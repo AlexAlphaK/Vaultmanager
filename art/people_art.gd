@@ -110,6 +110,17 @@ static func paint(look: Dictionary, frame := 0) -> PixelCanvas:
 		c.rect(8, 7 + y0, 3, 1, Color("#2a2a30"))
 		c.px(5, 6 + y0, Color("#9fd0e8"))
 		c.px(9, 6 + y0, Color("#9fd0e8"))
+	if look.get("shades", false):
+		c.rect(5, 6 + y0, 6, 2, Color("#14141a"))
+		c.px(7, 7 + y0, skin.darkened(0.2))
+		c.px(8, 7 + y0, skin.darkened(0.2))
+		c.px(5, 6 + y0, Color("#6a7aa0"))
+		c.px(9, 6 + y0, Color("#6a7aa0"))
+	if look.get("chain", false):
+		c.px(6, 12 + y0, Pal.GOLD)
+		c.px(9, 12 + y0, Pal.GOLD)
+		c.rect(7, 13 + y0, 2, 1, Pal.GOLD)
+		c.px(7, 14 + y0, Color("#f6e08a"))
 
 	match int(look.hair_style):
 		0:

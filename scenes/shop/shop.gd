@@ -123,10 +123,10 @@ func _tick(delta: float) -> void:
 
 
 func _spawn() -> void:
-	var c := Customer.create(Shop.day, Shop.reputation, Shop.coin_list(), rng, MarketEvents.customer_event(rng))
+	var c := Customers.next_customer(rng, MarketEvents.customer_event(rng))
 	queue.append(c)
 	Sfx.play(self, Sfx.door_bell(), -8.0)
-	Shop.log_event("%s walked in." % c.name)
+	Shop.log_event(Customers.arrival(c))
 
 
 func _walk(delta: float) -> void:
@@ -163,6 +163,7 @@ func _dismiss(c: Customer, text := "", mood := "") -> void:
 	queue.erase(c)
 	c.leaving = true
 	leaving.append(c)
+	Customers.on_leave(c)
 	if text != "":
 		Shop.log_event(text, mood)
 	if c == _shown:
@@ -173,6 +174,8 @@ func _dismiss(c: Customer, text := "", mood := "") -> void:
 func _on_action(id: String) -> void:
 	var c := _front()
 	if c == null or paused:
+		return
+	if c.kind == "visit" and id != "decline":
 		return
 	match id:
 		"test":
@@ -189,21 +192,15 @@ func _on_action(id: String) -> void:
 		"sell":
 			_sell(c)
 		"decline":
-			_dismiss(c, "%s left without buying." % c.name)
+			_dismiss(c, "%s said goodbye." % c.name if c.kind == "visit" else "%s left without buying." % c.name)
 
 
 func _offer(c: Customer) -> void:
 	var offer := c.offer_total()
-	if offer < c.reserve * c.expected_total():
-		c.tries += 1
-		c.patience -= 15.0
-		if c.piece:
-			c.say = "No. I know what this is worth." if c.tries > 1 else "That's a lowball for a piece like this. Look again."
-		else:
-			c.say = "Still too low. I know what spot is today." if c.tries > 1 else \
-				"That's a lowball. I was hoping for closer to %d%%." % roundi(c.reserve * 100.0 + rng.randf_range(0.0, 2.0))
+	if not c.hear_offer(offer):
 		hud.show_customer(c)
 		return
+	c.dealt = true
 	if c.piece:
 		_buy_piece(c, offer)
 		return
@@ -252,15 +249,12 @@ func _settle_piece(j: Dictionary) -> void:
 
 
 func _sell(c: Customer) -> void:
-	if Shop.sell_premium > c.max_premium:
-		c.tries += 1
-		c.patience -= 15.0
-		c.say = "The chain store downtown is cheaper." if c.tries > 1 else \
-			"Spot plus %d%%? I'd pay maybe %d%% over." % [roundi(Shop.sell_premium * 100.0), maxi(1, floori(c.max_premium * 100.0))]
+	if not c.hear_price(Shop.sell_premium):
 		hud.show_customer(c)
 		return
+	c.dealt = true
 	var price := c.sale_total()
-	var taken := Shop.take_stock(c.item.metal, c.qty)
+	var taken := Shop.take_stock(c.item.metal, c.qty, c.item if c.wanted_exact else null)
 	Shop.add_cash(price)
 	Shop.note("sold", price)
 	Shop.note("profit", price - taken.cost)
@@ -314,6 +308,7 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 				_dismiss(c, "You called %s's real %s plated. They stormed out." % [c.name, c.piece.short_title()], "bad")
 		"fake":
 			if c.fake != "":
+				c.caught = true
 				Shop.note("caught")
 				Shop.adjust_reputation(0.15)
 				_dismiss(c, "Caught a %s fake from %s!" % [Counterfeit.label(c.fake), c.name], "good")
