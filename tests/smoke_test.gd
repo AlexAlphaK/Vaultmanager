@@ -1,6 +1,6 @@
 extends Node
 ## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test, the vault lock-up,
-## the customers (archetypes, haggling, regulars' stories), and the menus, settings and music. Run:
+## the customers (archetypes, haggling, regulars' stories), staff and rush hours, and the menus, settings and music. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -25,6 +25,9 @@ func _ready() -> void:
 	await _check_shop_day()
 	await _check_jewellery_deals()
 	await _check_bar_deals()
+	_check_staff()
+	_check_rush_hours()
+	await _check_rush_day()
 	_check_settings()
 	_check_music()
 	await _check_menus()
@@ -663,6 +666,139 @@ func _check_bar_deals() -> void:
 	Progress.reset()
 	Shop.reset()
 	BullionBar.ledger.clear()
+
+
+## Hiring costs a fee, wages go on the ledger at closing, the guard cuts robbery odds,
+## and staff are saved and cleared by a new game.
+func _check_staff() -> void:
+	SaveGame.new_game()
+	Day.begin_day()
+	var risk := Progress.effect("robbery_risk")
+	var cash := Shop.cash
+	expect(Staff.hire("clerk") and Staff.hire("guard"), "hire a clerk and a guard")
+	expect(not Staff.hire("clerk"), "the clerk is hired once")
+	expect(is_equal_approx(Shop.cash, cash - Staff.ROLES.clerk.fee - Staff.ROLES.guard.fee), "hiring pays the signing fees")
+	expect(Progress.effect("robbery_risk") < risk, "the guard cuts the robbery odds")
+	expect(RushHours.grab_chance(RushHours.till_limit() * 2.0, true) < RushHours.GRAB_CHANCE, "the guard puts off till snatchers")
+	Day.open_shop()
+	expect(not Staff.can_hire("clerk"), "staff are hired in the morning")
+	cash = Shop.cash
+	Day.close_shop()
+	var report := Day.end_day()
+	expect(is_equal_approx(Shop.cash, cash - Staff.daily_wages() - Progress.daily_upkeep()), "wages are paid at closing")
+	expect(report.ledger.any(func(e): return str(e.label).begins_with("Wages")), "wages show in the day's ledger")
+	Progress.tier = 2
+	expect(Staff.wage("clerk") > Staff.ROLES.clerk.wage, "wages rise with the shop")
+	Progress.tier = 0
+	expect(SaveGame.save_game(), "the game saves with staff")
+	Staff.reset()
+	expect(SaveGame.load_game() and Staff.has("clerk") and Staff.has("guard"), "staff come back from the save")
+	expect(Staff.let_go("guard") and not Staff.has("guard") and is_equal_approx(Progress.effect("robbery_risk"), risk), "letting the guard go")
+	SaveGame.new_game()
+	expect(Staff.hired.is_empty(), "a new game starts with no staff")
+
+
+func _check_rush_hours() -> void:
+	expect(RushHours.at(1, 12 * 60).name == "Lunch rush", "lunch is busy on a Monday")
+	expect(RushHours.at(1, 10 * 60).is_empty(), "mid-morning is calm on a Monday")
+	expect(RushHours.at(6, 10 * 60).name == "Saturday crowd", "Saturday morning is busy")
+	expect(RushHours.at(7, 16 * 60).is_empty(), "Sunday afternoon is quiet")
+	expect(RushHours.summary(1).contains("lunch 11:45"), "the morning briefing lists the rushes")
+	expect(RushHours.grab_chance(RushHours.till_limit() * 0.5, true) == 0.0, "a light till is safe")
+	expect(RushHours.grab_chance(RushHours.till_limit() * 2.0, true) > RushHours.grab_chance(RushHours.till_limit() * 2.0, false), "a rush makes snatches likelier")
+
+
+## In a rush the clock runs on through a test, a full queue turns people away, the clerk
+## serves buyers, and a vault run empties the till.
+func _check_rush_day() -> void:
+	SaveGame.new_game()
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	if not shop.has_method("_open_shop"):
+		return
+	shop._open_shop()
+	shop.queue.clear()
+	# jump to lunch on a Monday
+	shop.time = (12.0 * 60.0 - 9.0 * 60.0) / (8.0 * 60.0) * shop.DAY_SECONDS
+	shop._tick(0.0)
+	expect(shop.rush.get("name", "") == "Lunch rush", "the lunch rush starts at noon")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	var seller := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	seller.kind = "seller"
+	seller.piece = null
+	seller.bar = null
+	seller.pos = ShopArt.SLOTS[0]
+	shop.queue.append(seller)
+	var waiting := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	waiting.kind = "seller"
+	waiting.pos = ShopArt.SLOTS[1]
+	shop.queue.append(waiting)
+	await get_tree().process_frame
+	shop._open_test(seller)
+	expect(not shop.paused, "the clock keeps running at the bench in a rush")
+	var t: float = shop.time
+	var patience: float = seller.patience
+	var other: float = waiting.patience
+	shop._tick(1.0)
+	expect(shop.time > t and is_equal_approx(seller.patience, patience) and waiting.patience < other, "the queue waits while you test, the customer on the bench does not")
+	shop._test.finished.emit("genuine")
+	expect(not shop.paused and shop._test == null, "back at the counter")
+	# a full queue turns walk-ins away
+	while shop.queue.size() < ShopArt.SLOTS.size():
+		var extra := Customer.create(1, 2.5, Shop.coin_list(), rng)
+		extra.kind = "seller"
+		shop.queue.append(extra)
+	shop._next_spawn = 0.0
+	shop._tick(0.01)
+	expect(Shop.stats.get("walked_by", 0.0) >= 1.0 and shop.queue.size() == ShopArt.SLOTS.size(), "a full queue in a rush turns people away")
+	# the clerk serves a buyer at the second till
+	shop.queue.clear()
+	Day.phase = Day.MORNING
+	Shop.cash = 50000.0
+	expect(Staff.hire("clerk"), "hire the clerk")
+	Day.phase = Day.OPEN
+	Shop.add_stock(Shop.coins["silver_maple"], 10, 30.0)
+	var front := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	front.kind = "seller"
+	front.piece = null
+	front.bar = null
+	front.pos = ShopArt.SLOTS[0]
+	var buyer := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	buyer.kind = "buyer"
+	buyer.item = Shop.coins["silver_maple"]
+	buyer.qty = 4
+	buyer.wanted_exact = false
+	buyer.max_premium = 0.5
+	buyer.ceiling_premium = 0.5
+	buyer.pos = ShopArt.SLOTS[1]
+	shop.queue.append(front)
+	shop.queue.append(buyer)
+	await get_tree().process_frame
+	shop._tick(0.01)
+	expect(shop.at_clerk == buyer and not shop.queue.has(buyer), "the clerk takes the buyer behind your customer")
+	buyer.pos = ShopArt.CLERK_SLOT
+	buyer.walking = false
+	var sold: float = Shop.stats.sold
+	shop._tick(shop.CLERK_SECONDS + 0.1)
+	expect(shop.at_clerk == null and Shop.stats.sold > sold and buyer.dealt, "the clerk rings up the sale")
+	expect(shop.till > 0.0, "the sale goes in the till")
+	# a vault run empties the till; the counter is shut while you are away
+	shop._on_action("vault_run")
+	expect(shop.away > 0.0, "off to the vault with the till")
+	var queued: int = shop.queue.size()
+	shop._on_action("refuse")
+	expect(shop.queue.size() == queued, "nobody is served while you are at the vault")
+	shop._tick(shop.VAULT_RUN_SECONDS + 0.1)
+	expect(shop.away <= 0.0 and shop.till == 0.0, "the till is locked in the safe")
+	# an overfull till can be snatched
+	shop.till = RushHours.till_limit() * 3.0
+	var cash := Shop.cash
+	shop._till_grab()
+	expect(Shop.cash < cash and shop.till < RushHours.till_limit() * 3.0, "a snatch takes cash from the till")
+	shop.queue_free()
+	SaveGame.new_game()
 
 
 func _bar_seller(rng: RandomNumberGenerator, spec_id: String, fake: String) -> Customer:

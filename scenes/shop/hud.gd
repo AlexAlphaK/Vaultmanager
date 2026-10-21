@@ -2,7 +2,7 @@ extends Control
 ## Shop HUD at 480x270: live ticker on top, the day's numbers and the counter card on
 ## the right, and the shop log under the room. Laid out by hand to the pixel.
 
-signal action(name: String) # "test", "offer", "refuse", "sell", "decline"
+signal action(name: String) # "test", "offer", "refuse", "sell", "decline", "vault_run"
 signal open_requested
 signal next_day_requested
 signal new_game_requested
@@ -24,6 +24,8 @@ var _stock_value: Label
 var _net: Label
 var _goal: ProgressBar
 var _goal_text: Label
+var _till: Label
+var _till_button: Button
 var _avatar: TextureRect
 var _who: Label
 var _wants: Label
@@ -61,10 +63,25 @@ func _ready() -> void:
 	show_customer(null, "Quiet for now. Customers arrive every few seconds.")
 
 
-func set_clock(day: int, minutes: int, closing: bool) -> void:
+func set_clock(day: int, minutes: int, closing: bool, rush := false) -> void:
 	_day.text = "Day %d" % day
-	var when := "closing" if closing else Day.weekday(day).substr(0, 3)
+	var when := "closing" if closing else ("RUSH" if rush else Day.weekday(day).substr(0, 3))
 	_clock.text = "%s %02d:%02d" % [when, minutes / 60, minutes % 60]
+	_clock.add_theme_color_override("font_color", Pal.WARN if rush else Pal.INK)
+
+
+## The cash at the counter since the last vault run. Over `limit` it is worth a snatch.
+## `away` counts down the seconds of a vault run under way.
+func set_till(usd: float, limit: float, away: float) -> void:
+	if away > 0.0:
+		_till.text = "Off to the vault..."
+		_till.add_theme_color_override("font_color", Pal.INK_DIM)
+	else:
+		_till.text = "Till %s" % Market.format_money(usd)
+		var hot := usd > limit
+		var flash := hot and fmod(Time.get_ticks_msec() / 1000.0, 0.8) < 0.4
+		_till.add_theme_color_override("font_color", Pal.BAD if flash else (Pal.WARN if hot else Pal.INK_DIM))
+	_till_button.disabled = away > 0.0 or usd < 1.0
 
 
 ## Fills the counter card. `c` is null when nobody is at the counter.
@@ -269,6 +286,9 @@ func _build_side() -> void:
 	_small_button("-", Rect2(x + 130, 216, 11, 11), func(): Shop.set_sell_premium(Shop.sell_premium - 0.01))
 	_small_button("+", Rect2(x + 143, 216, 11, 11), func(): Shop.set_sell_premium(Shop.sell_premium + 0.01))
 
+	_till = _label("", Vector2(x, 192), Vector2(100, 8), Pal.INK_DIM)
+	_till_button = _button("To vault", Rect2(x + 108, 190, 46, 11), "Button", "vault_run")
+	_till_button.tooltip_text = "Take the till's cash to the vault (3 seconds away from the counter)"
 	_label("IN THE VAULT", Vector2(x, 232), Vector2(154, 8), Pal.INK_FAINT)
 	for n in 3:
 		_stock_lines.append(_label("", Vector2(x, 241 + n * 9), Vector2(110, 8), Pal.INK_DIM))
