@@ -30,7 +30,7 @@ platinum and palladium prices follow the real market.
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
 | `scenes/bar_test/` | The bar test: scale, calipers, ultrasound flaw detector, XRF gun and loupe |
 | `scenes/vault/` | The vault lock-up minigame at closing time; `vault_layout.gd` holds the packing and break-in rules |
-| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people, coin, jewellery, bar, vault and title screen painters. No image files |
+| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people (walk cycle, back view, moods), coin, jewellery, bar, vault and title screen painters. `shop_ambience.gd` adds the sunbeam, dust, neon sign and shop cat; `bench_art.gd` the testing benches' wood, housings and lamp light. No image files |
 | `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds, `bar_sfx.gd` the gel, ultrasound and X-ray sounds) |
 | `audio/music_synth.gd` | The music, synthesised at runtime: a music-box title theme and a slow jazzy shop loop |
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons, sliders) |
