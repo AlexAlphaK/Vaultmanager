@@ -127,7 +127,14 @@ func _draw_bubble(c: Customer, at: Vector2) -> void:
 	draw_rect(Rect2(at, Vector2(13, 11)), Pal.INK)
 	draw_rect(Rect2(at + Vector2(1, 11), Vector2(3, 1)), Pal.INK)
 	draw_rect(Rect2(at + Vector2(1, 12), Vector2(1, 1)), Pal.INK)
-	if c.kind == "seller":
+	if c.kind == "seller" and c.piece:
+		# a little ring with a stone
+		var pal := Pal.for_metal(c.piece.metal)
+		for d in [Vector2(4, 5), Vector2(5, 4), Vector2(7, 4), Vector2(8, 5), Vector2(4, 6), Vector2(8, 6), Vector2(5, 7), Vector2(6, 7), Vector2(7, 7)]:
+			draw_rect(Rect2(at + d + Vector2(0, 1), Vector2.ONE), Pal.metal(pal, 3 if d.y < 6 else 2))
+		draw_rect(Rect2(at + Vector2(6, 2), Vector2(1, 2)), Color("#cfe6ff"))
+		draw_rect(Rect2(at + Vector2(5, 3), Vector2(3, 1)), Color("#9cc0e8"))
+	elif c.kind == "seller":
 		var pal := c.item.palette_name()
 		draw_rect(Rect2(at + Vector2(3, 2), Vector2(7, 7)), Pal.metal(pal, 1))
 		draw_rect(Rect2(at + Vector2(3, 2), Vector2(6, 6)), Pal.metal(pal, 3))

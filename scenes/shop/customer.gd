@@ -10,6 +10,10 @@ const SELLER_LINES := ["Clearing out my late husband's collection.", "Price is u
 	"Need a bit of cash for the car.", "Selling part of my stack."]
 const FAKE_LINES := ["Found these in a drawer. Real deal, trust me.", "Bought them online, need cash fast.",
 	"My cousin says these are worth a fortune.", "No receipt, but they're solid. Swear."]
+const JEWELLERY_LINES := ["This was my grandmother's. Never wear it.", "Divorce. Don't ask.",
+	"Found it at an estate sale. It's stamped.", "Cleaning out the jewellery box."]
+const JEWELLERY_SCAM_LINES := ["Solid gold, real stone. Need cash today.", "Had it appraised for twice that, honest.",
+	"My uncle's a jeweller, he says it's the real thing.", "Quick sale. No questions, right?"]
 const BUYER_LINES_DOWN := ["Prices dipped, I'm buying.", "Stocks are a casino. I want metal."]
 const BUYER_LINES_UP := ["Crypto burned me. I want something real.", "Adding to my stack.", "A gift for my granddaughter."]
 
@@ -28,6 +32,10 @@ var tries := 0
 var tested := false
 var seed := 0
 var event_id := "" # the market event that brought them in, if any
+## A piece of jewellery instead of coins (sellers only), and how the player graded it
+## in the appraisal: {"grade": String, "diamond": bool, "weight": grams}.
+var piece: JewelleryPiece
+var assessed := {}
 
 var pos := ShopArt.ENTRANCE
 var leaving := false
@@ -67,6 +75,11 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 		# panicking sellers take less, sellers cashing in at the top hold out for more
 		c.reserve = clampf(0.86 + rng.randf_range(-0.03, 0.04) + maxf(0.0, mood) * 0.012 + float(event.get("reserve", 0.0)), 0.74, 0.99)
 		c.say = (FAKE_LINES if c.fake != "" else SELLER_LINES)[rng.randi() % 4]
+		if event.is_empty() and rng.randf() < 0.35:
+			c.piece = JewelleryPiece.create(day, rng)
+			c.fake = ""
+			c.qty = 1
+			c.say = (JEWELLERY_SCAM_LINES if c.piece.scam else JEWELLERY_LINES)[rng.randi() % 4]
 	else:
 		c.max_premium = clampf(rng.randf_range(0.03, 0.09) + reputation * 0.006 + float(event.get("premium", 0.0)), 0.02, 0.20) + Progress.effect("premium")
 		var lines := BUYER_LINES_DOWN if mood < 0.0 else BUYER_LINES_UP
@@ -81,7 +94,19 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 
 ## Melt value of everything the customer brings or wants, at live prices.
 func melt_total() -> float:
+	if piece:
+		if assessed.is_empty():
+			return piece.claimed_value()
+		return piece.value_as(assessed.grade, assessed.diamond, assessed.weight)
 	return item.melt_value() * qty
+
+
+## The least the customer takes before walking: melt for coins, and for jewellery
+## what they believe it's worth (or what it really is, once they're shown).
+func expected_total() -> float:
+	if piece:
+		return piece.expected_value()
+	return melt_total()
 
 
 func offer_total() -> float:

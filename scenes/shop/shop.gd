@@ -1,15 +1,18 @@
 extends Node2D
 ## The shop floor: runs the day clock, brings customers in, and settles deals at
-## live market prices. Coin testing opens the CoinTest minigame over the shop.
-## Each day runs morning (prices, upgrades) -> open -> closing -> after hours (summary),
-## following the Day autoload. The game saves every morning.
-## Market events (real price moves) bring rushes of customers and a news banner.
+## live market prices. Coin testing opens the CoinTest minigame over the shop, and
+## jewellery opens the JewelleryTest appraisal.
+## Each day runs morning (prices, upgrades) -> open -> closing -> vault lock-up ->
+## after hours (summary), following the Day autoload. The game saves every morning.
 
 const DAY_SECONDS := 180.0
 const WALK_SPEED := 1.8 # tiles per second
 const CoinTestScene := preload("res://scenes/coin_test/coin_test.tscn")
+const VaultScene := preload("res://scenes/vault/vault.tscn")
 const NewsBanner := preload("res://scenes/shop/news_banner.gd")
 const RUSH_GAP := 1.5 # seconds between customers in a news rush
+const JewelleryTestScene := preload("res://scenes/jewellery_test/jewellery_test.tscn")
+const STONE_NAMES := {"cz": "cubic zirconia", "glass": "glass", "moissanite": "moissanite"}
 
 @onready var room: Node2D = $Room
 @onready var hud: Control = $Hud/Root
@@ -21,12 +24,15 @@ var paused := true
 var queue: Array[Customer] = []
 var leaving: Array[Customer] = []
 var pending_fakes: Array[Dictionary] = []
+## Jewellery bought today, on its way to the refiner: {"at", "piece", "paid", "name"}.
+var pending_pieces: Array[Dictionary] = []
 var rng := RandomNumberGenerator.new()
 
 var _next_spawn := 3.0
 var _rush_left := 0
 var _shown: Customer
 var _test: Control
+var _vault: Control
 
 
 func _ready() -> void:
@@ -91,9 +97,13 @@ func _tick(delta: float) -> void:
 			var cover := Progress.effect("fraud_refund")
 			if cover > 0.0:
 				Day.add_income("Fraud insurance payout", f.paid * minf(cover, 1.0))
+	for j in pending_pieces.duplicate():
+		if time >= j.at or closing:
+			pending_pieces.erase(j)
+			_settle_piece(j)
 	if closing and queue.is_empty() and leaving.is_empty():
 		paused = true
-		hud.show_day_summary(Day.end_day())
+		_open_vault()
 
 
 func _spawn() -> void:
@@ -158,7 +168,7 @@ func _on_action(id: String) -> void:
 				Shop.adjust_reputation(-0.05)
 				_dismiss(c, "Passed on %s's coins." % c.name)
 			else:
-				Shop.adjust_reputation(0.05 if c.fake != "" else -0.1)
+				Shop.adjust_reputation(0.05 if c.fake != "" or (c.piece and c.piece.scam) else -0.1)
 				_dismiss(c, "Turned %s away without testing." % c.name)
 		"sell":
 			_sell(c)
@@ -168,12 +178,18 @@ func _on_action(id: String) -> void:
 
 func _offer(c: Customer) -> void:
 	var offer := c.offer_total()
-	if Shop.buy_percent < c.reserve:
+	if offer < c.reserve * c.expected_total():
 		c.tries += 1
 		c.patience -= 15.0
-		c.say = "Still too low. I know what spot is today." if c.tries > 1 else \
-			"That's a lowball. I was hoping for closer to %d%%." % roundi(c.reserve * 100.0 + rng.randf_range(0.0, 2.0))
+		if c.piece:
+			c.say = "No. I know what this is worth." if c.tries > 1 else "That's a lowball for a piece like this. Look again."
+		else:
+			c.say = "Still too low. I know what spot is today." if c.tries > 1 else \
+				"That's a lowball. I was hoping for closer to %d%%." % roundi(c.reserve * 100.0 + rng.randf_range(0.0, 2.0))
 		hud.show_customer(c)
+		return
+	if c.piece:
+		_buy_piece(c, offer)
 		return
 	Shop.add_cash(-offer)
 	Shop.note("bought", offer)
@@ -183,6 +199,40 @@ func _offer(c: Customer) -> void:
 	Shop.adjust_reputation(0.05)
 	Sfx.play(self, Sfx.register_chime(), -6.0)
 	_dismiss(c, "Bought %d × %s for %s." % [c.qty, c.item.display_name, Market.format_money(offer)])
+
+
+func _buy_piece(c: Customer, offer: float) -> void:
+	Shop.add_cash(-offer)
+	Shop.note("bought", offer)
+	pending_pieces.append({"at": time + 8.0, "piece": c.piece, "paid": offer, "name": c.name})
+	Shop.adjust_reputation(0.05)
+	Sfx.play(self, Sfx.register_chime(), -6.0)
+	_dismiss(c, "Bought %s's %s for %s. Off to the refiner." % [c.name, c.piece.short_title(), Market.format_money(offer)])
+
+
+## The refiner melts a bought piece and the stone dealer takes any diamond.
+## This is where a wrong appraisal shows up.
+func _settle_piece(j: Dictionary) -> void:
+	var p: JewelleryPiece = j.piece
+	var payout := p.refiner_payout()
+	var paid: float = j.paid
+	Day.add_income("Refiner and stone dealer", payout)
+	Shop.note("profit", payout - paid)
+	var what := "%s's %s" % [j.name, p.short_title()]
+	var reasons: Array[String] = []
+	if p.true_grade == "plated":
+		reasons.append("it was plated %s" % p.base_metal)
+	elif p.true_grade != p.claimed_grade:
+		reasons.append("it was %s" % p.true_grade)
+	if p.stone != "" and p.stone != "diamond":
+		reasons.append("the stone was %s" % STONE_NAMES[p.stone])
+	if p.true_grade == "plated" or payout < paid * 0.97:
+		if p.true_grade == "plated":
+			Shop.note("scammed")
+			Shop.adjust_reputation(-0.3)
+		Shop.log_event("Refiner: %s%s. Lost %s." % [what, ": " + ", ".join(reasons) if not reasons.is_empty() else "", Market.format_money(paid - payout)], "bad")
+	else:
+		Shop.log_event("Refiner paid %s for %s (profit %s)." % [Market.format_money(payout), what, Market.format_money(payout - paid)], "good")
 
 
 func _sell(c: Customer) -> void:
@@ -221,7 +271,7 @@ func _on_market_event(event: Dictionary) -> void:
 
 func _open_test(c: Customer) -> void:
 	paused = true
-	_test = CoinTestScene.instantiate()
+	_test = (JewelleryTestScene if c.piece else CoinTestScene).instantiate()
 	hud.add_child(_test)
 	_test.start(c)
 	_test.finished.connect(_on_test_finished.bind(c))
@@ -235,7 +285,17 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 		"genuine":
 			c.tested = true
 			c.say = "Told you they were real. So, what's your offer?"
+			if c.piece:
+				_appraised(c)
 			hud.show_customer(c)
+		"fake" when c.piece:
+			if c.piece.true_grade == "plated":
+				Shop.note("caught")
+				Shop.adjust_reputation(0.15)
+				_dismiss(c, "Caught %s's plated %s! Acid doesn't lie." % [c.name, c.piece.short_title()], "good")
+			else:
+				Shop.adjust_reputation(-0.25)
+				_dismiss(c, "You called %s's real %s plated. They stormed out." % [c.name, c.piece.short_title()], "bad")
 		"fake":
 			if c.fake != "":
 				Shop.note("caught")
@@ -244,6 +304,43 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 			else:
 				Shop.adjust_reputation(-0.25)
 				_dismiss(c, "You called %s's genuine coins fake. They stormed out." % c.name, "bad")
+
+
+## The customer's reaction to your grading, and credit for catching a bad claim.
+func _appraised(c: Customer) -> void:
+	var p := c.piece
+	var a := c.assessed
+	if a.grade == p.true_grade and p.true_grade != p.claimed_grade:
+		if JewelleryPiece.PURITY[p.true_grade] > JewelleryPiece.PURITY[p.claimed_grade]:
+			Shop.adjust_reputation(0.1)
+			c.say = "It's %s, not %s? You could have kept quiet. Thank you." % [p.true_grade, p.claimed_grade]
+			Shop.log_event("Told %s their piece is better than they thought." % c.name, "good")
+		else:
+			c.say = "%s? Huh. My mother always said %s." % [p.true_grade, p.claimed_grade]
+			Shop.note("caught")
+			Shop.log_event("The acid says %s's piece is %s, not %s." % [c.name, p.true_grade, p.claimed_grade], "good")
+	elif p.stone != "" and p.stone != "diamond" and not a.diamond:
+		Shop.note("caught")
+		c.say = "Not a diamond? Well, the gold's still gold." if not p.scam else "Fine. Pay me for the metal then."
+		Shop.log_event("Spotted that %s's stone is %s." % [c.name, STONE_NAMES[p.stone]], "good")
+	else:
+		c.say = "So, what's it worth to you?"
+
+
+func _open_vault() -> void:
+	_vault = VaultScene.instantiate()
+	hud.add_child(_vault)
+	_vault.start()
+	_vault.finished.connect(_on_vault_finished)
+
+
+func _on_vault_finished(night: Dictionary) -> void:
+	_vault.queue_free()
+	_vault = null
+	var report := Day.end_day()
+	if night.get("break_in", false):
+		report.lines.append("Break-in overnight: lost %s." % Market.format_money(night.value))
+	hud.show_day_summary(report)
 
 
 func _open_next_day() -> void:
