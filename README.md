@@ -16,6 +16,7 @@ platinum and palladium prices follow the real market.
 | `autoload/progress.gd` | `Progress` singleton: the four shop tiers, upgrades and their effects |
 | `autoload/save_game.gd` | `SaveGame` singleton: saves to `user://save.json` every morning, loads on launch |
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
+| `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
@@ -24,6 +25,7 @@ platinum and palladium prices follow the real market.
 | `data/coins/*.tres` | Real coin specs (weight, purity, diameter, thickness) used by the testing minigame |
 | `scenes/menu/` | The title screen (main scene: Continue, New game, Settings, Quit) and the pause menu |
 | `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene) |
+| `scenes/tutorial/coach.gd` | The coach: the cards of the guided first day (with three scripted customers) and the bench intros |
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
 | `scenes/bar_test/` | The bar test: scale, calipers, ultrasound flaw detector, XRF gun and loupe |
@@ -43,6 +45,14 @@ The game opens on the title screen. **Continue** picks up your saved shop (the g
 every morning), **New game** starts over on day 1 (click twice if you have a save), and
 **Settings** sets the currency, the volume of everything, music and effects, and fullscreen.
 In the shop, **Esc** or the **Menu** button pauses the game. **F11** toggles fullscreen anywhere.
+
+A new game starts with a **guided first day**. Cards walk you through the ticker and your
+margins, then three customers: June sells you genuine Silver Eagles (test them with the scale and
+calipers, then buy), Slick tries to sell you plated steel fakes (the magnet catches them), and
+Priya buys silver from your vault. The shop clock waits while the cards are up. Then the shop is
+yours until closing, with one more card for the vault lock-up and one on the summary. The first
+time a jewellery piece or a bullion bar comes in, its bench opens with a short intro.
+**Skip tutorial** on any card turns all of this off. What you've seen is saved with the game.
 
 Customers queue at the counter. Sellers bring coins, buyers want coins from your vault.
 

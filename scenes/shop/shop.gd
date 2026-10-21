@@ -4,6 +4,13 @@ extends Node2D
 ## jewellery opens the JewelleryTest appraisal and bullion bars open the BarTest.
 ## Each day runs morning (prices, upgrades) -> open -> closing -> vault lock-up ->
 ## after hours (summary), following the Day autoload. The game saves every morning.
+## On day 1 of a new game the Coach walks the player through it.
+
+signal bench_opened(bench: Control, c: Customer)
+signal bench_closed(verdict: String, c: Customer)
+signal customer_left(c: Customer)
+signal vault_opened(vault: Control)
+signal summary_shown
 
 const DAY_SECONDS := 180.0
 const WALK_SPEED := 1.8 # tiles per second
@@ -37,6 +44,7 @@ var _shown: Customer
 var _test: Control
 var _vault: Control
 var _pause: PauseMenu
+var coach: Coach
 
 
 func _ready() -> void:
@@ -57,6 +65,9 @@ func _ready() -> void:
 		Shop.log_event("Welcome back. Day %d at your %s." % [Shop.day, Progress.tier_name()])
 	else:
 		Shop.log_event("Welcome to your shop. Test coins before you buy them.")
+	coach = Coach.new()
+	add_child(coach)
+	coach.attach(self)
 	_start_morning()
 
 
@@ -86,14 +97,16 @@ func open_pause_menu() -> void:
 
 
 func _tick(delta: float) -> void:
-	time += delta
+	# the clock waits while the tutorial walks through its first customers
+	if not coach.holds_clock():
+		time += delta
 	if not closing and time >= DAY_SECONDS:
 		closing = true
 		Day.close_shop()
 		Shop.log_event("Closing time. Serving the last customers.")
 	MarketEvents.advance(delta)
 	_next_spawn -= delta
-	if not closing and _next_spawn <= 0.0 and queue.size() < ShopArt.SLOTS.size():
+	if not closing and _next_spawn <= 0.0 and queue.size() < ShopArt.SLOTS.size() and not coach.holds_clock():
 		_spawn()
 		if _rush_left > 0:
 			_rush_left -= 1
@@ -131,7 +144,11 @@ func _tick(delta: float) -> void:
 
 
 func _spawn() -> void:
-	var c := Customers.next_customer(rng, MarketEvents.customer_event(rng))
+	admit(Customers.next_customer(rng, MarketEvents.customer_event(rng)))
+
+
+## Sends customer `c` through the door and into the queue.
+func admit(c: Customer) -> void:
 	queue.append(c)
 	Sfx.play(self, Sfx.door_bell(), -8.0)
 	Shop.log_event(Customers.arrival(c))
@@ -177,6 +194,7 @@ func _dismiss(c: Customer, text := "", mood := "") -> void:
 	if c == _shown:
 		_shown = null
 		_show_front()
+	customer_left.emit(c)
 
 
 func _on_action(id: String) -> void:
@@ -325,12 +343,14 @@ func _open_test(c: Customer) -> void:
 	hud.add_child(_test)
 	_test.start(c)
 	_test.finished.connect(_on_test_finished.bind(c))
+	bench_opened.emit(_test, c)
 
 
 func _on_test_finished(verdict: String, c: Customer) -> void:
 	_test.queue_free()
 	_test = null
 	paused = false
+	bench_closed.emit(verdict, c)
 	match verdict:
 		"genuine":
 			c.tested = true
@@ -391,6 +411,7 @@ func _open_vault() -> void:
 	hud.add_child(_vault)
 	_vault.start()
 	_vault.finished.connect(_on_vault_finished)
+	vault_opened.emit(_vault)
 
 
 func _on_vault_finished(night: Dictionary) -> void:
@@ -400,6 +421,7 @@ func _on_vault_finished(night: Dictionary) -> void:
 	if night.get("break_in", false):
 		report.lines.append("Break-in overnight: lost %s." % Market.format_money(night.value))
 	hud.show_day_summary(report)
+	summary_shown.emit()
 
 
 func _open_next_day() -> void:
@@ -432,5 +454,6 @@ func _new_game() -> void:
 	pending_fakes.clear()
 	pending_bars.clear()
 	SaveGame.new_game()
+	coach.restart()
 	Shop.log_event("A fresh start at the corner counter.")
 	_start_morning()
