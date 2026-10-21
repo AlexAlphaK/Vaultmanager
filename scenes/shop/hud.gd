@@ -161,8 +161,16 @@ func _refresh_deal() -> void:
 		_buttons.test.visible = not c.tested
 		_buttons.offer.visible = true
 		_buttons.offer.text = "Make offer" if c.tested else "Buy as is"
-		_buttons.offer.disabled = c.offer_total() > Shop.cash
-		_buttons.refuse.visible = not c.tested
+		var short := c.offer_total() > Shop.cash
+		_buttons.offer.disabled = short
+		if short:
+			_deal[1].text = "Not enough cash: %s" % Market.format_money(Shop.cash)
+			_deal[1].add_theme_color_override("font_color", Pal.BAD)
+		else:
+			_deal[1].add_theme_color_override("font_color", Pal.INK)
+		# always leave a way out, even when the offer can't be paid
+		_buttons.refuse.visible = true
+		_buttons.refuse.text = "No thanks" if c.tested else "Refuse"
 	else:
 		var have := Shop.count_of(c.item.metal)
 		_deal[0].text = "%d × %s coins" % [c.qty, {"XAU": "gold", "XAG": "silver", "XPT": "platinum"}.get(c.item.metal, "")]

@@ -129,8 +129,12 @@ func _on_action(id: String) -> void:
 		"offer":
 			_offer(c)
 		"refuse":
-			Shop.adjust_reputation(0.05 if c.fake != "" else -0.1)
-			_dismiss(c, "Turned %s away without testing." % c.name)
+			if c.tested:
+				Shop.adjust_reputation(-0.05)
+				_dismiss(c, "Passed on %s's coins." % c.name)
+			else:
+				Shop.adjust_reputation(0.05 if c.fake != "" else -0.1)
+				_dismiss(c, "Turned %s away without testing." % c.name)
 		"sell":
 			_sell(c)
 		"decline":
