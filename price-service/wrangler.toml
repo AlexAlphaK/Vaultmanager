@@ -1,0 +1,18 @@
+name = "vault-manager-prices"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+# Fast cron: crypto and stocks every 5 minutes (CoinGecko demo plan and Finnhub free plan both fit).
+# Slow cron: metals and exchange rates every 4 hours, to stay inside the MetalCharts free tier
+# (about 200 calls a month). On a paid metals plan, move metals to the fast cron.
+[triggers]
+crons = ["*/5 * * * *", "0 */4 * * *"]
+
+[[kv_namespaces]]
+binding = "PRICES"
+id = "4dd3d80ff1b74cce88eeda54a7e7557c"
+
+# Secrets (never commit them):
+#   npx wrangler secret put METALCHARTS_KEY
+#   npx wrangler secret put COINGECKO_KEY   (optional demo key; works without one at lower limits)
+#   npx wrangler secret put FINNHUB_KEY     (stocks are skipped without it)

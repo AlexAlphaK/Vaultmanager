@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BullionItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://items/bullion_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Krugerrand"
+metal = "XAU"
+weight_g = 33.93
+purity = 0.9167
+diameter_mm = 32.77
+sell_premium = 0.04

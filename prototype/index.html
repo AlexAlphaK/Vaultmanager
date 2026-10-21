@@ -1,0 +1,832 @@
+<title>Vault Manager Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: LED ticker across the top, isometric shop canvas left, counter + ledger panel right; stacks on phones. Single night-shop look. */
+:root {
+  color-scheme: dark;
+  --bg: #14110e;
+  --panel: #1e1915;
+  --panel-2: #27201a;
+  --line: #3b3128;
+  --ink: #f0e7d7;
+  --muted: #a8998a;
+  --gold: #e8b84a;
+  --gold-deep: #9a6a1c;
+  --silver: #c9d1dc;
+  --up: #79d184;
+  --down: #e66b5c;
+  --led: #ffb43a;
+  --display: "Silkscreen", "Courier New", monospace;
+  --digits: "VT323", "Courier New", monospace;
+  --body: "IBM Plex Sans", system-ui, sans-serif;
+}
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--body); font-size: 14px; line-height: 1.45; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 14px 28px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 12px; }
+header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: var(--display); font-weight: 700; font-size: 22px; margin: 0; letter-spacing: .02em; color: var(--gold); text-wrap: balance; }
+h1 small { font-size: 11px; color: var(--muted); font-weight: 400; margin-left: 6px; letter-spacing: .08em; }
+.feed { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.feed .dot { width: 8px; height: 8px; background: var(--led); display: inline-block; }
+
+.ticker { background: #0b0907; border: 2px solid var(--line); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.tk { padding: 6px 10px; border-right: 2px solid var(--line); display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 8px; align-items: center; min-width: 0; }
+.tk:last-child { border-right: 0; }
+.tk .sym { font-family: var(--display); font-size: 12px; color: var(--muted); letter-spacing: .08em; }
+.tk .px { font-family: var(--digits); font-size: 26px; color: var(--led); line-height: 1; font-variant-numeric: tabular-nums; text-align: right; }
+.tk .chg { font-family: var(--digits); font-size: 18px; line-height: 1; }
+.tk canvas { width: 100%; height: 18px; image-rendering: pixelated; }
+.up { color: var(--up); } .down { color: var(--down); }
+.crawl { background: #0b0907; border: 2px solid var(--line); border-top: 0; margin-top: -12px; padding: 3px 10px; font-family: var(--digits); font-size: 18px; color: var(--led); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 12px; align-items: start; }
+.stage { background: #0e0c0a; border: 2px solid var(--line); position: relative; min-width: 0; }
+#shop { display: block; width: 100%; height: auto; image-rendering: pixelated; aspect-ratio: 320 / 192; }
+.goal { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-top: 2px solid var(--line); font-size: 12px; color: var(--muted); }
+.bar { flex: 1; height: 10px; background: var(--panel-2); border: 1px solid var(--line); position: relative; }
+.bar i { position: absolute; inset: 0 auto 0 0; background: var(--gold); }
+
+.side { display: grid; gap: 12px; min-width: 0; }
+.card { background: var(--panel); border: 2px solid var(--line); padding: 12px; display: grid; gap: 10px; min-width: 0; }
+.card h2 { font-family: var(--display); font-size: 12px; letter-spacing: .1em; color: var(--muted); margin: 0; font-weight: 400; text-transform: uppercase; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.stat .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.stat .v { font-family: var(--digits); font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; }
+.stars { color: var(--gold); letter-spacing: 2px; font-size: 16px; }
+
+.who { display: flex; gap: 10px; align-items: center; }
+.who canvas { width: 40px; height: 72px; image-rendering: pixelated; background: var(--panel-2); border: 1px solid var(--line); flex: none; }
+.who .name { font-weight: 600; }
+.who .say { color: var(--muted); font-size: 13px; }
+.deal { background: var(--panel-2); border: 1px solid var(--line); padding: 8px 10px; display: grid; gap: 2px; }
+.deal .item { font-weight: 600; }
+.deal .num { font-family: var(--digits); font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button { font-family: var(--display); font-size: 12px; letter-spacing: .04em; background: var(--panel-2); color: var(--ink); border: 2px solid var(--line); padding: 8px 10px; cursor: pointer; box-shadow: 0 3px 0 #0a0806; }
+button:hover { border-color: var(--gold-deep); }
+button:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a0806; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+button.primary { background: var(--gold); color: #241603; border-color: #f6d27e; }
+button.danger { color: var(--down); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.slider { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; font-size: 12px; color: var(--muted); }
+.slider input { grid-column: 1 / -1; accent-color: var(--gold); width: 100%; }
+.slider b { font-family: var(--digits); font-size: 20px; color: var(--ink); font-weight: 400; }
+.vault { display: grid; gap: 4px; font-size: 13px; }
+.vault div { display: flex; justify-content: space-between; gap: 8px; }
+.vault span:last-child { font-family: var(--digits); font-size: 18px; font-variant-numeric: tabular-nums; }
+.log { font-size: 12px; color: var(--muted); display: grid; gap: 3px; max-height: 140px; overflow-y: auto; }
+.log .good { color: var(--up); } .log .bad { color: var(--down); }
+.empty { color: var(--muted); font-size: 13px; }
+
+/* Minigame */
+.modal { position: fixed; inset: 0; background: rgba(6, 5, 4, .82); display: grid; place-items: center; z-index: 20; padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); overflow-y: auto; }
+.bench { background: var(--panel); border: 2px solid var(--line); width: min(980px, 100%); display: grid; grid-template-columns: minmax(0, 1fr) 280px; }
+.bench .view { min-width: 0; border-right: 2px solid var(--line); }
+#bench { display: block; width: 100%; height: auto; aspect-ratio: 256 / 160; image-rendering: pixelated; }
+.tools { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px; border-top: 2px solid var(--line); }
+.bench .info { padding: 12px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.spec, .read { font-size: 13px; display: grid; gap: 3px; }
+.spec div, .read div { display: flex; justify-content: space-between; gap: 8px; }
+.spec span:last-child, .read span:last-child { font-family: var(--digits); font-size: 19px; font-variant-numeric: tabular-nums; }
+.read .pending { color: var(--muted); }
+.hint { font-size: 12px; color: var(--muted); }
+.summary { background: var(--panel); border: 2px solid var(--line); width: min(440px, 100%); padding: 18px; display: grid; gap: 12px; }
+.summary h3 { font-family: var(--display); color: var(--gold); margin: 0; font-size: 18px; }
+
+@media (max-width: 900px) {
+  .main { grid-template-columns: 1fr; }
+  .bench { grid-template-columns: 1fr; }
+  .bench .view { border-right: 0; border-bottom: 2px solid var(--line); }
+}
+@media (max-width: 560px) {
+  .ticker { grid-template-columns: 1fr 1fr; }
+  .tk:nth-child(2) { border-right: 0; }
+  .tk:nth-child(-n+2) { border-bottom: 2px solid var(--line); }
+  .tk .px { font-size: 22px; }
+}
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { button:active { transform: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Vault Manager <small>PROTOTYPE 0.1</small></h1>
+    <div class="feed"><span class="dot"></span><span id="feedLabel">Simulated feed, seeded from the live price service (21 Oct 2026). 1 second = 15 market minutes.</span></div>
+  </header>
+
+  <div class="ticker" id="ticker"></div>
+  <div class="crawl" id="crawl">MARKET OPEN. Welcome to Main Street Bullion.</div>
+
+  <div class="main">
+    <div class="stage">
+      <canvas id="shop" width="320" height="192" aria-label="Isometric view of your bullion shop"></canvas>
+      <div class="goal"><span>Biggest store in town</span><div class="bar"><i id="goalBar" style="width:0%"></i></div><span id="goalTxt">$0 / $250k</span></div>
+    </div>
+
+    <div class="side">
+      <div class="card">
+        <h2 id="dayLbl">Day 1 · 09:00</h2>
+        <div class="stats">
+          <div class="stat"><div class="k">Cash</div><div class="v" id="sCash">$0</div></div>
+          <div class="stat"><div class="k">Vault (live)</div><div class="v" id="sVault">$0</div></div>
+          <div class="stat"><div class="k">Net worth</div><div class="v" id="sNet">$0</div></div>
+          <div class="stat"><div class="k">Reputation</div><div class="stars" id="sRep"></div></div>
+        </div>
+      </div>
+
+      <div class="card" id="counter">
+        <h2>At the counter</h2>
+        <div id="counterBody"></div>
+      </div>
+
+      <div class="card">
+        <h2>House rates</h2>
+        <label class="slider" for="buyPct">Buy at % of melt <b id="buyPctV">92%</b>
+          <input type="range" id="buyPct" min="80" max="100" value="92">
+        </label>
+        <label class="slider" for="sellPrem">Sell premium over spot <b id="sellPremV">+5%</b>
+          <input type="range" id="sellPrem" min="0" max="15" value="5">
+        </label>
+      </div>
+
+      <div class="card">
+        <h2>Vault</h2>
+        <div class="vault" id="vaultList"></div>
+      </div>
+
+      <div class="card">
+        <h2>Ledger</h2>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mgModal" hidden>
+  <div class="bench" role="dialog" aria-modal="true" aria-labelledby="mgTitle">
+    <div class="view">
+      <canvas id="bench" width="256" height="160" aria-label="Close-up of the coin on the testing bench"></canvas>
+      <div class="tools">
+        <button id="tScale">Scale</button>
+        <button id="tCal">Calipers</button>
+        <button id="tPing">Ping</button>
+        <button id="tMag">Magnet</button>
+        <button id="tLoupe">Loupe</button>
+      </div>
+    </div>
+    <div class="info">
+      <h2 id="mgTitle" style="font-family:var(--display);font-size:14px;margin:0;color:var(--gold)">Coin test</h2>
+      <div class="hint">Compare your readings with the mint spec. Genuine coins land within 0.05 g and 0.1 mm, ring for over a second, and ignore magnets (silver drags slightly).</div>
+      <div><div class="hint" style="text-transform:uppercase;letter-spacing:.08em">Mint spec</div><div class="spec" id="mgSpec"></div></div>
+      <div><div class="hint" style="text-transform:uppercase;letter-spacing:.08em">Your readings</div><div class="read" id="mgRead"></div></div>
+      <div class="row">
+        <button class="primary" id="vGen">Genuine</button>
+        <button class="danger" id="vFake">Fake</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="dayModal" hidden>
+  <div class="summary" role="dialog" aria-modal="true" aria-labelledby="dayTitle">
+    <h3 id="dayTitle">Closing time</h3>
+    <div id="daySum" class="vault"></div>
+    <button class="primary" id="nextDay">Open the shop for day 2</button>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+// ---------- helpers ----------
+const $ = id => document.getElementById(id);
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const gauss = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const money = (x, d = 0) => (x < 0 ? '-$' : '$') + Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+// ---------- 3x5 pixel font ----------
+const FONT = {
+  '0':'111101101101111','1':'010110010010111','2':'111001111100111','3':'111001111001111','4':'101101111001001',
+  '5':'111100111001111','6':'111100111101111','7':'111001010010010','8':'111101111101111','9':'111101111001111',
+  'A':'010101111101101','B':'110101110101110','C':'011100100100011','D':'110101101101110','E':'111100110100111',
+  'F':'111100110100100','G':'011100101101011','H':'101101111101101','I':'111010010010111','J':'001001001101010',
+  'K':'101101110101101','L':'100100100100111','M':'101111111101101','N':'110101101101101','O':'010101101101010',
+  'P':'110101110100100','Q':'010101101110011','R':'110101110101101','S':'011100010001110','T':'111010010010010',
+  'U':'101101101101111','V':'101101101101010','W':'101101111111101','X':'101101010101101','Y':'101101010010010',
+  'Z':'111001010100111','.':'000000000000010','$':'011110010011110','%':'101001010100101','+':'000010111010000',
+  '-':'000000111000000',':':'000010000010000','/':'001001010100100',' ':'000000000000000'
+};
+function glyphs(str, fn) { // fn(px, py) for every lit pixel, 4px advance
+  let x = 0;
+  for (const ch of str.toUpperCase()) {
+    const g = FONT[ch] || FONT[' '];
+    for (let k = 0; k < 15; k++) if (g[k] === '1') fn(x + (k % 3), Math.floor(k / 3));
+    x += 4;
+  }
+}
+function text(ctx, str, x, y, col) { ctx.fillStyle = col; glyphs(str, (px, py) => ctx.fillRect(x + px, y + py, 1, 1)); }
+
+// ---------- metals & market ----------
+const METALS = {
+  XAU: { name: 'Gold', sym: 'AU', p: 4131.55, vol: 0.0012 },
+  XAG: { name: 'Silver', sym: 'AG', p: 57.59, vol: 0.0021 },
+  XPT: { name: 'Platinum', sym: 'PT', p: 1631.85, vol: 0.0018 },
+  XPD: { name: 'Palladium', sym: 'PD', p: 1092.36, vol: 0.0022 }
+};
+for (const k in METALS) { const m = METALS[k]; m.open = m.p; m.hist = [m.p]; }
+const HEADLINES = [
+  ['XAU', 1, 'Crypto exchange outage. Nervous money runs to gold.'],
+  ['XAU', -1, 'Tech stocks rip higher. FinTok says gold is for boomers.'],
+  ['XAU', 1, 'Central bank hints at rate cuts.'],
+  ['XAG', 1, 'Solar panel makers report record silver demand.'],
+  ['XAG', -1, 'Silver futures slide as the dollar strengthens.'],
+  ['XPT', 1, 'Strike at a South African platinum mine.'],
+  ['XPT', -1, 'Car sales slump hits platinum demand.'],
+  ['XPD', -1, 'Palladium drifts lower on EV headlines.'],
+  ['XAU', -1, 'Meme coin mania pulls savers out of bullion.']
+];
+function dayChange(k) { const m = METALS[k]; return (m.p / m.open - 1) * 100; }
+let lastNews = 0;
+function marketTick(now) {
+  for (const k in METALS) {
+    const m = METALS[k];
+    m.p *= 1 + gauss() * m.vol;
+    m.hist.push(m.p); if (m.hist.length > 80) m.hist.shift();
+  }
+  if (now - lastNews > rnd(30, 50)) {
+    lastNews = now;
+    const [k, dir, h] = pick(HEADLINES);
+    const jump = dir * rnd(0.008, 0.022);
+    METALS[k].p *= 1 + jump;
+    $('crawl').textContent = `NEWS: ${h} ${METALS[k].sym} ${jump > 0 ? '+' : ''}${(jump * 100).toFixed(1)}%`;
+  }
+  renderTicker();
+}
+function buildTicker() {
+  $('ticker').innerHTML = Object.keys(METALS).map(k => `
+    <div class="tk" id="tk${k}">
+      <span class="sym">${METALS[k].sym} ${METALS[k].name}</span><span class="px" id="px${k}"></span>
+      <span class="chg" id="ch${k}"></span><canvas id="sp${k}" width="80" height="18"></canvas>
+    </div>`).join('');
+}
+function renderTicker() {
+  for (const k in METALS) {
+    const m = METALS[k], c = dayChange(k);
+    $('px' + k).textContent = m.p.toFixed(2);
+    const ch = $('ch' + k); ch.textContent = (c >= 0 ? '▲ +' : '▼ ') + c.toFixed(2) + '%'; ch.className = 'chg ' + (c >= 0 ? 'up' : 'down');
+    const cv = $('sp' + k), x = cv.getContext('2d'), h = m.hist, lo = Math.min(...h), hi = Math.max(...h);
+    x.clearRect(0, 0, 80, 18);
+    x.fillStyle = c >= 0 ? '#79d184' : '#e66b5c';
+    const Y = v => hi === lo ? 9 : Math.round(16 - (v - lo) / (hi - lo) * 14), X = i => Math.round(i * 78 / Math.max(1, h.length - 1));
+    const col = c >= 0 ? '121,209,132' : '230,107,92';
+    h.forEach((v, i) => { const y = Y(v), x0 = X(i), x1 = i < h.length - 1 ? X(i + 1) : x0 + 1; x.fillStyle = `rgba(${col},.18)`; x.fillRect(x0, y, x1 - x0, 18 - y); x.fillStyle = `rgb(${col})`; x.fillRect(x0, y, x1 - x0, 1);
+      if (i < h.length - 1) { const yn = Y(h[i + 1]); x.fillRect(x1, Math.min(y, yn), 1, Math.abs(yn - y) + 1); } });
+    x.fillStyle = '#ffb43a'; x.fillRect(X(h.length - 1), Y(h.at(-1)) - 1, 2, 2);
+  }
+}
+
+// ---------- coins ----------
+const COINS = {
+  gEagle: { name: 'American Gold Eagle', metal: 'XAU', g: 33.93, mm: 32.70, pal: 'gold22', motif: 'eagle', label: 'LIBERTY', year: '2024' },
+  gMaple: { name: 'Gold Maple Leaf', metal: 'XAU', g: 31.11, mm: 30.00, pal: 'gold', motif: 'leaf', label: 'CANADA', year: '2023' },
+  kRand: { name: 'Krugerrand', metal: 'XAU', g: 33.93, mm: 32.77, pal: 'gold22', motif: 'buck', label: 'SUID AFRIKA', year: '2022' },
+  sEagle: { name: 'American Silver Eagle', metal: 'XAG', g: 31.10, mm: 40.60, pal: 'silver', motif: 'eagle', label: 'LIBERTY', year: '2025' },
+  sMaple: { name: 'Silver Maple Leaf', metal: 'XAG', g: 31.11, mm: 38.00, pal: 'silver', motif: 'leaf', label: 'CANADA', year: '2024' },
+  sBrit: { name: 'Silver Britannia', metal: 'XAG', g: 31.21, mm: 38.61, pal: 'silver', motif: 'shield', label: 'BRITANNIA', year: '2025' },
+  pEagle: { name: 'Platinum Eagle', metal: 'XPT', g: 31.12, mm: 32.70, pal: 'plat', motif: 'eagle', label: 'LIBERTY', year: '2023' }
+};
+const PAL = {
+  gold: ['#3a2506', '#6e4810', '#a8761e', '#d9a53a', '#f4cf6a', '#fff2be'],
+  gold22: ['#3c2208', '#73441a', '#ad6c2a', '#dc9c4c', '#f6c886', '#ffeccc'],
+  silver: ['#2a2e35', '#565e6a', '#848d9a', '#b3bcc8', '#dce2ea', '#ffffff'],
+  plat: ['#2c3140', '#5a6275', '#8690a4', '#adb6c8', '#d3d9e6', '#f2f5fb'],
+  brass: ['#352a08', '#64521a', '#968028', '#c2aa42', '#e0cd76', '#f4e9b4']
+};
+const MOTIFS = {
+  eagle: ['......##........','.....####.......','....##.##.......','#..######....#..','##..#####...##..','###.######.###..','.##########.##..','..#########.#...','...########.....','....######......','.....####.......','....##..##......','...##....##.....'],
+  leaf: ['.......##.......','......####......','...#..####..#...','...##.####.##...','#..##########..#','##.##########.##','.##############.','..############..','...##########...','....########....','..############..','.......##.......','.......##.......'],
+  buck: ['..#.#...........','..#.#...........','...##...........','..####..........','..###...........','...##########...','...###########..','....#########...','....##.....##...','....#.#....#.#..','....#.#....#.#..','...#...#..#...#.','................'],
+  shield: ['.......##.......','......####......','......####......','..############..','...##########...','....########....','....########....','...####..####...','...###....###...','..##........##..','................','................','................']
+};
+// fakes: what each kind of counterfeit does to the readings
+const FAKES = {
+  steel: { label: 'plated steel', w: m => m === 'XAG' ? 0.75 : 0.41, dmm: 0, magnet: 'strong', ring: [0.25, 0.6], pal: null, minDay: 1 },
+  brass: { label: 'brass copy', w: m => m === 'XAG' ? 0.81 : 0.44, dmm: 0, magnet: 'none', ring: [0.35, 0.7], pal: 'brass', minDay: 1 },
+  clad: { label: 'copper-nickel clad', w: () => 0.86, dmm: 0, magnet: 'none', ring: [0.4, 0.8], pal: null, minDay: 2 },
+  tungsten: { label: 'tungsten core', w: () => 0.995, dmm: 0.45, magnet: 'none', ring: [0.2, 0.75], pal: null, minDay: 2 }
+};
+
+// ---------- state ----------
+const S = {
+  day: 1, t: 0, dayLen: 150, cash: 25000, rep: 2.5,
+  inv: [{ coin: 'sEagle', qty: 6, cost: 53 }, { coin: 'gMaple', qty: 1, cost: 3950 }],
+  queue: [], leaving: [], nextSpawn: 3, closing: false,
+  stats: { bought: 0, sold: 0, profit: 0, caught: 0, scammed: 0 },
+  mg: null, pendingFakes: []
+};
+const meltOf = (coinId, qty = 1) => qty * METALS[COINS[coinId].metal].p; // every coin here holds 1 troy oz
+const vaultValue = () => S.inv.reduce((s, it) => s + meltOf(it.coin, it.qty), 0);
+const ozOf = metal => S.inv.filter(it => COINS[it.coin].metal === metal).reduce((s, it) => s + it.qty, 0);
+
+function log(msg, cls = '') {
+  const d = document.createElement('div'); d.textContent = `D${S.day} ${clock()} ${msg}`; if (cls) d.className = cls;
+  $('log').prepend(d);
+}
+function clock() { const mins = 9 * 60 + Math.floor(S.t / S.dayLen * 8 * 60); return `${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`; }
+
+// ---------- customers ----------
+const NAMES = ['Mrs. Okafor', 'Dale', 'Priya', 'Grandpa Lev', 'Kevin', 'Ms. Halvorsen', 'Marco', 'June', 'Big Earl', 'Tomasz', 'Aiyana', 'Rosa', 'Deshawn', 'Hiro', 'Fern'];
+const SHIRTS = ['#3f7cc0', '#b8473a', '#4f9a5c', '#8a5bb0', '#d08a2c', '#2f8f8f', '#c0507a', '#556070'];
+const HAIR = ['#2a1a10', '#5a3418', '#b07a34', '#d9c38a', '#8c8c8c', '#1a1a1a', '#a0401c'];
+const SKIN = ['#f2cfa8', '#d9a77a', '#b27a4e', '#8a5532', '#5e3a22'];
+const SLOTS = [[4.6, 4.5], [5.6, 5.1], [6.6, 5.7], [7.6, 6.3]];
+const SPAWN = [10.2, 6.4], EXIT = [10.4, 7.6];
+let cid = 0;
+function spawnCustomer() {
+  const r = Math.random(), metal = r < 0.42 ? 'XAU' : r < 0.88 ? 'XAG' : 'XPT';
+  const mood = dayChange(metal);
+  const seller = Math.random() < clamp(0.6 + mood * 0.08, 0.35, 0.85);
+  const coins = Object.keys(COINS).filter(k => COINS[k].metal === metal);
+  const coin = pick(coins);
+  const c = {
+    id: ++cid, name: pick(NAMES), type: seller ? 'seller' : 'buyer', metal, coin,
+    qty: metal === 'XAG' ? Math.floor(rnd(5, 26)) : Math.floor(rnd(1, metal === 'XAU' ? 4 : 3)),
+    fake: null, reserve: 0, maxPrem: 0, patience: 70, maxPatience: 70,
+    i: SPAWN[0], j: SPAWN[1], tgt: null, walkT: 0,
+    look: { shirt: pick(SHIRTS), hair: pick(HAIR), skin: pick(SKIN) }, tested: false, verdict: null, tries: 0
+  };
+  if (seller) {
+    const fakeOdds = Math.min(0.45, 0.25 + 0.04 * (S.day - 1));
+    if (Math.random() < fakeOdds) {
+      const kinds = Object.keys(FAKES).filter(k => FAKES[k].minDay <= S.day && !(k === 'tungsten' && metal === 'XAG'));
+      c.fake = pick(kinds);
+    }
+    c.reserve = clamp(0.86 + rnd(-0.03, 0.04) + Math.max(0, mood) * 0.012, 0.8, 0.99);
+    c.say = c.fake ? pick(['Found these in a drawer. Real deal, trust me.', 'Bought them online, need cash fast.', 'My cousin says these are worth a fortune.'])
+                   : pick(['Clearing out my late husband\'s collection.', 'Price is up, time to cash in.', 'Need a bit of cash for the car.', 'Selling part of my stack.']);
+  } else {
+    c.maxPrem = clamp(rnd(0.03, 0.09) + S.rep * 0.006, 0.02, 0.14);
+    c.say = mood < 0 ? pick(['Prices dipped, I\'m buying.', 'Stocks are a casino. I want metal.']) : pick(['Crypto burned me. I want something real.', 'Adding to my stack.', 'A gift for my granddaughter.']);
+  }
+  S.queue.push(c);
+  log(`${c.name} walked in.`);
+}
+function slotFor(c) { const k = S.queue.indexOf(c); return SLOTS.at(Math.min(k, SLOTS.length - 1)); }
+function dismiss(c, msg, cls) {
+  S.queue = S.queue.filter(x => x !== c);
+  c.tgt = EXIT; S.leaving.push(c);
+  if (msg) log(msg, cls);
+  renderCounter();
+}
+function adjRep(d) { S.rep = clamp(S.rep + d, 0, 5); }
+
+// ---------- counter panel ----------
+function front() { const c = S.queue[0]; return c && Math.hypot(c.i - SLOTS[0][0], c.j - SLOTS[0][1]) < 0.15 ? c : null; }
+let shownId = null;
+function renderCounter() {
+  const c = front(), body = $('counterBody');
+  shownId = c ? c.id : null;
+  if (!c) { body.innerHTML = `<div class="empty">${S.queue.length ? 'A customer is walking up to the counter.' : S.closing ? 'Closing up for the day.' : 'Quiet for now. Customers arrive every few seconds.'}</div>`; return; }
+  const C = COINS[c.coin];
+  let html = `<div class="who"><canvas id="avatar" width="12" height="22"></canvas><div><div class="name">${c.name}</div><div class="say">“${c.say}”</div></div></div>`;
+  if (c.type === 'seller') {
+    const melt = meltOf(c.coin, c.qty), offer = melt * buyPct();
+    html += `<div class="deal"><div class="hint">Wants to sell</div><div class="item">${c.qty} × ${C.name}</div>
+      <div class="num">Melt ${money(melt)}</div><div class="hint">Your offer at ${Math.round(buyPct() * 100)}%: <b>${money(offer)}</b>${c.verdict === 'genuine' ? ' · tested genuine' : ''}</div></div>
+      <div class="row">${c.verdict ? '' : '<button class="primary" id="bTest">Test a coin</button>'}
+      <button id="bOffer"${offer > S.cash ? ' disabled' : ''}>${c.verdict ? 'Make offer' : 'Offer untested'}</button>
+      ${c.verdict ? '' : '<button class="danger" id="bRefuse">Refuse</button>'}</div>`;
+  } else {
+    const have = ozOf(c.metal), price = c.qty * METALS[c.metal].p * (1 + sellPrem());
+    html += `<div class="deal"><div class="hint">Wants to buy</div><div class="item">${c.qty} oz of ${METALS[c.metal].name.toLowerCase()}</div>
+      <div class="num">${money(price)}</div><div class="hint">Spot +${Math.round(sellPrem() * 100)}% · you hold ${have} oz</div></div>
+      <div class="row"><button class="primary" id="bSell"${have < c.qty ? ' disabled' : ''}>Sell</button><button id="bDecline">${have < c.qty ? 'Out of stock' : 'Decline'}</button></div>`;
+  }
+  body.innerHTML = html;
+  drawPerson($('avatar').getContext('2d'), 1, 21, c.look, 0, false);
+  const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };
+  on('bTest', () => openMinigame(c));
+  on('bOffer', () => makeOffer(c));
+  on('bRefuse', () => { adjRep(c.fake ? 0.05 : -0.1); dismiss(c, `Refused ${c.name} without testing.`); });
+  on('bSell', () => sellTo(c));
+  on('bDecline', () => dismiss(c, `${c.name} left without buying.`));
+}
+const buyPct = () => +$('buyPct').value / 100;
+const sellPrem = () => +$('sellPrem').value / 100;
+
+function makeOffer(c) {
+  const offer = meltOf(c.coin, c.qty) * buyPct();
+  if (buyPct() < c.reserve) {
+    c.tries++; c.patience -= 15;
+    c.say = c.tries > 1 ? `Still too low. I know what spot is today.` : `That's lowball. I was hoping for closer to ${Math.round(c.reserve * 100 + rnd(0, 2))}%.`;
+    renderCounter(); return;
+  }
+  S.cash -= offer; S.stats.bought += offer;
+  const item = S.inv.find(it => it.coin === c.coin && !it.fake);
+  if (c.fake) { S.pendingFakes.push({ at: S.t + 8, coin: c.coin, qty: c.qty, paid: offer, kind: c.fake }); S.inv.push({ coin: c.coin, qty: c.qty, cost: offer / c.qty, fake: true }); }
+  else if (item) { item.cost = (item.cost * item.qty + offer) / (item.qty + c.qty); item.qty += c.qty; }
+  else S.inv.push({ coin: c.coin, qty: c.qty, cost: offer / c.qty });
+  adjRep(0.05);
+  dismiss(c, `Bought ${c.qty} × ${COINS[c.coin].name} for ${money(offer)}.`);
+}
+function sellTo(c) {
+  const price = c.qty * METALS[c.metal].p * (1 + sellPrem());
+  if (sellPrem() > c.maxPrem) {
+    c.tries++; c.patience -= 15;
+    c.say = c.tries > 1 ? 'The chain store downtown is cheaper.' : `Spot plus ${Math.round(sellPrem() * 100)}%? I'd pay maybe ${Math.max(1, Math.floor(c.maxPrem * 100))}% over.`;
+    renderCounter(); return;
+  }
+  let need = c.qty, cost = 0;
+  for (const it of S.inv.filter(it => COINS[it.coin].metal === c.metal)) {
+    const take = Math.min(need, it.qty); it.qty -= take; need -= take; cost += take * it.cost;
+    if (it.fake && take) { adjRep(-0.6); log(`${c.name} came back: some coins you sold were fake! Refunded.`, 'bad'); S.cash -= take * METALS[c.metal].p; }
+    if (!need) break;
+  }
+  S.inv = S.inv.filter(it => it.qty > 0);
+  S.cash += price; S.stats.sold += price; S.stats.profit += price - cost; adjRep(0.08);
+  dismiss(c, `Sold ${c.qty} oz ${METALS[c.metal].name.toLowerCase()} for ${money(price)} (profit ${money(price - cost)}).`, price - cost >= 0 ? 'good' : 'bad');
+}
+
+// ---------- isometric shop ----------
+const cv = $('shop'), g = cv.getContext('2d');
+const OX = 168, OY = 62;
+const P = (i, j, z = 0) => [OX + (i - j) * 16, OY + (i + j) * 8 - z];
+function fillPoly(ctx, pts, col) {
+  ctx.fillStyle = col;
+  const ys = pts.map(p => p[1]), y0 = Math.floor(Math.min(...ys)), y1 = Math.ceil(Math.max(...ys));
+  for (let y = y0; y < y1; y++) {
+    const sy = y + 0.5, xs = [];
+    for (let k = 0; k < pts.length; k++) {
+      const a = pts[k], b = pts[(k + 1) % pts.length];
+      if ((a[1] <= sy && b[1] > sy) || (b[1] <= sy && a[1] > sy)) xs.push(a[0] + (sy - a[1]) / (b[1] - a[1]) * (b[0] - a[0]));
+    }
+    if (xs.length < 2) continue;
+    const xa = Math.round(Math.min(...xs)), xb = Math.round(Math.max(...xs));
+    if (xb > xa) ctx.fillRect(xa, y, xb - xa, 1);
+  }
+}
+function line(a, b, col) {
+  g.fillStyle = col;
+  let [x0, y0] = a.map(Math.round), [x1, y1] = b.map(Math.round);
+  const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1; let err = dx + dy;
+  for (;;) { g.fillRect(x0, y0, 1, 1); if (x0 === x1 && y0 === y1) break; const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } }
+}
+function box(i, j, w, d, h, c, z0 = 0) {
+  fillPoly(g, [P(i, j + d, z0 + h), P(i + w, j + d, z0 + h), P(i + w, j + d, z0), P(i, j + d, z0)], c.left);
+  fillPoly(g, [P(i + w, j, z0 + h), P(i + w, j + d, z0 + h), P(i + w, j + d, z0), P(i + w, j, z0)], c.right);
+  fillPoly(g, [P(i, j, z0 + h), P(i + w, j, z0 + h), P(i + w, j + d, z0 + h), P(i, j + d, z0 + h)], c.top);
+  if (c.edge) { line(P(i, j + d, z0 + h), P(i + w, j + d, z0 + h), c.edge); line(P(i + w, j, z0 + h), P(i + w, j + d, z0 + h), c.edge); }
+}
+const quadR = (i0, i1, z0, z1, col) => fillPoly(g, [P(i0, 0, z1), P(i1, 0, z1), P(i1, 0, z0), P(i0, 0, z0)], col);
+const quadL = (j0, j1, z0, z1, col) => fillPoly(g, [P(0, j0, z1), P(0, j1, z1), P(0, j1, z0), P(0, j0, z0)], col);
+function wallTextR(str, i0, ztop, col) { // skewed text on the right-hand wall
+  g.fillStyle = col;
+  const [bx, by] = P(i0, 0, ztop);
+  glyphs(str, (px, py) => g.fillRect(bx + px, by + Math.floor(px / 2) + py, 1, 1));
+}
+function wallTextL(str, j0, ztop, col) { // skewed text on the left-hand wall (reads left to right, rising)
+  g.fillStyle = col;
+  const [bx, by] = P(0, j0, ztop);
+  glyphs(str, (px, py) => g.fillRect(bx + px, by - Math.floor(px / 2) + py, 1, 1));
+}
+const IW = 9, JW = 7, WH = 58;
+const WOOD = { top: '#8a5a30', left: '#5e3b1d', right: '#71482a', edge: '#b88a4c' };
+const STEEL = { top: '#59606b', left: '#2f343c', right: '#3f454f', edge: '#7d8591' };
+
+function drawRoom(dusk) {
+  g.fillStyle = '#0e0c0a'; g.fillRect(0, 0, 320, 192);
+  // floor planks
+  for (let i = 0; i < IW; i++) for (let j = 0; j < JW; j++) {
+    const shade = ['#6b4526', '#73492a', '#674223'][(i * 3 + j * 5) % 3];
+    fillPoly(g, [P(i, j), P(i + 1, j), P(i + 1, j + 1), P(i, j + 1)], shade);
+    line(P(i, j), P(i + 1, j), '#553519');
+    line(P(i, j + 0.5), P(i + 1, j + 0.5), '#5c3a1c');
+  }
+  // rug in front of the counter
+  fillPoly(g, [P(3.4, 4.1), P(8.4, 4.1), P(8.4, 6.8), P(3.4, 6.8)], '#c9a24a');
+  fillPoly(g, [P(3.6, 4.25), P(8.2, 4.25), P(8.2, 6.65), P(3.6, 6.65)], '#7a2a24');
+  fillPoly(g, [P(3.9, 4.5), P(7.9, 4.5), P(7.9, 6.4), P(3.9, 6.4)], '#8e342c');
+  // walls
+  fillPoly(g, [P(0, 0, WH), P(IW, 0, WH), P(IW, 0), P(0, 0)], '#3d4a3f');
+  fillPoly(g, [P(0, 0, WH), P(0, JW, WH), P(0, JW), P(0, 0)], '#34403a');
+  quadR(0, IW, 0, 16, '#4a2f1b'); quadL(0, JW, 0, 16, '#41291a');
+  line(P(0, 0, 16), P(IW, 0, 16), '#b88a4c'); line(P(0, 0, 16), P(0, JW, 16), '#a07640');
+  line(P(0, 0, WH), P(IW, 0, WH), '#c9a24a'); line(P(0, 0, WH), P(0, JW, WH), '#c9a24a');
+  // wallpaper stripes
+  for (let i = 0.5; i < IW; i += 1) line(P(i, 0, 18), P(i, 0, WH - 2), '#435246');
+  for (let j = 0.5; j < JW; j += 1) line(P(0, j, 18), P(0, j, WH - 2), '#3a463f');
+  // window on left wall: the town outside
+  const sky = dusk > 0.5 ? '#2b2a52' : '#6fa3c8';
+  quadL(1.2, 3.6, 22, 50, sky);
+  quadL(1.4, 1.9, 22, 34, '#3c4658'); quadL(1.9, 2.3, 22, 42, '#2f3848'); quadL(2.3, 2.9, 22, 30, '#46516a'); quadL(2.9, 3.4, 22, 38, '#353f52');
+  g.fillStyle = dusk > 0.5 ? '#ffd56a' : '#9fb4c8';
+  for (const [jj, zz] of [[1.6, 30], [2.05, 36], [2.1, 28], [2.6, 26], [3.1, 33]]) { const [x, y] = P(0, jj, zz); g.fillRect(x, y, 1, 1); }
+  line(P(0, 1.2, 50), P(0, 3.6, 50), '#c9a24a'); line(P(0, 1.2, 22), P(0, 3.6, 22), '#c9a24a');
+  line(P(0, 1.2, 22), P(0, 1.2, 50), '#c9a24a'); line(P(0, 3.6, 22), P(0, 3.6, 50), '#c9a24a'); line(P(0, 2.4, 22), P(0, 2.4, 50), '#c9a24a');
+  // shop sign on left wall
+  quadL(4.2, 6.6, 34, 46, '#1d1712'); wallTextL('BULLION', 6.45, 43, '#e8b84a');
+  // LED price board on right wall, live prices
+  quadR(2.6, 7.8, 24, 52, '#0b0907');
+  wallTextR('AU ' + METALS.XAU.p.toFixed(0), 2.85, 49, '#ffb43a');
+  wallTextR('AG ' + METALS.XAG.p.toFixed(2), 2.85, 41, '#dce2ea');
+  wallTextR('PT ' + METALS.XPT.p.toFixed(0), 2.85, 33, '#b8c2d6');
+  const up = dayChange('XAU') >= 0; g.fillStyle = up ? '#79d184' : '#e66b5c';
+  { const [x, y] = P(7.2, 0, 47); if (up) { g.fillRect(x + 1, y, 1, 1); g.fillRect(x, y + 1, 3, 1); } else { g.fillRect(x, y + 1, 3, 1); g.fillRect(x + 1, y + 2, 1, 1); } }
+}
+function drawSafe() {
+  box(0.25, 0.35, 1.6, 1.5, 36, STEEL);
+  const [cx, cy] = P(1.85, 1.1, 20);
+  g.fillStyle = '#20242a'; g.fillRect(cx - 4, cy - 3, 9, 9);
+  g.fillStyle = '#c9a24a'; g.fillRect(cx - 3, cy - 2, 7, 7);
+  g.fillStyle = '#7d5a20'; g.fillRect(cx - 1, cy, 3, 3);
+  g.fillStyle = '#f4cf6a'; g.fillRect(cx, cy - 2, 1, 2);
+  line(P(1.85, 0.5, 33), P(1.85, 0.5, 3), '#2a2e35'); line(P(1.85, 1.75, 33), P(1.85, 1.75, 3), '#2a2e35');
+  const [hx, hy] = P(1.85, 1.55, 14); g.fillStyle = '#c9a24a'; g.fillRect(hx, hy, 2, 5);
+}
+function drawPlant() {
+  box(8.1, 0.25, 0.6, 0.6, 8, { top: '#3a2216', left: '#8e4a2c', right: '#a85a36' });
+  const [x, y] = P(8.4, 0.55, 8);
+  const leaves = [[0, -14], [-3, -11], [3, -12], [-5, -7], [5, -8], [-2, -5], [2, -4], [0, -9], [-4, -13], [4, -15], [1, -17]];
+  for (const [a, b] of leaves) { g.fillStyle = '#3f8a46'; g.fillRect(x + a - 1, y + b, 3, 3); g.fillStyle = '#5fb267'; g.fillRect(x + a, y + b, 1, 1); }
+}
+function drawCase() {
+  box(0.35, 3.5, 1.2, 2.8, 11, WOOD);
+  // coins on velvet, one dot per coin you hold (up to 30)
+  fillPoly(g, [P(0.45, 3.6, 11), P(1.45, 3.6, 11), P(1.45, 6.2, 11), P(0.45, 6.2, 11)], '#5a1f24');
+  let n = 0;
+  for (const it of S.inv) for (let q = 0; q < it.qty && n < 30; q++, n++) {
+    const col = PAL[COINS[it.coin].pal][4], ii = 0.6 + (n % 3) * 0.32, jj = 3.75 + Math.floor(n / 3) * 0.24;
+    const [x, y] = P(ii, jj, 11); g.fillStyle = col; g.fillRect(x, y, 2, 1); g.fillStyle = '#ffffff'; g.fillRect(x, y, 1, 1);
+  }
+  box(0.35, 3.5, 1.2, 2.8, 7, { top: 'rgba(170,215,235,.18)', left: 'rgba(170,215,235,.22)', right: 'rgba(170,215,235,.28)', edge: '#d8f0ff' }, 11);
+}
+function drawCounter() {
+  box(2.2, 3.0, 5.4, 0.9, 16, WOOD);
+  line(P(2.2, 3.9, 8), P(7.6, 3.9, 8), '#4a2e16');
+  // cash register and testing mat on the counter
+  box(6.4, 3.05, 0.9, 0.7, 7, { top: '#2f343c', left: '#1c2026', right: '#262b32', edge: '#59606b' }, 16);
+  { const [x, y] = P(6.9, 3.75, 20); g.fillStyle = '#79d184'; g.fillRect(x - 2, y - 2, 4, 1); }
+  fillPoly(g, [P(3.4, 3.15, 16), P(4.6, 3.15, 16), P(4.6, 3.8, 16), P(3.4, 3.8, 16)], '#2b5a3a');
+  { const [x, y] = P(4.0, 3.45, 16); g.fillStyle = '#f4cf6a'; g.fillRect(x - 1, y - 1, 3, 2); g.fillStyle = '#fff2be'; g.fillRect(x - 1, y - 1, 1, 1); }
+}
+const BODY = [
+  '...hhhh...', '..hhhhhh..', '..hssssh..', '..sesses..', '..ssssss..', '...ssss...',
+  '..wwwwww..', '.wwwwwwww.', '.wwwwwwww.', '.swwwwwws.', '.swwwwwws.', '..wwwwww..',
+  '..pppppp..', '..pppppp..', '..pp..pp..', '..pp..pp..', '..pp..pp..', '..bb..bb..'
+];
+const BODY_STEP = BODY.slice(0, 14).concat(['..pp.pp...', '.pp...pp..', '.pp...pp..', '.bb...bb..']);
+function drawPerson(ctx, x, y, look, step, apron) {
+  const rows = step ? BODY_STEP : BODY, h = rows.length;
+  const cols = { h: look.hair, s: look.skin, e: '#1a1410', w: look.shirt, p: '#2f3442', b: '#1a1410' };
+  rows.forEach((r, ry) => { for (let rx = 0; rx < r.length; rx++) { const ch = r[rx]; if (ch === '.') continue; let col = cols[ch]; if (apron && ch === 'w' && rx > 2 && rx < 7 && ry > 7) col = '#d9c9a8'; ctx.fillStyle = col; ctx.fillRect(x + rx, y - h + ry + 1, 1, 1); } });
+}
+const KEEPER = { hair: '#4a3220', skin: '#e3b48a', shirt: '#2f6b63' };
+function drawCustomers(now) {
+  const all = S.queue.concat(S.leaving).sort((a, b) => (a.i + a.j) - (b.i + b.j));
+  for (const c of all) {
+    const [x, y] = P(c.i, c.j); const moving = c.walkT > 0;
+    const step = moving && Math.floor(now * 6) % 2;
+    g.fillStyle = 'rgba(0,0,0,.28)'; g.fillRect(Math.round(x) - 4, Math.round(y) - 1, 9, 2);
+    drawPerson(g, Math.round(x) - 5, Math.round(y) - (moving && step ? 1 : 0), c.look, step, false);
+    if (S.queue.includes(c) && !moving) {
+      const pw = 10, f = clamp(c.patience / c.maxPatience, 0, 1);
+      g.fillStyle = '#1a1410'; g.fillRect(Math.round(x) - 5, Math.round(y) - 22, pw, 2);
+      g.fillStyle = f > 0.5 ? '#79d184' : f > 0.25 ? '#ffb43a' : '#e66b5c'; g.fillRect(Math.round(x) - 5, Math.round(y) - 22, Math.ceil(pw * f), 2);
+      if (c === S.queue[0]) { // speech bubble with the item
+        const bx = Math.round(x) + 4, by = Math.round(y) - 33;
+        g.fillStyle = '#f0e7d7'; g.fillRect(bx, by, 11, 9); g.fillRect(bx + 1, by + 9, 2, 2);
+        if (c.type === 'seller') { const pal = PAL[COINS[c.coin].pal]; g.fillStyle = pal[2]; g.fillRect(bx + 3, by + 2, 5, 5); g.fillStyle = pal[4]; g.fillRect(bx + 3, by + 2, 4, 4); g.fillStyle = pal[5]; g.fillRect(bx + 4, by + 3, 1, 1); }
+        else text(g, '$', bx + 4, by + 2, '#2b5a3a');
+      }
+    }
+  }
+}
+
+// ---------- minigame ----------
+const bc = $('bench'), b = bc.getContext('2d');
+const felt = (() => { const o = document.createElement('canvas'); o.width = 256; o.height = 160; const x = o.getContext('2d'); let s = 7;
+  const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let yy = 0; yy < 160; yy++) for (let xx = 0; xx < 256; xx++) { const v = r(); x.fillStyle = v < 0.12 ? '#1f4a33' : v > 0.93 ? '#2f6a4a' : '#275c40'; x.fillRect(xx, yy, 1, 1); }
+  x.fillStyle = '#1a3b2a'; x.fillRect(0, 0, 256, 2); x.fillRect(0, 158, 256, 2); return o; })();
+function makeCoin(c) {
+  const C = COINS[c.coin], F = c.fake ? FAKES[c.fake] : null;
+  const mm = C.mm + (F ? F.dmm : 0), r = Math.round(mm * 1.2), size = r * 2 + 4;
+  const o = document.createElement('canvas'); o.width = size; o.height = size; const x = o.getContext('2d');
+  const pal = PAL[F && F.pal ? F.pal : C.pal], cx = size / 2, cy = size / 2, soft = !!F;
+  const put = (px, py, lvl) => { x.fillStyle = pal[clamp(lvl, 0, 5)]; x.fillRect(px, py, 1, 1); };
+  for (let py = 0; py < size; py++) for (let px = 0; px < size; px++) {
+    const dx = px + 0.5 - cx, dy = py + 0.5 - cy, d = Math.hypot(dx, dy); if (d > r) continue;
+    const ang = Math.atan2(dy, dx), light = (-dx - dy) / r; let lvl;
+    if (d > r - 1.2) lvl = Math.floor((ang + Math.PI) * r / 1.6) % 2 ? 1 : 3;            // reeded edge
+    else if (d > r - 4) lvl = light > 0.2 ? 4 : light < -0.3 ? 2 : 3;                     // raised rim
+    else if (d > r - 5) lvl = light > 0 ? 1 : 4;                                            // rim bevel
+    else { lvl = 3 + (light > 0.55 ? 1 : 0) - (light < -0.6 ? 1 : 0); if ((px + py) % 2 && ((light > 0.35 && light <= 0.55) || (light < -0.4 && light >= -0.6))) lvl += light > 0 ? 1 : -1; } // field, dithered
+    if (Math.abs(d - (r - 8)) < 0.6 && Math.floor((ang + Math.PI) * (r - 8) / 3) % 2 === 0) lvl = 5; // bead ring
+    put(px, py, lvl);
+  }
+  // motif in relief
+  const M = MOTIFS[C.motif], k = Math.max(2, Math.floor(r / 13)), mw = 16 * k, mh = M.length * k, mx = Math.round(cx - mw / 2), my = Math.round(cy - mh / 2 - 2);
+  let seed = c.id * 97;
+  const jit = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let ry = 0; ry < M.length; ry++) for (let rx = 0; rx < 16; rx++) {
+    if (M[ry][rx] !== '#') continue;
+    for (let a = 0; a < k; a++) for (let bb = 0; bb < k; bb++) {
+      if (soft && jit() < 0.22) continue;                                                  // mushy strike on fakes
+      const edgeHi = (a === 0 || bb === 0);
+      put(mx + rx * k + a, my + ry * k + bb, soft ? 4 : edgeHi ? 5 : 4);
+    }
+    const below = M[ry + 1] && M[ry + 1][rx] === '#', right = M[ry][rx + 1] === '#';
+    if (!soft) { if (!below) for (let a = 0; a < k; a++) put(mx + rx * k + a, my + (ry + 1) * k, 1); if (!right) for (let a = 0; a < k; a++) put(mx + (rx + 1) * k, my + ry * k + a, 2); }
+  }
+  // legend along the top arc and year at the bottom
+  const lab = C.label, rr = r - 14, span = Math.min(Math.PI * 0.9, lab.length * 4.5 / rr);
+  [...lab].forEach((ch, n) => { const ang = -Math.PI / 2 - span / 2 + span * (n + 0.5) / lab.length, gx = Math.round(cx + Math.cos(ang) * rr) - 1, gy = Math.round(cy + Math.sin(ang) * rr) - 2;
+    glyphs(ch, (px, py) => { put(gx + px, gy + py, 5); if (!soft) put(gx + px + 1, gy + py + 1, 1); }); });
+  const yw = C.year.length * 4 - 1; glyphs(C.year, (px, py) => { put(Math.round(cx - yw / 2) + px, Math.round(cy + r - 15) + py, 5); if (!soft) put(Math.round(cx - yw / 2) + px + 1, Math.round(cy + r - 15) + py + 1, 1); });
+  return { img: o, r, size };
+}
+function readings(c) {
+  const C = COINS[c.coin], F = c.fake ? FAKES[c.fake] : null;
+  return {
+    g: F ? C.g * F.w(C.metal) + gauss() * 0.04 : C.g + gauss() * 0.012,
+    mm: C.mm + (F ? F.dmm : 0) + gauss() * 0.025,
+    ring: F ? rnd(...F.ring) : (C.metal === 'XAG' ? rnd(1.8, 2.4) : rnd(1.2, 1.6)),
+    freq: F ? rnd(900, 1500) : (C.metal === 'XAG' ? 3100 : C.metal === 'XPT' ? 2600 : 2100),
+    magnet: F ? F.magnet : C.metal === 'XAG' ? 'slight' : 'none'
+  };
+}
+function openMinigame(c) {
+  S.mg = { c, coin: makeCoin(c), R: readings(c), used: {}, t0: performance.now() / 1000, ping: -9, mag: -9, cal: -9, scale: -9, loupe: false };
+  const C = COINS[c.coin];
+  $('mgTitle').textContent = `Testing: ${C.name}`;
+  $('mgSpec').innerHTML = `<div><span>Weight</span><span>${C.g.toFixed(2)} g</span></div><div><span>Diameter</span><span>${C.mm.toFixed(2)} mm</span></div><div><span>Metal</span><span>${METALS[C.metal].name}</span></div>`;
+  renderReadings();
+  $('mgModal').hidden = false; $('tScale').focus();
+}
+function renderReadings() {
+  const m = S.mg, R = m.R, u = m.used, pend = '<span class="pending">not tested</span>';
+  const magTxt = { strong: 'Snaps to the magnet', slight: 'Slow drag (normal for silver)', none: 'No reaction' };
+  $('mgRead').innerHTML = `
+    <div><span>Weight</span>${u.scale ? `<span>${R.g.toFixed(2)} g</span>` : pend}</div>
+    <div><span>Diameter</span>${u.cal ? `<span>${R.mm.toFixed(2)} mm</span>` : pend}</div>
+    <div><span>Ring time</span>${u.ping ? `<span>${R.ring.toFixed(1)} s</span>` : pend}</div>
+    <div><span>Magnet</span>${u.mag ? `<span style="font-family:var(--body);font-size:13px">${magTxt[R.magnet]}</span>` : pend}</div>`;
+}
+let actx = null;
+function playPing(R) {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime, out = actx.createGain(); out.connect(actx.destination);
+    out.gain.setValueAtTime(0.0001, t); out.gain.exponentialRampToValueAtTime(0.25, t + 0.005); out.gain.exponentialRampToValueAtTime(0.0001, t + R.ring);
+    for (const [mul, amp] of [[1, 1], [2.76, 0.4], [5.4, 0.18]]) { const o = actx.createOscillator(), gg = actx.createGain(); o.frequency.value = R.freq * mul; gg.gain.value = amp; o.connect(gg).connect(out); o.start(t); o.stop(t + R.ring + 0.05); }
+  } catch (e) { /* audio unavailable: the waveform still shows */ }
+}
+function useTool(name) {
+  const m = S.mg, now = performance.now() / 1000; if (!m) return;
+  m.used[name] = true; if (name !== 'loupe') m[name] = now;
+  if (name === 'ping') playPing(m.R);
+  if (name === 'loupe') m.loupe = !m.loupe;
+  renderReadings();
+}
+function lcd(x, y, w, str) { b.fillStyle = '#1a2a1a'; b.fillRect(x, y, w, 9); b.fillStyle = '#0f170f'; b.fillRect(x, y, w, 1); text(b, str, x + w - str.length * 4 - 1, y + 2, '#9cf58a'); }
+function drawBench(now) {
+  const m = S.mg; if (!m) return;
+  b.drawImage(felt, 0, 0);
+  const R = m.R, cx0 = 104, cy0 = 84; let cx = cx0, cy = cy0;
+  // ping: coin shakes while it rings
+  const pt = now - m.ping; if (pt < R.ring) cx += Math.round(Math.sin(pt * 90) * (1 - pt / R.ring));
+  // magnet slides across
+  const mt = now - m.mag, magOn = mt < 2.4;
+  let magX = 0;
+  if (magOn) { magX = cx0 + m.coin.r + 30 - Math.min(1, mt / 1.0) * 26; if (R.magnet === 'strong') cx += Math.round(Math.min(1, Math.max(0, (mt - 0.6) / 0.15)) * 12); if (R.magnet === 'slight') cx += Math.round(Math.min(1, mt / 2) * 3); }
+  // shadow + coin + glint
+  b.fillStyle = 'rgba(0,0,0,.35)'; b.beginPath(); b.ellipse(cx + 3, cy + 4, m.coin.r, m.coin.r, 0, 0, Math.PI * 2); b.fill();
+  b.drawImage(m.coin.img, Math.round(cx - m.coin.size / 2), Math.round(cy - m.coin.size / 2));
+  const gp = ((now * 0.35) % 1.6) - 0.3; if (gp > 0 && gp < 1) { b.fillStyle = 'rgba(255,255,255,.55)'; const gx = Math.round(cx - m.coin.r + gp * m.coin.r * 2), gy = Math.round(cy - m.coin.r * 0.55 + gp * m.coin.r * 0.4); b.fillRect(gx, gy, 1, 1); b.fillRect(gx - 1, gy + 1, 3, 1); b.fillRect(gx, gy + 2, 1, 1); }
+  if (magOn) { const y = cy0 - 8; b.fillStyle = '#c0392b'; b.fillRect(magX, y, 14, 4); b.fillRect(magX, y + 12, 14, 4); b.fillRect(magX + 10, y, 4, 16); b.fillStyle = '#dfe4ea'; b.fillRect(magX, y, 3, 4); b.fillRect(magX, y + 12, 3, 4); }
+  // scale on the right
+  b.fillStyle = '#3a3f48'; b.fillRect(186, 104, 62, 44); b.fillStyle = '#4c535e'; b.fillRect(186, 104, 62, 2);
+  b.fillStyle = '#b3bcc8'; b.fillRect(192, 98, 50, 6); b.fillStyle = '#dce2ea'; b.fillRect(192, 98, 50, 1);
+  const st = now - m.scale;
+  lcd(194, 124, 46, m.used.scale ? (st < 0.8 ? (R.g * st / 0.8).toFixed(2) : R.g.toFixed(2)) + 'G' : '0.00G');
+  if (m.used.scale) { const pal = PAL[COINS[m.c.coin].pal]; b.fillStyle = pal[2]; b.fillRect(207, 95, 20, 3); b.fillStyle = pal[4]; b.fillRect(207, 95, 20, 1); }
+  text(b, 'SCALE', 196, 140, '#848d9a');
+  // calipers
+  if (m.used.cal) {
+    const ct = Math.min(1, (now - m.cal) / 0.7), gap = m.coin.r + 1 + Math.round((1 - ct) * 18), y = cy0 - m.coin.r - 10;
+    b.fillStyle = '#c3cad4'; b.fillRect(cx0 - gap - 3, y, gap * 2 + 26, 4); b.fillStyle = '#e8edf3'; b.fillRect(cx0 - gap - 3, y, gap * 2 + 26, 1);
+    b.fillStyle = '#9aa3b0'; b.fillRect(cx0 - gap - 3, y, 3, m.coin.r + 10); b.fillRect(cx0 + gap, y, 3, m.coin.r + 10);
+    lcd(cx0 + gap + 4, y - 11, 34, ct < 1 ? (R.mm + (1 - ct) * 15).toFixed(2) : R.mm.toFixed(2));
+  }
+  // ping waveform
+  if (m.used.ping) {
+    b.fillStyle = '#0b0907'; b.fillRect(6, 6, 90, 30); text(b, 'RING', 9, 9, '#ffb43a');
+    const el = Math.min(now - m.ping, 2.6);
+    for (let px = 0; px < 84; px++) { const tt = px / 84 * 2.6; if (tt > el) break; const amp = Math.exp(-tt / (R.ring / 3)) * 11, yy = Math.round(Math.sin(tt * R.freq / 40) * amp); b.fillStyle = '#ffb43a'; b.fillRect(9 + px, 24 + Math.min(0, yy), 1, Math.abs(yy) + 1); }
+  }
+  // loupe: magnified look at the strike
+  if (m.loupe) {
+    const L = 30, lx = 214, ly = 40, sx = m.coin.size / 2 - 10, sy = m.coin.size / 2 - 12;
+    b.save(); b.beginPath(); b.arc(lx, ly, L, 0, Math.PI * 2); b.clip(); b.imageSmoothingEnabled = false;
+    b.drawImage(m.coin.img, sx, sy, 20, 20, lx - L, ly - L, L * 2, L * 2); b.restore();
+    b.strokeStyle = '#1a1410'; b.lineWidth = 3; b.beginPath(); b.arc(lx, ly, L + 1, 0, Math.PI * 2); b.stroke();
+    b.fillStyle = '#5e3b1d'; b.fillRect(lx - 24, ly + L, 6, 14);
+  }
+}
+function verdict(v) {
+  const m = S.mg; if (!m) return; const c = m.c;
+  $('mgModal').hidden = true; S.mg = null;
+  if (v === 'fake') {
+    if (c.fake) { S.stats.caught++; adjRep(0.15); dismiss(c, `Caught a ${FAKES[c.fake].label} fake from ${c.name}!`, 'good'); }
+    else { adjRep(-0.25); dismiss(c, `Called ${c.name}'s genuine coins fake. They stormed out.`, 'bad'); }
+  } else { c.verdict = 'genuine'; c.say = 'Told you they were real. So, what\'s your offer?'; renderCounter(); }
+}
+$('tScale').onclick = () => useTool('scale'); $('tCal').onclick = () => useTool('cal');
+$('tPing').onclick = () => useTool('ping'); $('tMag').onclick = () => useTool('mag'); $('tLoupe').onclick = () => useTool('loupe');
+$('vGen').onclick = () => verdict('genuine'); $('vFake').onclick = () => verdict('fake');
+
+// ---------- HUD ----------
+function renderHud() {
+  const v = vaultValue(), net = S.cash + v;
+  $('sCash').textContent = money(S.cash); $('sVault').textContent = money(v); $('sNet').textContent = money(net);
+  const full = Math.floor(S.rep), half = S.rep - full >= 0.5; $('sRep').textContent = '★'.repeat(full) + (half ? '☆' : '') + '·'.repeat(5 - full - (half ? 1 : 0)) + ` ${S.rep.toFixed(1)}`;
+  $('dayLbl').textContent = `Day ${S.day} · ${clock()}${S.closing ? ' · closing' : ''}`;
+  $('goalBar').style.width = clamp(net / 250000 * 100, 0, 100) + '%'; $('goalTxt').textContent = `${money(net)} / $250k`;
+  const groups = {}; for (const it of S.inv) { const k = it.coin; groups[k] = (groups[k] || 0) + it.qty; }
+  $('vaultList').innerHTML = Object.keys(groups).length ? Object.keys(groups).map(k => `<div><span>${groups[k]} × ${COINS[k].name}</span><span>${money(meltOf(k, groups[k]))}</span></div>`).join('') : '<div class="empty">Empty vault.</div>';
+  $('buyPctV').textContent = $('buyPct').value + '%'; $('sellPremV').textContent = '+' + $('sellPrem').value + '%';
+}
+$('buyPct').oninput = () => { renderHud(); renderCounter(); };
+$('sellPrem').oninput = () => { renderHud(); renderCounter(); };
+
+function endDay() {
+  S.paused = true;
+  const net = S.cash + vaultValue();
+  $('dayTitle').textContent = `Day ${S.day} closed`;
+  $('daySum').innerHTML = `<div><span>Bought from customers</span><span>${money(S.stats.bought)}</span></div>
+    <div><span>Sold to customers</span><span>${money(S.stats.sold)}</span></div>
+    <div><span>Realised profit</span><span>${money(S.stats.profit)}</span></div>
+    <div><span>Fakes caught</span><span>${S.stats.caught}</span></div>
+    <div><span>Fakes that slipped through</span><span>${S.stats.scammed}</span></div>
+    <div><span>Net worth at today's prices</span><span>${money(net)}</span></div>
+    <div class="hint" style="display:block">Tomorrow: more customers if your reputation grows, and smarter fakes.</div>`;
+  $('nextDay').textContent = `Open the shop for day ${S.day + 1}`;
+  $('dayModal').hidden = false;
+}
+$('nextDay').onclick = () => {
+  S.day++; S.t = 0; S.closing = false; S.paused = false; S.nextSpawn = 2; S.stats = { bought: 0, sold: 0, profit: 0, caught: 0, scammed: 0 };
+  for (const k in METALS) METALS[k].open = METALS[k].p;
+  $('dayModal').hidden = true; log('Shop open.');
+};
+
+// ---------- main loop ----------
+let last = performance.now() / 1000, tickAcc = 0, hudAcc = 0;
+function frame() {
+  const now = performance.now() / 1000, dt = Math.min(0.1, now - last); last = now;
+  if (!S.paused && !S.mg) {
+    S.t += dt;
+    tickAcc += dt; if (tickAcc >= 1) { tickAcc = 0; marketTick(now); }
+    if (!S.closing && S.t >= S.dayLen) { S.closing = true; log('Closing time. Serving the last customers.'); }
+    S.nextSpawn -= dt;
+    if (!S.closing && S.nextSpawn <= 0 && S.queue.length < SLOTS.length) { spawnCustomer(); S.nextSpawn = Math.max(5, 15 - S.rep * 2) * rnd(0.7, 1.3); }
+    for (const c of S.queue.slice()) {
+      if (!c.walkT && c === S.queue[0] && front() === c) c.patience -= dt; else if (!c.walkT) c.patience -= dt * 0.5;
+      if (c.patience <= 0) { adjRep(-0.12); dismiss(c, `${c.name} got tired of waiting and left.`, 'bad'); }
+    }
+    for (const f of S.pendingFakes.slice()) if (S.t >= f.at || S.closing) {
+      S.pendingFakes = S.pendingFakes.filter(x => x !== f);
+      const it = S.inv.find(x => x.fake && x.coin === f.coin); if (it) S.inv = S.inv.filter(x => x !== it);
+      S.stats.scammed++; adjRep(-0.3); log(`Assay lab: the ${f.qty} × ${COINS[f.coin].name} you bought were ${FAKES[f.kind].label}. Lost ${money(f.paid)}.`, 'bad');
+    }
+    if (S.closing && !S.queue.length && !S.leaving.length) endDay();
+  }
+  // movement
+  for (const c of S.queue.concat(S.leaving)) {
+    const tgt = S.leaving.includes(c) ? EXIT : slotFor(c), dx = tgt[0] - c.i, dy = tgt[1] - c.j, d = Math.hypot(dx, dy), sp = 1.8 * dt;
+    if (d > 0.02) { c.i += dx / d * Math.min(sp, d); c.j += dy / d * Math.min(sp, d); c.walkT = 1; } else c.walkT = 0;
+  }
+  S.leaving = S.leaving.filter(c => c.walkT);
+  const f = front(); if ((f ? f.id : null) !== shownId) renderCounter();
+  // draw shop
+  const dusk = clamp((S.t / S.dayLen - 0.75) * 4, 0, 1);
+  drawRoom(dusk); drawSafe(); drawPlant();
+  const [kx, ky] = P(4.7, 2.3); g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(kx - 4, ky - 1, 9, 2);
+  drawPerson(g, kx - 5, ky + (Math.floor(now * 1.5) % 2 ? 0 : -1) * 0, KEEPER, 0, true);
+  drawCounter(); drawCase(); drawCustomers(now);
+  if (dusk > 0) { g.fillStyle = `rgba(20,16,50,${dusk * 0.35})`; g.fillRect(0, 0, 320, 192); }
+  text(g, `DAY ${S.day}  ${clock()}`, 6, 182, '#f0e7d7');
+  if (S.mg) drawBench(now);
+  hudAcc += dt; if (hudAcc > 0.5) { hudAcc = 0; renderHud(); }
+  requestAnimationFrame(frame);
+}
+buildTicker(); renderTicker(); renderHud(); renderCounter();
+log('Shop open. Test coins before you buy them.');
+requestAnimationFrame(frame);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.mg) { $('mgModal').hidden = true; S.mg = null; } });
+})();
+</script>
