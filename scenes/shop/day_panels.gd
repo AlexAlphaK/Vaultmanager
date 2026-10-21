@@ -11,6 +11,8 @@ const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
 var page := "" # "morning", "upgrades", "summary" or "" when hidden
+## The morning's Open the shop button, for the tutorial to point at.
+var open_button: Button
 var _box: VBoxContainer
 var _hint: Label
 var _confirm_new := false
@@ -100,8 +102,8 @@ func _build_morning() -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
 	_box.add_child(row)
-	var open := _button(row, "Open the shop", "PrimaryButton", func(): open_requested.emit())
-	open.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	open_button = _button(row, "Open the shop", "PrimaryButton", func(): open_requested.emit())
+	open_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var count := Progress.available_upgrades().size() + Staff.ROLES.size() - Staff.hired.size()
 	var expand_ready := Progress.expand_blocker() == "" and not Progress.is_top_tier()
 	_button(row, "Upgrades (%d)%s" % [count, " !" if expand_ready else ""], "Button", show_upgrades)

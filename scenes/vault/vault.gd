@@ -13,6 +13,8 @@ var layout: VaultLayout
 var limit := 30.0
 var elapsed := 0.0
 var locked := false
+## Stops the clock and the hands, while the tutorial explains the lock-up.
+var paused := false
 var report := {}
 var rng := RandomNumberGenerator.new()
 
@@ -59,7 +61,7 @@ func _process(delta: float) -> void:
 	if layout == null:
 		return
 	_time += delta
-	if not locked:
+	if not locked and not paused:
 		elapsed += delta
 		var left := ceili(limit - elapsed)
 		if left <= 5 and left != _last_tick and left > 0:
@@ -72,7 +74,7 @@ func _process(delta: float) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
-	if layout == null or locked:
+	if layout == null or locked or paused:
 		return
 	var m := get_local_mouse_position()
 	if event is InputEventMouseMotion:
@@ -90,7 +92,7 @@ func _gui_input(event: InputEvent) -> void:
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if layout == null or locked or not event.pressed or event.echo:
+	if layout == null or locked or paused or not event.pressed or event.echo:
 		return
 	match event.keycode:
 		KEY_R:

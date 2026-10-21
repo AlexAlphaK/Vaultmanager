@@ -1,6 +1,7 @@
 extends Node
 ## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test, the vault lock-up,
-## the customers (archetypes, haggling, regulars' stories), staff and rush hours, and the menus, settings and music. Run:
+## the customers (archetypes, haggling, regulars' stories), staff and rush hours, the menus, settings
+## and music, and the tutorial. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -31,6 +32,7 @@ func _ready() -> void:
 	_check_settings()
 	_check_music()
 	await _check_menus()
+	await _check_tutorial()
 	SaveGame.delete_save()
 	print("SMOKE TEST %s (%d failures)" % ["PASSED" if failures == 0 else "FAILED", failures])
 	get_tree().quit(1 if failures else 0)
@@ -205,7 +207,7 @@ func _check_customers() -> void:
 		for n in 10:
 			var c := Customer.create(Shop.day, 3.0, Shop.coin_list(), rng)
 			Customers.apply_archetype(c, id, rng)
-			expect(c.archetype == id and c.frames.size() == 3, "%s customer is painted" % id)
+			expect(c.archetype == id and c.frames.size() == PeopleArt.FRAMES, "%s customer is painted" % id)
 			expect(c.say != "" and c.patience > 0.0, "%s customer talks and waits" % id)
 			match id:
 				"collector":
@@ -314,6 +316,7 @@ func _check_customers() -> void:
 
 
 func _check_shop_day() -> void:
+	Tutorial.skip_all() # the guided first day has its own check
 	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
 	add_child(shop)
 	await get_tree().process_frame
@@ -446,6 +449,7 @@ func _check_jewellery() -> void:
 
 func _check_jewellery_deals() -> void:
 	Shop.reset()
+	Tutorial.skip_all() # the guided first day has its own check
 	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
 	add_child(shop)
 	await get_tree().process_frame
@@ -605,6 +609,7 @@ func _sweep_finds_fault(b: BullionBar) -> bool:
 func _check_bar_deals() -> void:
 	Shop.reset()
 	Progress.reset()
+	Tutorial.skip_all() # the guided first day has its own check
 	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
 	add_child(shop)
 	await get_tree().process_frame
@@ -712,6 +717,7 @@ func _check_rush_hours() -> void:
 ## serves buyers, and a vault run empties the till.
 func _check_rush_day() -> void:
 	SaveGame.new_game()
+	Tutorial.skip_all() # the guided first day has its own check
 	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
 	add_child(shop)
 	await get_tree().process_frame
@@ -970,6 +976,7 @@ func _check_menus() -> void:
 	expect(title._continue.disabled, "Continue is off without a save")
 	title.queue_free()
 
+	Tutorial.skip_all() # the guided first day has its own check
 	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
 	add_child(shop)
 	await get_tree().process_frame
@@ -986,3 +993,136 @@ func _check_menus() -> void:
 	await get_tree().process_frame
 	SaveGame.delete_save()
 	Shop.reset()
+
+
+## The guided first day from the welcome card to the summary, the bench intros, and Skip.
+func _check_tutorial() -> void:
+	SaveGame.new_game()
+	expect(not Tutorial.first_day_done, "a new game starts the tutorial")
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not shop.has_method("admit") or shop.coach == null:
+		expect(false, "the shop has a coach")
+		return
+	var coach: Coach = shop.coach
+	expect(coach.guiding and coach.step == "welcome" and coach._card.visible, "the morning opens on the welcome card")
+	_press_card(coach, 0)
+	expect(coach.step == "prices", "Show me moves on to the ticker")
+	_press_card(coach, 0)
+	_press_card(coach, 0)
+	expect(coach.step == "open", "the cards lead to Open the shop")
+	await get_tree().process_frame
+	expect(coach._target is Callable and coach._target.call() is Rect2, "the card points at Open the shop")
+	shop._open_shop()
+	expect(coach.step == "june_walk" and shop.queue.size() == 1, "the first scripted customer walks in")
+	expect(coach.holds_clock(), "the clock waits during the guided customers")
+	# June: test her genuine coins and buy them
+	var june: Customer = shop.queue[0]
+	june.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	await get_tree().process_frame
+	expect(coach.step == "june_counter" and is_zero_approx(shop.time), "June reaches the counter and the clock hasn't moved")
+	shop._on_action("test")
+	expect(coach.step == "june_tools", "the coin test explains the tools")
+	shop._test.use_tool("scale")
+	shop._test.use_tool("calipers")
+	await get_tree().create_timer(2.0).timeout
+	expect(coach.step == "june_call", "after measuring, the coach says to call it genuine")
+	shop._test.finished.emit("genuine")
+	expect(coach.step == "june_offer", "back at the counter, make an offer")
+	var cash := Shop.cash
+	shop._on_action("offer")
+	expect(Shop.cash < cash and june.dealt, "June takes the offer")
+	expect(coach.step == "between", "the coach waits before the next customer")
+	_press_card(coach, 0)
+	# Slick: the magnet catches his steel fakes
+	expect(coach.step == "slick_walk", "the nervous seller walks in")
+	var slick: Customer = shop.queue[0]
+	expect(slick.fake == "steel", "his coins are fake")
+	slick.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	await get_tree().process_frame
+	shop._on_action("test")
+	expect(coach.step == "slick_tools", "the coach points at the magnet")
+	shop._test.use_tool("magnet")
+	await get_tree().create_timer(1.6).timeout
+	expect(coach.step == "slick_call", "the magnet snaps and the coach says to call it fake")
+	shop._test.finished.emit("fake")
+	expect(slick.caught and not shop.queue.has(slick), "Slick is caught and leaves")
+	_press_card(coach, 0)
+	# Priya buys from the vault
+	expect(coach.step == "priya_walk", "the buyer walks in")
+	var priya: Customer = shop.queue[0]
+	priya.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	await get_tree().process_frame
+	expect(coach.step == "priya_counter", "the coach points at Sell")
+	cash = Shop.cash
+	shop._on_action("sell")
+	expect(Shop.cash > cash and coach.step == "free", "Priya buys and the guided part ends")
+	_press_card(coach, 0)
+	expect(not coach.holds_clock() and coach.step == "open_day", "Got it hands the shop back")
+	await get_tree().process_frame
+	expect(shop.time > 0.0, "the clock runs again")
+	# a jewellery seller in free play gets the bench intro once
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	var j := _jewellery_seller(rng, "XAU", "14K")
+	shop.queue.push_front(j)
+	j.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	shop._open_test(j)
+	expect(coach._card.visible and coach._title.text == "Jewellery appraisal", "the jewellery bench gets an intro")
+	shop._test.finished.emit("cancel")
+	expect(Tutorial.has_seen("jewellery") and not coach._card.visible, "the intro is shown only once")
+	shop._open_test(j)
+	expect(not coach._card.visible, "no intro the second time")
+	shop._test.finished.emit("cancel")
+	# closing: the coach holds the vault clock until Start
+	shop.queue.clear()
+	shop.leaving.clear()
+	shop.time = shop.DAY_SECONDS + 1.0
+	shop._tick(0.0)
+	expect(coach.step == "vault" and shop._vault.paused, "the vault waits for the lock-up card")
+	await get_tree().process_frame
+	await get_tree().process_frame
+	expect(is_zero_approx(shop._vault.elapsed), "the vault clock waits")
+	_press_card(coach, 0)
+	expect(not shop._vault.paused, "Start the clock starts the lock-up")
+	shop._vault.lock_up()
+	shop._vault.finished.emit(shop._vault.report)
+	expect(coach.step == "summary", "the summary gets the last card")
+	_press_card(coach, 0)
+	expect(Tutorial.first_day_done and not coach.guiding, "Finish ends the tutorial")
+	shop._open_next_day()
+	await get_tree().process_frame
+	expect(not coach._card.visible, "day 2 has no cards")
+	expect(SaveGame.load_game() and Tutorial.first_day_done and Tutorial.has_seen("jewellery"), "the tutorial is saved")
+	shop.queue_free()
+	await get_tree().process_frame
+	# Skip tutorial, straight from the welcome card
+	SaveGame.new_game()
+	shop = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	coach = shop.coach
+	expect(coach._card.visible, "the welcome card is up again in a new game")
+	_press_card(coach, coach._row.get_child_count() - 1)
+	expect(Tutorial.first_day_done and Tutorial.has_seen("bar") and not coach._card.visible, "Skip tutorial skips everything")
+	var saved = JSON.parse_string(FileAccess.get_file_as_string(SaveGame.path))
+	expect(saved.get("tutorial", {}).get("first_day_done", false), "skipping is saved right away")
+	shop._open_shop()
+	expect(shop.queue.is_empty() and not coach.holds_clock(), "no scripted customers after skipping")
+	shop.queue_free()
+	# let the button clicks finish playing
+	await get_tree().create_timer(0.4).timeout
+	SaveGame.delete_save()
+	Shop.reset()
+
+
+func _press_card(coach: Coach, index: int) -> void:
+	var b: Button = coach._row.get_child(index)
+	b.pressed.emit()

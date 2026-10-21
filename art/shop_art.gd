@@ -45,6 +45,9 @@ static func paint_room(dusk: bool) -> PixelCanvas:
 	iso.top(0, 0, IW, JW, 0, _floor)
 	iso.top(3.4, 4.6, 9.2, 7.6, 0, _rug)
 	iso.top(9.25, 5.0, IW, 7.4, 0, _doormat)
+	_scuffs(iso)
+	for r in [COUNTER, CASE, SHELF]:
+		_contact_shadow(iso, r)
 	iso.face_j(0, 0, IW, 0, WALL_H, func(i, z): return _wall(i * 16.0, z, false))
 	iso.face_i(0, 0, JW, 0, WALL_H, func(j, z): return _wall(j * 16.0, z, true))
 	# corner post and crown moulding
@@ -57,6 +60,8 @@ static func paint_room(dusk: bool) -> PixelCanvas:
 	_board_frame(iso)
 	_clock_face(iso)
 	_shelf(iso)
+	_certificate(iso)
+	_camera(iso)
 	_plant(iso, 9.0, 0.3)
 	_plant(iso, 0.25, 7.2)
 	# soft shadow along the wall bases
@@ -71,6 +76,7 @@ static func paint_front(dusk: bool) -> PixelCanvas:
 	var iso := iso_on(c)
 	_counter(iso)
 	_case_body(iso)
+	_ledger(iso)
 	for lamp_i in [4.2, 7.0]:
 		_lamp(iso, lamp_i, 3.7, dusk)
 	return c
@@ -518,6 +524,18 @@ static func _lamp(iso: Iso, i: float, j: float, dusk: bool) -> void:
 	c.rect(x - 5, y + 4, 11, 2, Color("#3d6b58"))
 	c.rect(x - 6, y + 6, 13, 1, Pal.GOLD.darkened(0.2))
 	c.rect(x - 2, y + 7, 5, 1, Color("#fff2be") if dusk else Color("#f4e2a8"))
+	c.px(x - 4, y + 3, Color("#5a8a76")) # glint on the enamel
+	c.px(x - 3, y + 2, Color("#5a8a76"))
+	if dusk:
+		# a soft cone of light down to the counter
+		var foot := iso.p(i, j - 0.1, COUNTER_H)
+		var cone := PackedVector2Array([Vector2(x - 5, y + 7), Vector2(x + 6, y + 7), foot + Vector2(17, 0), foot + Vector2(-17, 0)])
+		var mask := PixelCanvas.new(c.width, c.height)
+		mask.poly(cone, Color.WHITE)
+		for yy in range(y + 8, roundi(foot.y)):
+			for xx in range(x - 18, x + 19):
+				if mask.get_px(xx, yy).a > 0.0 and PixelCanvas.checker(xx, yy):
+					c.px(xx, yy, Color("#ffe8a0", 0.13))
 	# warm pool of light on the counter top
 	var pool := iso.p(i, j - 0.1, COUNTER_H)
 	var a := 0.16 if dusk else 0.08
@@ -528,6 +546,81 @@ static func _lamp(iso: Iso, i: float, j: float, dusk: bool) -> void:
 				var q := Vector2i(roundi(pool.x) + xx, roundi(pool.y) + yy)
 				if c.get_px(q.x, q.y).a > 0.0:
 					c.px(q.x, q.y, Color("#ffe8a0", a * (1.0 - e)))
+
+
+## A framed assay certificate with a wax seal, on the left wall by the case.
+static func _certificate(iso: Iso) -> void:
+	var j0 := 7.3
+	var j1 := 7.95
+	var z0 := 30.0
+	var z1 := 44.0
+	iso.face_i(0, j0, j1, z0, z1, func(j, z):
+		var u: float = (j1 - j) * 16.0
+		var h: float = z1 - z
+		var w := (j1 - j0) * 16.0
+		var tall := z1 - z0
+		if u < 1.0 or h < 1.0 or u > w - 1.0 or h > tall - 1.0:
+			return Pal.GOLD.darkened(0.25) if u < 1.0 or h < 1.0 else Color("#6a4a1c")
+		if absf(u - w * 0.7) < 1.6 and absf(h - tall * 0.72) < 1.6:
+			return Color("#a8302a") # seal
+		if int(h) in [3, 5, 6, 8] and u > 2.0 and u < w - 2.0 - (3.0 if int(h) == 8 else 0.0):
+			return Color("#8a7a62") if int(h) != 3 else Color("#3a2a1a")
+		return Color("#efe3c8")
+	)
+
+
+## A security camera on a bracket up in the corner.
+static func _camera(iso: Iso) -> void:
+	var c := iso.canvas
+	var q := iso.p(ShopAmbience.CAMERA.x, ShopAmbience.CAMERA.y, ShopAmbience.CAMERA.z).round()
+	var x := int(q.x)
+	var y := int(q.y)
+	c.rect(x - 1, y - 4, 1, 4, Color("#2a2e35")) # bracket
+	c.rect(x - 2, y - 5, 3, 1, Color("#3f454f"))
+	c.rect(x - 1, y, 7, 4, Color("#c6ccd4"))
+	c.rect(x - 1, y, 7, 1, Color("#e8edf3"))
+	c.rect(x - 1, y + 3, 7, 1, Color("#7c838e"))
+	c.rect(x + 5, y + 1, 2, 2, Color("#2a2e35")) # lens hood
+	c.px(x + 6, y + 2, Color("#5a8ab0"))
+	c.rect(x - 2, y - 1, 9, 1, Color("#7c838e")) # sun visor
+
+
+## Ambient occlusion where a fixture meets the floor.
+static func _contact_shadow(iso: Iso, r: Rect2) -> void:
+	iso.top(r.position.x - 0.12, r.position.y - 0.12, r.end.x + 0.2, r.end.y + 0.2, 0, func(i, j):
+		var out := maxf(maxf(r.position.x - i, i - r.end.x), maxf(r.position.y - j, j - r.end.y))
+		if out < 0.0:
+			return null
+		return Color(0, 0, 0, 0.22 if out < 0.08 else 0.1)
+	)
+
+
+## Worn patches and scuffs on the boards where customers stand and walk.
+static func _scuffs(iso: Iso) -> void:
+	iso.top(9.2, 4.6, IW, 7.6, 0, func(i, j):
+		var n := _noise(int(i * 22.0), int(j * 22.0))
+		return Color(1, 0.9, 0.7, 0.06) if n > 0.6 else null
+	)
+	iso.top(2.6, 4.2, 3.4, 5.4, 0, func(i, j):
+		var n := _noise(int(i * 30.0) + 7, int(j * 30.0))
+		return Color(0, 0, 0, 0.08) if n > 0.75 else null
+	)
+
+
+## The day ledger lying open on the counter with a pen across it.
+static func _ledger(iso: Iso) -> void:
+	var h := COUNTER_H
+	iso.box(5.35, 3.35, 0.95, 0.6, 1.0, {"top": Color("#efe3c8"), "left": Color("#7a2a24"), "right": Color("#5a1f24")}, h)
+	iso.top(5.35, 3.35, 6.3, 3.95, h + 1.0, func(i, j):
+		if absf(i - 5.82) < 0.04:
+			return Color("#b8a888") # spine
+		if int(j * 40.0) % 3 == 0 and absf(i - 5.82) > 0.12 and i > 5.45 and i < 6.2:
+			return Color("#a89a86") # ruled lines
+		return null
+	)
+	iso.line3(Vector3(5.55, 3.5, h + 1.5), Vector3(6.15, 3.85, h + 1.5), Color("#1d2a4a"))
+	var cap := iso.p(6.15, 3.85, h + 1.5).round()
+	iso.canvas.px(int(cap.x), int(cap.y), Pal.GOLD)
 
 
 static func _noise(x: int, y: int) -> float:

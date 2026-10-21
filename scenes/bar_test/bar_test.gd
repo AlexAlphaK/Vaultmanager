@@ -83,7 +83,7 @@ func start(c: Customer) -> void:
 	_spectrum = _build_spectrum(readings.surface, rng)
 	var art := BarArt.paint(bar, BarArt.bench_ppm(bar))
 	_bar = art.texture()
-	_shadow = _paint_shadow(art).texture()
+	_shadow = BenchArt.soft_shadow(art).texture()
 	# the loupe's detailed painting is big: paint it off the main thread
 	var b := bar
 	var ppm := BarArt.detail_ppm(b)
@@ -226,12 +226,13 @@ func _draw() -> void:
 	_draw_xrf_screen()
 	_draw_scale_lcd()
 	var r := _bar_rect()
-	draw_texture(_shadow, r.position + Vector2(2, 3))
+	draw_texture(_shadow, r.position + Vector2(1, 2))
 	draw_texture(_bar, r.position)
 	_draw_glint(r)
 	_draw_calipers()
 	_draw_probe()
 	_draw_xrf_gun()
+	BenchArt.draw_motes(self, _time, Rect2(0, 0, BENCH_W, 270))
 
 
 func _bar_rect() -> Rect2:
@@ -714,17 +715,7 @@ static func _build_spectrum(surface: Dictionary, rng: RandomNumberGenerator) -> 
 
 ## Wooden bench, grey rubber mat, the flaw detector, the XRF analyzer and a platform scale.
 func _paint_bench() -> PixelCanvas:
-	var c := PixelCanvas.new(BENCH_W, 270, Color("#5e3b1d"))
-	for y in 270:
-		var plank := y / 18
-		for x in BENCH_W:
-			var n := ShopArt._noise(x / 4 + plank * 31, y)
-			var col := Color("#5e3b1d") if n > 0.15 else Color("#56361a")
-			if y % 18 == 0:
-				col = Color("#3a2410")
-			elif n > 0.93:
-				col = Color("#6a4424")
-			c.px(x, y, col)
+	var c := BenchArt.wood(BENCH_W, 270)
 	# rubber mat with a dimpled grip
 	var mat := MAT
 	c.rect(mat.position.x + 2, mat.position.y + 3, mat.size.x, mat.size.y, Color(0, 0, 0, 0.3))
@@ -745,10 +736,7 @@ func _paint_bench() -> PixelCanvas:
 		c.rect(rx, ry - (3 if mm % 10 == 0 else 1), 1, 3 if mm % 10 == 0 else 1, Color("#6b7380"))
 	# the two instruments: a green-screen flaw detector and the XRF analyzer's dock
 	for box in [UT, XRF]:
-		c.rect(box.position.x + 2, box.position.y + 3, box.size.x, box.size.y, Color(0, 0, 0, 0.35))
-		c.rect(box.position.x, box.position.y, box.size.x, box.size.y, Color("#3a3f48"))
-		c.rect(box.position.x, box.position.y, box.size.x, 1, Color("#7d8591"))
-		c.rect(box.position.x, box.end.y - 1, box.size.x, 1, Color("#1c1f24"))
+		BenchArt.housing(c, box, Color("#3a3f48"))
 	for plot in [UT_PLOT, XRF_PLOT]:
 		c.rect(plot.position.x - 1, plot.position.y - 1, plot.size.x + 2, plot.size.y + 2, Color("#1c1f24"))
 		c.rect(plot.position.x, plot.position.y, plot.size.x, plot.size.y, Color("#0b0e0a") if plot == UT_PLOT else Color("#0e0b07"))
@@ -771,12 +759,7 @@ func _paint_bench() -> PixelCanvas:
 	c.disc(XRF.end.x - 8, XRF.position.y + 5, 2.0, Color("#c0392b"))
 	# platform scale
 	var s := SCALE_RECT
-	c.rect(s.position.x + 2, s.position.y + 3, s.size.x, s.size.y, Color(0, 0, 0, 0.35))
-	c.rect(s.position.x, s.position.y, s.size.x, s.size.y, Color("#3a3f48"))
-	c.rect(s.position.x, s.position.y, s.size.x, 1, Color("#7d8591"))
-	c.rect(s.position.x, s.position.y, 1, s.size.y, Color("#5b616b"))
-	c.rect(s.position.x, s.end.y - 1, s.size.x, 1, Color("#1c1f24"))
-	c.rect(s.end.x - 1, s.position.y, 1, s.size.y, Color("#262a30"))
+	BenchArt.housing(c, s, Color("#3a3f48"))
 	var pan := PAN
 	c.rect(pan.position.x - 1, pan.position.y - 1, pan.size.x + 2, pan.size.y + 2, Color("#1c1f24"))
 	for y in range(pan.position.y, pan.end.y):
@@ -793,15 +776,7 @@ func _paint_bench() -> PixelCanvas:
 	for bx in [s.position.x + 8, s.end.x - 26]:
 		c.rect(bx, lcd.end.y + 6, 18, 5, Color("#22262c"))
 		c.rect(bx + 1, lcd.end.y + 6, 16, 1, Color("#6b7380"))
-	return c
-
-
-func _paint_shadow(art: PixelCanvas) -> PixelCanvas:
-	var c := PixelCanvas.new(art.width, art.height)
-	for y in art.height:
-		for x in art.width:
-			if art.image.get_pixel(x, y).a > 0.0:
-				c.image.set_pixel(x, y, Color(0, 0, 0, 0.4))
+	BenchArt.lamp_light(c)
 	return c
 
 

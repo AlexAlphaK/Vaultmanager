@@ -37,6 +37,22 @@ func save_game() -> bool:
 	return true
 
 
+## Writes one section into the existing save without touching the rest, so a choice
+## like skipping the tutorial sticks even if the player quits before the next morning.
+func save_section(key: String) -> bool:
+	if not has_save() or not _sections.has(key):
+		return false
+	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if typeof(data) != TYPE_DICTIONARY:
+		return false
+	data[key] = _sections[key].save.call()
+	var f := FileAccess.open(path, FileAccess.WRITE)
+	if f == null:
+		return false
+	f.store_string(JSON.stringify(data, "\t"))
+	return true
+
+
 ## Loads every registered section found in the file. Returns false if there is no
 ## readable save, leaving the current game untouched.
 func load_game() -> bool:
