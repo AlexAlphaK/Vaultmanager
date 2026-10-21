@@ -40,6 +40,21 @@ platinum and palladium prices follow the real market.
 | `price-service/` | Cloudflare Worker that polls the metals API and serves `GET /prices` |
 | `prototype/index.html` | Single-file browser prototype (simulated prices, coin testing minigame) |
 
+## Play on Windows (no Godot needed)
+
+Every change merged into `main` builds a fresh Windows version automatically.
+
+1. Open https://github.com/AlexAlphaK/Vaultmanager/releases/latest
+2. Under **Assets**, click **VaultManager-windows.zip** to download it.
+3. Right-click the zip, choose **Extract All**, then double-click **VaultManager.exe**.
+4. The first time, Windows may say "Windows protected your PC" because the game is not
+   signed. Click **More info**, then **Run anyway**.
+
+Saves and settings live in `%APPDATA%\Godot\app_userdata\Vault Manager`, so a new download
+keeps your shop. The build is made by `.github/workflows/windows-build.yml` from the
+"Windows Desktop" preset in `export_presets.cfg`; to export by hand in the editor use
+**Project > Export > Windows Desktop**.
+
 ## How to play
 
 The game opens on the title screen. **Continue** picks up your saved shop (the game saves

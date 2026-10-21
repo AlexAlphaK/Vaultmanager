@@ -1,0 +1,81 @@
+# Builds the double-clickable Windows game (VaultManager.exe).
+# Every push to main refreshes the "Latest Windows build" release, so the download link
+# https://github.com/AlexAlphaK/Vaultmanager/releases/latest always has the newest game.
+# Pull requests just build it (as a downloadable artifact) to check the export still works.
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: "4.3"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot and export templates
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}-stable
+
+      - name: Download Godot and export templates
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot && cd ~/godot
+          base=https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable
+          curl -sSLfo godot.zip "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip && rm godot.zip
+          mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
+          # keep only the Windows templates, the full set is over 1 GB
+          curl -sSLfo templates.tpz "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q templates.tpz 'templates/windows_*' 'templates/version.txt' && rm templates.tpz
+
+      - name: Install export templates
+        run: |
+          dest=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p "$dest" && cp ~/godot/templates/* "$dest/"
+
+      - name: Import project
+        run: ~/godot/godot --headless --import --path . || true
+
+      - name: Smoke test
+        run: ~/godot/godot --headless --path . res://tests/smoke_test.tscn
+
+      - name: Export Windows build
+        run: |
+          mkdir -p build/windows
+          ~/godot/godot --headless --path . --export-release "Windows Desktop" build/windows/VaultManager.exe
+          test -s build/windows/VaultManager.exe
+          cd build/windows && zip -q ../VaultManager-windows.zip VaultManager.exe
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VaultManager-windows
+          path: build/windows/VaultManager.exe
+
+      - name: Publish "Latest Windows build" release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete windows-latest --cleanup-tag --yes || true
+          gh release create windows-latest build/VaultManager-windows.zip \
+            --target "$GITHUB_SHA" --latest \
+            --title "Latest Windows build" \
+            --notes "Built from ${GITHUB_SHA::7}. Download VaultManager-windows.zip, unzip it and double-click VaultManager.exe."
