@@ -1,13 +1,25 @@
 extends Node2D
 ## Draws the isometric shop: baked layers, the live LED price board, the wall clock,
-## the keeper and the customers. Customers are owned by shop.gd; this only draws them.
+## the keeper, the staff, the cat, the sunbeam and the customers. Customers are owned by
+## shop.gd; this only draws and animates them (walk cycle, facing, blinking, moods).
 
+const CLERK_LOOK := {
+	"skin": "#c98f62", "hair": "#1a1a1a", "hair_style": 4, "shirt": "#8a5bb0", "top": 0,
+	"pants": "#2f3442", "glasses": true, "beard": false, "hat": false, "apron": true,
+}
+const GUARD_LOOK := {
+	"skin": "#7a4a2c", "hair": "#2a1a10", "hair_style": 3, "shirt": "#30406a", "top": 1,
+	"pants": "#1f1f24", "glasses": false, "beard": false, "hat": true, "apron": false,
+}
 const BOARD_ROWS := [["XAU", "AU", Color("#ffb43a")], ["XAG", "AG", Color("#e6ecf4")], ["XPT", "PT", Color("#b8c8e6")], ["XPD", "PD", Color("#c8b8e6")]]
 
 var customers: Array[Customer] = []
 var front_customer: Customer
 ## 0 at opening, 1 at closing time.
 var day_fraction := 0.0
+## The keeper is off at the safe with the till, and the clerk is ringing someone up.
+var keeper_away := false
+var clerk_busy := false
 
 var _iso := ShopArt.iso_on(PixelCanvas.new(1, 1))
 var _room := {}
@@ -16,16 +28,29 @@ var _glass: Texture2D
 var _shelf_stock: Texture2D
 var _case_stock: Texture2D
 var _keeper: Array[Texture2D] = []
+var _clerk: Texture2D
+var _guard: Texture2D
+var _light := {}
+var _cat: Array[Texture2D] = []
 var _time := 0.0
+## Per customer: where they were last frame, which way they face, when they started leaving.
+var _last_pos := {}
+var _facing_back := {}
+var _left_at := {}
 
 
 func _ready() -> void:
 	for dusk in [false, true]:
 		_room[dusk] = ShopArt.paint_room(dusk).texture()
 		_front[dusk] = ShopArt.paint_front(dusk).texture()
+		_light[dusk] = ShopAmbience.paint_light(dusk).texture()
 	_glass = ShopArt.paint_case_glass().texture()
 	var look := PeopleArt.keeper_look()
-	_keeper.append(PeopleArt.paint(look, 0).texture())
+	_keeper.append(PeopleArt.paint(look, PeopleArt.STAND).texture())
+	_keeper.append(PeopleArt.paint(look, PeopleArt.BLINK).texture())
+	_cat = ShopAmbience.paint_cat_frames()
+	_clerk = PeopleArt.paint(CLERK_LOOK, PeopleArt.STAND).texture()
+	_guard = PeopleArt.paint(GUARD_LOOK, PeopleArt.STAND).texture()
 	_refresh_stock()
 	Shop.changed.connect(_refresh_stock)
 
@@ -47,15 +72,25 @@ func _refresh_stock() -> void:
 func _draw() -> void:
 	var dusk := clampf((day_fraction - 0.7) * 3.3, 0.0, 1.0)
 	draw_texture(_room[dusk > 0.5], Vector2.ZERO)
+	draw_texture(_light[dusk > 0.5], Vector2.ZERO)
 	_draw_board()
 	_draw_clock()
+	ShopAmbience.draw_neon(self, _iso, _time, day_fraction < 1.0)
+	ShopAmbience.draw_camera_led(self, _iso, _time)
 	draw_texture(_shelf_stock, Vector2.ZERO)
-	var kp := screen_pos(ShopArt.KEEPER_SPOT.x, ShopArt.KEEPER_SPOT.y).round()
+	var spot := ShopArt.KEEPER_AWAY if keeper_away else ShopArt.KEEPER_SPOT
+	var kp := screen_pos(spot.x, spot.y).round()
 	var breathe := 1.0 if fmod(_time, 2.4) < 1.2 else 0.0
-	draw_texture(_keeper[0], kp + Vector2(-8, -28 + breathe))
+	draw_texture(_keeper[1 if _blinking(_time, 0.0) else 0], kp + Vector2(-8, -28 + breathe))
+	if Staff.has("clerk"):
+		var cp := screen_pos(ShopArt.CLERK_SPOT.x, ShopArt.CLERK_SPOT.y).round()
+		var bob := (1.0 if fmod(_time, 0.5) < 0.25 else 0.0) if clerk_busy else breathe
+		draw_texture(_clerk, cp + Vector2(-8, -28 + bob))
+	ShopAmbience.draw_motes(self, _iso, _time, dusk > 0.5)
 	draw_texture(_front[dusk > 0.5], Vector2.ZERO)
 	draw_texture(_case_stock, Vector2.ZERO)
 	draw_texture(_glass, Vector2.ZERO)
+	ShopAmbience.draw_cat(self, _iso, _cat, _time)
 	_draw_customers()
 	if dusk > 0.0:
 		draw_rect(Rect2(Vector2.ZERO, ShopArt.SIZE), Color(0.08, 0.06, 0.22, dusk * 0.28))
@@ -100,16 +135,28 @@ func _wall_hand(angle: float, length: float, col: Color) -> void:
 
 
 func _draw_customers() -> void:
-	var order := customers.duplicate()
-	order.sort_custom(func(a, b): return a.pos.x + a.pos.y < b.pos.x + b.pos.y)
+	# untyped, so the guard's spot can be sorted in with the customers
+	var order: Array = []
+	order.append_array(customers)
+	if Staff.has("guard"):
+		order.append(ShopArt.GUARD_SPOT)
+	order.sort_custom(func(a, b): return _depth(a) < _depth(b))
+	for key in _last_pos.keys():
+		if not customers.has(key):
+			_last_pos.erase(key)
+			_facing_back.erase(key)
+			_left_at.erase(key)
 	for c in order:
+		if c is Vector2:
+			_draw_guard(c)
+			continue
 		var base := screen_pos(c.pos.x, c.pos.y).round()
-		var frame := 0
-		if c.walking:
-			frame = 1 + int(_time * 6.0) % 2
+		var frame := _frame_for(c)
 		draw_rect(Rect2(base + Vector2(-5, -1), Vector2(11, 2)), Color(0, 0, 0, 0.3))
 		draw_rect(Rect2(base + Vector2(-3, 0), Vector2(7, 1)), Color(0, 0, 0, 0.2))
 		draw_texture(c.frames[frame], base + Vector2(-8, -27))
+		if c.leaving:
+			_draw_mood(c, base)
 		if c.leaving or c.walking:
 			continue
 		var f := clampf(c.patience / c.max_patience, 0.0, 1.0)
@@ -119,6 +166,71 @@ func _draw_customers() -> void:
 		draw_rect(Rect2(bar.position, Vector2(ceilf(12.0 * f), 2)), bar_col)
 		if c == front_customer:
 			_draw_bubble(c, base + Vector2(5, -46))
+
+
+func _depth(who) -> float:
+	var p: Vector2 = who if who is Vector2 else who.pos
+	return p.x + p.y
+
+
+func _draw_guard(at: Vector2) -> void:
+	var base := screen_pos(at.x, at.y).round()
+	draw_rect(Rect2(base + Vector2(-5, -1), Vector2(11, 2)), Color(0, 0, 0, 0.3))
+	draw_texture(_guard, base + Vector2(-8, -27))
+	# the badge
+	draw_rect(Rect2(base + Vector2(-3, -16), Vector2(1, 1)), Pal.GOLD)
+
+
+## Picks the customer's animation frame: walking towards or away from us, standing,
+## blinking now and then, or arms folded and tapping a foot once their patience runs low.
+func _frame_for(c: Customer) -> int:
+	var phase := float(c.seed % 1000) / 1000.0
+	var screen := screen_pos(c.pos.x, c.pos.y)
+	var moved: Vector2 = screen - _last_pos.get(c, screen)
+	_last_pos[c] = screen
+	if moved.length() > 0.01:
+		_facing_back[c] = moved.y < 0.0
+	var back: bool = _facing_back.get(c, false)
+	if c.leaving and not _left_at.has(c):
+		_left_at[c] = _time
+	if c.leaving and c.dealt and _time - float(_left_at[c]) < 0.5:
+		return PeopleArt.HAPPY # a wave on the way out
+	if c.walking:
+		var step := int(_time * 7.0 + phase * 4.0) % 4
+		return PeopleArt.BACK_WALK[step] if back else PeopleArt.WALK[step]
+	if back:
+		return PeopleArt.BACK
+	if c.leaving:
+		return PeopleArt.STAND
+	if c.patience / c.max_patience < 0.3:
+		return PeopleArt.TAP if fmod(_time + phase, 0.6) < 0.2 else PeopleArt.CROSS
+	return PeopleArt.BLINK if _blinking(_time, phase) else PeopleArt.STAND
+
+
+## True for a blink of 0.15 s every few seconds, offset by `phase` so people blink out of step.
+func _blinking(t: float, phase: float) -> bool:
+	return fmod(t + phase * 3.7, 3.7) < 0.15
+
+
+## A heart floats up over someone who leaves with a deal, a grumble over someone who doesn't.
+func _draw_mood(c: Customer, base: Vector2) -> void:
+	var t: float = _time - _left_at[c]
+	if t > 1.6:
+		return
+	var at := base + Vector2(-3, -36 - floorf(t * 6.0))
+	var a := clampf(1.6 - t, 0.0, 1.0)
+	var rows: Array
+	var col: Color
+	if c.dealt:
+		rows = [".#.#.", "#####", "#####", ".###.", "..#.."]
+		col = Color("#ff6a7a", a)
+	else:
+		rows = ["#.#.#", ".###.", "##.##", ".###.", "#.#.#"]
+		col = Color("#9aa3b0", a)
+	for y in rows.size():
+		for x in rows[y].length():
+			if rows[y][x] == "#":
+				draw_rect(Rect2(at + Vector2(x, y), Vector2.ONE), col)
 
 
 func _draw_bubble(c: Customer, at: Vector2) -> void:

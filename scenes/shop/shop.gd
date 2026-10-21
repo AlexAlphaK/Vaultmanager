@@ -4,6 +4,8 @@ extends Node2D
 ## jewellery opens the JewelleryTest appraisal and bullion bars open the BarTest.
 ## Each day runs morning (prices, upgrades) -> open -> closing -> vault lock-up ->
 ## after hours (summary), following the Day autoload. The game saves every morning.
+## In the rush hours (RushHours) the clock keeps running while you test, so you juggle
+## the counter, the benches and runs to the vault with the till; staff (Staff) help out.
 ## On day 1 of a new game the Coach walks the player through it.
 
 signal bench_opened(bench: Control, c: Customer)
@@ -21,6 +23,8 @@ const RUSH_GAP := 1.5 # seconds between customers in a news rush
 const JewelleryTestScene := preload("res://scenes/jewellery_test/jewellery_test.tscn")
 const BarTestScene := preload("res://scenes/bar_test/bar_test.tscn")
 const STONE_NAMES := {"cz": "cubic zirconia", "glass": "glass", "moissanite": "moissanite"}
+const CLERK_SECONDS := 5.0 # how long the clerk takes to ring up a sale
+const VAULT_RUN_SECONDS := 3.0 # away from the counter while you take the till to the vault
 
 @onready var room: Node2D = $Room
 @onready var hud: Control = $Hud/Root
@@ -37,7 +41,16 @@ var pending_pieces: Array[Dictionary] = []
 ## Bars bought today, on their way to the bullion dealer: {"at", "bar", "paid", "name"}.
 var pending_bars: Array[Dictionary] = []
 var rng := RandomNumberGenerator.new()
+## Today's busy hour from RushHours, or {} when the shop is calm.
+var rush := {}
+## Cash taken at the counter since the last vault run, and seconds left on a run under way.
+var till := 0.0
+var away := 0.0
+## The buyer at the clerk's till, and seconds left on their sale.
+var at_clerk: Customer
+var clerk_left := 0.0
 
+var _testing: Customer
 var _next_spawn := 3.0
 var _rush_left := 0
 var _shown: Customer
@@ -60,6 +73,7 @@ func _ready() -> void:
 	Music.play("shop")
 	var banner := NewsBanner.new()
 	hud.add_child(banner)
+	add_child(RushStrip.new(self))
 	MarketEvents.started.connect(_on_market_event)
 	if SaveGame.load_game():
 		Shop.log_event("Welcome back. Day %d at your %s." % [Shop.day, Progress.tier_name()])
@@ -80,9 +94,27 @@ func _process(delta: float) -> void:
 		_shown = front
 		_show_front()
 	room.front_customer = front
-	room.customers.assign(queue + leaving)
+	room.customers.assign(_everyone())
 	room.day_fraction = clampf(time / DAY_SECONDS, 0.0, 1.0)
-	hud.set_clock(Shop.day, int(9 * 60 + room.day_fraction * 8 * 60), closing)
+	room.keeper_away = away > 0.0
+	room.clerk_busy = at_clerk != null and not at_clerk.walking
+	hud.set_clock(Shop.day, int(minutes()), closing, not rush.is_empty())
+	hud.set_till(till, RushHours.till_limit(), away)
+
+
+## The shop clock in minutes after midnight: 09:00 at opening, 17:00 at closing time.
+func minutes() -> float:
+	return 9.0 * 60.0 + clampf(time / DAY_SECONDS, 0.0, 1.0) * 8.0 * 60.0
+
+
+## Everyone in the shop: the queue, the clerk's customer and those on their way out.
+func _everyone() -> Array[Customer]:
+	var out: Array[Customer] = []
+	out.append_array(queue)
+	out.append_array(leaving)
+	if at_clerk:
+		out.append(at_clerk)
+	return out
 
 
 ## Esc opens the pause menu, except in the coin and jewellery benches, where it means "back".
@@ -104,17 +136,33 @@ func _tick(delta: float) -> void:
 		closing = true
 		Day.close_shop()
 		Shop.log_event("Closing time. Serving the last customers.")
+	_update_rush()
 	MarketEvents.advance(delta)
 	_next_spawn -= delta
-	if not closing and _next_spawn <= 0.0 and queue.size() < ShopArt.SLOTS.size() and not coach.holds_clock():
-		_spawn()
-		if _rush_left > 0:
-			_rush_left -= 1
-			_next_spawn = RUSH_GAP
-		else:
-			_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor()
+	if not closing and _next_spawn <= 0.0 and not coach.holds_clock():
+		if queue.size() < ShopArt.SLOTS.size():
+			_spawn()
+			if _rush_left > 0:
+				_rush_left -= 1
+				_next_spawn = RUSH_GAP
+			elif not rush.is_empty():
+				_next_spawn = RushHours.SPAWN_GAP / Progress.traffic() * rng.randf_range(0.75, 1.25)
+			else:
+				_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor()
+		elif not rush.is_empty():
+			# in a rush nobody waits outside: a full queue turns them away
+			Shop.note("walked_by")
+			_next_spawn = RushHours.SPAWN_GAP / Progress.traffic() * rng.randf_range(0.75, 1.25)
+	if away > 0.0:
+		away -= delta
+		if away <= 0.0:
+			_finish_vault_run()
+	_clerk_tick(delta)
+	if not closing and rng.randf() < RushHours.grab_chance(till, not rush.is_empty()) * delta:
+		_till_grab()
 	for c in queue.duplicate():
-		if c.walking:
+		# whoever is on the testing bench is watching you work
+		if c.walking or c == _testing:
 			continue
 		c.patience -= delta if c == _front() else delta * 0.5
 		if c.patience <= 0.0:
@@ -138,9 +186,25 @@ func _tick(delta: float) -> void:
 		if time >= j.at or closing:
 			pending_bars.erase(j)
 			_settle_bar(j)
-	if closing and queue.is_empty() and leaving.is_empty():
+	if closing and queue.is_empty() and leaving.is_empty() and at_clerk == null and away <= 0.0 and _test == null:
 		paused = true
 		_open_vault()
+
+
+## Starts and ends the busy hours as the clock passes them.
+func _update_rush() -> void:
+	# no rush while the tutorial is still guiding the first day
+	var now := {} if closing or not Tutorial.first_day_done else RushHours.at(Shop.day, minutes())
+	if now.get("name", "") == rush.get("name", ""):
+		return
+	rush = now
+	if rush.is_empty():
+		Shop.log_event("The rush is over. Catch your breath.")
+		return
+	_next_spawn = minf(_next_spawn, 1.0)
+	Sfx.play(self, Sfx.door_bell(), -4.0)
+	var help := "" if Staff.has("clerk") else " A clerk would help."
+	Shop.log_event("%s! The queue keeps waiting while you test.%s" % [rush.name, help], "bad")
 
 
 func _spawn() -> void:
@@ -155,8 +219,10 @@ func admit(c: Customer) -> void:
 
 
 func _walk(delta: float) -> void:
-	for c in queue + leaving:
+	for c in _everyone():
 		var target: Vector2 = ShopArt.EXIT if c.leaving else ShopArt.SLOTS[mini(queue.find(c), ShopArt.SLOTS.size() - 1)]
+		if c == at_clerk:
+			target = ShopArt.CLERK_SLOT
 		var to := target - c.pos
 		var step := WALK_SPEED * delta
 		c.walking = to.length() > 0.02
@@ -174,7 +240,9 @@ func _front() -> Customer:
 
 
 func _show_front() -> void:
-	if _shown:
+	if away > 0.0:
+		hud.show_customer(null, "Back in a moment: taking the till to the vault.")
+	elif _shown:
 		hud.show_customer(_shown)
 	elif not queue.is_empty():
 		hud.show_customer(null, "A customer is walking up to the counter.")
@@ -198,8 +266,13 @@ func _dismiss(c: Customer, text := "", mood := "") -> void:
 
 
 func _on_action(id: String) -> void:
+	if paused or _test != null or away > 0.0:
+		return
+	if id == "vault_run":
+		_start_vault_run()
+		return
 	var c := _front()
-	if c == null or paused:
+	if c == null:
 		return
 	if c.kind == "visit" and id != "decline":
 		return
@@ -227,6 +300,8 @@ func _offer(c: Customer) -> void:
 		hud.show_customer(c)
 		return
 	c.dealt = true
+	# sellers are paid from the till first, the rest from the safe
+	till = maxf(0.0, till - offer)
 	if c.piece:
 		_buy_piece(c, offer)
 		return
@@ -310,10 +385,18 @@ func _sell(c: Customer) -> void:
 	if not c.hear_price(Shop.sell_premium):
 		hud.show_customer(c)
 		return
+	var sale := _ring_up(c)
+	_dismiss(c, sale.text, sale.mood)
+
+
+## Hands a buyer their coins and puts the money in the till.
+## Returns the log line and its mood: {"text", "mood"}.
+func _ring_up(c: Customer) -> Dictionary:
 	c.dealt = true
 	var price := c.sale_total()
 	var taken := Shop.take_stock(c.item.metal, c.qty, c.item if c.wanted_exact else null)
 	Shop.add_cash(price)
+	till += price
 	Shop.note("sold", price)
 	Shop.note("profit", price - taken.cost)
 	Shop.note("served")
@@ -322,10 +405,82 @@ func _sell(c: Customer) -> void:
 	if taken.fakes > 0:
 		var refund: float = price / c.qty * taken.fakes
 		Shop.add_cash(-refund)
+		till = maxf(0.0, till - refund)
 		Shop.reputation_for("sold_fake")
 		Shop.log_event("%s came back: %d of the coins you sold were fake! Refunded %s." % [c.name, taken.fakes, Market.format_money(refund)], "bad")
 	var profit: float = price - taken.cost
-	_dismiss(c, "Sold %d coins for %s (profit %s)." % [c.qty, Market.format_money(price), Market.format_money(profit)], "good" if profit >= 0.0 else "bad")
+	return {"text": "Sold %d coins for %s (profit %s)." % [c.qty, Market.format_money(price), Market.format_money(profit)],
+		"mood": "good" if profit >= 0.0 else "bad"}
+
+
+## The clerk takes a buyer from the queue to the second till. They leave you the
+## customer at your counter, sellers (they don't test) and anyone they already sent back.
+func _clerk_tick(delta: float) -> void:
+	if not Staff.has("clerk"):
+		return
+	if at_clerk:
+		if not at_clerk.walking:
+			clerk_left -= delta
+			if clerk_left <= 0.0:
+				_clerk_finish()
+		return
+	var busy := _test != null or away > 0.0
+	for c in queue:
+		if c.walking or c == _testing or c.kind != "buyer" or c.clerk_tried or c.stock_have() < c.qty:
+			continue
+		if c == _front() and not busy:
+			continue
+		queue.erase(c)
+		at_clerk = c
+		clerk_left = CLERK_SECONDS
+		if c == _shown:
+			_shown = null
+			_show_front()
+		return
+
+
+func _clerk_finish() -> void:
+	var c := at_clerk
+	var clerk: String = Staff.ROLES.clerk.name
+	at_clerk = null
+	if c.stock_have() < c.qty:
+		_dismiss(c, "%s left: the coins sold out before %s could ring them up." % [c.name, clerk], "bad")
+		return
+	if c.hear_price(Shop.sell_premium):
+		var sale := _ring_up(c)
+		_dismiss(c, "%s: %s" % [clerk, sale.text], sale.mood)
+		return
+	# they want a better price than the clerk may give: back to the queue for you
+	c.clerk_tried = true
+	if queue.size() < ShopArt.SLOTS.size():
+		queue.append(c)
+		Shop.log_event("%s wants a better price. %s sent them to you." % [c.name, clerk])
+	else:
+		_dismiss(c, "%s wouldn't pay your price and left." % c.name, "bad")
+
+
+func _start_vault_run() -> void:
+	if till < 1.0:
+		return
+	away = VAULT_RUN_SECONDS
+	Sfx.play(self, Sfx.click(), -6.0)
+	_show_front()
+
+
+func _finish_vault_run() -> void:
+	away = 0.0
+	Shop.log_event("Locked %s from the till in the safe." % Market.format_money(till), "good")
+	till = 0.0
+	_show_front()
+
+
+## Someone reaches over the counter for an overfull till.
+func _till_grab() -> void:
+	var taken := till * 0.6
+	till -= taken
+	Day.add_expense("Snatched from the till", taken)
+	Shop.note("stolen", taken)
+	Shop.log_event("A thief grabbed %s from the till and ran! Take cash to the vault." % Market.format_money(taken), "bad")
 
 
 ## A headline breaks: the first few customers it brings come straight in.
@@ -338,7 +493,9 @@ func _on_market_event(event: Dictionary) -> void:
 
 
 func _open_test(c: Customer) -> void:
-	paused = true
+	# in a rush the clock keeps going: the queue waits, the clerk works on
+	paused = rush.is_empty()
+	_testing = c
 	_test = (JewelleryTestScene if c.piece else (BarTestScene if c.bar else CoinTestScene)).instantiate()
 	hud.add_child(_test)
 	_test.start(c)
@@ -349,6 +506,7 @@ func _open_test(c: Customer) -> void:
 func _on_test_finished(verdict: String, c: Customer) -> void:
 	_test.queue_free()
 	_test = null
+	_testing = null
 	paused = false
 	bench_closed.emit(verdict, c)
 	match verdict:
@@ -420,6 +578,10 @@ func _on_vault_finished(night: Dictionary) -> void:
 	var report := Day.end_day()
 	if night.get("break_in", false):
 		report.lines.append("Break-in overnight: lost %s." % Market.format_money(night.value))
+	var missed := int(Shop.stats.get("walked_by", 0.0))
+	if missed > 0:
+		report.lines.append("%d customer%s saw the queue in the rush and walked on.%s" % [missed, "" if missed == 1 else "s",
+			"" if Staff.has("clerk") else " A clerk would keep the line moving."])
 	hud.show_day_summary(report)
 	summary_shown.emit()
 
@@ -440,6 +602,9 @@ func _start_morning() -> void:
 
 func _open_shop() -> void:
 	_next_spawn = 2.0
+	rush = {}
+	till = 0.0
+	away = 0.0
 	paused = false
 	hud.hide_panels()
 	Day.open_shop()
@@ -451,6 +616,7 @@ func _new_game() -> void:
 		c.leaving = true
 	queue.clear()
 	leaving.clear()
+	at_clerk = null
 	pending_fakes.clear()
 	pending_bars.clear()
 	SaveGame.new_game()

@@ -3,3 +3,4 @@
 price-service/node_modules/
 price-service/.wrangler/
 .dev.vars
+build/

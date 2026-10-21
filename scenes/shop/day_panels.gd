@@ -1,7 +1,7 @@
 class_name DayPanels
 extends PanelContainer
 ## The panels over the shop floor between shop hours: the morning briefing, the
-## upgrades and expansion page, and the end-of-day summary. Rebuilt each time one opens.
+## upgrades, staff and expansion page, and the end-of-day summary. Rebuilt each time one opens.
 
 signal open_requested
 signal next_day_requested
@@ -28,6 +28,7 @@ func _ready() -> void:
 	visible = false
 	Progress.changed.connect(_refresh_page)
 	Shop.changed.connect(_refresh_page)
+	Staff.changed.connect(_refresh_page)
 
 
 func hide_panel() -> void:
@@ -73,10 +74,13 @@ func _build_morning() -> void:
 	_title("%s, day %d" % [Day.weekday(), Shop.day])
 	_text("%s · morning. Set your prices on the right, then open up." % Progress.tier_name(), Pal.INK_DIM)
 	_text(_market_hint(), Pal.INK)
+	_text(RushHours.summary(Shop.day), Pal.WARN)
 	_gap()
 	_heading("BILLS")
 	var grid := _grid()
 	_pair(grid, "Upkeep tonight", Market.format_money(Progress.daily_upkeep()))
+	if not Staff.hired.is_empty():
+		_pair(grid, "Staff wages tonight", Market.format_money(Staff.daily_wages()))
 	var weekly := 0.0
 	for bill in Day.upcoming_bills():
 		weekly += bill.usd
@@ -100,7 +104,7 @@ func _build_morning() -> void:
 	_box.add_child(row)
 	open_button = _button(row, "Open the shop", "PrimaryButton", func(): open_requested.emit())
 	open_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var count := Progress.available_upgrades().size()
+	var count := Progress.available_upgrades().size() + Staff.ROLES.size() - Staff.hired.size()
 	var expand_ready := Progress.expand_blocker() == "" and not Progress.is_top_tier()
 	_button(row, "Upgrades (%d)%s" % [count, " !" if expand_ready else ""], "Button", show_upgrades)
 	_button(row, "Sure? Click again" if _confirm_new else "New game", "DangerButton", _on_new_game)
@@ -140,7 +144,7 @@ func _on_new_game() -> void:
 
 func _build_upgrades() -> void:
 	_clear()
-	_title("Upgrades")
+	_title("Upgrades and staff")
 	_text("Cash %s. Hover an upgrade to see what it does." % Market.format_money(Shop.cash), Pal.INK_DIM)
 	_gap()
 	var grid := _grid(3)
@@ -157,6 +161,13 @@ func _build_upgrades() -> void:
 	for id in Progress.available_upgrades():
 		var u: Dictionary = Progress.upgrades[id]
 		_upgrade_row(grid, u.name, u.cost, Progress.can_buy(id), "Buy", u.desc, func(): Progress.buy(id))
+	for id in Staff.ROLES:
+		var role: Dictionary = Staff.ROLES[id]
+		var desc := "%s Wage %s a day." % [role.desc, Market.format_money(Staff.wage(id))]
+		if Staff.has(id):
+			_upgrade_row(grid, "%s, %s" % [role.name, role.title.to_lower()], -1.0, true, "Let go", desc, func(): Staff.let_go(id), Pal.GOOD)
+		elif int(role.tier) <= Progress.tier:
+			_upgrade_row(grid, "Hire a %s" % role.title.to_lower(), role.fee, Staff.can_hire(id), "Hire", desc, func(): Staff.hire(id))
 	var locked := Progress.locked_upgrade_count()
 	if locked > 0:
 		_text("%d more upgrade%s unlock as the shop grows." % [locked, "" if locked == 1 else "s"], Pal.INK_FAINT)

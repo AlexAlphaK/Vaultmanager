@@ -28,6 +28,7 @@ const INSURANCE_RATE := 0.002
 ##   premium       +premium buyers accept        insurance share off the insurance bill (negative)
 ##   fraud_refund  share of fake losses repaid   safe      +share of vault capacity
 ##   robbery_risk  share off robbery odds (negative), read by the vault minigame
+## Staff on the payroll add their effects too (see Staff.ROLES).
 var upgrades := {
 	"bench": {"name": "Waiting bench", "cost": 1500.0, "tier": 0,
 		"desc": "Customers wait 25% longer before they give up.", "effects": {"patience": 0.25}},
@@ -85,7 +86,7 @@ func effect(key: String) -> float:
 	for id in owned:
 		if upgrades.has(id):
 			total += float(upgrades[id].effects.get(key, 0.0))
-	return total
+	return total + Staff.effect(key)
 
 
 func has_upgrade(id: String) -> bool:
