@@ -15,7 +15,8 @@ platinum and palladium prices follow the real market.
 | `data/coins/*.tres` | Real coin specs (weight, purity, diameter, thickness) used by the testing minigame |
 | `scenes/shop/` | The isometric shop: room renderer, customers, HUD and the day loop (main scene) |
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
-| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people and coin painters. No image files |
+| `scenes/vault/` | The vault lock-up minigame at closing time; `vault_layout.gd` holds the packing and break-in rules |
+| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people, coin and vault painters. No image files |
 | `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring |
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons) |
 | `tests/smoke_test.tscn` | Headless checks: run `godot --headless --path . res://tests/smoke_test.tscn` |
@@ -33,6 +34,13 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
 - Fakes you buy are caught by the assay lab a little later, and cost you the money and reputation.
 - The **-/+** buttons set what share of melt you pay sellers and the premium you charge buyers.
   Push too far and customers walk.
+- **Closing time** opens the vault lock-up. Your stock and the till's cash spill onto the counter
+  tray as coin tubes, coin boxes, monster boxes, cash straps and the customer ledger. Drag them
+  into the wall safe and the floor safe before the lights go out (right-click or R turns a piece,
+  Enter locks up early). Anything left on the tray raises the break-in risk, and so does
+  locking up late. Burglars take everything on the tray, crack the wall safe 40% of the time,
+  and never get into the floor safe. Losing the ledger costs reputation. To try it on its own,
+  open `scenes/vault/vault.tscn` in Godot and press F6.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
 

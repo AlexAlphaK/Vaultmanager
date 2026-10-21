@@ -1,10 +1,12 @@
 extends Node2D
 ## The shop floor: runs the day clock, brings customers in, and settles deals at
-## live market prices. Coin testing opens the CoinTest minigame over the shop.
+## live market prices. Coin testing opens the CoinTest minigame over the shop, and
+## closing time opens the Vault lock-up before the day's results.
 
 const DAY_SECONDS := 180.0
 const WALK_SPEED := 1.8 # tiles per second
 const CoinTestScene := preload("res://scenes/coin_test/coin_test.tscn")
+const VaultScene := preload("res://scenes/vault/vault.tscn")
 
 @onready var room: Node2D = $Room
 @onready var hud: Control = $Hud/Root
@@ -20,6 +22,7 @@ var rng := RandomNumberGenerator.new()
 var _next_spawn := 3.0
 var _shown: Customer
 var _test: Control
+var _vault: Control
 
 
 func _ready() -> void:
@@ -68,7 +71,7 @@ func _tick(delta: float) -> void:
 			Shop.log_event("Assay lab: the %d × %s were %s. Lost %s." % [f.qty, f.item.display_name, Counterfeit.label(f.fake), Market.format_money(f.paid)], "bad")
 	if closing and queue.is_empty() and leaving.is_empty():
 		paused = true
-		hud.show_day_summary(Shop.day, Shop.stats)
+		_open_vault()
 
 
 func _spawn() -> void:
@@ -206,6 +209,19 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 			else:
 				Shop.adjust_reputation(-0.25)
 				_dismiss(c, "You called %s's genuine coins fake. They stormed out." % c.name, "bad")
+
+
+func _open_vault() -> void:
+	_vault = VaultScene.instantiate()
+	hud.add_child(_vault)
+	_vault.start()
+	_vault.finished.connect(_on_vault_finished)
+
+
+func _on_vault_finished(_report: Dictionary) -> void:
+	_vault.queue_free()
+	_vault = null
+	hud.show_day_summary(Shop.day, Shop.stats)
 
 
 func _open_next_day() -> void:

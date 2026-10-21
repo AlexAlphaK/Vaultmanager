@@ -127,6 +127,13 @@ func confiscate(item: BullionItem, fake: String) -> int:
 	return 0
 
 
+## Takes up to `qty` coins out of one lot, e.g. when burglars empty a safe.
+func remove_from_lot(lot: Dictionary, qty: int) -> void:
+	lot.qty -= mini(qty, lot.qty)
+	stock = stock.filter(func(l): return l.qty > 0)
+	changed.emit()
+
+
 func add_cash(usd: float) -> void:
 	cash += usd
 	changed.emit()
