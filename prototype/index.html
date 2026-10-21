@@ -114,7 +114,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 <div class="wrap">
   <header class="top">
     <h1>Vault Manager <small>PROTOTYPE 0.1</small></h1>
-    <div class="feed"><span class="dot"></span><span id="feedLabel">Simulated feed, seeded from recent spot prices. 1 second = 15 market minutes.</span></div>
+    <div class="feed"><span class="dot"></span><span id="feedLabel">Simulated feed, seeded from the live price service (21 Oct 2026). 1 second = 15 market minutes.</span></div>
   </header>
 
   <div class="ticker" id="ticker"></div>
@@ -324,7 +324,7 @@ const FAKES = {
 // ---------- state ----------
 const S = {
   day: 1, t: 0, dayLen: 150, cash: 25000, rep: 2.5,
-  inv: [{ coin: 'sEagle', qty: 6, cost: 66 }, { coin: 'gMaple', qty: 1, cost: 4300 }],
+  inv: [{ coin: 'sEagle', qty: 6, cost: 53 }, { coin: 'gMaple', qty: 1, cost: 3950 }],
   queue: [], leaving: [], nextSpawn: 3, closing: false,
   stats: { bought: 0, sold: 0, profit: 0, caught: 0, scammed: 0 },
   mg: null, pendingFakes: []
