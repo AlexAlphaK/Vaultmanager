@@ -15,13 +15,15 @@ platinum and palladium prices follow the real market.
 | `autoload/progress.gd` | `Progress` singleton: the four shop tiers, upgrades and their effects |
 | `autoload/save_game.gd` | `SaveGame` singleton: saves to `user://save.json` every morning, loads on launch |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
+| `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
 | `items/counterfeit.gd` | The four kinds of fake (plated steel, brass, copper-nickel clad, tungsten core) and what each does to the readings |
 | `data/coins/*.tres` | Real coin specs (weight, purity, diameter, thickness) used by the testing minigame |
 | `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene) |
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
+| `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
 | `scenes/vault/` | The vault lock-up minigame at closing time; `vault_layout.gd` holds the packing and break-in rules |
-| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people, coin and vault painters. No image files |
-| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring |
+| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people, coin, jewellery and vault painters. No image files |
+| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds) |
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons) |
 | `tests/smoke_test.tscn` | Headless checks: run `godot --headless --path . res://tests/smoke_test.tscn` |
 | `price-service/` | Cloudflare Worker that polls the metals API and serves `GET /prices` |
@@ -36,6 +38,15 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   **Loupe** (move the mouse over the coin). Compare each reading with the spec column, then
   call it **Genuine** or **Fake**. Esc goes back to the counter.
 - Fakes you buy are caught by the assay lab a little later, and cost you the money and reputation.
+- Some sellers bring **jewellery** instead. **Examine** opens the appraisal bench. Press 1-5 or click
+  the tools: **Scale** (true weight), **Acid** (rub a streak on the touchstone, then click a bottle or
+  press Q-Y to drop 10K, 14K, 18K, 22K, silver or platinum acid: the streak survives acids up to its
+  karat and base metal fizzes), **Tester** (thermal probe on the stone; moissanite fools it),
+  **Magnet** (plated steel snaps, a chain's clasp spring pulls a little) and **Loupe** (read the
+  hallmark, look for plating wear, inclusions, scuffs, bubbles and doubled facet edges).
+  Then set the **Metal** grade (G) and whether the **Stone** is a diamond (D); your offer follows
+  from your grading at today's prices. Bought pieces go to the refiner, who pays what they are
+  really worth, so a wrong appraisal shows up in the log a few seconds later.
 - The **-/+** buttons set what share of melt you pay sellers and the premium you charge buyers.
   Push too far and customers walk.
 - **Closing time** opens the vault lock-up. Your stock and the till's cash spill onto the counter

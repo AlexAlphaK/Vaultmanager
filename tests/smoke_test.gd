@@ -1,5 +1,5 @@
 extends Node
-## Headless checks for the shop, the coin test and the vault lock-up. Run:
+## Headless checks for the shop, the coin test, the jewellery appraisal and the vault lock-up. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -15,9 +15,11 @@ func _ready() -> void:
 	_check_stock()
 	_check_bills_and_upgrades()
 	_check_save_load()
+	_check_jewellery()
 	_check_vault_layout()
 	await _check_vault_scene()
 	await _check_shop_day()
+	await _check_jewellery_deals()
 	SaveGame.delete_save()
 	print("SMOKE TEST %s (%d failures)" % ["PASSED" if failures == 0 else "FAILED", failures])
 	get_tree().quit(1 if failures else 0)
@@ -145,6 +147,7 @@ func _check_shop_day() -> void:
 	c.kind = "seller"
 	c.item = Shop.coins["gold_maple"]
 	c.fake = "steel"
+	c.piece = null
 	c.qty = 2
 	c.reserve = 0.5
 	shop.queue.append(c)
@@ -162,7 +165,8 @@ func _check_shop_day() -> void:
 	var g := Customer.create(1, 2.5, Shop.coin_list(), rng)
 	g.kind = "seller"
 	g.fake = ""
-	shop.queue.append(g)
+	g.piece = null
+	shop.queue.push_front(g)
 	g.pos = ShopArt.SLOTS[0]
 	await get_tree().process_frame
 	shop._open_test(g)
@@ -208,6 +212,131 @@ func _check_shop_day() -> void:
 	shop._open_shop()
 	expect(not shop.paused, "day 2 opens")
 	shop.queue_free()
+
+
+## Every jewellery fraud must show up on at least one bench test, values must follow
+## the claim and the truth, and every kind of piece must paint at every scale.
+func _check_jewellery() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	var frauds := {}
+	for n in 400:
+		var p := JewelleryPiece.create(1 + n % 5, rng)
+		var claimed := JewelleryPiece.new()
+		claimed.metal = p.metal
+		claimed.true_grade = p.claimed_grade
+		var acid_differs := false
+		for acid in JewelleryPiece.ACIDS:
+			if p.acid_reaction(acid) != claimed.acid_reaction(acid):
+				acid_differs = true
+		if p.true_grade != p.claimed_grade:
+			frauds["grade"] = true
+			expect(acid_differs, "%s %s claimed %s shows on the acids" % [p.true_grade, p.kind, p.claimed_grade])
+		else:
+			expect(not acid_differs, "honest %s %s passes the acids" % [p.claimed_grade, p.kind])
+		if p.stone != "" and p.stone != "diamond":
+			frauds[p.stone] = true
+			expect(p.tester_leds() < 10 or p.stone == "moissanite", "%s fails the thermal tester" % p.stone)
+		if p.true_grade == "plated" and p.base_metal == "steel":
+			expect(p.magnet() == "strong", "plated steel snaps to the magnet")
+		expect(p.claimed_g > 0.0 and p.weight_g > 0.0, "%s has a weight" % p.kind)
+		if p.true_grade == p.claimed_grade and p.stone in ["", "diamond"]:
+			expect(is_equal_approx(p.value_as(p.claimed_grade, p.stone != "", p.weight_g), p.true_value()), "honest %s is worth its claim" % p.kind)
+		expect(p.expected_value() <= p.true_value() + 0.01, "nobody expects more than a piece is worth")
+	for kind in ["grade", "cz", "glass", "moissanite"]:
+		expect(frauds.has(kind), "fraud kind %s turns up" % kind)
+	for kind in ["ring", "chain", "bracelet", "pendant"]:
+		var p := JewelleryPiece.new()
+		p.kind = kind
+		p.stone = "diamond" if kind in ["ring", "pendant"] else ""
+		p.carat = 0.5
+		p.seed = 3
+		for scale in [1, JewelleryArt.BENCH_SCALE, JewelleryArt.DETAIL_SCALE]:
+			var art := JewelleryArt.paint(p, scale)
+			expect(art.width == int(JewelleryArt.SIZE.x) * scale, "%s paints at scale %d" % [kind, scale])
+			expect(not art.image.is_invisible(), "%s has pixels at scale %d" % [kind, scale])
+
+
+func _check_jewellery_deals() -> void:
+	Shop.reset()
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	if not shop.has_method("_open_shop"):
+		return
+	shop._open_shop()
+	shop.queue.clear()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 21
+	# a plated ring bought as is: the refiner finds out
+	var c := _jewellery_seller(rng, "XAU", "18K")
+	c.piece.apply_fraud("plated", 1, rng)
+	c.piece.claimed_g = c.piece.weight_g
+	shop.queue.push_front(c)
+	c.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	var cash := Shop.cash
+	shop._on_action("offer")
+	expect(Shop.cash < cash and shop.pending_pieces.size() == 1, "buying a piece pays the seller")
+	shop.time += 9.0
+	shop._tick(0.0)
+	expect(shop.pending_pieces.is_empty() and Shop.stats.scammed == 1.0, "the refiner catches plating")
+	# an under-karat ring, appraised with the bench tools
+	var u := _jewellery_seller(rng, "XAU", "18K")
+	u.piece.apply_fraud("underkarat", 1, rng)
+	shop.queue.push_front(u)
+	u.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	shop._open_test(u)
+	var bench: Control = shop._test
+	for tool in ["scale", "acid", "tester", "magnet", "loupe"]:
+		bench.use_tool(tool)
+	for acid in JewelleryPiece.ACIDS:
+		bench.drop_acid(acid)
+	await get_tree().create_timer(3.2).timeout
+	var summary: String = bench._acid_summary()
+	expect(summary.contains("<") and not summary.contains("18K+"), "acid dissolves an under-karat streak (%s)" % summary)
+	while bench.grade != u.piece.true_grade:
+		bench.cycle_grade(1)
+	bench.finish()
+	expect(u.tested and u.assessed.grade == u.piece.true_grade, "the appraisal is recorded")
+	expect(is_equal_approx(u.melt_total(), u.piece.true_value()), "an accurate appraisal values the piece truly")
+	cash = Shop.cash
+	shop._on_action("offer")
+	expect(Shop.cash < cash, "the seller takes a fair offer at the true karat")
+	shop.time += 9.0
+	shop._tick(0.0)
+	expect(Shop.cash > cash - u.offer_total() * 0.5, "the refiner pays out for a fairly bought piece")
+	# calling a genuine piece plated sends the customer away
+	var g := _jewellery_seller(rng, "XAU", "14K")
+	shop.queue.push_front(g)
+	g.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	shop._open_test(g)
+	shop._test.grade = "plated"
+	shop._test.finish()
+	expect(not shop.queue.has(g), "an insulted customer leaves")
+	shop.queue_free()
+	Shop.reset()
+
+
+func _jewellery_seller(rng: RandomNumberGenerator, metal: String, grade: String) -> Customer:
+	var c := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	c.kind = "seller"
+	c.fake = ""
+	c.reserve = 0.85
+	var p := JewelleryPiece.new()
+	p.kind = "ring"
+	p.metal = metal
+	p.claimed_grade = grade
+	p.true_grade = grade
+	p.weight_g = 5.0
+	p.claimed_g = 5.0
+	p.stamp = grade
+	p.seed = rng.randi()
+	c.piece = p
+	c.qty = 1
+	return c
 
 
 func _check_vault_layout() -> void:
