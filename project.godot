@@ -18,6 +18,7 @@ MarketEvents="*res://autoload/market_events.gd"
 Customers="*res://autoload/customers.gd"
 Settings="*res://autoload/settings.gd"
 Music="*res://autoload/music.gd"
+Tutorial="*res://autoload/tutorial.gd"
 
 [display]
 
