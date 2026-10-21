@@ -17,6 +17,7 @@ func _ready() -> void:
 	_check_save_load()
 	_check_jewellery()
 	_check_vault_layout()
+	_check_market_events()
 	await _check_vault_scene()
 	await _check_shop_day()
 	await _check_jewellery_deals()
