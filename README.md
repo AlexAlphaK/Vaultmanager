@@ -21,7 +21,8 @@ platinum and palladium prices follow the real market.
 | `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene) |
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
-| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people, coin and jewellery painters. No image files |
+| `scenes/vault/` | The vault lock-up minigame at closing time; `vault_layout.gd` holds the packing and break-in rules |
+| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people, coin, jewellery and vault painters. No image files |
 | `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds) |
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons) |
 | `tests/smoke_test.tscn` | Headless checks: run `godot --headless --path . res://tests/smoke_test.tscn` |
@@ -48,6 +49,15 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   really worth, so a wrong appraisal shows up in the log a few seconds later.
 - The **-/+** buttons set what share of melt you pay sellers and the premium you charge buyers.
   Push too far and customers walk.
+- **Closing time** opens the vault lock-up. Your stock and the till's cash spill onto the counter
+  tray as coin tubes, coin boxes, monster boxes, cash straps and the customer ledger. Drag them
+  into the wall safe and the floor safe before the lights go out (right-click or R turns a piece,
+  Enter locks up early). Anything left on the tray raises the break-in risk, and so does
+  locking up late. Burglars take everything on the tray, crack the wall safe 40% of the time,
+  and never get into the floor safe. Losing the ledger costs reputation. Moving to a bigger
+  shop widens the floor safe, the Second safe upgrade adds a shelf to the wall safe, and the
+  alarm upgrades cut the break-in odds. To try it on its own,
+  open `scenes/vault/vault.tscn` in Godot and press F6.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
 

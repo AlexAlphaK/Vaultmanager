@@ -14,6 +14,7 @@ Shop="*res://autoload/shop.gd"
 Progress="*res://autoload/progress.gd"
 Day="*res://autoload/day.gd"
 SaveGame="*res://autoload/save_game.gd"
+MarketEvents="*res://autoload/market_events.gd"
 
 [display]
 

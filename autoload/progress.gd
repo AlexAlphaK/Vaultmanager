@@ -40,7 +40,7 @@ var upgrades := {
 	"fraud_cover": {"name": "Fraud insurance", "cost": 8000.0, "tier": 1,
 		"desc": "Pays back half of what you lose on fakes the assay lab catches.", "effects": {"fraud_refund": 0.5}},
 	"big_safe": {"name": "Second safe", "cost": 12000.0, "tier": 1,
-		"desc": "Doubles how many coins the vault holds.", "effects": {"safe": 1.0}},
+		"desc": "Adds a shelf to the wall safe for the nightly lock-up.", "effects": {"safe": 1.0}},
 	"radio_ads": {"name": "Radio ads", "cost": 18000.0, "tier": 1,
 		"desc": "The whole town hears about you: customers arrive 20% faster.", "effects": {"traffic": 0.2}},
 	"lounge": {"name": "Collector's lounge", "cost": 35000.0, "tier": 2,
