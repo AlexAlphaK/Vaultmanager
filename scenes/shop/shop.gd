@@ -3,6 +3,7 @@ extends Node2D
 ## live market prices. Coin testing opens the CoinTest minigame over the shop.
 ## Each day runs morning (prices, upgrades) -> open -> closing -> after hours (summary),
 ## following the Day autoload. The game saves every morning.
+## Market events (real price moves) bring rushes of customers and a news banner.
 
 const DAY_SECONDS := 180.0
 const WALK_SPEED := 1.8 # tiles per second
@@ -34,6 +35,9 @@ func _ready() -> void:
 	hud.open_requested.connect(_open_shop)
 	hud.next_day_requested.connect(_open_next_day)
 	hud.new_game_requested.connect(_new_game)
+	var banner := NewsBanner.new()
+	hud.add_child(banner)
+	MarketEvents.started.connect(_on_market_event)
 	if SaveGame.load_game():
 		Shop.log_event("Welcome back. Day %d at your %s." % [Shop.day, Progress.tier_name()])
 	else:
@@ -65,7 +69,11 @@ func _tick(delta: float) -> void:
 	_next_spawn -= delta
 	if not closing and _next_spawn <= 0.0 and queue.size() < ShopArt.SLOTS.size():
 		_spawn()
-		_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() * rng.randf_range(0.7, 1.3)
+		if _rush_left > 0:
+			_rush_left -= 1
+			_next_spawn = RUSH_GAP
+		else:
+			_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor()
 	for c in queue.duplicate():
 		if c.walking:
 			continue
