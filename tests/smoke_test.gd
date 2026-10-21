@@ -132,10 +132,65 @@ func _check_save_load() -> void:
 	expect(not SaveGame.has_save(), "new game deletes the save")
 
 
+func _check_market_events() -> void:
+	var saved_source := Market.source
+	var saved_crypto := Market.crypto.duplicate(true)
+	var saved_change := Market.metals_change.duplicate()
+	MarketEvents.stop()
+	MarketEvents.advance(MarketEvents.COOLDOWN_SECONDS + 1.0)
+	Market.source = "live"
+	# calm markets make no news
+	Market.crypto = {"BTC": {"price": 60000.0, "change_pct": 1.0}}
+	Market.metals_change = {"XAU": 0.2, "XAG": -0.4, "XPT": 0.0}
+	MarketEvents.evaluate()
+	expect(MarketEvents.active.is_empty(), "a calm market starts no event")
+	# a Bitcoin crash brings crypto converts who buy gold
+	Market.crypto.BTC.change_pct = -7.5
+	MarketEvents.evaluate()
+	expect(MarketEvents.active.get("id") == "btc_crash", "a Bitcoin crash starts the crypto convert rush")
+	expect(MarketEvents.headline(MarketEvents.active).contains("-7.5%"), "the headline shows the real move")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 3
+	var ev := MarketEvents.active.duplicate()
+	ev.share = 1.0
+	var c := Customer.create(1, 2.5, Shop.coin_list(), rng, ev)
+	expect(c.kind == "buyer" and c.item.metal == "XAU" and c.event_id == "btc_crash", "event customers follow the event")
+	expect(ev.lines.has(c.say), "event customers talk about the news")
+	expect(MarketEvents.spawn_factor() < 1.0, "events bring customers faster")
+	# it runs out, and does not fire again until the move fades
+	MarketEvents.advance(MarketEvents.EVENT_SECONDS + 1.0)
+	expect(MarketEvents.active.is_empty(), "the event ends on its own")
+	MarketEvents.advance(MarketEvents.COOLDOWN_SECONDS + 1.0)
+	expect(MarketEvents.active.is_empty(), "a news story does not repeat while it is still true")
+	Market.crypto.BTC.change_pct = -1.0
+	MarketEvents.evaluate()
+	# a gold dip over the last real day: panic sellers who take less
+	Market.metals_change.XAU = -1.8
+	MarketEvents.evaluate()
+	expect(MarketEvents.active.get("id") == "gold_dip", "a gold dip starts the panic sellers")
+	ev = MarketEvents.active.duplicate()
+	ev.share = 1.0
+	var reserves := 0.0
+	for n in 20:
+		var s := Customer.create(1, 2.5, Shop.coin_list(), rng, ev)
+		expect(s.kind == "seller" and s.item.metal == "XAU", "panic sellers bring gold")
+		reserves += s.reserve
+	expect(reserves / 20.0 < 0.86, "panic sellers accept less than usual")
+	MarketEvents.stop()
+	MarketEvents.advance(MarketEvents.COOLDOWN_SECONDS + 1.0)
+	Market.source = saved_source
+	Market.crypto = saved_crypto
+	Market.metals_change = saved_change
+
+
 func _check_shop_day() -> void:
 	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
 	add_child(shop)
 	await get_tree().process_frame
+	# a script that fails to parse leaves a bare node, and every check below would error out silently
+	if not shop.has_method("_open_shop"):
+		expect(false, "the shop script loads")
+		return
 	expect(shop.paused and Day.phase == Day.MORNING, "the day starts in the morning, shop shut")
 	expect(SaveGame.has_save(), "the morning is saved")
 	shop._open_shop()
