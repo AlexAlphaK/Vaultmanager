@@ -19,15 +19,17 @@ platinum and palladium prices follow the real market.
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
+| `items/bullion_bar.gd` | `BullionBar`: the bars customers sell (1 oz to 1 kilo, gold, silver and platinum), the six kinds of fake bar, what the ultrasound and XRF gun read, and the ledger of serial numbers you have bought |
 | `items/counterfeit.gd` | The four kinds of fake (plated steel, brass, copper-nickel clad, tungsten core) and what each does to the readings |
 | `data/coins/*.tres` | Real coin specs (weight, purity, diameter, thickness) used by the testing minigame |
 | `scenes/menu/` | The title screen (main scene: Continue, New game, Settings, Quit) and the pause menu |
 | `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene) |
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
+| `scenes/bar_test/` | The bar test: scale, calipers, ultrasound flaw detector, XRF gun and loupe |
 | `scenes/vault/` | The vault lock-up minigame at closing time; `vault_layout.gd` holds the packing and break-in rules |
-| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people, coin, jewellery, vault and title screen painters. No image files |
-| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds) |
+| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people, coin, jewellery, bar, vault and title screen painters. No image files |
+| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds, `bar_sfx.gd` the gel, ultrasound and X-ray sounds) |
 | `audio/music_synth.gd` | The music, synthesised at runtime: a music-box title theme and a slow jazzy shop loop |
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons, sliders) |
 | `ui/settings_panel.gd` | The settings page shared by the title screen and the pause menu |
@@ -58,6 +60,18 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   Then set the **Metal** grade (G) and whether the **Stone** is a diamond (D); your offer follows
   from your grading at today's prices. Bought pieces go to the refiner, who pays what they are
   really worth, so a wrong appraisal shows up in the log a few seconds later.
+- Other sellers bring a **bullion bar**. **Test bar** opens the bar bench. Press 1-5 or click the tools:
+  **Scale** (a real bar weighs its stated weight, up to 0.1% over, never under), **Calipers** (length,
+  width and an edge-on thickness view), **Ultrasound** (move the probe over the bar with the mouse; the
+  flaw detector shows the echo off the bottom of the bar, which must land inside the gate, and the
+  scan map marks every spot you checked), **XRF** (an X-ray gun that reads what the surface is made
+  of; buy the XRF analyzer upgrade first) and **Loupe** (read the marks and the serial number).
+  Tungsten is almost exactly as heavy as gold, so a tungsten bar under gold plating or a gold bar
+  with a tungsten slug inside passes the scale. Sound travels faster through tungsten: the echo
+  comes back early, and over a hidden slug a second echo shows up. Slugs sit in the middle of the
+  bar, so sweep it all over. Fakers also stamp the serials of real bars: the panel tells you when
+  a serial is one you have bought before. Bought bars go to the bullion dealer, who tests them again.
+  The Bullion dealer account upgrade gets you a better price for genuine bars.
 - The **-/+** buttons set what share of melt you pay sellers and the premium you charge buyers.
   Push too far and customers walk.
 - **Closing time** opens the vault lock-up. Your stock and the till's cash spill onto the counter

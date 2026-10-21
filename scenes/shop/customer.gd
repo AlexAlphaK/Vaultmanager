@@ -1,7 +1,7 @@
 class_name Customer
 extends RefCounted
 ## Someone who walks in to sell coins to the shop or buy them.
-## Sellers sometimes carry fakes; their asking price follows the day's market mood.
+## Some sellers bring jewellery or a bullion bar instead. Sellers sometimes carry fakes; their asking price follows the day's market mood.
 ## A customer who comes because of a market event (see MarketEvents) follows that event.
 ## Customers (the autoload) gives each one a personality: an archetype, and for the
 ## shop's regulars a place in their story. Most customers haggle a little; hagglers a lot.
@@ -16,6 +16,10 @@ const JEWELLERY_LINES := ["This was my grandmother's. Never wear it.", "Divorce.
 	"Found it at an estate sale. It's stamped.", "Cleaning out the jewellery box."]
 const JEWELLERY_SCAM_LINES := ["Solid gold, real stone. Need cash today.", "Had it appraised for twice that, honest.",
 	"My uncle's a jeweller, he says it's the real thing.", "Quick sale. No questions, right?"]
+const BAR_LINES := ["Inherited this bar. I'd rather have cash.", "Bought it years ago. Time to sell.",
+	"It's been sitting in my safe deposit box.", "Need the money for a down payment."]
+const BAR_SCAM_LINES := ["Got it cheap from a guy. Real, I promise.", "Comes with the card, but I lost it.",
+	"Melt it down if you don't believe me.", "Quick deal? I've got another buyer waiting."]
 const BUYER_LINES_DOWN := ["Prices dipped, I'm buying.", "Stocks are a casino. I want metal."]
 const BUYER_LINES_UP := ["Crypto burned me. I want something real.", "Adding to my stack.", "A gift for my granddaughter."]
 
@@ -55,6 +59,8 @@ var event_id := "" # the market event that brought them in, if any
 ## in the appraisal: {"grade": String, "diamond": bool, "weight": grams}.
 var piece: JewelleryPiece
 var assessed := {}
+## A bullion bar instead of coins (sellers only).
+var bar: BullionBar
 
 var pos := ShopArt.ENTRANCE
 var leaving := false
@@ -99,6 +105,11 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 			c.fake = ""
 			c.qty = 1
 			c.say = (JEWELLERY_SCAM_LINES if c.piece.scam else JEWELLERY_LINES)[rng.randi() % 4]
+		elif event.is_empty() and rng.randf() < 0.3:
+			c.bar = BullionBar.create(day, Progress.tier, rng, fake_odds)
+			c.fake = ""
+			c.qty = 1
+			c.say = (BAR_SCAM_LINES if c.bar.fake != "" else BAR_LINES)[rng.randi() % 4]
 	else:
 		c.max_premium = clampf(rng.randf_range(0.03, 0.09) + reputation * 0.006 + float(event.get("premium", 0.0)), 0.02, 0.20) + Progress.effect("premium")
 		var lines := BUYER_LINES_DOWN if mood < 0.0 else BUYER_LINES_UP
@@ -195,6 +206,8 @@ func melt_total() -> float:
 		if assessed.is_empty():
 			return piece.claimed_value()
 		return piece.value_as(assessed.grade, assessed.diamond, assessed.weight)
+	if bar:
+		return bar.melt_value()
 	return item.melt_value() * qty
 
 

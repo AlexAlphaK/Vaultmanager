@@ -134,6 +134,13 @@ func _draw_bubble(c: Customer, at: Vector2) -> void:
 			draw_rect(Rect2(at + d + Vector2(0, 1), Vector2.ONE), Pal.metal(pal, 3 if d.y < 6 else 2))
 		draw_rect(Rect2(at + Vector2(6, 2), Vector2(1, 2)), Color("#cfe6ff"))
 		draw_rect(Rect2(at + Vector2(5, 3), Vector2(3, 1)), Color("#9cc0e8"))
+	elif c.kind == "seller" and c.bar:
+		# a little bar with a bevel
+		var pal := c.bar.palette_name()
+		draw_rect(Rect2(at + Vector2(2, 4), Vector2(9, 5)), Pal.metal(pal, 1))
+		draw_rect(Rect2(at + Vector2(2, 4), Vector2(8, 4)), Pal.metal(pal, 3))
+		draw_rect(Rect2(at + Vector2(3, 4), Vector2(6, 1)), Pal.metal(pal, 5))
+		draw_rect(Rect2(at + Vector2(3, 5), Vector2(6, 2)), Pal.metal(pal, 4))
 	elif c.kind == "seller":
 		var pal := c.item.palette_name()
 		draw_rect(Rect2(at + Vector2(3, 2), Vector2(7, 7)), Pal.metal(pal, 1))

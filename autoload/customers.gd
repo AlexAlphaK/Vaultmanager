@@ -209,6 +209,7 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 				c.say = HAGGLER_LINES[rng.randi() % HAGGLER_LINES.size()]
 		"crypto_bro":
 			c.piece = null
+			c.bar = null
 			c.fake = ""
 			c.name = CRYPTO_NAMES[rng.randi() % CRYPTO_NAMES.size()]
 			if event.is_empty():
@@ -231,6 +232,7 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 		"collector":
 			c.kind = "buyer"
 			c.piece = null
+			c.bar = null
 			c.fake = ""
 			c.wanted_exact = true
 			c.name = COLLECTOR_NAMES[rng.randi() % COLLECTOR_NAMES.size()]
@@ -249,6 +251,7 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 		"shady":
 			c.kind = "seller"
 			c.piece = null
+			c.bar = null
 			c.assessed = {}
 			c.name = SHADY_NAMES[rng.randi() % SHADY_NAMES.size()]
 			c.fake = ""
@@ -283,6 +286,7 @@ func regular_customer(id: String, rng: RandomNumberGenerator) -> Customer:
 	c.set_look(b.get("look", reg.look))
 	c.kind = b.kind
 	c.piece = null
+	c.bar = null
 	c.assessed = {}
 	c.fake = ""
 	c.haggle = 0.0

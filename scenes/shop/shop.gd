@@ -1,7 +1,7 @@
 extends Node2D
 ## The shop floor: runs the day clock, brings customers in, and settles deals at
-## live market prices. Coin testing opens the CoinTest minigame over the shop, and
-## jewellery opens the JewelleryTest appraisal.
+## live market prices. Coin testing opens the CoinTest minigame over the shop,
+## jewellery opens the JewelleryTest appraisal and bullion bars open the BarTest.
 ## Each day runs morning (prices, upgrades) -> open -> closing -> vault lock-up ->
 ## after hours (summary), following the Day autoload. The game saves every morning.
 
@@ -12,6 +12,7 @@ const VaultScene := preload("res://scenes/vault/vault.tscn")
 const NewsBanner := preload("res://scenes/shop/news_banner.gd")
 const RUSH_GAP := 1.5 # seconds between customers in a news rush
 const JewelleryTestScene := preload("res://scenes/jewellery_test/jewellery_test.tscn")
+const BarTestScene := preload("res://scenes/bar_test/bar_test.tscn")
 const STONE_NAMES := {"cz": "cubic zirconia", "glass": "glass", "moissanite": "moissanite"}
 
 @onready var room: Node2D = $Room
@@ -26,6 +27,8 @@ var leaving: Array[Customer] = []
 var pending_fakes: Array[Dictionary] = []
 ## Jewellery bought today, on its way to the refiner: {"at", "piece", "paid", "name"}.
 var pending_pieces: Array[Dictionary] = []
+## Bars bought today, on their way to the bullion dealer: {"at", "bar", "paid", "name"}.
+var pending_bars: Array[Dictionary] = []
 var rng := RandomNumberGenerator.new()
 
 var _next_spawn := 3.0
@@ -38,6 +41,7 @@ var _pause: PauseMenu
 
 func _ready() -> void:
 	rng.randomize()
+	BullionBar.hook_up()
 	hud.action.connect(_on_action)
 	hud.open_requested.connect(_open_shop)
 	hud.next_day_requested.connect(_open_next_day)
@@ -117,6 +121,10 @@ func _tick(delta: float) -> void:
 		if time >= j.at or closing:
 			pending_pieces.erase(j)
 			_settle_piece(j)
+	for j in pending_bars.duplicate():
+		if time >= j.at or closing:
+			pending_bars.erase(j)
+			_settle_bar(j)
 	if closing and queue.is_empty() and leaving.is_empty():
 		paused = true
 		_open_vault()
@@ -185,9 +193,9 @@ func _on_action(id: String) -> void:
 		"refuse":
 			if c.tested:
 				Shop.adjust_reputation(-0.05)
-				_dismiss(c, "Passed on %s's coins." % c.name)
+				_dismiss(c, "Passed on %s's %s." % [c.name, "bar" if c.bar else "coins"])
 			else:
-				Shop.adjust_reputation(0.05 if c.fake != "" or (c.piece and c.piece.scam) else -0.1)
+				Shop.adjust_reputation(0.05 if c.fake != "" or (c.piece and c.piece.scam) or (c.bar and c.bar.fake != "") else -0.1)
 				_dismiss(c, "Turned %s away without testing." % c.name)
 		"sell":
 			_sell(c)
@@ -203,6 +211,9 @@ func _offer(c: Customer) -> void:
 	c.dealt = true
 	if c.piece:
 		_buy_piece(c, offer)
+		return
+	if c.bar:
+		_buy_bar(c, offer)
 		return
 	Shop.add_cash(-offer)
 	Shop.note("bought", offer)
@@ -221,6 +232,35 @@ func _buy_piece(c: Customer, offer: float) -> void:
 	Shop.adjust_reputation(0.05)
 	Sfx.play(self, Sfx.register_chime(), -6.0)
 	_dismiss(c, "Bought %s's %s for %s. Off to the refiner." % [c.name, c.piece.short_title(), Market.format_money(offer)])
+
+
+func _buy_bar(c: Customer, offer: float) -> void:
+	Shop.add_cash(-offer)
+	Shop.note("bought", offer)
+	BullionBar.record(c.bar, Shop.day)
+	pending_bars.append({"at": time + 8.0, "bar": c.bar, "paid": offer, "name": c.name})
+	Shop.adjust_reputation(0.05)
+	Sfx.play(self, Sfx.register_chime(), -6.0)
+	_dismiss(c, "Bought %s's %s for %s. Off to the bullion dealer." % [c.name, c.bar.display_name(), Market.format_money(offer)])
+
+
+## The bullion dealer checks every bar it buys from you, so a fake shows up here.
+func _settle_bar(j: Dictionary) -> void:
+	var b: BullionBar = j.bar
+	var paid: float = j.paid
+	var payout := b.dealer_payout(Progress.effect("bar_payout"))
+	if payout > 0.0:
+		Day.add_income("Bullion dealer", payout)
+	Shop.note("profit", payout - paid)
+	if b.fake == "":
+		Shop.log_event("Bullion dealer paid %s for %s's %s (profit %s)." % [Market.format_money(payout), j.name, b.display_name(), Market.format_money(payout - paid)], "good")
+		return
+	Shop.note("scammed")
+	Shop.adjust_reputation(-0.3)
+	Shop.log_event("Bullion dealer: %s's %s was %s. Lost %s." % [j.name, b.display_name(), BullionBar.label(b.fake), Market.format_money(paid - payout)], "bad")
+	var cover := Progress.effect("fraud_refund")
+	if cover > 0.0 and paid > payout:
+		Day.add_income("Fraud insurance payout", (paid - payout) * minf(cover, 1.0))
 
 
 ## The refiner melts a bought piece and the stone dealer takes any diamond.
@@ -281,7 +321,7 @@ func _on_market_event(event: Dictionary) -> void:
 
 func _open_test(c: Customer) -> void:
 	paused = true
-	_test = (JewelleryTestScene if c.piece else CoinTestScene).instantiate()
+	_test = (JewelleryTestScene if c.piece else (BarTestScene if c.bar else CoinTestScene)).instantiate()
 	hud.add_child(_test)
 	_test.start(c)
 	_test.finished.connect(_on_test_finished.bind(c))
@@ -294,7 +334,7 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 	match verdict:
 		"genuine":
 			c.tested = true
-			c.say = "Told you they were real. So, what's your offer?"
+			c.say = "Told you it was real. So, what's your offer?" if c.bar else "Told you they were real. So, what's your offer?"
 			if c.piece:
 				_appraised(c)
 			hud.show_customer(c)
@@ -306,6 +346,14 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 			else:
 				Shop.adjust_reputation(-0.25)
 				_dismiss(c, "You called %s's real %s plated. They stormed out." % [c.name, c.piece.short_title()], "bad")
+		"fake" when c.bar:
+			if c.bar.fake != "":
+				Shop.note("caught")
+				Shop.adjust_reputation(0.15)
+				_dismiss(c, "Caught %s's %s bar!%s" % [c.name, BullionBar.label(c.bar.fake), " Its serial was cloned." if c.bar.cloned else ""], "good")
+			else:
+				Shop.adjust_reputation(-0.25)
+				_dismiss(c, "You called %s's genuine bar fake. They stormed out." % c.name, "bad")
 		"fake":
 			if c.fake != "":
 				c.caught = true
@@ -382,6 +430,7 @@ func _new_game() -> void:
 	queue.clear()
 	leaving.clear()
 	pending_fakes.clear()
+	pending_bars.clear()
 	SaveGame.new_game()
 	Shop.log_event("A fresh start at the corner counter.")
 	_start_morning()
