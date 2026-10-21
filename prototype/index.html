@@ -233,10 +233,10 @@ function text(ctx, str, x, y, col) { ctx.fillStyle = col; glyphs(str, (px, py) =
 
 // ---------- metals & market ----------
 const METALS = {
-  XAU: { name: 'Gold', sym: 'AU', p: 4473.37, vol: 0.0012 },
-  XAG: { name: 'Silver', sym: 'AG', p: 73.31, vol: 0.0021 },
-  XPT: { name: 'Platinum', sym: 'PT', p: 1879.64, vol: 0.0018 },
-  XPD: { name: 'Palladium', sym: 'PD', p: 1520.0, vol: 0.0022 }
+  XAU: { name: 'Gold', sym: 'AU', p: 4131.55, vol: 0.0012 },
+  XAG: { name: 'Silver', sym: 'AG', p: 57.59, vol: 0.0021 },
+  XPT: { name: 'Platinum', sym: 'PT', p: 1631.85, vol: 0.0018 },
+  XPD: { name: 'Palladium', sym: 'PD', p: 1092.36, vol: 0.0022 }
 };
 for (const k in METALS) { const m = METALS[k]; m.open = m.p; m.hist = [m.p]; }
 const HEADLINES = [

@@ -36,7 +36,7 @@ const COUNTRY_CURRENCY := {
 	"EE": "EUR", "LV": "EUR", "LT": "EUR", "LU": "EUR", "MT": "EUR", "CY": "EUR", "HR": "EUR",
 }
 ## Last-resort seed when there is no network and no cache (first launch offline).
-const SEED_PRICES := {"XAU": 4473.37, "XAG": 73.31, "XPT": 1879.64, "XPD": 1520.0}
+const SEED_PRICES := {"XAU": 4131.55, "XAG": 57.59, "XPT": 1631.85, "XPD": 1092.36}
 
 @export var service_url := "https://vault-manager-prices.price-service.workers.dev/prices"
 

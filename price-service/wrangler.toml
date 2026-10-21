@@ -10,7 +10,7 @@ crons = ["*/5 * * * *", "0 */4 * * *"]
 
 [[kv_namespaces]]
 binding = "PRICES"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "4dd3d80ff1b74cce88eeda54a7e7557c"
 
 # Secrets (never commit them):
 #   npx wrangler secret put METALCHARTS_KEY

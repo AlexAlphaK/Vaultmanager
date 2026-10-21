@@ -20,7 +20,7 @@ platinum and palladium prices follow the real market.
 1. Open the folder in Godot 4.3 or later and press Play.
 2. Without the price service running, the game starts in "simulated" mode from seed prices.
 3. To use live prices, deploy `price-service/`:
-   - `npx wrangler kv namespace create PRICES` and paste the id into `wrangler.toml`
+   - `npx wrangler kv namespace create PRICES` and paste the id into `wrangler.toml` (only when deploying to a new Cloudflare account)
    - Set the API keys as secrets (never commit them; for local `wrangler dev`, put them in `price-service/.dev.vars`, which is git-ignored):
      `npx wrangler secret put METALCHARTS_KEY`, `COINGECKO_KEY` (optional), `FINNHUB_KEY`
    - `npx wrangler deploy`. `Market.service_url` points at the deployed worker; change it if you deploy your own.
