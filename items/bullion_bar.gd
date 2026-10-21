@@ -260,6 +260,12 @@ static func hook_up() -> void:
 		"desc": "The bullion dealer pays 99.5% of melt for genuine bars instead of 98%.", "effects": {"bar_payout": 0.015}})
 	SaveGame.register("bars", func(): return ledger_to_dict(), func(d): ledger_from_dict(d))
 	SaveGame.new_game_started.connect(func(): ledger.clear())
+	# a title screen may have loaded the save, or started a new game, before this ran
+	ledger.clear()
+	if SaveGame.has_save():
+		var data = JSON.parse_string(FileAccess.get_file_as_string(SaveGame.path))
+		if typeof(data) == TYPE_DICTIONARY and typeof(data.get("bars")) == TYPE_DICTIONARY:
+			ledger_from_dict(data.bars)
 
 
 static func record(b: BullionBar, day: int) -> void:

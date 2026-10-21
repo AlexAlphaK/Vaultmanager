@@ -447,6 +447,17 @@ func _check_bars() -> void:
 	BullionBar.ledger.clear()
 	BullionBar.ledger_from_dict(JSON.parse_string(JSON.stringify(saved)))
 	expect(BullionBar.ledger.get("NS 123456", 0) == 4, "the serial ledger saves and loads")
+	# hooking up late (after a title screen loaded or wiped the save) still picks up the file
+	SaveGame.save_game()
+	BullionBar.ledger.clear()
+	BullionBar._hooked = false
+	BullionBar.hook_up()
+	expect(BullionBar.ledger.get("NS 123456", 0) == 4, "a late hook-up reads the ledger from the save")
+	SaveGame.delete_save()
+	BullionBar._hooked = false
+	BullionBar.hook_up()
+	expect(BullionBar.ledger.is_empty(), "a late hook-up with no save starts an empty ledger")
+	BullionBar.record(bought, 4)
 	var clone := BullionBar.create(5, 0, rng, 1.0)
 	var tries := 0
 	while not clone.cloned and tries < 50:
