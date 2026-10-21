@@ -23,6 +23,20 @@ const BAR_SCAM_LINES := ["Got it cheap from a guy. Real, I promise.", "Comes wit
 const BUYER_LINES_DOWN := ["Prices dipped, I'm buying.", "Stocks are a casino. I want metal."]
 const BUYER_LINES_UP := ["Crypto burned me. I want something real.", "Adding to my stack.", "A gift for my granddaughter."]
 
+## Odds an everyday seller's coins are fake: FAKE_ODDS.x on day 1, rising by FAKE_ODDS.y
+## a day up to FAKE_ODDS_MAX. Bars are faked less often, since a fake bar costs far more.
+## Tuned with tests/balance_sim.tscn: missing a fake costs the whole price, and a fair
+## deal earns about a tenth of it, so a player who tests most coins should come out ahead.
+const FAKE_ODDS := Vector2(0.08, 0.005)
+const FAKE_ODDS_MAX := 0.2
+const BAR_FAKE_SHARE := 0.6
+## Odds a customer sells rather than buys (on a flat market), and the odds a seller
+## brings jewellery, or else a bar, instead of coins. Only coin sellers stock the
+## vault, so these set how often a buyer finds the shelves empty.
+const SELLER_SHARE := 0.65
+const JEWELLERY_SHARE := 0.3
+const BAR_SHARE := 0.25
+
 var name := ""
 var kind := "seller" # or "buyer"
 var item: BullionItem
@@ -82,7 +96,7 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 	c.item = choices[rng.randi() % choices.size()]
 	metal = c.item.metal
 	var mood := Market.day_change_percent(metal)
-	c.kind = "seller" if rng.randf() < clampf(0.6 + mood * 0.08, 0.35, 0.85) else "buyer"
+	c.kind = "seller" if rng.randf() < clampf(SELLER_SHARE + mood * 0.08, 0.35, 0.85) else "buyer"
 	c.qty = rng.randi_range(5, 25) if metal == "XAG" else rng.randi_range(1, 3 if metal == "XAU" else 2)
 	if not event.is_empty():
 		c.event_id = event.id
@@ -93,20 +107,20 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 	c.max_patience = 70.0 * (1.0 + Progress.effect("patience"))
 	c.patience = c.max_patience
 	if c.kind == "seller":
-		var fake_odds := minf(0.45, 0.25 + 0.04 * (day - 1))
+		var fake_odds := fake_odds_on(day)
 		var kinds := Counterfeit.kinds_for(metal, day)
 		if not kinds.is_empty() and rng.randf() < fake_odds:
 			c.fake = kinds[rng.randi() % kinds.size()]
 		# panicking sellers take less, sellers cashing in at the top hold out for more
 		c.reserve = clampf(0.86 + rng.randf_range(-0.03, 0.04) + maxf(0.0, mood) * 0.012 + float(event.get("reserve", 0.0)), 0.74, 0.99)
 		c.say = (FAKE_LINES if c.fake != "" else SELLER_LINES)[rng.randi() % 4]
-		if event.is_empty() and rng.randf() < 0.35:
+		if event.is_empty() and rng.randf() < JEWELLERY_SHARE:
 			c.piece = JewelleryPiece.create(day, rng)
 			c.fake = ""
 			c.qty = 1
 			c.say = (JEWELLERY_SCAM_LINES if c.piece.scam else JEWELLERY_LINES)[rng.randi() % 4]
-		elif event.is_empty() and rng.randf() < 0.3:
-			c.bar = BullionBar.create(day, Progress.tier, rng, fake_odds)
+		elif event.is_empty() and rng.randf() < BAR_SHARE:
+			c.bar = BullionBar.create(day, Progress.tier, rng, fake_odds * BAR_FAKE_SHARE)
 			c.fake = ""
 			c.qty = 1
 			c.say = (BAR_SCAM_LINES if c.bar.fake != "" else BAR_LINES)[rng.randi() % 4]
@@ -120,6 +134,10 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 	c.ceiling_premium = c.max_premium
 	c.set_look(PeopleArt.random_look(rng))
 	return c
+
+
+static func fake_odds_on(day: int) -> float:
+	return minf(FAKE_ODDS_MAX, FAKE_ODDS.x + FAKE_ODDS.y * (day - 1))
 
 
 func set_look(look: Dictionary) -> void:

@@ -118,14 +118,14 @@ func _tick(delta: float) -> void:
 			continue
 		c.patience -= delta if c == _front() else delta * 0.5
 		if c.patience <= 0.0:
-			Shop.adjust_reputation(-0.12)
+			Shop.reputation_for("walked_out")
 			_dismiss(c, "%s got tired of waiting and left." % c.name, "bad")
 	for f in pending_fakes.duplicate():
 		if time >= f.at or closing:
 			pending_fakes.erase(f)
 			Shop.confiscate(f.item, f.fake)
 			Shop.note("scammed")
-			Shop.adjust_reputation(-0.3)
+			Shop.reputation_for("scammed")
 			Shop.log_event("Assay lab: the %d × %s were %s. Lost %s." % [f.qty, f.item.display_name, Counterfeit.label(f.fake), Market.format_money(f.paid)], "bad")
 			var cover := Progress.effect("fraud_refund")
 			if cover > 0.0:
@@ -210,10 +210,10 @@ func _on_action(id: String) -> void:
 			_offer(c)
 		"refuse":
 			if c.tested:
-				Shop.adjust_reputation(-0.05)
+				Shop.reputation_for("passed_tested")
 				_dismiss(c, "Passed on %s's %s." % [c.name, "bar" if c.bar else "coins"])
 			else:
-				Shop.adjust_reputation(0.05 if c.fake != "" or (c.piece and c.piece.scam) or (c.bar and c.bar.fake != "") else -0.1)
+				Shop.reputation_for("refused_fake" if c.fake != "" or (c.piece and c.piece.scam) or (c.bar and c.bar.fake != "") else "refused_genuine")
 				_dismiss(c, "Turned %s away without testing." % c.name)
 		"sell":
 			_sell(c)
@@ -238,7 +238,7 @@ func _offer(c: Customer) -> void:
 	Shop.add_stock(c.item, c.qty, offer / c.qty, c.fake)
 	if c.fake != "":
 		pending_fakes.append({"at": time + 8.0, "item": c.item, "fake": c.fake, "qty": c.qty, "paid": offer})
-	Shop.adjust_reputation(0.05)
+	Shop.reputation_for("bought")
 	Sfx.play(self, Sfx.register_chime(), -6.0)
 	_dismiss(c, "Bought %d × %s for %s." % [c.qty, c.item.display_name, Market.format_money(offer)])
 
@@ -247,7 +247,7 @@ func _buy_piece(c: Customer, offer: float) -> void:
 	Shop.add_cash(-offer)
 	Shop.note("bought", offer)
 	pending_pieces.append({"at": time + 8.0, "piece": c.piece, "paid": offer, "name": c.name})
-	Shop.adjust_reputation(0.05)
+	Shop.reputation_for("bought")
 	Sfx.play(self, Sfx.register_chime(), -6.0)
 	_dismiss(c, "Bought %s's %s for %s. Off to the refiner." % [c.name, c.piece.short_title(), Market.format_money(offer)])
 
@@ -257,7 +257,7 @@ func _buy_bar(c: Customer, offer: float) -> void:
 	Shop.note("bought", offer)
 	BullionBar.record(c.bar, Shop.day)
 	pending_bars.append({"at": time + 8.0, "bar": c.bar, "paid": offer, "name": c.name})
-	Shop.adjust_reputation(0.05)
+	Shop.reputation_for("bought")
 	Sfx.play(self, Sfx.register_chime(), -6.0)
 	_dismiss(c, "Bought %s's %s for %s. Off to the bullion dealer." % [c.name, c.bar.display_name(), Market.format_money(offer)])
 
@@ -274,7 +274,7 @@ func _settle_bar(j: Dictionary) -> void:
 		Shop.log_event("Bullion dealer paid %s for %s's %s (profit %s)." % [Market.format_money(payout), j.name, b.display_name(), Market.format_money(payout - paid)], "good")
 		return
 	Shop.note("scammed")
-	Shop.adjust_reputation(-0.3)
+	Shop.reputation_for("scammed")
 	Shop.log_event("Bullion dealer: %s's %s was %s. Lost %s." % [j.name, b.display_name(), BullionBar.label(b.fake), Market.format_money(paid - payout)], "bad")
 	var cover := Progress.effect("fraud_refund")
 	if cover > 0.0 and paid > payout:
@@ -300,7 +300,7 @@ func _settle_piece(j: Dictionary) -> void:
 	if p.true_grade == "plated" or payout < paid * 0.97:
 		if p.true_grade == "plated":
 			Shop.note("scammed")
-			Shop.adjust_reputation(-0.3)
+			Shop.reputation_for("scammed")
 		Shop.log_event("Refiner: %s%s. Lost %s." % [what, ": " + ", ".join(reasons) if not reasons.is_empty() else "", Market.format_money(paid - payout)], "bad")
 	else:
 		Shop.log_event("Refiner paid %s for %s (profit %s)." % [Market.format_money(payout), what, Market.format_money(payout - paid)], "good")
@@ -317,12 +317,12 @@ func _sell(c: Customer) -> void:
 	Shop.note("sold", price)
 	Shop.note("profit", price - taken.cost)
 	Shop.note("served")
-	Shop.adjust_reputation(0.08)
+	Shop.reputation_for("sold")
 	Sfx.play(self, Sfx.register_chime(), -6.0)
 	if taken.fakes > 0:
 		var refund: float = price / c.qty * taken.fakes
 		Shop.add_cash(-refund)
-		Shop.adjust_reputation(-0.6)
+		Shop.reputation_for("sold_fake")
 		Shop.log_event("%s came back: %d of the coins you sold were fake! Refunded %s." % [c.name, taken.fakes, Market.format_money(refund)], "bad")
 	var profit: float = price - taken.cost
 	_dismiss(c, "Sold %d coins for %s (profit %s)." % [c.qty, Market.format_money(price), Market.format_money(profit)], "good" if profit >= 0.0 else "bad")
@@ -361,27 +361,27 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 		"fake" when c.piece:
 			if c.piece.true_grade == "plated":
 				Shop.note("caught")
-				Shop.adjust_reputation(0.15)
+				Shop.reputation_for("caught")
 				_dismiss(c, "Caught %s's plated %s! Acid doesn't lie." % [c.name, c.piece.short_title()], "good")
 			else:
-				Shop.adjust_reputation(-0.25)
+				Shop.reputation_for("wrong_call")
 				_dismiss(c, "You called %s's real %s plated. They stormed out." % [c.name, c.piece.short_title()], "bad")
 		"fake" when c.bar:
 			if c.bar.fake != "":
 				Shop.note("caught")
-				Shop.adjust_reputation(0.15)
+				Shop.reputation_for("caught")
 				_dismiss(c, "Caught %s's %s bar!%s" % [c.name, BullionBar.label(c.bar.fake), " Its serial was cloned." if c.bar.cloned else ""], "good")
 			else:
-				Shop.adjust_reputation(-0.25)
+				Shop.reputation_for("wrong_call")
 				_dismiss(c, "You called %s's genuine bar fake. They stormed out." % c.name, "bad")
 		"fake":
 			if c.fake != "":
 				c.caught = true
 				Shop.note("caught")
-				Shop.adjust_reputation(0.15)
+				Shop.reputation_for("caught")
 				_dismiss(c, "Caught a %s fake from %s!" % [Counterfeit.label(c.fake), c.name], "good")
 			else:
-				Shop.adjust_reputation(-0.25)
+				Shop.reputation_for("wrong_call")
 				_dismiss(c, "You called %s's genuine coins fake. They stormed out." % c.name, "bad")
 
 
@@ -391,7 +391,7 @@ func _appraised(c: Customer) -> void:
 	var a := c.assessed
 	if a.grade == p.true_grade and p.true_grade != p.claimed_grade:
 		if JewelleryPiece.PURITY[p.true_grade] > JewelleryPiece.PURITY[p.claimed_grade]:
-			Shop.adjust_reputation(0.1)
+			Shop.reputation_for("honest")
 			c.say = "It's %s, not %s? You could have kept quiet. Thank you." % [p.true_grade, p.claimed_grade]
 			Shop.log_event("Told %s their piece is better than they thought." % c.name, "good")
 		else:
