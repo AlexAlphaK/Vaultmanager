@@ -15,6 +15,7 @@ Progress="*res://autoload/progress.gd"
 Day="*res://autoload/day.gd"
 SaveGame="*res://autoload/save_game.gd"
 MarketEvents="*res://autoload/market_events.gd"
+Customers="*res://autoload/customers.gd"
 
 [display]
 

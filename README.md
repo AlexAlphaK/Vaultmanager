@@ -10,6 +10,7 @@ platinum and palladium prices follow the real market.
 | `project.godot` | Godot 4.3 project, 480x270 pixel-perfect viewport scaled by whole numbers |
 | `autoload/market.gd` | `Market` singleton: metals, crypto, stocks and exchange rates; caches to disk, simulates when offline; formats money in the player's currency |
 | `autoload/market_events.gd` | `MarketEvents` singleton: turns real price moves into news headlines and rushes of customers |
+| `autoload/customers.gd` | `Customers` singleton: customer archetypes (haggler, crypto bro, collector, shady seller) and the regulars' stories |
 | `autoload/shop.gd` | `Shop` singleton: cash, reputation, stock and the day's results; stock is valued at live prices |
 | `autoload/day.gd` | `Day` singleton: day phases (morning, open, closing, after hours), the week, bills and the day's ledger |
 | `autoload/progress.gd` | `Progress` singleton: the four shop tiers, upgrades and their effects |
@@ -60,6 +61,27 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   open `scenes/vault/vault.tscn` in Godot and press F6.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
+
+## Customers
+
+Not everyone who walks in is the same. The counter card tags the ones worth watching:
+
+| Who | What they do |
+| --- | --- |
+| Everyday walk-ins | About half will come down (or up) a point if you hold firm |
+| **Hagglers** | Open well above (or below) their real number, then come round a step each time you hold firm. They name their counter, so you can meet them with the -/+ buttons or keep pushing. Every push costs patience |
+| **Crypto bros** | Big gold orders and short patience. They buy after crypto rallies, sell cheap after crashes, and turn up in Bitcoin rushes |
+| **Collectors** | Want one exact coin and pay 12-18% over spot for it |
+| **Nervous sellers** | Suspiciously cheap and in a hurry. Most carry fakes |
+
+**Regulars** come back every couple of days, and each has a short story told over their visits:
+Grandpa Lev selling his late wife's coins, Mrs. Okafor saving silver for her granddaughter's
+college fund, Chad the crypto trader riding his ups and downs, Dr. Vance building a museum
+display, and Vinnie, who keeps trying to sell you fakes until Detective Ruiz pays a visit.
+Fair deals build their loyalty (and slightly better prices); finish a story for a reputation
+boost or a reward. Turn a regular away twice and they find another shop. If a regular wants a
+coin you don't have, they come back for it later. Story moments show up in the end-of-day
+summary, and everything is saved. The stories live in `Customers.REGULARS`.
 
 ## Market events
 
