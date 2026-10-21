@@ -15,6 +15,10 @@ const ACIDS: Array[String] = ["10K", "14K", "18K", "22K", "AG", "PT"]
 const CARAT_G := 0.2
 ## What the refiner pays for metal, as a share of melt.
 const REFINER_RATE := 0.98
+## Odds a piece is not what its owner says (plated, under-karat, a fake stone, or
+## better than claimed): FRAUD_ODDS.x on day 1, rising by .y a day up to the max.
+const FRAUD_ODDS := Vector2(0.25, 0.01)
+const FRAUD_ODDS_MAX := 0.4
 
 var kind := "ring"
 var metal := "XAU" # what it is claimed to be made of
@@ -59,7 +63,7 @@ static func create(day: int, rng: RandomNumberGenerator) -> JewelleryPiece:
 		p.weight_g += p.carat * CARAT_G
 	p.stamp = default_stamp(p.true_grade, rng)
 
-	var fraud_odds := minf(0.55, 0.3 + 0.04 * (day - 1))
+	var fraud_odds := minf(FRAUD_ODDS_MAX, FRAUD_ODDS.x + FRAUD_ODDS.y * (day - 1))
 	if rng.randf() < fraud_odds:
 		var options: Array[String] = ["plated"]
 		if p.metal == "XAU" and p.claimed_grade != "10K":

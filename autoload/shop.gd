@@ -6,13 +6,30 @@ signal changed
 signal logged(text: String, mood: String) # mood: "", "good" or "bad"
 
 const COIN_DIR := "res://data/coins/"
+## Stars won or lost at the counter. Tuned with tests/balance_sim.tscn so a careful
+## player earns the 3 stars for Main Street in about a week and 4.5 in about a month.
+const REPUTATION := {
+	"bought": 0.01, # a fair purchase
+	"sold": 0.015, # a sale
+	"caught": 0.04, # spotting a fake
+	"refused_fake": 0.01, # turning away a fake without testing
+	"honest": 0.05, # telling a seller their piece is better than they thought
+	"passed_tested": -0.02, # testing coins, then not buying them
+	"refused_genuine": -0.04, # turning away honest coins untested
+	"walked_out": -0.04, # a customer tired of waiting
+	"wrong_call": -0.1, # calling genuine coins fake
+	"scammed": -0.15, # the assay lab, refiner or dealer found a fake you bought
+	"sold_fake": -0.4, # a customer found fakes in what you sold them
+}
 
 var day := 1
 var cash := 25000.0
 var reputation := 2.5 # 0 to 5 stars
 ## Percent of melt the shop pays sellers, and premium over melt it charges buyers.
-var buy_percent := 0.92
-var sell_premium := 0.06
+const DEFAULT_BUY_PERCENT := 0.9
+const DEFAULT_SELL_PREMIUM := 0.06
+var buy_percent := DEFAULT_BUY_PERCENT
+var sell_premium := DEFAULT_SELL_PREMIUM
 ## Each lot: {"item": BullionItem, "qty": int, "cost": USD per coin, "fake": kind or ""}
 var stock: Array[Dictionary] = []
 var stats := {}
@@ -28,6 +45,8 @@ func reset() -> void:
 	day = 1
 	cash = 25000.0
 	reputation = 2.5
+	buy_percent = DEFAULT_BUY_PERCENT
+	sell_premium = DEFAULT_SELL_PREMIUM
 	stock.clear()
 	_reset_stats()
 	if coins.has("silver_eagle"):
@@ -151,6 +170,11 @@ func add_cash(usd: float) -> void:
 func adjust_reputation(delta: float) -> void:
 	reputation = clampf(reputation + delta, 0.0, 5.0)
 	changed.emit()
+
+
+## Applies one of the REPUTATION moves.
+func reputation_for(what: String) -> void:
+	adjust_reputation(REPUTATION[what])
 
 
 func set_buy_percent(value: float) -> void:
