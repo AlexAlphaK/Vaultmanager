@@ -1,14 +1,25 @@
 extends Node2D
 ## Draws the isometric shop: baked layers, the live LED price board, the wall clock,
-## the keeper, the cat, the sunbeam and the customers. Customers are owned by shop.gd;
-## this only draws and animates them (walk cycle, facing, blinking, moods).
+## the keeper, the staff, the cat, the sunbeam and the customers. Customers are owned by
+## shop.gd; this only draws and animates them (walk cycle, facing, blinking, moods).
 
+const CLERK_LOOK := {
+	"skin": "#c98f62", "hair": "#1a1a1a", "hair_style": 4, "shirt": "#8a5bb0", "top": 0,
+	"pants": "#2f3442", "glasses": true, "beard": false, "hat": false, "apron": true,
+}
+const GUARD_LOOK := {
+	"skin": "#7a4a2c", "hair": "#2a1a10", "hair_style": 3, "shirt": "#30406a", "top": 1,
+	"pants": "#1f1f24", "glasses": false, "beard": false, "hat": true, "apron": false,
+}
 const BOARD_ROWS := [["XAU", "AU", Color("#ffb43a")], ["XAG", "AG", Color("#e6ecf4")], ["XPT", "PT", Color("#b8c8e6")], ["XPD", "PD", Color("#c8b8e6")]]
 
 var customers: Array[Customer] = []
 var front_customer: Customer
 ## 0 at opening, 1 at closing time.
 var day_fraction := 0.0
+## The keeper is off at the safe with the till, and the clerk is ringing someone up.
+var keeper_away := false
+var clerk_busy := false
 
 var _iso := ShopArt.iso_on(PixelCanvas.new(1, 1))
 var _room := {}
@@ -17,6 +28,8 @@ var _glass: Texture2D
 var _shelf_stock: Texture2D
 var _case_stock: Texture2D
 var _keeper: Array[Texture2D] = []
+var _clerk: Texture2D
+var _guard: Texture2D
 var _light := {}
 var _cat: Array[Texture2D] = []
 var _time := 0.0
@@ -36,6 +49,8 @@ func _ready() -> void:
 	_keeper.append(PeopleArt.paint(look, PeopleArt.STAND).texture())
 	_keeper.append(PeopleArt.paint(look, PeopleArt.BLINK).texture())
 	_cat = ShopAmbience.paint_cat_frames()
+	_clerk = PeopleArt.paint(CLERK_LOOK, PeopleArt.STAND).texture()
+	_guard = PeopleArt.paint(GUARD_LOOK, PeopleArt.STAND).texture()
 	_refresh_stock()
 	Shop.changed.connect(_refresh_stock)
 
@@ -63,9 +78,14 @@ func _draw() -> void:
 	ShopAmbience.draw_neon(self, _iso, _time, day_fraction < 1.0)
 	ShopAmbience.draw_camera_led(self, _iso, _time)
 	draw_texture(_shelf_stock, Vector2.ZERO)
-	var kp := screen_pos(ShopArt.KEEPER_SPOT.x, ShopArt.KEEPER_SPOT.y).round()
+	var spot := ShopArt.KEEPER_AWAY if keeper_away else ShopArt.KEEPER_SPOT
+	var kp := screen_pos(spot.x, spot.y).round()
 	var breathe := 1.0 if fmod(_time, 2.4) < 1.2 else 0.0
 	draw_texture(_keeper[1 if _blinking(_time, 0.0) else 0], kp + Vector2(-8, -28 + breathe))
+	if Staff.has("clerk"):
+		var cp := screen_pos(ShopArt.CLERK_SPOT.x, ShopArt.CLERK_SPOT.y).round()
+		var bob := (1.0 if fmod(_time, 0.5) < 0.25 else 0.0) if clerk_busy else breathe
+		draw_texture(_clerk, cp + Vector2(-8, -28 + bob))
 	ShopAmbience.draw_motes(self, _iso, _time, dusk > 0.5)
 	draw_texture(_front[dusk > 0.5], Vector2.ZERO)
 	draw_texture(_case_stock, Vector2.ZERO)
@@ -115,14 +135,21 @@ func _wall_hand(angle: float, length: float, col: Color) -> void:
 
 
 func _draw_customers() -> void:
-	var order := customers.duplicate()
-	order.sort_custom(func(a, b): return a.pos.x + a.pos.y < b.pos.x + b.pos.y)
+	# untyped, so the guard's spot can be sorted in with the customers
+	var order: Array = []
+	order.append_array(customers)
+	if Staff.has("guard"):
+		order.append(ShopArt.GUARD_SPOT)
+	order.sort_custom(func(a, b): return _depth(a) < _depth(b))
 	for key in _last_pos.keys():
 		if not customers.has(key):
 			_last_pos.erase(key)
 			_facing_back.erase(key)
 			_left_at.erase(key)
 	for c in order:
+		if c is Vector2:
+			_draw_guard(c)
+			continue
 		var base := screen_pos(c.pos.x, c.pos.y).round()
 		var frame := _frame_for(c)
 		draw_rect(Rect2(base + Vector2(-5, -1), Vector2(11, 2)), Color(0, 0, 0, 0.3))
@@ -139,6 +166,19 @@ func _draw_customers() -> void:
 		draw_rect(Rect2(bar.position, Vector2(ceilf(12.0 * f), 2)), bar_col)
 		if c == front_customer:
 			_draw_bubble(c, base + Vector2(5, -46))
+
+
+func _depth(who) -> float:
+	var p: Vector2 = who if who is Vector2 else who.pos
+	return p.x + p.y
+
+
+func _draw_guard(at: Vector2) -> void:
+	var base := screen_pos(at.x, at.y).round()
+	draw_rect(Rect2(base + Vector2(-5, -1), Vector2(11, 2)), Color(0, 0, 0, 0.3))
+	draw_texture(_guard, base + Vector2(-8, -27))
+	# the badge
+	draw_rect(Rect2(base + Vector2(-3, -16), Vector2(1, 1)), Pal.GOLD)
 
 
 ## Picks the customer's animation frame: walking towards or away from us, standing,

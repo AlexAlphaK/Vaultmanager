@@ -18,6 +18,12 @@ const CASE_H := 12.0
 const SHELF := Rect2(4.6, 0.15, 4.0, 0.6)
 const SHELF_H := 14.0
 const KEEPER_SPOT := Vector2(5.6, 2.5)
+## Staff: the clerk's till at the left end of the counter, its customer spot, and the guard by the door.
+## On a vault run the keeper steps back to the safe by the shelf.
+const CLERK_SPOT := Vector2(3.4, 2.5)
+const CLERK_SLOT := Vector2(3.4, 4.8)
+const GUARD_SPOT := Vector2(9.9, 4.3)
+const KEEPER_AWAY := Vector2(8.2, 1.4)
 const SLOTS := [Vector2(6.2, 4.8), Vector2(7.4, 5.5), Vector2(8.5, 6.2), Vector2(9.4, 6.9)]
 const ENTRANCE := Vector2(10.7, 5.6)
 const EXIT := Vector2(10.7, 7.0)
