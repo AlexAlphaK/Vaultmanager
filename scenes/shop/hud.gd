@@ -165,13 +165,16 @@ func _refresh_deal() -> void:
 		if c.piece:
 			_deal[0].text = c.piece.short_title() + (" with stone" if c.piece.stone != "" else "")
 			_deal[1].text = "%s  %s" % ["Appraised" if c.tested else "As claimed", Market.format_money(c.melt_total())]
+		elif c.bar:
+			_deal[0].text = c.bar.display_name()
+			_deal[1].text = "Melt today  %s" % Market.format_money(c.melt_total())
 		else:
 			_deal[0].text = "%d × %s" % [c.qty, c.item.display_name]
 			_deal[1].text = "Melt today  %s" % Market.format_money(c.melt_total())
 		_deal[2].text = "Your offer  %s%s" % [Market.format_money(c.offer_total()), "  tested" if c.tested else ""]
 		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
 		_buttons.test.visible = not c.tested
-		_buttons.test.text = "Examine" if c.piece else "Test coin"
+		_buttons.test.text = "Examine" if c.piece else ("Test bar" if c.bar else "Test coin")
 		_buttons.offer.visible = true
 		_buttons.offer.text = "Make offer" if c.tested else "Buy as is"
 		var short := c.offer_total() > Shop.cash

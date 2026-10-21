@@ -1,5 +1,5 @@
 extends Node
-## Headless checks for the shop, the coin test, the jewellery appraisal and the vault lock-up. Run:
+## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test and the vault lock-up. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -16,11 +16,13 @@ func _ready() -> void:
 	_check_bills_and_upgrades()
 	_check_save_load()
 	_check_jewellery()
+	_check_bars()
 	_check_vault_layout()
 	_check_market_events()
 	await _check_vault_scene()
 	await _check_shop_day()
 	await _check_jewellery_deals()
+	await _check_bar_deals()
 	SaveGame.delete_save()
 	print("SMOKE TEST %s (%d failures)" % ["PASSED" if failures == 0 else "FAILED", failures])
 	get_tree().quit(1 if failures else 0)
@@ -204,6 +206,7 @@ func _check_shop_day() -> void:
 	c.item = Shop.coins["gold_maple"]
 	c.fake = "steel"
 	c.piece = null
+	c.bar = null
 	c.qty = 2
 	c.reserve = 0.5
 	shop.queue.append(c)
@@ -222,6 +225,7 @@ func _check_shop_day() -> void:
 	g.kind = "seller"
 	g.fake = ""
 	g.piece = null
+	g.bar = null
 	shop.queue.push_front(g)
 	g.pos = ShopArt.SLOTS[0]
 	await get_tree().process_frame
@@ -380,6 +384,7 @@ func _jewellery_seller(rng: RandomNumberGenerator, metal: String, grade: String)
 	var c := Customer.create(1, 2.5, Shop.coin_list(), rng)
 	c.kind = "seller"
 	c.fake = ""
+	c.bar = null
 	c.reserve = 0.85
 	var p := JewelleryPiece.new()
 	p.kind = "ring"
@@ -392,6 +397,152 @@ func _jewellery_seller(rng: RandomNumberGenerator, metal: String, grade: String)
 	p.seed = rng.randi()
 	c.piece = p
 	c.qty = 1
+	return c
+
+
+## Every fake bar must fail the scale, the calipers or an ultrasound sweep (the XRF gun
+## is an upgrade, so it can only confirm), and every genuine bar must pass them all.
+func _check_bars() -> void:
+	BullionBar.hook_up()
+	expect(Progress.upgrades.has("xrf_gun") and Progress.upgrades.has("bar_dealer"), "bar upgrades are registered")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 13
+	BullionBar.ledger.clear()
+	var seen := {}
+	for id in BullionBar.SPECS:
+		var b := BullionBar.new()
+		b.spec_id = id
+		b.seed = rng.randi()
+		b.serial = BullionBar.new_serial(b.spec().prefix, rng)
+		expect(b.thickness_mm() > 0.5 and b.melt_value() > 0.0, "%s has a thickness and a melt value" % id)
+		for n in 10:
+			var r := b.readings(rng)
+			expect(b.readings_pass(r) and b.surface_pass(r.surface), "genuine %s passes the scale, calipers and XRF" % id)
+		expect(not _sweep_finds_fault(b), "genuine %s echoes inside the gate everywhere" % id)
+		for kind in BullionBar.fakes_for(b.metal(), 99, id):
+			seen[kind] = true
+			b.fake = kind
+			for n in 10:
+				var r := b.readings(rng)
+				expect(not b.readings_pass(r) or _sweep_finds_fault(b), "%s %s fails a base test" % [kind, id])
+			expect(b.true_value() < b.melt_value(), "%s %s is worth less than it claims" % [kind, id])
+			if not BullionBar.FAKES[kind].core:
+				expect(not b.surface_pass(b.readings(rng).surface), "the XRF sees through %s %s" % [kind, id])
+			b.fake = ""
+		var art := BarArt.paint(b, BarArt.bench_ppm(b))
+		expect(art.width >= 90 and art.width <= ceili(BarArt.BENCH_W) and not art.image.is_invisible(), "%s paints on the bench" % id)
+		expect(BarArt.serial_rect(b).size.x > 0.0, "%s has a serial number" % id)
+	for kind in BullionBar.FAKES:
+		expect(seen.has(kind), "fake bar kind %s turns up" % kind)
+	# a tungsten slug only shows in the middle of the bar
+	var core := BullionBar.new()
+	core.spec_id = "gold_100g"
+	core.fake = "tungsten_core"
+	expect(not core.echo_off(Vector2(0.08, 0.5)) and core.echo_off(Vector2(0.5, 0.5)), "a tungsten core hides from the edges")
+	# serials of bought bars are remembered across a save
+	var bought := BullionBar.new()
+	bought.serial = "NS 123456"
+	BullionBar.record(bought, 4)
+	var saved := BullionBar.ledger_to_dict()
+	BullionBar.ledger.clear()
+	BullionBar.ledger_from_dict(JSON.parse_string(JSON.stringify(saved)))
+	expect(BullionBar.ledger.get("NS 123456", 0) == 4, "the serial ledger saves and loads")
+	var clone := BullionBar.create(5, 0, rng, 1.0)
+	var tries := 0
+	while not clone.cloned and tries < 50:
+		clone = BullionBar.create(5, 0, rng, 1.0)
+		tries += 1
+	expect(clone.cloned and BullionBar.ledger.has(clone.serial), "fakers copy serials you have seen")
+	BullionBar.ledger.clear()
+
+
+func _sweep_finds_fault(b: BullionBar) -> bool:
+	for y in 5:
+		for x in 9:
+			if b.echo_off(Vector2((x + 0.5) / 9.0, (y + 0.5) / 5.0)):
+				return true
+	return false
+
+
+func _check_bar_deals() -> void:
+	Shop.reset()
+	Progress.reset()
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	if not shop.has_method("_open_shop"):
+		return
+	shop._open_shop()
+	shop.queue.clear()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 31
+	# a plated tungsten bar bought as is: the bullion dealer finds out
+	var c := _bar_seller(rng, "gold_1oz", "plated_tungsten")
+	shop.queue.push_front(c)
+	c.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	var hud: Control = shop.get_node("Hud/Root")
+	expect(hud._buttons.test.text == "Test bar", "a bar seller offers a bar test")
+	var cash := Shop.cash
+	shop._on_action("offer")
+	expect(Shop.cash < cash and shop.pending_bars.size() == 1, "buying a bar pays the seller")
+	expect(BullionBar.ledger.has(c.bar.serial), "a bought bar's serial goes in the ledger")
+	shop.time += 9.0
+	shop._tick(0.0)
+	expect(shop.pending_bars.is_empty() and Shop.stats.scammed == 1.0, "the bullion dealer catches a tungsten bar")
+	# a tungsten-core bar on the bench: the scale and XRF pass, the probe over the middle does not
+	Progress.owned.append("xrf_gun")
+	var t := _bar_seller(rng, "gold_100g", "tungsten_core")
+	shop.queue.push_front(t)
+	t.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	shop._open_test(t)
+	var bench: Control = shop._test
+	expect(bench.get_script().resource_path.ends_with("bar_test.gd"), "a bar opens the bar bench")
+	for tool in ["scale", "calipers", "xrf", "loupe", "loupe"]:
+		bench.use_tool(tool)
+	await get_tree().create_timer(2.8).timeout
+	expect(bench._xrf_done and t.bar.surface_pass(bench.readings.surface), "the XRF reads a clean gold shell")
+	bench.use_tool("ultrasound")
+	bench.probe_at(Vector2(0.1, 0.5))
+	expect(bench.scan_off_count() == 0, "the edge of a cored bar echoes normally")
+	bench.probe_at(Vector2(0.5, 0.5))
+	expect(bench.scan_off_count() == 1, "the probe finds the tungsten core")
+	await get_tree().process_frame
+	bench.finished.emit("fake")
+	expect(not shop.queue.has(t) and Shop.stats.caught >= 1.0, "calling the cored bar fake catches it")
+	# a genuine bar passes and sells at a profit
+	var g := _bar_seller(rng, "silver_10oz", "")
+	shop.queue.push_front(g)
+	g.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	shop._open_test(g)
+	shop._test.finished.emit("genuine")
+	expect(g.tested, "a genuine verdict marks the bar tested")
+	cash = Shop.cash
+	shop._on_action("offer")
+	shop.time += 9.0
+	shop._tick(0.0)
+	expect(Shop.cash > cash, "the bullion dealer pays more than the shop paid for a genuine bar")
+	shop.queue_free()
+	Progress.reset()
+	Shop.reset()
+	BullionBar.ledger.clear()
+
+
+func _bar_seller(rng: RandomNumberGenerator, spec_id: String, fake: String) -> Customer:
+	var c := Customer.create(3, 2.5, Shop.coin_list(), rng)
+	c.kind = "seller"
+	c.fake = ""
+	c.piece = null
+	c.reserve = 0.85
+	c.qty = 1
+	var b := BullionBar.new()
+	b.spec_id = spec_id
+	b.seed = rng.randi()
+	b.serial = BullionBar.new_serial(b.spec().prefix, rng)
+	b.fake = fake
+	c.bar = b
 	return c
 
 
