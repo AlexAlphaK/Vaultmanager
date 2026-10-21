@@ -83,7 +83,10 @@ func show_customer(c: Customer, idle_text := "") -> void:
 		return
 	_avatar.texture = c.frames[0]
 	_who.text = c.name
-	_wants.text = "wants to sell" if c.kind == "seller" else "wants to buy"
+	var tag := Customers.tag(c)
+	_wants.text = {"seller": "wants to sell", "buyer": "wants to buy", "visit": "stopped by to talk"}.get(c.kind, "")
+	if tag != "":
+		_wants.text = "%s · %s" % [tag, _wants.text]
 	_quote.text = "\"%s\"" % c.say
 	_quote.add_theme_color_override("font_color", Pal.INK)
 	_refresh_deal()
@@ -161,6 +164,13 @@ func _refresh_deal() -> void:
 	var c := _customer
 	if c == null:
 		return
+	if c.kind == "visit":
+		_deal[0].text = c.note
+		_deal[0].add_theme_color_override("font_color", Pal.GOLD)
+		_buttons.decline.visible = true
+		_buttons.decline.text = "Goodbye"
+		return
+	_deal[0].add_theme_color_override("font_color", Pal.INK)
 	if c.kind == "seller":
 		if c.piece:
 			_deal[0].text = c.piece.short_title() + (" with stone" if c.piece.stone != "" else "")
@@ -185,8 +195,11 @@ func _refresh_deal() -> void:
 		_buttons.refuse.visible = true
 		_buttons.refuse.text = "No thanks" if c.tested else "Refuse"
 	else:
-		var have := Shop.count_of(c.item.metal)
-		_deal[0].text = "%d × %s coins" % [c.qty, {"XAU": "gold", "XAG": "silver", "XPT": "platinum"}.get(c.item.metal, "")]
+		var have := c.stock_have()
+		if c.wanted_exact:
+			_deal[0].text = "%d × %s" % [c.qty, c.item.display_name]
+		else:
+			_deal[0].text = "%d × %s coins" % [c.qty, {"XAU": "gold", "XAG": "silver", "XPT": "platinum"}.get(c.item.metal, "")]
 		_deal[1].text = "You hold %d" % have
 		_deal[2].text = "Price  %s" % Market.format_money(c.sale_total())
 		_deal[2].add_theme_color_override("font_color", Pal.GOLD)

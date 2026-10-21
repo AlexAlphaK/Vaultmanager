@@ -67,6 +67,15 @@ func count_of(metal: String) -> int:
 	return n
 
 
+## Coins held of one exact kind, for collectors.
+func count_of_item(item: BullionItem) -> int:
+	var n := 0
+	for lot in stock:
+		if lot.item == item:
+			n += lot.qty
+	return n
+
+
 ## Fine troy ounces held per metal, for the shelf display.
 func ounces_by_metal() -> Dictionary:
 	var out := {}
@@ -95,10 +104,11 @@ func add_stock(item: BullionItem, qty: int, cost_each: float, fake := "") -> voi
 	changed.emit()
 
 
-## Takes `qty` coins of `metal`, genuine lots first. Returns {"cost": USD, "fakes": count, "melt": USD}.
-func take_stock(metal: String, qty: int) -> Dictionary:
+## Takes `qty` coins of `metal` (only `item` coins when given), genuine lots first.
+## Returns {"cost": USD, "fakes": count, "melt": USD}.
+func take_stock(metal: String, qty: int, item: BullionItem = null) -> Dictionary:
 	var result := {"cost": 0.0, "fakes": 0, "melt": 0.0}
-	var lots := stock.filter(func(l): return l.item.metal == metal)
+	var lots := stock.filter(func(l): return l.item.metal == metal and (item == null or l.item == item))
 	lots.sort_custom(func(a, b): return a.fake == "" and b.fake != "")
 	for lot in lots:
 		if qty <= 0:
