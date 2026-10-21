@@ -31,14 +31,22 @@ var areas := {
 	WALL: {"size": Vector2i(4, 2), "crack": 0.4, "name": "Wall safe"},
 	FLOOR: {"size": Vector2i(5, 3), "crack": 0.0, "name": "Floor safe"},
 }
+## Multiplies the break-in odds; alarm upgrades bring it down.
+var risk_scale := 1.0
 ## Each piece: {"kind", "title", "contents": Array[String], "value": USD, "cash": USD,
 ## "lots": [[stock lot, qty]], "area", "cell": Vector2i, "rot": 0-3}
 var pieces: Array[Dictionary] = []
 
 
-## Packs the shop's current stock and cash onto the tray.
+## Packs the shop's current stock and cash onto the tray. Bigger shops get a wider
+## floor safe, the Second safe upgrade adds a shelf to the wall safe, and alarm
+## upgrades (Progress effect "robbery_risk") cut the odds.
 static func from_shop(rng: RandomNumberGenerator) -> VaultLayout:
 	var v := VaultLayout.new()
+	v.areas[FLOOR].size.x += mini(Progress.tier, 2)
+	if Progress.effect("safe") > 0.0:
+		v.areas[WALL].size.y += 1
+	v.risk_scale = maxf(0.1, 1.0 + Progress.effect("robbery_risk"))
 	var by_metal := {}
 	for lot in Shop.stock:
 		var metal: String = lot.item.metal
@@ -132,7 +140,7 @@ func out_share() -> float:
 ## Chance of a break-in tonight. Valuables left out draw burglars, and so does a
 ## shop that stays lit late: `elapsed_share` is how much of the lock-up time was used.
 func risk(elapsed_share: float) -> float:
-	return clampf(0.04 + 0.5 * out_share() + 0.15 * clampf(elapsed_share, 0.0, 1.0), 0.0, 0.9)
+	return clampf((0.04 + 0.5 * out_share() + 0.15 * clampf(elapsed_share, 0.0, 1.0)) * risk_scale, 0.0, 0.9)
 
 
 ## Rolls the night. Returns {"break_in": bool, "cracked": {area: bool}, "stolen": [pieces], "value": USD}.

@@ -5,7 +5,6 @@ extends Node
 signal changed
 signal logged(text: String, mood: String) # mood: "", "good" or "bad"
 
-const GOAL_NET_WORTH := 250000.0
 const COIN_DIR := "res://data/coins/"
 
 var day := 1
@@ -166,6 +165,29 @@ func next_day() -> void:
 	day += 1
 	_reset_stats()
 	Market.start_new_day()
+	changed.emit()
+
+
+## Saved state. Stock lots refer to coins by id.
+func to_dict() -> Dictionary:
+	var lots := []
+	for lot in stock:
+		lots.append({"item": lot.item.id, "qty": lot.qty, "cost": lot.cost, "fake": lot.fake})
+	return {"day": day, "cash": cash, "reputation": reputation, "buy_percent": buy_percent,
+		"sell_premium": sell_premium, "stock": lots}
+
+
+func from_dict(d: Dictionary) -> void:
+	day = maxi(1, int(d.get("day", 1)))
+	cash = float(d.get("cash", cash))
+	reputation = clampf(float(d.get("reputation", reputation)), 0.0, 5.0)
+	buy_percent = float(d.get("buy_percent", buy_percent))
+	sell_premium = float(d.get("sell_premium", sell_premium))
+	stock.clear()
+	for lot in d.get("stock", []):
+		if coins.has(lot.get("item", "")) and int(lot.get("qty", 0)) > 0:
+			stock.append({"item": coins[lot.item], "qty": int(lot.qty), "cost": float(lot.get("cost", 0.0)), "fake": str(lot.get("fake", ""))})
+	_reset_stats()
 	changed.emit()
 
 

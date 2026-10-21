@@ -5,7 +5,7 @@ extends RefCounted
 
 const CELL := 16
 const SIZE := Vector2i(316, 270)
-## Top-left pixel of each area's grid in the room.
+## Top-left pixel of each area's grid in the room, for the starting safe sizes.
 const ORIGINS := {"tray": Vector2i(10, 36), "wall": Vector2i(186, 42), "floor": Vector2i(174, 150)}
 
 const STEEL := [Color("#1c1f24"), Color("#2f343c"), Color("#3f454f"), Color("#59606b"), Color("#7d8591"), Color("#b3bcc8")]
@@ -15,6 +15,14 @@ const INSIDE_LINE := Color("#1d2026")
 
 ## The room with the safe doors standing open, or with no doors when `open` is false
 ## (the closed doors are drawn on top with paint_door).
+## Top-left pixel of an area's grid. A wider floor safe grows to the left.
+static func origin(area: String, grid: Vector2i) -> Vector2i:
+	var o: Vector2i = ORIGINS[area]
+	if area == "floor":
+		o.x -= (grid.x - 5) * CELL
+	return o
+
+
 static func paint_room(areas: Dictionary, open := true) -> PixelCanvas:
 	var c := PixelCanvas.new(SIZE.x, SIZE.y)
 	_wall(c)
@@ -117,7 +125,7 @@ static func _floor(c: PixelCanvas) -> void:
 
 
 static func _tray(c: PixelCanvas, grid: Vector2i) -> void:
-	var o: Vector2i = ORIGINS.tray
+	var o := origin("tray", grid)
 	var w := grid.x * CELL
 	var h := grid.y * CELL
 	c.text("COUNTER TRAY", o.x, o.y - 12, Color("#c6ccd4"))
@@ -135,7 +143,7 @@ static func _tray(c: PixelCanvas, grid: Vector2i) -> void:
 
 
 static func _wall_safe(c: PixelCanvas, grid: Vector2i, open: bool) -> void:
-	var o: Vector2i = ORIGINS.wall
+	var o := origin("wall", grid)
 	var w := grid.x * CELL
 	var h := grid.y * CELL
 	_safe_body(c, Rect2i(o.x - 8, o.y - 8, w + 16, h + 16))
@@ -154,7 +162,7 @@ static func _wall_safe(c: PixelCanvas, grid: Vector2i, open: bool) -> void:
 
 
 static func _floor_safe(c: PixelCanvas, grid: Vector2i, open: bool) -> void:
-	var o: Vector2i = ORIGINS.floor
+	var o := origin("floor", grid)
 	var w := grid.x * CELL
 	var h := grid.y * CELL
 	var body := Rect2i(o.x - 12, o.y - 12, w + 24, h + 50)

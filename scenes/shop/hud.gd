@@ -3,7 +3,9 @@ extends Control
 ## the right, and the shop log under the room. Laid out by hand to the pixel.
 
 signal action(name: String) # "test", "offer", "refuse", "sell", "decline"
+signal open_requested
 signal next_day_requested
+signal new_game_requested
 
 const SIDE_X := 318
 const SIDE_W := 160
@@ -16,6 +18,7 @@ var _currency: OptionButton
 var _day: Label
 var _clock: Label
 var _stars: Label
+var _tier: Label
 var _cash: Label
 var _stock_value: Label
 var _net: Label
@@ -32,9 +35,7 @@ var _sell_label: Label
 var _stock_lines: Array[Label] = []
 var _stock_values: Array[Label] = []
 var _log_lines: Array[Label] = []
-var _summary: PanelContainer
-var _summary_rows: Array[Label] = []
-var _summary_button: Button
+var _panels: DayPanels
 var _customer: Customer
 
 
@@ -45,11 +46,16 @@ func _ready() -> void:
 	_build_ticker()
 	_build_side()
 	_build_log()
-	_build_summary()
+	_panels = DayPanels.new()
+	add_child(_panels)
+	_panels.open_requested.connect(func(): open_requested.emit())
+	_panels.next_day_requested.connect(func(): next_day_requested.emit())
+	_panels.new_game_requested.connect(func(): new_game_requested.emit())
 	Market.prices_changed.connect(func(_p): _refresh())
 	Market.source_changed.connect(func(_s): _refresh())
 	Market.currency_changed.connect(func(_c): _refresh())
 	Shop.changed.connect(_refresh)
+	Progress.changed.connect(_refresh)
 	Shop.logged.connect(add_log)
 	_refresh()
 	show_customer(null, "Quiet for now. Customers arrive every few seconds.")
@@ -57,7 +63,8 @@ func _ready() -> void:
 
 func set_clock(day: int, minutes: int, closing: bool) -> void:
 	_day.text = "Day %d" % day
-	_clock.text = "%02d:%02d%s" % [minutes / 60, minutes % 60, " closing" if closing else ""]
+	var when := "closing" if closing else Day.weekday(day).substr(0, 3)
+	_clock.text = "%s %02d:%02d" % [when, minutes / 60, minutes % 60]
 
 
 ## Fills the counter card. `c` is null when nobody is at the counter.
@@ -90,22 +97,19 @@ func add_log(text: String, mood := "") -> void:
 	_log_lines[0].add_theme_color_override("font_color", {"good": Pal.GOOD, "bad": Pal.BAD}.get(mood, Pal.INK))
 
 
-func show_day_summary(day: int, stats: Dictionary) -> void:
-	var rows := [
-		["Bought from customers", Market.format_money(stats.bought)],
-		["Sold to customers", Market.format_money(stats.sold)],
-		["Profit on sales", Market.format_money(stats.profit)],
-		["Fakes caught", str(int(stats.caught))],
-		["Fakes that got past you", str(int(stats.scammed))],
-		["Net worth at today's prices", Market.format_money(Shop.net_worth())],
-	]
-	for n in rows.size():
-		_summary_rows[n * 2].text = rows[n][0]
-		_summary_rows[n * 2 + 1].text = rows[n][1]
-	_summary.get_node("Box/Title").text = "Day %d closed" % day
-	_summary_button.text = "Open the shop for day %d" % (day + 1)
-	_summary.visible = true
-	_summary_button.grab_focus()
+## The morning briefing over the shop floor, with upgrades one click away.
+func show_morning() -> void:
+	show_customer(null, "The shop opens when you press Open the shop.")
+	_panels.show_morning()
+
+
+func hide_panels() -> void:
+	_panels.hide_panel()
+
+
+## `report` comes from Day.end_day().
+func show_day_summary(report: Dictionary) -> void:
+	_panels.show_summary(report)
 
 
 func _refresh() -> void:
@@ -126,8 +130,12 @@ func _refresh() -> void:
 	_stock_value.text = Market.format_money(Shop.vault_value())
 	var net := Shop.net_worth()
 	_net.text = Market.format_money(net)
-	_goal.value = clampf(net / Shop.GOAL_NET_WORTH * 100.0, 0.0, 100.0)
-	_goal_text.text = "Goal %s" % Market.format_money(Shop.GOAL_NET_WORTH)
+	_goal.value = Progress.next_tier_progress() * 100.0
+	if Progress.is_top_tier():
+		_goal_text.text = "Top of the town"
+	else:
+		_goal_text.text = "Next %s" % Market.format_money(Progress.tier_info(Progress.tier + 1).need_worth)
+	_tier.text = Progress.tier_name()
 	_buy_label.text = "Pay sellers %d%% of melt" % roundi(Shop.buy_percent * 100.0)
 	_sell_label.text = "Charge buyers +%d%%" % roundi(Shop.sell_premium * 100.0)
 	var groups := {}
@@ -205,7 +213,8 @@ func _build_side() -> void:
 	_day = _label("Day 1", Vector2(x, 16), Vector2(80, 16), Pal.GOLD)
 	_day.add_theme_font_size_override("font_size", 16)
 	_clock = _label("09:00", Vector2(x + 76, 21), Vector2(78, 8), Pal.INK, HORIZONTAL_ALIGNMENT_RIGHT)
-	_stars = _label("", Vector2(x, 33), Vector2(154, 8), Pal.GOLD)
+	_stars = _label("", Vector2(x, 33), Vector2(60, 8), Pal.GOLD)
+	_tier = _label("", Vector2(x + 60, 33), Vector2(94, 8), Pal.INK_DIM, HORIZONTAL_ALIGNMENT_RIGHT)
 	_cash = _row("Cash", 43)
 	_stock_value = _row("Stock at spot", 52)
 	_net = _row("Net worth", 61)
@@ -251,49 +260,6 @@ func _build_log() -> void:
 	_panel(Rect2(0, 233, SIDE_X - 2, 37), Color("#120e0a"), Pal.PANEL_EDGE)
 	for n in 4:
 		_log_lines.append(_label("", Vector2(4, 235 + n * 8), Vector2(308, 8), Pal.INK))
-
-
-func _build_summary() -> void:
-	_summary = PanelContainer.new()
-	add_child(_summary)
-	_summary.position = Vector2(70, 60)
-	_summary.size = Vector2(176, 120)
-	_summary.add_theme_stylebox_override("panel", UiTheme.box(Pal.PANEL, Pal.GOLD, 8, 6))
-	var box := VBoxContainer.new()
-	box.name = "Box"
-	box.add_theme_constant_override("separation", 6)
-	_summary.add_child(box)
-	var title := Label.new()
-	title.name = "Title"
-	title.add_theme_font_size_override("font_size", 16)
-	title.add_theme_color_override("font_color", Pal.GOLD)
-	box.add_child(title)
-	var grid := GridContainer.new()
-	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", 12)
-	grid.add_theme_constant_override("v_separation", 1)
-	box.add_child(grid)
-	for n in 12:
-		var l := Label.new()
-		if n % 2 == 1:
-			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-			l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			l.add_theme_color_override("font_color", Pal.GOLD if n == 11 else Pal.INK)
-		else:
-			l.add_theme_color_override("font_color", Pal.INK_DIM)
-		grid.add_child(l)
-		_summary_rows.append(l)
-	var note := Label.new()
-	note.text = "Tomorrow brings more customers if your\nreputation grows, and smarter fakes."
-	note.add_theme_color_override("font_color", Pal.INK_FAINT)
-	box.add_child(note)
-	_summary_button = Button.new()
-	_summary_button.theme_type_variation = "PrimaryButton"
-	_summary_button.pressed.connect(func():
-		_summary.visible = false
-		next_day_requested.emit())
-	box.add_child(_summary_button)
-	_summary.visible = false
 
 
 func _row(caption: String, y: int) -> Label:

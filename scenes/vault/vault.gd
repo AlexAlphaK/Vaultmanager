@@ -174,14 +174,14 @@ func _draw() -> void:
 		_outline(_hover, _piece_pos(_hover), _hover.rot, Pal.GOLD)
 	if locked:
 		for area in _doors:
-			var o: Vector2 = VaultArt.ORIGINS[area]
+			var o := _origin(area)
 			draw_texture(_doors[area], o - Vector2(2, 2))
 	if not _held.is_empty():
 		var m := get_local_mouse_position()
 		var target := _drop_target(m)
 		if target.area != "":
 			var tint := Color(Pal.GOOD, 0.35) if target.ok else Color(Pal.BAD, 0.35)
-			var o: Vector2 = VaultArt.ORIGINS[target.area]
+			var o := _origin(target.area)
 			for c in VaultLayout.cells_of(_held.kind, _held_rot):
 				var cell: Vector2i = target.cell + c
 				if cell.x >= 0 and cell.y >= 0 and cell.x < layout.areas[target.area].size.x and cell.y < layout.areas[target.area].size.y:
@@ -229,12 +229,16 @@ func _tex(kind: String, rot: int) -> Texture2D:
 # ---------------------------------------------------------------- behaviour
 
 func _piece_pos(p: Dictionary) -> Vector2:
-	return Vector2(VaultArt.ORIGINS[p.area] + p.cell * CELL)
+	return _origin(p.area) + Vector2(p.cell * CELL)
+
+
+func _origin(area: String) -> Vector2:
+	return Vector2(VaultArt.origin(area, layout.areas[area].size))
 
 
 func _piece_under(at: Vector2) -> Dictionary:
 	for area in layout.areas:
-		var cell := Vector2i(((at - Vector2(VaultArt.ORIGINS[area])) / CELL).floor())
+		var cell := Vector2i(((at - _origin(area)) / CELL).floor())
 		var p := layout.piece_at(area, cell)
 		if not p.is_empty() and not is_same(p, _held):
 			return p
@@ -246,7 +250,7 @@ func _drop_target(at: Vector2) -> Dictionary:
 	var top_left := at - _grab
 	var fallback := {"area": "", "cell": Vector2i.ZERO, "ok": false}
 	for area in layout.areas:
-		var o := Vector2(VaultArt.ORIGINS[area])
+		var o := _origin(area)
 		var cell := Vector2i(((top_left - o) / CELL).round())
 		if layout.can_place(_held, area, cell, _held_rot):
 			return {"area": area, "cell": cell, "ok": true}
@@ -277,6 +281,8 @@ func _build_panel() -> void:
 	_ui.risk = _label("", Vector2(x + 60, 64), Pal.INK, 96, HORIZONTAL_ALIGNMENT_RIGHT)
 	_label("FLOOR SAFE", Vector2(x, 78), Pal.INK_FAINT)
 	_label("Burglars can't crack it", Vector2(x, 87), Pal.INK_DIM, 156)
+	if layout.risk_scale < 1.0:
+		_label("Alarm: -%d%% risk" % roundi((1.0 - layout.risk_scale) * 100.0), Vector2(x + 96, 78), Pal.GOOD, 60, HORIZONTAL_ALIGNMENT_RIGHT)
 	_label("WALL SAFE", Vector2(x, 98), Pal.INK_FAINT)
 	_label("Cracked in %d%% of break-ins" % roundi(layout.areas[VaultLayout.WALL].crack * 100.0), Vector2(x, 107), Pal.INK_DIM, 156)
 	_ui.title = _label("", Vector2(x, 122), Pal.GOLD, 156)
