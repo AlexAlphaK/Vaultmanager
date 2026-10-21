@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="BullionItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://items/bullion_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "silver_britannia"
+display_name = "Silver Britannia"
+metal = "XAG"
+weight_g = 31.21
+purity = 0.999
+diameter_mm = 38.61
+thickness_mm = 3.00
+sell_premium = 0.10
+palette = "silver"
+motif = "britannia"
+legend = "BRITANNIA"
+fineness_text = "1 OZ 999 FINE SILVER"
+year = "2025"
+radial_lines = false

@@ -9,11 +9,32 @@ platinum and palladium prices follow the real market.
 | --- | --- |
 | `project.godot` | Godot 4.3 project, 480x270 pixel-perfect viewport scaled by whole numbers |
 | `autoload/market.gd` | `Market` singleton: metals, crypto, stocks and exchange rates; caches to disk, simulates when offline; formats money in the player's currency |
-| `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price |
-| `data/coins/*.tres` | Real coin specs (weight, purity, diameter) used by the testing minigame |
-| `scenes/main.tscn` | Placeholder scene showing the ticker and vault value |
+| `autoload/shop.gd` | `Shop` singleton: cash, reputation, stock and the day's results; stock is valued at live prices |
+| `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
+| `items/counterfeit.gd` | The four kinds of fake (plated steel, brass, copper-nickel clad, tungsten core) and what each does to the readings |
+| `data/coins/*.tres` | Real coin specs (weight, purity, diameter, thickness) used by the testing minigame |
+| `scenes/shop/` | The isometric shop: room renderer, customers, HUD and the day loop (main scene) |
+| `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
+| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people and coin painters. No image files |
+| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring |
+| `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons) |
+| `tests/smoke_test.tscn` | Headless checks: run `godot --headless --path . res://tests/smoke_test.tscn` |
 | `price-service/` | Cloudflare Worker that polls the metals API and serves `GET /prices` |
 | `prototype/index.html` | Single-file browser prototype (simulated prices, coin testing minigame) |
+
+## How to play
+
+Customers queue at the counter. Sellers bring coins, buyers want coins from your vault.
+
+- **Test coin** opens the bench. Press 1-5 or click the tools: **Scale** (weight), **Calipers**
+  (diameter and thickness), **Ping** (listen to the ring and watch the scope), **Magnet** and
+  **Loupe** (move the mouse over the coin). Compare each reading with the spec column, then
+  call it **Genuine** or **Fake**. Esc goes back to the counter.
+- Fakes you buy are caught by the assay lab a little later, and cost you the money and reputation.
+- The **-/+** buttons set what share of melt you pay sellers and the premium you charge buyers.
+  Push too far and customers walk.
+- Every price comes from the live market feed, so the same coin is worth more or less from one
+  day to the next. The LED board on the back wall shows today's spot prices.
 
 ## Run
 

@@ -1,0 +1,347 @@
+extends Control
+## Shop HUD at 480x270: live ticker on top, the day's numbers and the counter card on
+## the right, and the shop log under the room. Laid out by hand to the pixel.
+
+signal action(name: String) # "test", "offer", "refuse", "sell", "decline"
+signal next_day_requested
+
+const SIDE_X := 318
+const SIDE_W := 160
+const TICKER := ["XAU", "XAG", "XPT", "XPD"]
+const TICKER_NAMES := {"XAU": "AU", "XAG": "AG", "XPT": "PT", "XPD": "PD"}
+
+var _ticker_labels := {}
+var _feed: Label
+var _currency: OptionButton
+var _day: Label
+var _clock: Label
+var _stars: Label
+var _cash: Label
+var _stock_value: Label
+var _net: Label
+var _goal: ProgressBar
+var _goal_text: Label
+var _avatar: TextureRect
+var _who: Label
+var _wants: Label
+var _quote: Label
+var _deal: Array[Label] = []
+var _buttons := {}
+var _buy_label: Label
+var _sell_label: Label
+var _stock_lines: Array[Label] = []
+var _stock_values: Array[Label] = []
+var _log_lines: Array[Label] = []
+var _summary: PanelContainer
+var _summary_rows: Array[Label] = []
+var _summary_button: Button
+var _customer: Customer
+
+
+func _ready() -> void:
+	theme = UiTheme.get_theme()
+	set_anchors_preset(Control.PRESET_FULL_RECT)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_build_ticker()
+	_build_side()
+	_build_log()
+	_build_summary()
+	Market.prices_changed.connect(func(_p): _refresh())
+	Market.source_changed.connect(func(_s): _refresh())
+	Market.currency_changed.connect(func(_c): _refresh())
+	Shop.changed.connect(_refresh)
+	Shop.logged.connect(add_log)
+	_refresh()
+	show_customer(null, "Quiet for now. Customers arrive every few seconds.")
+
+
+func set_clock(day: int, minutes: int, closing: bool) -> void:
+	_day.text = "Day %d" % day
+	_clock.text = "%02d:%02d%s" % [minutes / 60, minutes % 60, " closing" if closing else ""]
+
+
+## Fills the counter card. `c` is null when nobody is at the counter.
+func show_customer(c: Customer, idle_text := "") -> void:
+	_customer = c
+	for b in _buttons.values():
+		b.visible = false
+	for l in _deal:
+		l.text = ""
+	if c == null:
+		_avatar.texture = null
+		_who.text = ""
+		_wants.text = ""
+		_quote.text = idle_text
+		_quote.add_theme_color_override("font_color", Pal.INK_DIM)
+		return
+	_avatar.texture = c.frames[0]
+	_who.text = c.name
+	_wants.text = "wants to sell" if c.kind == "seller" else "wants to buy"
+	_quote.text = "\"%s\"" % c.say
+	_quote.add_theme_color_override("font_color", Pal.INK)
+	_refresh_deal()
+
+
+func add_log(text: String, mood := "") -> void:
+	for n in range(_log_lines.size() - 1, 0, -1):
+		_log_lines[n].text = _log_lines[n - 1].text
+		_log_lines[n].add_theme_color_override("font_color", _log_lines[n - 1].get_theme_color("font_color").darkened(0.12))
+	_log_lines[0].text = text
+	_log_lines[0].add_theme_color_override("font_color", {"good": Pal.GOOD, "bad": Pal.BAD}.get(mood, Pal.INK))
+
+
+func show_day_summary(day: int, stats: Dictionary) -> void:
+	var rows := [
+		["Bought from customers", Market.format_money(stats.bought)],
+		["Sold to customers", Market.format_money(stats.sold)],
+		["Profit on sales", Market.format_money(stats.profit)],
+		["Fakes caught", str(int(stats.caught))],
+		["Fakes that got past you", str(int(stats.scammed))],
+		["Net worth at today's prices", Market.format_money(Shop.net_worth())],
+	]
+	for n in rows.size():
+		_summary_rows[n * 2].text = rows[n][0]
+		_summary_rows[n * 2 + 1].text = rows[n][1]
+	_summary.get_node("Box/Title").text = "Day %d closed" % day
+	_summary_button.text = "Open the shop for day %d" % (day + 1)
+	_summary.visible = true
+	_summary_button.grab_focus()
+
+
+func _refresh() -> void:
+	for metal in TICKER:
+		var l: Label = _ticker_labels[metal]
+		if not Market.prices.has(metal):
+			l.text = ""
+			continue
+		var change := Market.day_change_percent(metal)
+		l.text = "%s %s %s%.1f%%" % [TICKER_NAMES[metal], Market.format_money(Market.prices[metal], 2 if metal == "XAG" else 0), "▲" if change >= 0.0 else "▼", absf(change)]
+		l.add_theme_color_override("font_color", Pal.GOOD if change >= 0.0 else Pal.BAD)
+	_feed.text = {"live": "● LIVE", "cached": "● CACHED", "simulated": "● OFFLINE"}.get(Market.source, "")
+	_feed.add_theme_color_override("font_color", {"live": Pal.GOOD, "cached": Pal.WARN}.get(Market.source, Pal.INK_FAINT))
+	var full := int(Shop.reputation)
+	var half := Shop.reputation - full >= 0.5
+	_stars.text = "★".repeat(full) + ("☆" if half else "") + "  %.1f" % Shop.reputation
+	_cash.text = Market.format_money(Shop.cash)
+	_stock_value.text = Market.format_money(Shop.vault_value())
+	var net := Shop.net_worth()
+	_net.text = Market.format_money(net)
+	_goal.value = clampf(net / Shop.GOAL_NET_WORTH * 100.0, 0.0, 100.0)
+	_goal_text.text = "Goal %s" % Market.format_money(Shop.GOAL_NET_WORTH)
+	_buy_label.text = "Pay sellers %d%% of melt" % roundi(Shop.buy_percent * 100.0)
+	_sell_label.text = "Charge buyers +%d%%" % roundi(Shop.sell_premium * 100.0)
+	var groups := {}
+	for lot in Shop.stock:
+		var key: String = lot.item.display_name
+		groups[key] = groups.get(key, [0, 0.0])
+		groups[key][0] += lot.qty
+		groups[key][1] += lot.item.melt_value() * lot.qty
+	var keys := groups.keys()
+	for n in _stock_lines.size():
+		var l := _stock_lines[n]
+		if n < keys.size():
+			l.text = "%d × %s" % [groups[keys[n]][0], keys[n]]
+			_stock_values[n].text = Market.format_money(groups[keys[n]][1])
+		else:
+			l.text = "Empty vault." if n == 0 and keys.is_empty() else ""
+			_stock_values[n].text = ""
+	if _customer:
+		_refresh_deal()
+
+
+func _refresh_deal() -> void:
+	var c := _customer
+	if c == null:
+		return
+	if c.kind == "seller":
+		_deal[0].text = "%d × %s" % [c.qty, c.item.display_name]
+		_deal[1].text = "Melt today  %s" % Market.format_money(c.melt_total())
+		_deal[2].text = "Your offer  %s%s" % [Market.format_money(c.offer_total()), "  tested" if c.tested else ""]
+		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
+		_buttons.test.visible = not c.tested
+		_buttons.offer.visible = true
+		_buttons.offer.text = "Make offer" if c.tested else "Buy as is"
+		_buttons.offer.disabled = c.offer_total() > Shop.cash
+		_buttons.refuse.visible = not c.tested
+	else:
+		var have := Shop.count_of(c.item.metal)
+		_deal[0].text = "%d × %s coins" % [c.qty, {"XAU": "gold", "XAG": "silver", "XPT": "platinum"}.get(c.item.metal, "")]
+		_deal[1].text = "You hold %d" % have
+		_deal[2].text = "Price  %s" % Market.format_money(c.sale_total())
+		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
+		_buttons.sell.visible = true
+		_buttons.sell.disabled = have < c.qty
+		_buttons.decline.visible = true
+		_buttons.decline.text = "Out of stock" if have < c.qty else "Decline"
+
+
+# ---------------------------------------------------------------- layout
+
+func _build_ticker() -> void:
+	_panel(Rect2(0, 0, 480, 12), Color("#120e0a"), Pal.PANEL_EDGE)
+	var x := 4
+	for metal in TICKER:
+		_ticker_labels[metal] = _label("", Vector2(x, 3), Vector2(86, 8))
+		x += 84
+	_feed = _label("", Vector2(342, 3), Vector2(52, 8))
+	_currency = OptionButton.new()
+	add_child(_currency)
+	_currency.position = Vector2(440, 1)
+	_currency.size = Vector2(38, 10)
+	_currency.fit_to_longest_item = false
+	_currency.focus_mode = Control.FOCUS_NONE
+	var codes := Market.CURRENCY_SYMBOLS.keys()
+	for n in codes.size():
+		_currency.add_item(codes[n], n)
+		if codes[n] == Market.currency:
+			_currency.select(n)
+	_currency.item_selected.connect(func(n): Market.set_currency(codes[n]))
+	_currency.tooltip_text = "Show money in this currency"
+
+
+func _build_side() -> void:
+	_panel(Rect2(SIDE_X - 2, 12, SIDE_W + 4, 258), Pal.PANEL, Pal.PANEL_EDGE)
+	var x := SIDE_X + 2
+	_day = _label("Day 1", Vector2(x, 16), Vector2(80, 16), Pal.GOLD)
+	_day.add_theme_font_size_override("font_size", 16)
+	_clock = _label("09:00", Vector2(x + 76, 21), Vector2(78, 8), Pal.INK, HORIZONTAL_ALIGNMENT_RIGHT)
+	_stars = _label("", Vector2(x, 33), Vector2(154, 8), Pal.GOLD)
+	_cash = _row("Cash", 43)
+	_stock_value = _row("Stock at spot", 52)
+	_net = _row("Net worth", 61)
+	_net.add_theme_color_override("font_color", Pal.GOLD)
+	_goal = ProgressBar.new()
+	add_child(_goal)
+	_goal.show_percentage = false
+	_goal.position = Vector2(x, 72)
+	_goal.size = Vector2(80, 5)
+	_goal_text = _label("", Vector2(x + 82, 70), Vector2(72, 8), Pal.INK_DIM, HORIZONTAL_ALIGNMENT_RIGHT)
+
+	_panel(Rect2(SIDE_X, 82, SIDE_W - 2, 116), Color("#241c15"), Pal.PANEL_EDGE)
+	_avatar = TextureRect.new()
+	add_child(_avatar)
+	_avatar.position = Vector2(x + 1, 86)
+	_avatar.size = Vector2(16, 28)
+	_who = _label("", Vector2(x + 22, 88), Vector2(130, 8), Pal.GOLD)
+	_wants = _label("", Vector2(x + 22, 97), Vector2(130, 8), Pal.INK_DIM)
+	_quote = _label("", Vector2(x + 1, 117), Vector2(152, 27), Pal.INK)
+	_quote.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	for n in 3:
+		_deal.append(_label("", Vector2(x + 1, 145 + n * 9), Vector2(152, 8)))
+	_buttons.test = _button("Test coin", Rect2(x, 177, 50, 12), "PrimaryButton", "test")
+	_buttons.offer = _button("Make offer", Rect2(x + 52, 177, 52, 12), "Button", "offer")
+	_buttons.refuse = _button("Refuse", Rect2(x + 106, 177, 48, 12), "DangerButton", "refuse")
+	_buttons.sell = _button("Sell", Rect2(x, 177, 70, 12), "PrimaryButton", "sell")
+	_buttons.decline = _button("Decline", Rect2(x + 74, 177, 80, 12), "Button", "decline")
+
+	_buy_label = _label("", Vector2(x, 205), Vector2(124, 8))
+	_small_button("-", Rect2(x + 130, 203, 11, 11), func(): Shop.set_buy_percent(Shop.buy_percent - 0.01))
+	_small_button("+", Rect2(x + 143, 203, 11, 11), func(): Shop.set_buy_percent(Shop.buy_percent + 0.01))
+	_sell_label = _label("", Vector2(x, 218), Vector2(124, 8))
+	_small_button("-", Rect2(x + 130, 216, 11, 11), func(): Shop.set_sell_premium(Shop.sell_premium - 0.01))
+	_small_button("+", Rect2(x + 143, 216, 11, 11), func(): Shop.set_sell_premium(Shop.sell_premium + 0.01))
+
+	_label("IN THE VAULT", Vector2(x, 232), Vector2(154, 8), Pal.INK_FAINT)
+	for n in 3:
+		_stock_lines.append(_label("", Vector2(x, 241 + n * 9), Vector2(110, 8), Pal.INK_DIM))
+		_stock_values.append(_label("", Vector2(x + 104, 241 + n * 9), Vector2(50, 8), Pal.INK_DIM, HORIZONTAL_ALIGNMENT_RIGHT))
+
+
+func _build_log() -> void:
+	_panel(Rect2(0, 233, SIDE_X - 2, 37), Color("#120e0a"), Pal.PANEL_EDGE)
+	for n in 4:
+		_log_lines.append(_label("", Vector2(4, 235 + n * 8), Vector2(308, 8), Pal.INK))
+
+
+func _build_summary() -> void:
+	_summary = PanelContainer.new()
+	add_child(_summary)
+	_summary.position = Vector2(70, 60)
+	_summary.size = Vector2(176, 120)
+	_summary.add_theme_stylebox_override("panel", UiTheme.box(Pal.PANEL, Pal.GOLD, 8, 6))
+	var box := VBoxContainer.new()
+	box.name = "Box"
+	box.add_theme_constant_override("separation", 6)
+	_summary.add_child(box)
+	var title := Label.new()
+	title.name = "Title"
+	title.add_theme_font_size_override("font_size", 16)
+	title.add_theme_color_override("font_color", Pal.GOLD)
+	box.add_child(title)
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 12)
+	grid.add_theme_constant_override("v_separation", 1)
+	box.add_child(grid)
+	for n in 12:
+		var l := Label.new()
+		if n % 2 == 1:
+			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			l.add_theme_color_override("font_color", Pal.GOLD if n == 11 else Pal.INK)
+		else:
+			l.add_theme_color_override("font_color", Pal.INK_DIM)
+		grid.add_child(l)
+		_summary_rows.append(l)
+	var note := Label.new()
+	note.text = "Tomorrow brings more customers if your\nreputation grows, and smarter fakes."
+	note.add_theme_color_override("font_color", Pal.INK_FAINT)
+	box.add_child(note)
+	_summary_button = Button.new()
+	_summary_button.theme_type_variation = "PrimaryButton"
+	_summary_button.pressed.connect(func():
+		_summary.visible = false
+		next_day_requested.emit())
+	box.add_child(_summary_button)
+	_summary.visible = false
+
+
+func _row(caption: String, y: int) -> Label:
+	_label(caption, Vector2(SIDE_X + 2, y), Vector2(80, 8), Pal.INK_DIM)
+	return _label("", Vector2(SIDE_X + 76, y), Vector2(78, 8), Pal.INK, HORIZONTAL_ALIGNMENT_RIGHT)
+
+
+func _label(text: String, pos: Vector2, size: Vector2, col := Pal.INK, align := HORIZONTAL_ALIGNMENT_LEFT) -> Label:
+	var l := Label.new()
+	add_child(l)
+	l.text = text
+	l.position = pos
+	l.size = size
+	l.horizontal_alignment = align
+	l.clip_text = true
+	l.add_theme_color_override("font_color", col)
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return l
+
+
+func _panel(r: Rect2, bg: Color, edge: Color) -> Panel:
+	var p := Panel.new()
+	add_child(p)
+	p.position = r.position
+	p.size = r.size
+	p.add_theme_stylebox_override("panel", UiTheme.box(bg, edge))
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return p
+
+
+func _button(text: String, r: Rect2, variation: String, id: String) -> Button:
+	var b := Button.new()
+	add_child(b)
+	b.text = text
+	b.theme_type_variation = variation
+	b.position = r.position
+	b.size = r.size
+	b.focus_mode = Control.FOCUS_NONE
+	b.pressed.connect(func(): action.emit(id))
+	return b
+
+
+func _small_button(text: String, r: Rect2, on_press: Callable) -> Button:
+	var b := Button.new()
+	add_child(b)
+	b.text = text
+	b.position = r.position
+	b.size = r.size
+	b.focus_mode = Control.FOCUS_NONE
+	b.pressed.connect(on_press)
+	return b

@@ -4,9 +4,17 @@
 
 [resource]
 script = ExtResource("1")
+id = "silver_eagle"
 display_name = "American Silver Eagle"
 metal = "XAG"
 weight_g = 31.10
 purity = 0.999
 diameter_mm = 40.6
+thickness_mm = 2.98
 sell_premium = 0.12
+palette = "silver"
+motif = "eagle"
+legend = "LIBERTY"
+fineness_text = "1 OZ FINE SILVER"
+year = "2025"
+radial_lines = false

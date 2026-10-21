@@ -4,9 +4,17 @@
 
 [resource]
 script = ExtResource("1")
+id = "silver_maple"
 display_name = "Silver Maple Leaf"
 metal = "XAG"
 weight_g = 31.11
 purity = 0.9999
 diameter_mm = 38.0
+thickness_mm = 3.29
 sell_premium = 0.10
+palette = "silver"
+motif = "leaf"
+legend = "CANADA"
+fineness_text = "9999"
+year = "2024"
+radial_lines = true

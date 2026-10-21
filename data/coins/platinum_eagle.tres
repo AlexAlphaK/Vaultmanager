@@ -4,9 +4,17 @@
 
 [resource]
 script = ExtResource("1")
+id = "platinum_eagle"
 display_name = "Platinum Eagle"
 metal = "XPT"
 weight_g = 31.12
 purity = 0.9995
 diameter_mm = 32.7
+thickness_mm = 2.39
 sell_premium = 0.08
+palette = "plat"
+motif = "eagle"
+legend = "LIBERTY"
+fineness_text = "1 OZ .9995 PLAT"
+year = "2023"
+radial_lines = false
