@@ -49,13 +49,14 @@ static func magnet_snap() -> AudioStreamWAV:
 	return _cached("snap", func(): return _tone([[320.0, 0.0, 0.06], [180.0, 0.0, 0.05]], 0.35))
 
 
-## Plays `stream` once on a throwaway player under `owner`.
+## Plays `stream` once on a throwaway player under `owner`, on the SFX bus.
 static func play(owner: Node, stream: AudioStream, volume_db := 0.0) -> void:
 	if stream == null or not owner.is_inside_tree():
 		return
 	var player := AudioStreamPlayer.new()
 	player.stream = stream
 	player.volume_db = volume_db
+	player.bus = "SFX"
 	owner.add_child(player)
 	player.finished.connect(player.queue_free)
 	player.play()
