@@ -93,3 +93,22 @@ static func _cached(key: String, make: Callable) -> AudioStreamWAV:
 	if not _cache.has(key):
 		_cache[key] = make.call()
 	return _cache[key]
+
+
+## A safe door swinging shut and its bolts throwing.
+static func safe_clunk() -> AudioStreamWAV:
+	return _cached("clunk", func(): return _tone([[110.0, 0.0, 0.18], [220.0, 0.0, 0.08], [1400.0, 0.14, 0.04], [1250.0, 0.2, 0.04]], 0.45))
+
+
+## The last seconds of the lock-up clock.
+static func tick() -> AudioStreamWAV:
+	return _cached("tick", func(): return _tone([[1800.0, 0.0, 0.02]], 0.2))
+
+
+## A burglar alarm: two alternating tones.
+static func alarm() -> AudioStreamWAV:
+	return _cached("alarm", func():
+		var notes := []
+		for k in 6:
+			notes.append([960.0 if k % 2 == 0 else 720.0, k * 0.22, 0.22])
+		return _tone(notes, 0.25))

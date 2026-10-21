@@ -1,12 +1,13 @@
 extends Node2D
 ## The shop floor: runs the day clock, brings customers in, and settles deals at
 ## live market prices. Coin testing opens the CoinTest minigame over the shop.
-## Each day runs morning (prices, upgrades) -> open -> closing -> after hours (summary),
-## following the Day autoload. The game saves every morning.
+## Each day runs morning (prices, upgrades) -> open -> closing -> vault lock-up ->
+## after hours (summary), following the Day autoload. The game saves every morning.
 
 const DAY_SECONDS := 180.0
 const WALK_SPEED := 1.8 # tiles per second
 const CoinTestScene := preload("res://scenes/coin_test/coin_test.tscn")
+const VaultScene := preload("res://scenes/vault/vault.tscn")
 const NewsBanner := preload("res://scenes/shop/news_banner.gd")
 const RUSH_GAP := 1.5 # seconds between customers in a news rush
 
@@ -26,6 +27,7 @@ var _next_spawn := 3.0
 var _rush_left := 0
 var _shown: Customer
 var _test: Control
+var _vault: Control
 
 
 func _ready() -> void:
@@ -85,7 +87,7 @@ func _tick(delta: float) -> void:
 				Day.add_income("Fraud insurance payout", f.paid * minf(cover, 1.0))
 	if closing and queue.is_empty() and leaving.is_empty():
 		paused = true
-		hud.show_day_summary(Day.end_day())
+		_open_vault()
 
 
 func _spawn() -> void:
@@ -236,6 +238,22 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 			else:
 				Shop.adjust_reputation(-0.25)
 				_dismiss(c, "You called %s's genuine coins fake. They stormed out." % c.name, "bad")
+
+
+func _open_vault() -> void:
+	_vault = VaultScene.instantiate()
+	hud.add_child(_vault)
+	_vault.start()
+	_vault.finished.connect(_on_vault_finished)
+
+
+func _on_vault_finished(night: Dictionary) -> void:
+	_vault.queue_free()
+	_vault = null
+	var report := Day.end_day()
+	if night.get("break_in", false):
+		report.lines.append("Break-in overnight: lost %s." % Market.format_money(night.value))
+	hud.show_day_summary(report)
 
 
 func _open_next_day() -> void:
