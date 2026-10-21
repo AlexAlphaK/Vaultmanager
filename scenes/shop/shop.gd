@@ -1,10 +1,13 @@
 extends Node2D
 ## The shop floor: runs the day clock, brings customers in, and settles deals at
 ## live market prices. Coin testing opens the CoinTest minigame over the shop.
+## Market events (real price moves) bring rushes of customers and a news banner.
 
 const DAY_SECONDS := 180.0
 const WALK_SPEED := 1.8 # tiles per second
 const CoinTestScene := preload("res://scenes/coin_test/coin_test.tscn")
+const NewsBanner := preload("res://scenes/shop/news_banner.gd")
+const RUSH_GAP := 1.5 # seconds between customers in a news rush
 
 @onready var room: Node2D = $Room
 @onready var hud: Control = $Hud/Root
@@ -18,6 +21,7 @@ var pending_fakes: Array[Dictionary] = []
 var rng := RandomNumberGenerator.new()
 
 var _next_spawn := 3.0
+var _rush_left := 0
 var _shown: Customer
 var _test: Control
 
@@ -26,6 +30,9 @@ func _ready() -> void:
 	rng.randomize()
 	hud.action.connect(_on_action)
 	hud.next_day_requested.connect(_open_next_day)
+	var banner := NewsBanner.new()
+	hud.add_child(banner)
+	MarketEvents.started.connect(_on_market_event)
 	Shop.log_event("Shop open. Test coins before you buy them.")
 
 
@@ -48,10 +55,15 @@ func _tick(delta: float) -> void:
 	if not closing and time >= DAY_SECONDS:
 		closing = true
 		Shop.log_event("Closing time. Serving the last customers.")
+	MarketEvents.advance(delta)
 	_next_spawn -= delta
 	if not closing and _next_spawn <= 0.0 and queue.size() < ShopArt.SLOTS.size():
 		_spawn()
-		_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) * rng.randf_range(0.7, 1.3)
+		if _rush_left > 0:
+			_rush_left -= 1
+			_next_spawn = RUSH_GAP
+		else:
+			_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor()
 	for c in queue.duplicate():
 		if c.walking:
 			continue
@@ -72,7 +84,7 @@ func _tick(delta: float) -> void:
 
 
 func _spawn() -> void:
-	var c := Customer.create(Shop.day, Shop.reputation, Shop.coin_list(), rng)
+	var c := Customer.create(Shop.day, Shop.reputation, Shop.coin_list(), rng, MarketEvents.customer_event(rng))
 	queue.append(c)
 	Sfx.play(self, Sfx.door_bell(), -8.0)
 	Shop.log_event("%s walked in." % c.name)
@@ -183,6 +195,15 @@ func _sell(c: Customer) -> void:
 		Shop.log_event("%s came back: %d of the coins you sold were fake! Refunded %s." % [c.name, taken.fakes, Market.format_money(refund)], "bad")
 	var profit: float = price - taken.cost
 	_dismiss(c, "Sold %d coins for %s (profit %s)." % [c.qty, Market.format_money(price), Market.format_money(profit)], "good" if profit >= 0.0 else "bad")
+
+
+## A headline breaks: the first few customers it brings come straight in.
+func _on_market_event(event: Dictionary) -> void:
+	if closing:
+		return
+	_rush_left = int(event.rush)
+	_next_spawn = minf(_next_spawn, 1.0)
+	Sfx.play(self, Sfx.door_bell(), -4.0)
 
 
 func _open_test(c: Customer) -> void:

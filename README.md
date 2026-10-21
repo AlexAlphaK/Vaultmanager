@@ -9,6 +9,7 @@ platinum and palladium prices follow the real market.
 | --- | --- |
 | `project.godot` | Godot 4.3 project, 480x270 pixel-perfect viewport scaled by whole numbers |
 | `autoload/market.gd` | `Market` singleton: metals, crypto, stocks and exchange rates; caches to disk, simulates when offline; formats money in the player's currency |
+| `autoload/market_events.gd` | `MarketEvents` singleton: turns real price moves into news headlines and rushes of customers |
 | `autoload/shop.gd` | `Shop` singleton: cash, reputation, stock and the day's results; stock is valued at live prices |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/counterfeit.gd` | The four kinds of fake (plated steel, brass, copper-nickel clad, tungsten core) and what each does to the readings |
@@ -35,6 +36,28 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   Push too far and customers walk.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
+
+## Market events
+
+Big real-world moves make the news, and the news brings customers. A red or green NEWS strip
+runs over the shop for about a minute, and most new customers come because of the story:
+
+| Real move | Headline | Who walks in |
+| --- | --- | --- |
+| Gold down 1% in a day | Gold slides | Panic sellers who accept less than usual |
+| Gold up 1% | Gold jumps | Sellers cashing in, holding out for more |
+| Silver up or down 2% | Silver squeeze / Silver on sale | Silver buyers, paying extra in a squeeze |
+| Platinum up 2% | Platinum pops | Platinum sellers |
+| Bitcoin down 4% in 24h | Bitcoin crashes | Crypto converts buying gold at a premium |
+| Bitcoin up 4% | Bitcoin soars | Sellers raising cash to chase crypto |
+| Dogecoin up 10% | Dogecoin moons | Lucky winners buying gold |
+| S&P 500 down or up 1.2% | Stocks tumble / Stocks rally | Safe-haven gold buyers, or sellers moving into shares |
+| NVIDIA down 5% | Chip stocks plunge | Tech money buying silver |
+
+Metals compare with the price about a day ago (the price service keeps a day and a half of
+metal quotes and sends `metals_change`). Crypto and stocks use the provider's daily change.
+A story does not repeat until its move has faded. Triggers and effects live in
+`MarketEvents.EVENTS`. In a debug build (playing from the editor), **F9** plays the next event.
 
 ## Run
 

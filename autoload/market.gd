@@ -43,6 +43,7 @@ const SEED_PRICES := {"XAU": 4131.55, "XAG": 57.59, "XPT": 1631.85, "XPD": 1092.
 var prices := {}
 var crypto := {} # symbol -> {"price": USD, "change_pct": 24h %}
 var stocks := {} # symbol -> {"price": USD, "change_pct": % since last close}
+var metals_change := {} # metal -> % change over the last real day, from the price service
 var fx := {"USD": 1.0} # currency -> units per 1 USD
 var currency := "USD"
 var day_open := {}
@@ -87,6 +88,14 @@ func day_change_percent(metal: String) -> float:
 	if open <= 0.0:
 		return 0.0
 	return (float(prices.get(metal, open)) / open - 1.0) * 100.0
+
+
+## Percent change over the last real day when the price service knows it, otherwise
+## since the in-game day opened. Drives market events.
+func metal_move_percent(metal: String) -> float:
+	if source != "simulated" and metals_change.has(metal):
+		return float(metals_change[metal])
+	return day_change_percent(metal)
 
 
 func start_new_day() -> void:
@@ -201,7 +210,7 @@ func _save_cache() -> void:
 	var file := FileAccess.open(CACHE_PATH, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify({
-			"prices": prices, "crypto": crypto, "stocks": stocks, "fx": fx, "last_live_unix": last_live_unix,
+			"prices": prices, "metals_change": metals_change, "crypto": crypto, "stocks": stocks, "fx": fx, "last_live_unix": last_live_unix,
 		}))
 
 
@@ -218,6 +227,10 @@ func _apply_quote(data: Dictionary) -> void:
 	for metal in METALS:
 		if data.prices.has(metal):
 			prices[metal] = float(data.prices[metal])
+	if typeof(data.get("metals_change")) == TYPE_DICTIONARY:
+		for metal in METALS:
+			if data.metals_change.has(metal):
+				metals_change[metal] = float(data.metals_change[metal])
 	for key in ["crypto", "stocks"]:
 		if typeof(data.get(key)) != TYPE_DICTIONARY:
 			continue
