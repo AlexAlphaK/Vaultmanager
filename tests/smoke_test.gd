@@ -1,6 +1,6 @@
 extends Node
-## Headless checks for the shop, the coin test, the jewellery appraisal, the vault lock-up and
-## the customers (archetypes, haggling, regulars' stories). Run:
+## Headless checks for the shop, the coin test, the jewellery appraisal, the vault lock-up,
+## the customers (archetypes, haggling, regulars' stories), and the menus, settings and music. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -23,6 +23,9 @@ func _ready() -> void:
 	await _check_vault_scene()
 	await _check_shop_day()
 	await _check_jewellery_deals()
+	_check_settings()
+	_check_music()
+	await _check_menus()
 	SaveGame.delete_save()
 	print("SMOKE TEST %s (%d failures)" % ["PASSED" if failures == 0 else "FAILED", failures])
 	get_tree().quit(1 if failures else 0)
@@ -607,4 +610,81 @@ func _check_vault_scene() -> void:
 	await get_tree().create_timer(1.0).timeout
 	expect(vault._result != null, "the night's result shows")
 	vault.queue_free()
+	Shop.reset()
+
+
+func _check_settings() -> void:
+	var real_path := Settings.path
+	Settings.path = "user://smoke_test_settings.cfg"
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
+	expect(AudioServer.get_bus_index("Music") != -1 and AudioServer.get_bus_index("SFX") != -1, "the Music and SFX buses exist")
+	Settings.set_volume("Music", 0.25)
+	var music := AudioServer.get_bus_index("Music")
+	expect(is_equal_approx(AudioServer.get_bus_volume_db(music), linear_to_db(0.25)), "the music slider sets the bus volume")
+	Settings.set_volume("SFX", 0.0)
+	expect(AudioServer.is_bus_mute(AudioServer.get_bus_index("SFX")), "effects at zero are muted")
+	Settings.set_fullscreen(true)
+	Settings.volume["Music"] = 1.0
+	Settings.fullscreen = false
+	Settings.load_settings()
+	expect(is_equal_approx(Settings.volume["Music"], 0.25) and Settings.fullscreen, "settings come back from disk")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
+	Settings.path = real_path
+	Settings.load_settings()
+
+
+func _check_music() -> void:
+	for track in MusicSynth.TRACKS:
+		var w := MusicSynth.render(track, 1)
+		var frames := w.data.size() / 2
+		expect(w.loop_mode == AudioStreamWAV.LOOP_FORWARD and w.loop_end == frames, "%s music loops" % track)
+		var peak := 0
+		for n in range(0, frames, 7):
+			peak = maxi(peak, absi(w.data.decode_s16(n * 2)))
+		expect(peak > 3000 and peak < 32767, "%s music is audible and does not clip" % track)
+	expect(MusicSynth.midi_hz(69) == 440.0, "A4 is 440 Hz")
+
+
+func _check_menus() -> void:
+	SaveGame.new_game()
+	Shop.day = 9
+	SaveGame.save_game()
+	expect(SaveGame.peek().get("day", 0) == 9, "the title screen can read the saved day")
+	var title: Control = load("res://scenes/menu/title_screen.tscn").instantiate()
+	add_child(title)
+	await get_tree().process_frame
+	if not title.has_method("_go_to_shop"):
+		expect(false, "the title script loads")
+		return
+	expect(not title._continue.disabled and "Day 9" in title._save_info.text, "Continue shows the saved shop")
+	title._on_new_game()
+	expect(SaveGame.has_save() and title._confirm_new, "New game asks before erasing a save")
+	title._open_settings()
+	await get_tree().process_frame
+	expect(title._settings != null and not title._menu.visible, "Settings opens from the title")
+	title._settings.close()
+	expect(title._settings == null and title._menu.visible, "Settings closes back to the menu")
+	title.queue_free()
+	SaveGame.delete_save()
+	title = load("res://scenes/menu/title_screen.tscn").instantiate()
+	add_child(title)
+	await get_tree().process_frame
+	expect(title._continue.disabled, "Continue is off without a save")
+	title.queue_free()
+
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	shop._open_shop()
+	shop.open_pause_menu()
+	expect(get_tree().paused and shop._pause.is_open(), "the pause menu pauses the game")
+	var clock: float = shop.time
+	await get_tree().process_frame
+	await get_tree().process_frame
+	expect(is_equal_approx(shop.time, clock), "the shop clock stops while paused")
+	shop._pause.close()
+	expect(not get_tree().paused and not shop._pause.is_open(), "Resume unpauses")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.delete_save()
 	Shop.reset()

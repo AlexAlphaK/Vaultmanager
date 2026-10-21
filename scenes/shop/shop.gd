@@ -33,6 +33,7 @@ var _rush_left := 0
 var _shown: Customer
 var _test: Control
 var _vault: Control
+var _pause: PauseMenu
 
 
 func _ready() -> void:
@@ -41,6 +42,10 @@ func _ready() -> void:
 	hud.open_requested.connect(_open_shop)
 	hud.next_day_requested.connect(_open_next_day)
 	hud.new_game_requested.connect(_new_game)
+	hud.menu_requested.connect(open_pause_menu)
+	_pause = PauseMenu.new()
+	add_child(_pause)
+	Music.play("shop")
 	var banner := NewsBanner.new()
 	hud.add_child(banner)
 	MarketEvents.started.connect(_on_market_event)
@@ -63,6 +68,17 @@ func _process(delta: float) -> void:
 	room.customers.assign(queue + leaving)
 	room.day_fraction = clampf(time / DAY_SECONDS, 0.0, 1.0)
 	hud.set_clock(Shop.day, int(9 * 60 + room.day_fraction * 8 * 60), closing)
+
+
+## Esc opens the pause menu, except in the coin and jewellery benches, where it means "back".
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE and _test == null:
+		open_pause_menu()
+		get_viewport().set_input_as_handled()
+
+
+func open_pause_menu() -> void:
+	_pause.open()
 
 
 func _tick(delta: float) -> void:
