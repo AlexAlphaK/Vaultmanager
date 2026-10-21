@@ -204,7 +204,7 @@ func _check_customers() -> void:
 		for n in 10:
 			var c := Customer.create(Shop.day, 3.0, Shop.coin_list(), rng)
 			Customers.apply_archetype(c, id, rng)
-			expect(c.archetype == id and c.frames.size() == 3, "%s customer is painted" % id)
+			expect(c.archetype == id and c.frames.size() == PeopleArt.FRAMES, "%s customer is painted" % id)
 			expect(c.say != "" and c.patience > 0.0, "%s customer talks and waits" % id)
 			match id:
 				"collector":

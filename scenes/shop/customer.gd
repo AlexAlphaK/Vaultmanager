@@ -124,7 +124,7 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 
 func set_look(look: Dictionary) -> void:
 	frames.clear()
-	for f in 3:
+	for f in PeopleArt.FRAMES:
 		frames.append(PeopleArt.paint(look, f).texture())
 
 

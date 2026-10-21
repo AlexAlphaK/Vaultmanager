@@ -258,6 +258,7 @@ func _draw() -> void:
 	_draw_drop()
 	_draw_probe()
 	_draw_magnet()
+	BenchArt.draw_motes(self, _time, Rect2(0, 0, BENCH_W, 270))
 
 
 ## Where the piece's canvas sits on screen right now.
@@ -690,17 +691,7 @@ func _label(text: String, pos: Vector2, col: Color, width := 0, align := HORIZON
 ## Wooden bench with a black velvet pad, a slate touchstone, a pocket scale and
 ## the thermal tester's box. Bottles, LEDs, pen and magnet are drawn live.
 func _paint_bench() -> PixelCanvas:
-	var c := PixelCanvas.new(BENCH_W, 270, Color("#5e3b1d"))
-	for y in 270:
-		var plank := y / 18
-		for x in BENCH_W:
-			var n := ShopArt._noise(x / 4 + plank * 31, y)
-			var col := Color("#5e3b1d") if n > 0.15 else Color("#56361a")
-			if y % 18 == 0:
-				col = Color("#3a2410")
-			elif n > 0.93:
-				col = Color("#6a4424")
-			c.px(x, y, col)
+	var c := BenchArt.wood(BENCH_W, 270)
 	# velvet pad: deep pile with a soft sheen towards the light
 	var pad := PAD
 	c.rect(pad.position.x + 2, pad.position.y + 3, pad.size.x, pad.size.y, Color(0, 0, 0, 0.4))
@@ -745,12 +736,7 @@ func _paint_bench() -> PixelCanvas:
 	c.text("ACIDS", BOTTLE.position.x, BOTTLE.position.y - 17, Color("#a3815a"))
 	# pocket scale
 	var s := SCALE_RECT
-	c.rect(s.position.x + 2, s.position.y + 3, s.size.x, s.size.y, Color(0, 0, 0, 0.35))
-	c.rect(s.position.x, s.position.y, s.size.x, s.size.y, Color("#3a3f48"))
-	c.rect(s.position.x, s.position.y, s.size.x, 1, Color("#7d8591"))
-	c.rect(s.position.x, s.position.y, 1, s.size.y, Color("#5b616b"))
-	c.rect(s.position.x, s.end.y - 1, s.size.x, 1, Color("#1c1f24"))
-	c.rect(s.end.x - 1, s.position.y, 1, s.size.y, Color("#262a30"))
+	BenchArt.housing(c, s, Color("#3a3f48"))
 	for y in range(s.position.y + 3, s.end.y - 3):
 		for x in range(s.position.x + 3, s.end.x - 3):
 			var d := Vector2(x + 0.5, y + 0.5).distance_to(PAN)
@@ -769,18 +755,14 @@ func _paint_bench() -> PixelCanvas:
 	c.text("CT/G", s.position.x + 5, lcd.position.y + 3, Color("#848d9a"))
 	# thermal diamond tester
 	var t := TESTER
-	c.rect(t.position.x + 2, t.position.y + 3, t.size.x, t.size.y, Color(0, 0, 0, 0.35))
-	c.rect(t.position.x, t.position.y, t.size.x, t.size.y, Color("#2b2f36"))
-	c.rect(t.position.x, t.position.y, t.size.x, 1, Color("#5b616b"))
-	c.rect(t.position.x, t.position.y, 1, t.size.y, Color("#4a4f58"))
-	c.rect(t.position.x, t.end.y - 1, t.size.x, 1, Color("#121418"))
-	c.rect(t.end.x - 1, t.position.y, 1, t.size.y, Color("#16181c"))
+	BenchArt.housing(c, t, Color("#2b2f36"))
 	c.text("THERMAL TESTER", t.position.x + 5, t.position.y + 4, Color("#9aa3b0"))
 	c.rect(LEDS_AT.x - 3, LEDS_AT.y - 3, 76, 10, Color("#14161a"))
 	c.text("SIM", LEDS_AT.x - 2, LEDS_AT.y + 9, Color("#3fae4a"))
 	c.text("DIA", LEDS_AT.x + 58, LEDS_AT.y + 9, Color("#e04a3a"))
 	# pen cradle
 	c.rect(PROBE_REST.x + 6, PROBE_REST.y + 2, 26, 3, Color("#1c1f24"))
+	BenchArt.lamp_light(c)
 	return c
 
 
