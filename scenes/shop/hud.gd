@@ -286,10 +286,10 @@ func _build_side() -> void:
 	_small_button("-", Rect2(x + 130, 216, 11, 11), func(): Shop.set_sell_premium(Shop.sell_premium - 0.01))
 	_small_button("+", Rect2(x + 143, 216, 11, 11), func(): Shop.set_sell_premium(Shop.sell_premium + 0.01))
 
-	_till = _label("", Vector2(x, 192), Vector2(100, 8), Pal.INK_DIM)
-	_till_button = _button("To vault", Rect2(x + 108, 190, 46, 11), "Button", "vault_run")
+	_label("IN THE VAULT", Vector2(x, 232), Vector2(60, 8), Pal.INK_FAINT)
+	_till = _label("", Vector2(x + 50, 232), Vector2(62, 8), Pal.INK_DIM, HORIZONTAL_ALIGNMENT_RIGHT)
+	_till_button = _button("To vault", Rect2(x + 116, 230, 38, 10), "Button", "vault_run")
 	_till_button.tooltip_text = "Take the till's cash to the vault (3 seconds away from the counter)"
-	_label("IN THE VAULT", Vector2(x, 232), Vector2(154, 8), Pal.INK_FAINT)
 	for n in 3:
 		_stock_lines.append(_label("", Vector2(x, 241 + n * 9), Vector2(110, 8), Pal.INK_DIM))
 		_stock_values.append(_label("", Vector2(x + 104, 241 + n * 9), Vector2(50, 8), Pal.INK_DIM, HORIZONTAL_ALIGNMENT_RIGHT))

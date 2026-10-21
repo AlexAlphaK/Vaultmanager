@@ -73,6 +73,7 @@ func _ready() -> void:
 	Music.play("shop")
 	var banner := NewsBanner.new()
 	hud.add_child(banner)
+	add_child(RushStrip.new(self))
 	MarketEvents.started.connect(_on_market_event)
 	if SaveGame.load_game():
 		Shop.log_event("Welcome back. Day %d at your %s." % [Shop.day, Progress.tier_name()])

@@ -14,6 +14,7 @@ platinum and palladium prices follow the real market.
 | `autoload/shop.gd` | `Shop` singleton: cash, reputation, stock and the day's results; stock is valued at live prices |
 | `autoload/day.gd` | `Day` singleton: day phases (morning, open, closing, after hours), the week, bills and the day's ledger |
 | `autoload/progress.gd` | `Progress` singleton: the four shop tiers, upgrades and their effects |
+| `autoload/staff.gd` | `Staff` singleton: the clerk and the guard you can hire, their signing fees, daily wages and effects |
 | `autoload/save_game.gd` | `SaveGame` singleton: saves to `user://save.json` every morning, loads on launch |
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
@@ -24,7 +25,7 @@ platinum and palladium prices follow the real market.
 | `items/counterfeit.gd` | The four kinds of fake (plated steel, brass, copper-nickel clad, tungsten core) and what each does to the readings |
 | `data/coins/*.tres` | Real coin specs (weight, purity, diameter, thickness) used by the testing minigame |
 | `scenes/menu/` | The title screen (main scene: Continue, New game, Settings, Quit) and the pause menu |
-| `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene) |
+| `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene); `rush_hours.gd` holds the busy hours and the till rules |
 | `scenes/tutorial/coach.gd` | The coach: the cards of the guided first day (with three scripted customers) and the bench intros |
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
@@ -93,6 +94,19 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   shop widens the floor safe, the Second safe upgrade adds a shelf to the wall safe, and the
   alarm upgrades cut the break-in odds. To try it on its own,
   open `scenes/vault/vault.tscn` in Godot and press F6.
+- **Rush hours.** Every day has a lunch rush (11:45) and an after-work rush (15:45); Saturdays
+  add a morning crowd and Sundays only have lunch. The clock turns orange and says RUSH. In a rush
+  customers pour in, a full queue turns people away at the door, and the clock keeps running while
+  you are at a testing bench, so the queue loses patience while you test. A strip at the top of the
+  bench shows who is waiting. Cash from sales piles up in the **till** (next to IN THE VAULT on the right);
+  past the limit it flashes and a thief may grab it, so press **To vault** to lock it away. That
+  takes you off the counter for 3 seconds.
+- **Staff.** Hire them on the Upgrades page in the morning. **Benny the clerk** works a second
+  till at the end of the counter: he sells coins to buyers at your price (sellers, who need
+  testing, stay with you), and sends anyone who wants a better price back to your queue.
+  **Rhonda the guard** stands by the door: break-ins drop by a third and till snatches almost
+  stop. Each costs a signing fee once and a daily wage at closing time, which rises as the shop
+  grows. **Let go** takes them off the payroll.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
 

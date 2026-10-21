@@ -135,7 +135,9 @@ func _wall_hand(angle: float, length: float, col: Color) -> void:
 
 
 func _draw_customers() -> void:
-	var order: Array = customers.duplicate()
+	# untyped, so the guard's spot can be sorted in with the customers
+	var order: Array = []
+	order.append_array(customers)
 	if Staff.has("guard"):
 		order.append(ShopArt.GUARD_SPOT)
 	order.sort_custom(func(a, b): return _depth(a) < _depth(b))
