@@ -1,25 +1,50 @@
 extends Node
-## Live precious metal prices (USD per troy ounce).
+## Live market data: precious metals (USD per troy ounce), crypto and stocks (USD),
+## and exchange rates for showing money in the player's currency.
 ## Polls the price service every 5 minutes, caches the last quote on disk,
 ## and falls back to a simulated random walk when the game has been offline too long.
+## All game logic works in USD; convert only for display with format_money().
 
 signal prices_changed(prices: Dictionary)
 signal source_changed(source: String) # "live", "cached" or "simulated"
+signal currency_changed(code: String)
 
 const METALS: Array[String] = ["XAU", "XAG", "XPT", "XPD"]
 const POLL_SECONDS := 300.0
 const SIM_STEP_SECONDS := 5.0
 const SIMULATE_AFTER_OFFLINE_SECONDS := 24 * 3600
 const CACHE_PATH := "user://last_prices.json"
+const SETTINGS_PATH := "user://settings.cfg"
 const TROY_OZ_GRAMS := 31.1034768
 ## Typical daily volatility, used only by the offline simulation.
 const DAILY_VOL := {"XAU": 0.012, "XAG": 0.02, "XPT": 0.018, "XPD": 0.022}
+const CRYPTO_DAILY_VOL := 0.04
+const STOCK_DAILY_VOL := 0.015
+## Currencies the player can pick (all covered by the ECB reference rates).
+const CURRENCY_SYMBOLS := {
+	"USD": "$", "EUR": "€", "GBP": "£", "JPY": "¥", "CAD": "C$", "AUD": "A$", "NZD": "NZ$",
+	"CHF": "CHF ", "SEK": "kr ", "NOK": "kr ", "DKK": "kr ", "PLN": "zł ", "CZK": "Kč ",
+	"HUF": "Ft ", "INR": "₹", "CNY": "¥", "HKD": "HK$", "SGD": "S$", "KRW": "₩",
+	"BRL": "R$", "MXN": "MX$", "ZAR": "R ", "TRY": "₺",
+}
+const COUNTRY_CURRENCY := {
+	"US": "USD", "GB": "GBP", "CA": "CAD", "AU": "AUD", "NZ": "NZD", "JP": "JPY", "CH": "CHF",
+	"SE": "SEK", "NO": "NOK", "DK": "DKK", "PL": "PLN", "CZ": "CZK", "HU": "HUF", "IN": "INR",
+	"CN": "CNY", "HK": "HKD", "SG": "SGD", "KR": "KRW", "BR": "BRL", "MX": "MXN", "ZA": "ZAR",
+	"TR": "TRY", "DE": "EUR", "FR": "EUR", "IT": "EUR", "ES": "EUR", "NL": "EUR", "BE": "EUR",
+	"AT": "EUR", "IE": "EUR", "PT": "EUR", "FI": "EUR", "GR": "EUR", "SK": "EUR", "SI": "EUR",
+	"EE": "EUR", "LV": "EUR", "LT": "EUR", "LU": "EUR", "MT": "EUR", "CY": "EUR", "HR": "EUR",
+}
 ## Last-resort seed when there is no network and no cache (first launch offline).
 const SEED_PRICES := {"XAU": 4473.37, "XAG": 73.31, "XPT": 1879.64, "XPD": 1520.0}
 
 @export var service_url := "http://127.0.0.1:8787/prices"
 
 var prices := {}
+var crypto := {} # symbol -> {"price": USD, "change_pct": 24h %}
+var stocks := {} # symbol -> {"price": USD, "change_pct": % since last close}
+var fx := {"USD": 1.0} # currency -> units per 1 USD
+var currency := "USD"
 var day_open := {}
 var source := "cached"
 var last_live_unix := 0
@@ -29,6 +54,7 @@ var _http: HTTPRequest
 
 func _ready() -> void:
 	_load_cache()
+	_load_currency()
 	_http = HTTPRequest.new()
 	_http.timeout = 10.0
 	add_child(_http)
@@ -62,6 +88,46 @@ func start_new_day() -> void:
 	day_open = prices.duplicate()
 
 
+## Picks the display currency and remembers it. Falls back to USD without a rate.
+func set_currency(code: String) -> void:
+	if not CURRENCY_SYMBOLS.has(code):
+		return
+	currency = code
+	var cfg := ConfigFile.new()
+	cfg.load(SETTINGS_PATH)
+	cfg.set_value("display", "currency", code)
+	cfg.save(SETTINGS_PATH)
+	currency_changed.emit(code)
+
+
+## Formats a USD amount in the player's currency, e.g. "€4,120".
+func format_money(usd: float, decimals := 0) -> String:
+	var code := currency if fx.has(currency) else "USD"
+	var amount := usd * float(fx.get(code, 1.0))
+	var minus := "-" if amount < 0.0 else ""
+	return minus + CURRENCY_SYMBOLS[code] + _group_digits(absf(amount), decimals)
+
+
+## Currency for the device's region, e.g. "de_DE" -> EUR. USD when unknown.
+static func currency_for_locale(locale: String) -> String:
+	var parts := locale.split("_")
+	if parts.size() >= 2:
+		return COUNTRY_CURRENCY.get(parts[1].substr(0, 2).to_upper(), "USD")
+	return "USD"
+
+
+static func _group_digits(value: float, decimals: int) -> String:
+	var text := String.num(value, decimals) if decimals > 0 else str(roundi(value))
+	var whole := text.get_slice(".", 0)
+	var frac := text.substr(whole.length())
+	var out := ""
+	for i in whole.length():
+		if i > 0 and (whole.length() - i) % 3 == 0:
+			out += ","
+		out += whole[i]
+	return out + frac
+
+
 func _on_response(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS or code != 200:
 		_go_offline()
@@ -70,9 +136,7 @@ func _on_response(result: int, code: int, _headers: PackedStringArray, body: Pac
 	if typeof(data) != TYPE_DICTIONARY or typeof(data.get("prices")) != TYPE_DICTIONARY:
 		_go_offline()
 		return
-	for metal in METALS:
-		if data.prices.has(metal):
-			prices[metal] = float(data.prices[metal])
+	_apply_quote(data)
 	last_live_unix = int(Time.get_unix_time_from_system())
 	_set_source("live")
 	_save_cache()
@@ -97,6 +161,14 @@ func _simulate_step() -> void:
 	for metal in METALS:
 		var vol: float = DAILY_VOL[metal] * step_scale
 		prices[metal] = float(prices[metal]) * (1.0 + randfn(0.0, vol))
+	for pair in [[crypto, CRYPTO_DAILY_VOL], [stocks, STOCK_DAILY_VOL]]:
+		var quotes: Dictionary = pair[0]
+		var vol: float = pair[1] * step_scale
+		for sym in quotes:
+			var q: Dictionary = quotes[sym]
+			var price := float(q.price) * (1.0 + randfn(0.0, vol))
+			q.change_pct = (1.0 + float(q.change_pct) / 100.0) * price / float(q.price) * 100.0 - 100.0
+			q.price = price
 	_emit()
 
 
@@ -123,7 +195,9 @@ func _add_timer(seconds: float, callback: Callable) -> void:
 func _save_cache() -> void:
 	var file := FileAccess.open(CACHE_PATH, FileAccess.WRITE)
 	if file:
-		file.store_string(JSON.stringify({"prices": prices, "last_live_unix": last_live_unix}))
+		file.store_string(JSON.stringify({
+			"prices": prices, "crypto": crypto, "stocks": stocks, "fx": fx, "last_live_unix": last_live_unix,
+		}))
 
 
 func _load_cache() -> void:
@@ -131,5 +205,30 @@ func _load_cache() -> void:
 		return
 	var data = JSON.parse_string(FileAccess.get_file_as_string(CACHE_PATH))
 	if typeof(data) == TYPE_DICTIONARY and typeof(data.get("prices")) == TYPE_DICTIONARY:
-		prices = data.prices
+		_apply_quote(data)
 		last_live_unix = int(data.get("last_live_unix", 0))
+
+
+func _apply_quote(data: Dictionary) -> void:
+	for metal in METALS:
+		if data.prices.has(metal):
+			prices[metal] = float(data.prices[metal])
+	for key in ["crypto", "stocks"]:
+		if typeof(data.get(key)) != TYPE_DICTIONARY:
+			continue
+		var target: Dictionary = crypto if key == "crypto" else stocks
+		for sym in data[key]:
+			var q = data[key][sym]
+			if typeof(q) == TYPE_DICTIONARY and q.has("price"):
+				target[sym] = {"price": float(q.price), "change_pct": float(q.get("change_pct", 0.0))}
+	if typeof(data.get("fx")) == TYPE_DICTIONARY:
+		for code in data.fx:
+			fx[code] = float(data.fx[code])
+
+
+func _load_currency() -> void:
+	var cfg := ConfigFile.new()
+	var saved := ""
+	if cfg.load(SETTINGS_PATH) == OK:
+		saved = cfg.get_value("display", "currency", "")
+	currency = saved if CURRENCY_SYMBOLS.has(saved) else currency_for_locale(OS.get_locale())

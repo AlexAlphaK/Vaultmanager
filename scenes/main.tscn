@@ -8,5 +8,11 @@ script = ExtResource("1")
 [node name="Ticker" type="Label" parent="."]
 offset_left = 8.0
 offset_top = 8.0
+offset_right = 380.0
+offset_bottom = 262.0
+
+[node name="CurrencyPicker" type="OptionButton" parent="."]
+offset_left = 392.0
+offset_top = 8.0
 offset_right = 472.0
-offset_bottom = 120.0
+offset_bottom = 28.0

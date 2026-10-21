@@ -2,13 +2,17 @@ name = "vault-manager-prices"
 main = "worker.js"
 compatibility_date = "2026-09-01"
 
-# Poll the provider every 5 minutes. The MetalCharts free tier allows about 200 calls a month,
-# so use "0 */4 * * *" (every 4 hours) on the free tier and every 5 minutes on a paid plan.
+# Fast cron: crypto and stocks every 5 minutes (CoinGecko demo plan and Finnhub free plan both fit).
+# Slow cron: metals and exchange rates every 4 hours, to stay inside the MetalCharts free tier
+# (about 200 calls a month). On a paid metals plan, move metals to the fast cron.
 [triggers]
-crons = ["0 */4 * * *"]
+crons = ["*/5 * * * *", "0 */4 * * *"]
 
 [[kv_namespaces]]
 binding = "PRICES"
 id = "REPLACE_WITH_KV_NAMESPACE_ID"
 
-# Set the API key with: npx wrangler secret put METALCHARTS_KEY
+# Secrets (never commit them):
+#   npx wrangler secret put METALCHARTS_KEY
+#   npx wrangler secret put COINGECKO_KEY   (optional demo key; works without one at lower limits)
+#   npx wrangler secret put FINNHUB_KEY     (stocks are skipped without it)
