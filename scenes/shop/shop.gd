@@ -1,0 +1,217 @@
+extends Node2D
+## The shop floor: runs the day clock, brings customers in, and settles deals at
+## live market prices. Coin testing opens the CoinTest minigame over the shop.
+
+const DAY_SECONDS := 180.0
+const WALK_SPEED := 1.8 # tiles per second
+const CoinTestScene := preload("res://scenes/coin_test/coin_test.tscn")
+
+@onready var room: Node2D = $Room
+@onready var hud: Control = $Hud/Root
+
+var time := 0.0
+var closing := false
+var paused := false
+var queue: Array[Customer] = []
+var leaving: Array[Customer] = []
+var pending_fakes: Array[Dictionary] = []
+var rng := RandomNumberGenerator.new()
+
+var _next_spawn := 3.0
+var _shown: Customer
+var _test: Control
+
+
+func _ready() -> void:
+	rng.randomize()
+	hud.action.connect(_on_action)
+	hud.next_day_requested.connect(_open_next_day)
+	Shop.log_event("Shop open. Test coins before you buy them.")
+
+
+func _process(delta: float) -> void:
+	if not paused:
+		_tick(delta)
+	_walk(delta)
+	var front := _front()
+	if front != _shown:
+		_shown = front
+		_show_front()
+	room.front_customer = front
+	room.customers.assign(queue + leaving)
+	room.day_fraction = clampf(time / DAY_SECONDS, 0.0, 1.0)
+	hud.set_clock(Shop.day, int(9 * 60 + room.day_fraction * 8 * 60), closing)
+
+
+func _tick(delta: float) -> void:
+	time += delta
+	if not closing and time >= DAY_SECONDS:
+		closing = true
+		Shop.log_event("Closing time. Serving the last customers.")
+	_next_spawn -= delta
+	if not closing and _next_spawn <= 0.0 and queue.size() < ShopArt.SLOTS.size():
+		_spawn()
+		_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) * rng.randf_range(0.7, 1.3)
+	for c in queue.duplicate():
+		if c.walking:
+			continue
+		c.patience -= delta if c == _front() else delta * 0.5
+		if c.patience <= 0.0:
+			Shop.adjust_reputation(-0.12)
+			_dismiss(c, "%s got tired of waiting and left." % c.name, "bad")
+	for f in pending_fakes.duplicate():
+		if time >= f.at or closing:
+			pending_fakes.erase(f)
+			Shop.confiscate(f.item, f.fake)
+			Shop.note("scammed")
+			Shop.adjust_reputation(-0.3)
+			Shop.log_event("Assay lab: the %d × %s were %s. Lost %s." % [f.qty, f.item.display_name, Counterfeit.label(f.fake), Market.format_money(f.paid)], "bad")
+	if closing and queue.is_empty() and leaving.is_empty():
+		paused = true
+		hud.show_day_summary(Shop.day, Shop.stats)
+
+
+func _spawn() -> void:
+	var c := Customer.create(Shop.day, Shop.reputation, Shop.coin_list(), rng)
+	queue.append(c)
+	Sfx.play(self, Sfx.door_bell(), -8.0)
+	Shop.log_event("%s walked in." % c.name)
+
+
+func _walk(delta: float) -> void:
+	for c in queue + leaving:
+		var target: Vector2 = ShopArt.EXIT if c.leaving else ShopArt.SLOTS[mini(queue.find(c), ShopArt.SLOTS.size() - 1)]
+		var to := target - c.pos
+		var step := WALK_SPEED * delta
+		c.walking = to.length() > 0.02
+		c.pos = target if to.length() <= step else c.pos + to.normalized() * step
+	for c in leaving.duplicate():
+		if not c.walking:
+			leaving.erase(c)
+
+
+func _front() -> Customer:
+	if queue.is_empty():
+		return null
+	var c := queue[0]
+	return c if not c.walking and c.pos.distance_to(ShopArt.SLOTS[0]) < 0.05 else null
+
+
+func _show_front() -> void:
+	if _shown:
+		hud.show_customer(_shown)
+	elif not queue.is_empty():
+		hud.show_customer(null, "A customer is walking up to the counter.")
+	elif closing:
+		hud.show_customer(null, "Closing up for the day.")
+	else:
+		hud.show_customer(null, "Quiet for now. Customers arrive every few seconds.")
+
+
+func _dismiss(c: Customer, text := "", mood := "") -> void:
+	queue.erase(c)
+	c.leaving = true
+	leaving.append(c)
+	if text != "":
+		Shop.log_event(text, mood)
+	if c == _shown:
+		_shown = null
+		_show_front()
+
+
+func _on_action(id: String) -> void:
+	var c := _front()
+	if c == null or paused:
+		return
+	match id:
+		"test":
+			_open_test(c)
+		"offer":
+			_offer(c)
+		"refuse":
+			Shop.adjust_reputation(0.05 if c.fake != "" else -0.1)
+			_dismiss(c, "Turned %s away without testing." % c.name)
+		"sell":
+			_sell(c)
+		"decline":
+			_dismiss(c, "%s left without buying." % c.name)
+
+
+func _offer(c: Customer) -> void:
+	var offer := c.offer_total()
+	if Shop.buy_percent < c.reserve:
+		c.tries += 1
+		c.patience -= 15.0
+		c.say = "Still too low. I know what spot is today." if c.tries > 1 else \
+			"That's a lowball. I was hoping for closer to %d%%." % roundi(c.reserve * 100.0 + rng.randf_range(0.0, 2.0))
+		hud.show_customer(c)
+		return
+	Shop.add_cash(-offer)
+	Shop.note("bought", offer)
+	Shop.add_stock(c.item, c.qty, offer / c.qty, c.fake)
+	if c.fake != "":
+		pending_fakes.append({"at": time + 8.0, "item": c.item, "fake": c.fake, "qty": c.qty, "paid": offer})
+	Shop.adjust_reputation(0.05)
+	Sfx.play(self, Sfx.register_chime(), -6.0)
+	_dismiss(c, "Bought %d × %s for %s." % [c.qty, c.item.display_name, Market.format_money(offer)])
+
+
+func _sell(c: Customer) -> void:
+	if Shop.sell_premium > c.max_premium:
+		c.tries += 1
+		c.patience -= 15.0
+		c.say = "The chain store downtown is cheaper." if c.tries > 1 else \
+			"Spot plus %d%%? I'd pay maybe %d%% over." % [roundi(Shop.sell_premium * 100.0), maxi(1, floori(c.max_premium * 100.0))]
+		hud.show_customer(c)
+		return
+	var price := c.sale_total()
+	var taken := Shop.take_stock(c.item.metal, c.qty)
+	Shop.add_cash(price)
+	Shop.note("sold", price)
+	Shop.note("profit", price - taken.cost)
+	Shop.note("served")
+	Shop.adjust_reputation(0.08)
+	Sfx.play(self, Sfx.register_chime(), -6.0)
+	if taken.fakes > 0:
+		var refund: float = price / c.qty * taken.fakes
+		Shop.add_cash(-refund)
+		Shop.adjust_reputation(-0.6)
+		Shop.log_event("%s came back: %d of the coins you sold were fake! Refunded %s." % [c.name, taken.fakes, Market.format_money(refund)], "bad")
+	var profit: float = price - taken.cost
+	_dismiss(c, "Sold %d coins for %s (profit %s)." % [c.qty, Market.format_money(price), Market.format_money(profit)], "good" if profit >= 0.0 else "bad")
+
+
+func _open_test(c: Customer) -> void:
+	paused = true
+	_test = CoinTestScene.instantiate()
+	hud.add_child(_test)
+	_test.start(c)
+	_test.finished.connect(_on_test_finished.bind(c))
+
+
+func _on_test_finished(verdict: String, c: Customer) -> void:
+	_test.queue_free()
+	_test = null
+	paused = false
+	match verdict:
+		"genuine":
+			c.tested = true
+			c.say = "Told you they were real. So, what's your offer?"
+			hud.show_customer(c)
+		"fake":
+			if c.fake != "":
+				Shop.note("caught")
+				Shop.adjust_reputation(0.15)
+				_dismiss(c, "Caught a %s fake from %s!" % [Counterfeit.label(c.fake), c.name], "good")
+			else:
+				Shop.adjust_reputation(-0.25)
+				_dismiss(c, "You called %s's genuine coins fake. They stormed out." % c.name, "bad")
+
+
+func _open_next_day() -> void:
+	Shop.next_day()
+	time = 0.0
+	closing = false
+	paused = false
+	_next_spawn = 2.0
+	Shop.log_event("Day %d. Shop open." % Shop.day)

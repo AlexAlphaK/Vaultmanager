@@ -54,6 +54,11 @@ var _http: HTTPRequest
 
 func _ready() -> void:
 	_load_cache()
+	if prices.is_empty():
+		# first launch: play on seed prices until the first quote arrives
+		prices = SEED_PRICES.duplicate()
+		source = "simulated"
+	start_new_day()
 	_load_currency()
 	_http = HTTPRequest.new()
 	_http.timeout = 10.0
@@ -117,7 +122,7 @@ static func currency_for_locale(locale: String) -> String:
 
 
 static func _group_digits(value: float, decimals: int) -> String:
-	var text := String.num(value, decimals) if decimals > 0 else str(roundi(value))
+	var text := ("%." + str(decimals) + "f") % value if decimals > 0 else str(roundi(value))
 	var whole := text.get_slice(".", 0)
 	var frac := text.substr(whole.length())
 	var out := ""

@@ -4,9 +4,17 @@
 
 [resource]
 script = ExtResource("1")
+id = "gold_maple"
 display_name = "Gold Maple Leaf"
 metal = "XAU"
 weight_g = 31.11
 purity = 0.9999
 diameter_mm = 30.0
+thickness_mm = 2.80
 sell_premium = 0.05
+palette = "gold"
+motif = "leaf"
+legend = "CANADA"
+fineness_text = "9999"
+year = "2023"
+radial_lines = true

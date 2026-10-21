@@ -4,9 +4,17 @@
 
 [resource]
 script = ExtResource("1")
+id = "gold_eagle"
 display_name = "American Gold Eagle"
 metal = "XAU"
 weight_g = 33.93
 purity = 0.9167
 diameter_mm = 32.7
+thickness_mm = 2.87
 sell_premium = 0.06
+palette = "gold22"
+motif = "eagle"
+legend = "LIBERTY"
+fineness_text = "1 OZ FINE GOLD"
+year = "2024"
+radial_lines = false

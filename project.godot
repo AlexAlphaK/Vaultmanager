@@ -4,12 +4,13 @@ config_version=5
 [application]
 
 config/name="Vault Manager"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/shop/shop.tscn"
 config/features=PackedStringArray("4.3")
 
 [autoload]
 
 Market="*res://autoload/market.gd"
+Shop="*res://autoload/shop.gd"
 
 [display]
 
