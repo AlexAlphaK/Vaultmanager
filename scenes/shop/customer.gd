@@ -3,8 +3,10 @@ extends RefCounted
 ## Someone who walks in to sell coins to the shop or buy them.
 ## Some sellers bring jewellery or a bullion bar instead. Sellers sometimes carry fakes; their asking price follows the day's market mood.
 ## A customer who comes because of a market event (see MarketEvents) follows that event.
+## Customers (the autoload) gives each one a personality: an archetype, and for the
+## shop's regulars a place in their story. Most customers haggle a little; hagglers a lot.
 
-const NAMES := ["Mrs. Okafor", "Dale", "Priya", "Grandpa Lev", "Kevin", "Ms. Halvorsen", "Marco", "June",
+const NAMES := ["Mrs. Adeyemi", "Dale", "Priya", "Grandpa Joe", "Kevin", "Ms. Halvorsen", "Marco", "June",
 	"Big Earl", "Tomasz", "Aiyana", "Rosa", "Deshawn", "Hiro", "Fern", "Ingrid", "Mateo", "Old Sal"]
 const SELLER_LINES := ["Clearing out my late husband's collection.", "Price is up, time to cash in.",
 	"Need a bit of cash for the car.", "Selling part of my stack."]
@@ -29,9 +31,26 @@ var fake := ""
 ## Lowest share of melt a seller accepts, and the highest premium a buyer pays.
 var reserve := 0.9
 var max_premium := 0.06
+## Haggling: how far the customer moves each time you hold firm, and how far they go.
+## Sellers come down to `floor_reserve`, buyers come up to `ceiling_premium`.
+var haggle := 0.0
+var floor_reserve := 0.9
+var ceiling_premium := 0.06
+## "walk_in", "haggler", "crypto_bro", "collector", "shady" or "regular".
+var archetype := "walk_in"
+## Regulars: who they are in Customers.REGULARS and which visit of their story this is.
+var regular_id := ""
+var beat := -1
+## Collectors want this exact coin, not just the metal.
+var wanted_exact := false
+## How the visit ended, read by Customers when they leave.
+var dealt := false
+var caught := false
 var patience := 70.0
 var max_patience := 70.0
 var say := ""
+## What a "visit" customer (someone who just drops by to talk) says under their quote.
+var note := ""
 var tries := 0
 var tested := false
 var seed := 0
@@ -97,10 +116,88 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 		c.say = lines[rng.randi() % lines.size()]
 	if not event.is_empty() and c.fake == "":
 		c.say = event.lines[rng.randi() % event.lines.size()]
-	var look := PeopleArt.random_look(rng)
-	for f in 3:
-		c.frames.append(PeopleArt.paint(look, f).texture())
+	c.floor_reserve = c.reserve
+	c.ceiling_premium = c.max_premium
+	c.set_look(PeopleArt.random_look(rng))
 	return c
+
+
+func set_look(look: Dictionary) -> void:
+	frames.clear()
+	for f in 3:
+		frames.append(PeopleArt.paint(look, f).texture())
+
+
+## Sets how hard the customer bargains. Sellers open `open` above their floor and buyers
+## open that much below their ceiling, then move `step` each time you hold firm.
+func set_haggle(open: float, step: float) -> void:
+	haggle = step
+	if kind == "seller":
+		floor_reserve = reserve
+		reserve = minf(reserve + open, 1.05)
+	else:
+		ceiling_premium = max_premium
+		max_premium = maxf(0.0, max_premium - open)
+
+
+## The seller hears your offer. True means deal; otherwise they counter and lose patience.
+func hear_offer(offer: float) -> bool:
+	if offer >= reserve * expected_total() - 0.01:
+		return true
+	tries += 1
+	patience -= 15.0
+	var moved := reserve > floor_reserve
+	reserve = maxf(floor_reserve, reserve - haggle)
+	if moved and offer >= reserve * expected_total() - 0.01:
+		say = "Ugh. Fine. You drive a hard bargain."
+		return true
+	var ask := ceili(reserve * 100.0 - 0.01)
+	if piece:
+		say = "No. I know what this is worth." if tries > 1 else "That's a lowball for a piece like this. Look again."
+		if moved:
+			say = "Look, I'd take %d%% of what it's worth. That's fair." % ask
+	elif moved:
+		var final := reserve <= floor_reserve
+		match archetype:
+			"haggler":
+				say = ("%d%%. That's my floor, take it or I walk." if final else "Come on. %d%% and we shake on it.") % ask
+			"crypto_bro":
+				say = "Bro. %d%%. I'm literally losing money here." % ask
+			_:
+				say = ("Okay, %d%%, but that's as low as I go." if final else "How about %d%%? Meet me halfway.") % ask
+	else:
+		say = "Still too low. I know what spot is today." if tries > 1 else \
+			"That's a lowball. I was hoping for closer to %d%%." % ask
+	return false
+
+
+## The buyer hears your price (premium over melt). True means sold.
+func hear_price(premium: float) -> bool:
+	if premium <= max_premium + 0.0001:
+		return true
+	tries += 1
+	patience -= 15.0
+	var moved := max_premium < ceiling_premium
+	max_premium = minf(ceiling_premium, max_premium + haggle)
+	if moved and premium <= max_premium + 0.0001:
+		say = "Fine, fine. Ring it up."
+		return true
+	var over := maxi(1, floori(max_premium * 100.0 + 0.01))
+	if moved:
+		say = ("Spot plus %d%%, final offer." if max_premium >= ceiling_premium else "I could stretch to %d%% over. Deal?") % over
+	elif archetype == "collector":
+		say = "I pay well for quality, but not that well. %d%% over." % over
+	else:
+		say = "The chain store downtown is cheaper." if tries > 1 else \
+			"Spot plus %d%%? I'd pay maybe %d%% over." % [roundi(premium * 100.0), over]
+	return false
+
+
+## Coins the shop holds that this customer would buy.
+func stock_have() -> int:
+	if wanted_exact:
+		return Shop.count_of_item(item)
+	return Shop.count_of(item.metal)
 
 
 ## Melt value of everything the customer brings or wants, at live prices.

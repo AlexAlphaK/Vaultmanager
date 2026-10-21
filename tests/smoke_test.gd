@@ -1,5 +1,6 @@
 extends Node
-## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test and the vault lock-up. Run:
+## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test, the vault lock-up,
+## the customers (archetypes, haggling, regulars' stories), and the menus, settings and music. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -19,10 +20,14 @@ func _ready() -> void:
 	_check_bars()
 	_check_vault_layout()
 	_check_market_events()
+	_check_customers()
 	await _check_vault_scene()
 	await _check_shop_day()
 	await _check_jewellery_deals()
 	await _check_bar_deals()
+	_check_settings()
+	_check_music()
+	await _check_menus()
 	SaveGame.delete_save()
 	print("SMOKE TEST %s (%d failures)" % ["PASSED" if failures == 0 else "FAILED", failures])
 	get_tree().quit(1 if failures else 0)
@@ -184,6 +189,125 @@ func _check_market_events() -> void:
 	Market.source = saved_source
 	Market.crypto = saved_crypto
 	Market.metals_change = saved_change
+
+
+func _check_customers() -> void:
+	Shop.reset()
+	Customers.reset()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	Shop.day = 5
+	# every archetype makes a customer with its personality
+	for id in ["walk_in", "haggler", "crypto_bro", "collector", "shady"]:
+		for n in 10:
+			var c := Customer.create(Shop.day, 3.0, Shop.coin_list(), rng)
+			Customers.apply_archetype(c, id, rng)
+			expect(c.archetype == id and c.frames.size() == 3, "%s customer is painted" % id)
+			expect(c.say != "" and c.patience > 0.0, "%s customer talks and waits" % id)
+			match id:
+				"collector":
+					expect(c.kind == "buyer" and c.wanted_exact and c.max_premium >= 0.12, "collectors pay well for one coin")
+				"shady":
+					expect(c.kind == "seller" and c.piece == null and c.reserve <= 0.84, "shady sellers come cheap")
+				"crypto_bro":
+					expect(c.item.metal == "XAU" and c.patience < 70.0, "crypto bros want gold, fast")
+				"haggler":
+					expect(c.haggle > 0.0, "hagglers bargain")
+	for n in 50:
+		var id := Customers.pick_archetype(rng)
+		expect(id in ["walk_in", "haggler", "crypto_bro", "collector", "shady"], "archetype pick is known")
+	var crypto_rush := {"id": "btc_crash", "measure": "crypto:BTC"}
+	for n in 20:
+		expect(Customers.pick_archetype(rng, crypto_rush) in ["walk_in", "crypto_bro"], "a crypto rush brings crypto folk")
+
+	# a haggling seller comes down a step each time you hold firm, then deals
+	var s := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	s.kind = "seller"
+	s.piece = null
+	s.fake = ""
+	s.archetype = "haggler"
+	s.reserve = 0.9
+	s.set_haggle(0.06, 0.02)
+	expect(is_equal_approx(s.reserve, 0.96) and is_equal_approx(s.floor_reserve, 0.9), "hagglers open high")
+	Shop.buy_percent = 0.92
+	expect(not s.hear_offer(s.offer_total()), "first offer is countered")
+	expect(s.say.contains("94%"), "the counter names a number: " + s.say)
+	expect(s.hear_offer(s.offer_total()), "holding firm closes the deal")
+	var stubborn := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	stubborn.kind = "seller"
+	stubborn.piece = null
+	stubborn.reserve = 0.9
+	stubborn.set_haggle(0.04, 0.02)
+	Shop.buy_percent = 0.8
+	for n in 5:
+		expect(not stubborn.hear_offer(stubborn.offer_total()), "a lowball never lands")
+	expect(is_equal_approx(stubborn.reserve, 0.9), "sellers stop at their floor")
+	# a haggling buyer comes up toward their ceiling
+	var b := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	b.kind = "buyer"
+	b.max_premium = 0.08
+	b.set_haggle(0.04, 0.02)
+	expect(not b.hear_price(0.07), "buyer balks at first")
+	expect(b.hear_price(0.07) or b.hear_price(0.07), "buyer comes round")
+	expect(not b.hear_price(0.12), "buyer never goes past the ceiling")
+	Shop.buy_percent = 0.92
+
+	# collectors take only their coin
+	Shop.add_stock(Shop.coins["silver_maple"], 5, 30.0)
+	var eagles := Shop.count_of_item(Shop.coins["silver_eagle"])
+	Shop.take_stock("XAG", 3, Shop.coins["silver_maple"])
+	expect(Shop.count_of_item(Shop.coins["silver_maple"]) == 2 and Shop.count_of_item(Shop.coins["silver_eagle"]) == eagles, "exact coins leave for collectors")
+
+	# Grandpa Lev's story plays out over visits a couple of days apart
+	Shop.day = 1
+	expect("lev" in Customers.due_regulars() and not "vance" in Customers.due_regulars(), "Lev is due on day 1, the collector later")
+	var rep := Shop.reputation
+	var beats: int = Customers.REGULARS[0].beats.size()
+	for n in beats:
+		var c := Customers.regular_customer("lev", rng)
+		expect(c.archetype == "regular" and c.beat == n and Customers.tag(c) == "regular", "Lev visit %d" % n)
+		expect(not "lev" in Customers.due_regulars(), "regulars come once a day at most")
+		c.dealt = true
+		Customers.on_leave(c)
+		Shop.day += 2
+	expect(Customers.state.lev.done and Customers.state.lev.loyalty == beats, "Lev's story ends")
+	expect(Shop.reputation > rep, "the finale lifts reputation")
+	# a regular treated badly finds another shop
+	Shop.day = 1
+	for n in 2:
+		var c := Customers.regular_customer("okafor", rng)
+		Customers.on_leave(c)
+		Shop.day += 2
+	expect(Customers.state.okafor.gone and not "okafor" in Customers.due_regulars(), "a spurned regular stops coming")
+	# out of stock is no one's fault: Dr. Vance comes back for it
+	var v := Customers.regular_customer("vance", rng)
+	Shop.confiscate(v.item, "")
+	Customers.on_leave(v)
+	expect(Customers.state.vance.beat == 0 and Customers.state.vance.loyalty == 0, "out of stock keeps the collector's story")
+	# catch Vinnie twice and the detective pays the reward
+	for caught in [true, true, false]:
+		var c := Customers.regular_customer("vinnie", rng)
+		expect(c.fake != "", "Vinnie's coins are fake")
+		c.caught = caught
+		Customers.on_leave(c)
+	var ruiz := Customers.regular_customer("vinnie", rng)
+	expect(ruiz.kind == "visit" and ruiz.name == "Detective Ruiz" and ruiz.note.begins_with("Reward"), "the detective visits")
+	var cash := Shop.cash
+	Customers.on_leave(ruiz)
+	expect(Shop.cash > cash and Customers.state.vinnie.done, "the detective pays the reward")
+	Customers.state.vinnie = Customers._fresh()
+	Customers.state.vinnie.beat = 3
+	expect(Customers.regular_customer("vinnie", rng).say.contains("Test your coins"), "no reward if Vinnie got away with it")
+	# story lines reach the summary, and stories survive a save
+	var report := {"lines": []}
+	Customers._on_day_ended(Shop.day, report)
+	expect(report.lines.size() >= beats, "story lines reach the day summary")
+	SaveGame.save_game()
+	Customers.reset()
+	expect(SaveGame.load_game() and Customers.state.lev.done and Customers.state.okafor.gone, "regulars' stories are saved")
+	SaveGame.delete_save()
+	Customers.reset()
+	Shop.reset()
 
 
 func _check_shop_day() -> void:
@@ -648,4 +772,81 @@ func _check_vault_scene() -> void:
 	await get_tree().create_timer(1.0).timeout
 	expect(vault._result != null, "the night's result shows")
 	vault.queue_free()
+	Shop.reset()
+
+
+func _check_settings() -> void:
+	var real_path := Settings.path
+	Settings.path = "user://smoke_test_settings.cfg"
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
+	expect(AudioServer.get_bus_index("Music") != -1 and AudioServer.get_bus_index("SFX") != -1, "the Music and SFX buses exist")
+	Settings.set_volume("Music", 0.25)
+	var music := AudioServer.get_bus_index("Music")
+	expect(is_equal_approx(AudioServer.get_bus_volume_db(music), linear_to_db(0.25)), "the music slider sets the bus volume")
+	Settings.set_volume("SFX", 0.0)
+	expect(AudioServer.is_bus_mute(AudioServer.get_bus_index("SFX")), "effects at zero are muted")
+	Settings.set_fullscreen(true)
+	Settings.volume["Music"] = 1.0
+	Settings.fullscreen = false
+	Settings.load_settings()
+	expect(is_equal_approx(Settings.volume["Music"], 0.25) and Settings.fullscreen, "settings come back from disk")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
+	Settings.path = real_path
+	Settings.load_settings()
+
+
+func _check_music() -> void:
+	for track in MusicSynth.TRACKS:
+		var w := MusicSynth.render(track, 1)
+		var frames := w.data.size() / 2
+		expect(w.loop_mode == AudioStreamWAV.LOOP_FORWARD and w.loop_end == frames, "%s music loops" % track)
+		var peak := 0
+		for n in range(0, frames, 7):
+			peak = maxi(peak, absi(w.data.decode_s16(n * 2)))
+		expect(peak > 3000 and peak < 32767, "%s music is audible and does not clip" % track)
+	expect(MusicSynth.midi_hz(69) == 440.0, "A4 is 440 Hz")
+
+
+func _check_menus() -> void:
+	SaveGame.new_game()
+	Shop.day = 9
+	SaveGame.save_game()
+	expect(SaveGame.peek().get("day", 0) == 9, "the title screen can read the saved day")
+	var title: Control = load("res://scenes/menu/title_screen.tscn").instantiate()
+	add_child(title)
+	await get_tree().process_frame
+	if not title.has_method("_go_to_shop"):
+		expect(false, "the title script loads")
+		return
+	expect(not title._continue.disabled and "Day 9" in title._save_info.text, "Continue shows the saved shop")
+	title._on_new_game()
+	expect(SaveGame.has_save() and title._confirm_new, "New game asks before erasing a save")
+	title._open_settings()
+	await get_tree().process_frame
+	expect(title._settings != null and not title._menu.visible, "Settings opens from the title")
+	title._settings.close()
+	expect(title._settings == null and title._menu.visible, "Settings closes back to the menu")
+	title.queue_free()
+	SaveGame.delete_save()
+	title = load("res://scenes/menu/title_screen.tscn").instantiate()
+	add_child(title)
+	await get_tree().process_frame
+	expect(title._continue.disabled, "Continue is off without a save")
+	title.queue_free()
+
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	shop._open_shop()
+	shop.open_pause_menu()
+	expect(get_tree().paused and shop._pause.is_open(), "the pause menu pauses the game")
+	var clock: float = shop.time
+	await get_tree().process_frame
+	await get_tree().process_frame
+	expect(is_equal_approx(shop.time, clock), "the shop clock stops while paused")
+	shop._pause.close()
+	expect(not get_tree().paused and not shop._pause.is_open(), "Resume unpauses")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.delete_save()
 	Shop.reset()

@@ -10,28 +10,39 @@ platinum and palladium prices follow the real market.
 | `project.godot` | Godot 4.3 project, 480x270 pixel-perfect viewport scaled by whole numbers |
 | `autoload/market.gd` | `Market` singleton: metals, crypto, stocks and exchange rates; caches to disk, simulates when offline; formats money in the player's currency |
 | `autoload/market_events.gd` | `MarketEvents` singleton: turns real price moves into news headlines and rushes of customers |
+| `autoload/customers.gd` | `Customers` singleton: customer archetypes (haggler, crypto bro, collector, shady seller) and the regulars' stories |
 | `autoload/shop.gd` | `Shop` singleton: cash, reputation, stock and the day's results; stock is valued at live prices |
 | `autoload/day.gd` | `Day` singleton: day phases (morning, open, closing, after hours), the week, bills and the day's ledger |
 | `autoload/progress.gd` | `Progress` singleton: the four shop tiers, upgrades and their effects |
 | `autoload/save_game.gd` | `SaveGame` singleton: saves to `user://save.json` every morning, loads on launch |
+| `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
+| `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
 | `items/bullion_bar.gd` | `BullionBar`: the bars customers sell (1 oz to 1 kilo, gold, silver and platinum), the six kinds of fake bar, what the ultrasound and XRF gun read, and the ledger of serial numbers you have bought |
 | `items/counterfeit.gd` | The four kinds of fake (plated steel, brass, copper-nickel clad, tungsten core) and what each does to the readings |
 | `data/coins/*.tres` | Real coin specs (weight, purity, diameter, thickness) used by the testing minigame |
+| `scenes/menu/` | The title screen (main scene: Continue, New game, Settings, Quit) and the pause menu |
 | `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene) |
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
 | `scenes/bar_test/` | The bar test: scale, calipers, ultrasound flaw detector, XRF gun and loupe |
 | `scenes/vault/` | The vault lock-up minigame at closing time; `vault_layout.gd` holds the packing and break-in rules |
-| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people, coin, jewellery, bar and vault painters. No image files |
+| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people, coin, jewellery, bar, vault and title screen painters. No image files |
 | `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds, `bar_sfx.gd` the gel, ultrasound and X-ray sounds) |
-| `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons) |
+| `audio/music_synth.gd` | The music, synthesised at runtime: a music-box title theme and a slow jazzy shop loop |
+| `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons, sliders) |
+| `ui/settings_panel.gd` | The settings page shared by the title screen and the pause menu |
 | `tests/smoke_test.tscn` | Headless checks: run `godot --headless --path . res://tests/smoke_test.tscn` |
 | `price-service/` | Cloudflare Worker that polls the metals API and serves `GET /prices` |
 | `prototype/index.html` | Single-file browser prototype (simulated prices, coin testing minigame) |
 
 ## How to play
+
+The game opens on the title screen. **Continue** picks up your saved shop (the game saves
+every morning), **New game** starts over on day 1 (click twice if you have a save), and
+**Settings** sets the currency, the volume of everything, music and effects, and fullscreen.
+In the shop, **Esc** or the **Menu** button pauses the game. **F11** toggles fullscreen anywhere.
 
 Customers queue at the counter. Sellers bring coins, buyers want coins from your vault.
 
@@ -74,6 +85,27 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   open `scenes/vault/vault.tscn` in Godot and press F6.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
+
+## Customers
+
+Not everyone who walks in is the same. The counter card tags the ones worth watching:
+
+| Who | What they do |
+| --- | --- |
+| Everyday walk-ins | About half will come down (or up) a point if you hold firm |
+| **Hagglers** | Open well above (or below) their real number, then come round a step each time you hold firm. They name their counter, so you can meet them with the -/+ buttons or keep pushing. Every push costs patience |
+| **Crypto bros** | Big gold orders and short patience. They buy after crypto rallies, sell cheap after crashes, and turn up in Bitcoin rushes |
+| **Collectors** | Want one exact coin and pay 12-18% over spot for it |
+| **Nervous sellers** | Suspiciously cheap and in a hurry. Most carry fakes |
+
+**Regulars** come back every couple of days, and each has a short story told over their visits:
+Grandpa Lev selling his late wife's coins, Mrs. Okafor saving silver for her granddaughter's
+college fund, Chad the crypto trader riding his ups and downs, Dr. Vance building a museum
+display, and Vinnie, who keeps trying to sell you fakes until Detective Ruiz pays a visit.
+Fair deals build their loyalty (and slightly better prices); finish a story for a reputation
+boost or a reward. Turn a regular away twice and they find another shop. If a regular wants a
+coin you don't have, they come back for it later. Story moments show up in the end-of-day
+summary, and everything is saved. The stories live in `Customers.REGULARS`.
 
 ## Market events
 
@@ -121,8 +153,16 @@ Design doc: https://claude.ai/artifact/VqviQgHanNwibT95FhXgLV
 ## Currency
 
 Everything runs in USD internally. `Market.format_money()` converts for display. The default
-currency comes from the device locale (e.g. `de_DE` shows euros); players can change it, and
-the choice is saved in `user://settings.cfg`.
+currency comes from the device locale (e.g. `de_DE` shows euros); players can change it in
+Settings, and the choice is saved in `user://settings.cfg`.
+
+## Sound
+
+Every sound is made in code. Effects play on the **SFX** bus and music on the **Music** bus;
+both feed **Master**, and `Settings` creates the buses at launch so there is no bus layout file.
+`MusicSynth` renders each track as a seamless loop (a second or two of work), so `Music` does it on
+a thread the first time and keeps the result in `user://music_cache/`. If you change
+`music_synth.gd`, bump `Music.CACHE_VERSION` so players get the new render.
 
 ## Feed states
 

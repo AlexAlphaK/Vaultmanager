@@ -52,6 +52,20 @@ func load_game() -> bool:
 	return true
 
 
+## A summary of the save for the title screen, without loading it:
+## {"day", "tier", "cash", "saved_unix"}, or {} when there is no readable save.
+func peek() -> Dictionary:
+	if not has_save():
+		return {}
+	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if typeof(data) != TYPE_DICTIONARY or int(data.get("version", 0)) > VERSION:
+		return {}
+	var shop: Dictionary = data.get("shop", {}) if typeof(data.get("shop")) == TYPE_DICTIONARY else {}
+	var progress: Dictionary = data.get("progress", {}) if typeof(data.get("progress")) == TYPE_DICTIONARY else {}
+	return {"day": int(shop.get("day", 1)), "tier": int(progress.get("tier", 0)),
+		"cash": float(shop.get("cash", 0.0)), "saved_unix": int(data.get("saved_unix", 0))}
+
+
 func delete_save() -> void:
 	if has_save():
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))

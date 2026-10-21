@@ -6,6 +6,7 @@ signal action(name: String) # "test", "offer", "refuse", "sell", "decline"
 signal open_requested
 signal next_day_requested
 signal new_game_requested
+signal menu_requested
 
 const SIDE_X := 318
 const SIDE_W := 160
@@ -14,7 +15,6 @@ const TICKER_NAMES := {"XAU": "AU", "XAG": "AG", "XPT": "PT", "XPD": "PD"}
 
 var _ticker_labels := {}
 var _feed: Label
-var _currency: OptionButton
 var _day: Label
 var _clock: Label
 var _stars: Label
@@ -83,7 +83,10 @@ func show_customer(c: Customer, idle_text := "") -> void:
 		return
 	_avatar.texture = c.frames[0]
 	_who.text = c.name
-	_wants.text = "wants to sell" if c.kind == "seller" else "wants to buy"
+	var tag := Customers.tag(c)
+	_wants.text = {"seller": "wants to sell", "buyer": "wants to buy", "visit": "stopped by to talk"}.get(c.kind, "")
+	if tag != "":
+		_wants.text = "%s · %s" % [tag, _wants.text]
 	_quote.text = "\"%s\"" % c.say
 	_quote.add_theme_color_override("font_color", Pal.INK)
 	_refresh_deal()
@@ -161,6 +164,13 @@ func _refresh_deal() -> void:
 	var c := _customer
 	if c == null:
 		return
+	if c.kind == "visit":
+		_deal[0].text = c.note
+		_deal[0].add_theme_color_override("font_color", Pal.GOLD)
+		_buttons.decline.visible = true
+		_buttons.decline.text = "Goodbye"
+		return
+	_deal[0].add_theme_color_override("font_color", Pal.INK)
 	if c.kind == "seller":
 		if c.piece:
 			_deal[0].text = c.piece.short_title() + (" with stone" if c.piece.stone != "" else "")
@@ -188,8 +198,11 @@ func _refresh_deal() -> void:
 		_buttons.refuse.visible = true
 		_buttons.refuse.text = "No thanks" if c.tested else "Refuse"
 	else:
-		var have := Shop.count_of(c.item.metal)
-		_deal[0].text = "%d × %s coins" % [c.qty, {"XAU": "gold", "XAG": "silver", "XPT": "platinum"}.get(c.item.metal, "")]
+		var have := c.stock_have()
+		if c.wanted_exact:
+			_deal[0].text = "%d × %s" % [c.qty, c.item.display_name]
+		else:
+			_deal[0].text = "%d × %s coins" % [c.qty, {"XAU": "gold", "XAG": "silver", "XPT": "platinum"}.get(c.item.metal, "")]
 		_deal[1].text = "You hold %d" % have
 		_deal[2].text = "Price  %s" % Market.format_money(c.sale_total())
 		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
@@ -208,19 +221,9 @@ func _build_ticker() -> void:
 		_ticker_labels[metal] = _label("", Vector2(x, 3), Vector2(86, 8))
 		x += 84
 	_feed = _label("", Vector2(342, 3), Vector2(52, 8))
-	_currency = OptionButton.new()
-	add_child(_currency)
-	_currency.position = Vector2(440, 1)
-	_currency.size = Vector2(38, 10)
-	_currency.fit_to_longest_item = false
-	_currency.focus_mode = Control.FOCUS_NONE
-	var codes := Market.CURRENCY_SYMBOLS.keys()
-	for n in codes.size():
-		_currency.add_item(codes[n], n)
-		if codes[n] == Market.currency:
-			_currency.select(n)
-	_currency.item_selected.connect(func(n): Market.set_currency(codes[n]))
-	_currency.tooltip_text = "Show money in this currency"
+	# the currency picker lives in Settings, behind this button and Esc
+	var menu := _small_button("Menu", Rect2(440, 1, 38, 10), func(): menu_requested.emit())
+	menu.tooltip_text = "Pause, settings and quit (Esc)"
 
 
 func _build_side() -> void:
