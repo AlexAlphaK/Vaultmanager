@@ -11,7 +11,9 @@ config/features=PackedStringArray("4.3")
 
 Market="*res://autoload/market.gd"
 Shop="*res://autoload/shop.gd"
-MarketEvents="*res://autoload/market_events.gd"
+Progress="*res://autoload/progress.gd"
+Day="*res://autoload/day.gd"
+SaveGame="*res://autoload/save_game.gd"
 
 [display]
 

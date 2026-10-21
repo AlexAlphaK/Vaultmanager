@@ -1,7 +1,8 @@
 extends Node2D
 ## The shop floor: runs the day clock, brings customers in, and settles deals at
 ## live market prices. Coin testing opens the CoinTest minigame over the shop.
-## Market events (real price moves) bring rushes of customers and a news banner.
+## Each day runs morning (prices, upgrades) -> open -> closing -> after hours (summary),
+## following the Day autoload. The game saves every morning.
 
 const DAY_SECONDS := 180.0
 const WALK_SPEED := 1.8 # tiles per second
@@ -14,7 +15,8 @@ const RUSH_GAP := 1.5 # seconds between customers in a news rush
 
 var time := 0.0
 var closing := false
-var paused := false
+## True while the shop clock is stopped: before opening, after hours and during a minigame.
+var paused := true
 var queue: Array[Customer] = []
 var leaving: Array[Customer] = []
 var pending_fakes: Array[Dictionary] = []
@@ -29,11 +31,14 @@ var _test: Control
 func _ready() -> void:
 	rng.randomize()
 	hud.action.connect(_on_action)
+	hud.open_requested.connect(_open_shop)
 	hud.next_day_requested.connect(_open_next_day)
-	var banner := NewsBanner.new()
-	hud.add_child(banner)
-	MarketEvents.started.connect(_on_market_event)
-	Shop.log_event("Shop open. Test coins before you buy them.")
+	hud.new_game_requested.connect(_new_game)
+	if SaveGame.load_game():
+		Shop.log_event("Welcome back. Day %d at your %s." % [Shop.day, Progress.tier_name()])
+	else:
+		Shop.log_event("Welcome to your shop. Test coins before you buy them.")
+	_start_morning()
 
 
 func _process(delta: float) -> void:
@@ -54,16 +59,13 @@ func _tick(delta: float) -> void:
 	time += delta
 	if not closing and time >= DAY_SECONDS:
 		closing = true
+		Day.close_shop()
 		Shop.log_event("Closing time. Serving the last customers.")
 	MarketEvents.advance(delta)
 	_next_spawn -= delta
 	if not closing and _next_spawn <= 0.0 and queue.size() < ShopArt.SLOTS.size():
 		_spawn()
-		if _rush_left > 0:
-			_rush_left -= 1
-			_next_spawn = RUSH_GAP
-		else:
-			_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor()
+		_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() * rng.randf_range(0.7, 1.3)
 	for c in queue.duplicate():
 		if c.walking:
 			continue
@@ -78,9 +80,12 @@ func _tick(delta: float) -> void:
 			Shop.note("scammed")
 			Shop.adjust_reputation(-0.3)
 			Shop.log_event("Assay lab: the %d × %s were %s. Lost %s." % [f.qty, f.item.display_name, Counterfeit.label(f.fake), Market.format_money(f.paid)], "bad")
+			var cover := Progress.effect("fraud_refund")
+			if cover > 0.0:
+				Day.add_income("Fraud insurance payout", f.paid * minf(cover, 1.0))
 	if closing and queue.is_empty() and leaving.is_empty():
 		paused = true
-		hud.show_day_summary(Shop.day, Shop.stats)
+		hud.show_day_summary(Day.end_day())
 
 
 func _spawn() -> void:
@@ -235,8 +240,32 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 
 func _open_next_day() -> void:
 	Shop.next_day()
+	_start_morning()
+
+
+func _start_morning() -> void:
 	time = 0.0
 	closing = false
-	paused = false
+	paused = true
+	Day.begin_day()
+	SaveGame.save_game()
+	hud.show_morning()
+
+
+func _open_shop() -> void:
 	_next_spawn = 2.0
-	Shop.log_event("Day %d. Shop open." % Shop.day)
+	paused = false
+	hud.hide_panels()
+	Day.open_shop()
+	Shop.log_event("%s, day %d. Shop open." % [Day.weekday(), Shop.day])
+
+
+func _new_game() -> void:
+	for c in queue + leaving:
+		c.leaving = true
+	queue.clear()
+	leaving.clear()
+	pending_fakes.clear()
+	SaveGame.new_game()
+	Shop.log_event("A fresh start at the corner counter.")
+	_start_morning()

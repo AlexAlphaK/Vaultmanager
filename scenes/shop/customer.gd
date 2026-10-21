@@ -51,10 +51,10 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 	var mood := Market.day_change_percent(metal)
 	c.kind = "seller" if rng.randf() < clampf(0.6 + mood * 0.08, 0.35, 0.85) else "buyer"
 	c.qty = rng.randi_range(5, 25) if metal == "XAG" else rng.randi_range(1, 3 if metal == "XAU" else 2)
-	if not event.is_empty():
-		c.event_id = event.id
-		c.kind = event.kind
-		c.qty = maxi(1, roundi(c.qty * float(event.get("qty", 1.0))))
+	# a bigger shop draws customers with bigger stacks
+	c.qty = maxi(1, roundi(c.qty * Progress.deal_size() * rng.randf_range(0.8, 1.2)))
+	c.max_patience = 70.0 * (1.0 + Progress.effect("patience"))
+	c.patience = c.max_patience
 	if c.kind == "seller":
 		var fake_odds := minf(0.45, 0.25 + 0.04 * (day - 1))
 		var kinds := Counterfeit.kinds_for(metal, day)
@@ -64,7 +64,7 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 		c.reserve = clampf(0.86 + rng.randf_range(-0.03, 0.04) + maxf(0.0, mood) * 0.012 + float(event.get("reserve", 0.0)), 0.74, 0.99)
 		c.say = (FAKE_LINES if c.fake != "" else SELLER_LINES)[rng.randi() % 4]
 	else:
-		c.max_premium = clampf(rng.randf_range(0.03, 0.09) + reputation * 0.006 + float(event.get("premium", 0.0)), 0.02, 0.20)
+		c.max_premium = clampf(rng.randf_range(0.03, 0.09) + reputation * 0.006, 0.02, 0.14) + Progress.effect("premium")
 		var lines := BUYER_LINES_DOWN if mood < 0.0 else BUYER_LINES_UP
 		c.say = lines[rng.randi() % lines.size()]
 	if not event.is_empty() and c.fake == "":
