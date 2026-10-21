@@ -171,6 +171,15 @@ func _check_shop_day() -> void:
 	await get_tree().create_timer(0.5).timeout
 	shop._test.finished.emit("genuine")
 	expect(g.tested, "verdict marks the coin tested")
+	# a tested seller the shop can't afford can still be turned away
+	var hud: Control = shop.get_node("Hud/Root")
+	var cash_before := Shop.cash
+	Shop.add_cash(-Shop.cash)
+	hud.show_customer(g)
+	expect(hud._buttons.offer.disabled and hud._buttons.refuse.visible, "an unaffordable seller can be refused")
+	shop._on_action("refuse")
+	expect(not shop.queue.has(g), "refusing sends the seller away")
+	Shop.add_cash(cash_before)
 	# a buyer
 	Shop.add_stock(Shop.coins["silver_maple"], 10, 40.0)
 	var b := Customer.create(1, 2.5, Shop.coin_list(), rng)
@@ -178,7 +187,6 @@ func _check_shop_day() -> void:
 	b.item = Shop.coins["silver_maple"]
 	b.qty = 5
 	b.max_premium = 0.5
-	shop.queue.erase(g)
 	shop.queue.push_front(b)
 	b.pos = ShopArt.SLOTS[0]
 	await get_tree().process_frame

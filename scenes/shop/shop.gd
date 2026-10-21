@@ -8,6 +8,8 @@ const DAY_SECONDS := 180.0
 const WALK_SPEED := 1.8 # tiles per second
 const CoinTestScene := preload("res://scenes/coin_test/coin_test.tscn")
 const VaultScene := preload("res://scenes/vault/vault.tscn")
+const NewsBanner := preload("res://scenes/shop/news_banner.gd")
+const RUSH_GAP := 1.5 # seconds between customers in a news rush
 
 @onready var room: Node2D = $Room
 @onready var hud: Control = $Hud/Root
@@ -22,6 +24,7 @@ var pending_fakes: Array[Dictionary] = []
 var rng := RandomNumberGenerator.new()
 
 var _next_spawn := 3.0
+var _rush_left := 0
 var _shown: Customer
 var _test: Control
 var _vault: Control
@@ -60,6 +63,7 @@ func _tick(delta: float) -> void:
 		closing = true
 		Day.close_shop()
 		Shop.log_event("Closing time. Serving the last customers.")
+	MarketEvents.advance(delta)
 	_next_spawn -= delta
 	if not closing and _next_spawn <= 0.0 and queue.size() < ShopArt.SLOTS.size():
 		_spawn()
@@ -87,7 +91,7 @@ func _tick(delta: float) -> void:
 
 
 func _spawn() -> void:
-	var c := Customer.create(Shop.day, Shop.reputation, Shop.coin_list(), rng)
+	var c := Customer.create(Shop.day, Shop.reputation, Shop.coin_list(), rng, MarketEvents.customer_event(rng))
 	queue.append(c)
 	Sfx.play(self, Sfx.door_bell(), -8.0)
 	Shop.log_event("%s walked in." % c.name)
@@ -144,8 +148,12 @@ func _on_action(id: String) -> void:
 		"offer":
 			_offer(c)
 		"refuse":
-			Shop.adjust_reputation(0.05 if c.fake != "" else -0.1)
-			_dismiss(c, "Turned %s away without testing." % c.name)
+			if c.tested:
+				Shop.adjust_reputation(-0.05)
+				_dismiss(c, "Passed on %s's coins." % c.name)
+			else:
+				Shop.adjust_reputation(0.05 if c.fake != "" else -0.1)
+				_dismiss(c, "Turned %s away without testing." % c.name)
 		"sell":
 			_sell(c)
 		"decline":
@@ -194,6 +202,15 @@ func _sell(c: Customer) -> void:
 		Shop.log_event("%s came back: %d of the coins you sold were fake! Refunded %s." % [c.name, taken.fakes, Market.format_money(refund)], "bad")
 	var profit: float = price - taken.cost
 	_dismiss(c, "Sold %d coins for %s (profit %s)." % [c.qty, Market.format_money(price), Market.format_money(profit)], "good" if profit >= 0.0 else "bad")
+
+
+## A headline breaks: the first few customers it brings come straight in.
+func _on_market_event(event: Dictionary) -> void:
+	if closing:
+		return
+	_rush_left = int(event.rush)
+	_next_spawn = minf(_next_spawn, 1.0)
+	Sfx.play(self, Sfx.door_bell(), -4.0)
 
 
 func _open_test(c: Customer) -> void:

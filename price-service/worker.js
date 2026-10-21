@@ -5,6 +5,7 @@
 // Response:
 // {
 //   "prices": { "XAU": 4473.37, "XAG": 73.31, "XPT": 1879.64, "XPD": 1520.0 },   // USD per troy oz
+//   "metals_change": { "XAU": -1.2, ... },                                       // % change over about a day
 //   "crypto": { "BTC": { "price": 0, "change_pct": 0 }, ... },                   // USD, 24h change
 //   "stocks": { "SPY": { "price": 0, "change_pct": 0 }, ... },                   // USD, change since last close
 //   "fx": { "EUR": 0.92, "GBP": 0.79, ... },                                     // units per 1 USD
@@ -54,8 +55,24 @@ async function refresh(env, mode) {
       console.log(`${key} refresh failed: ${err.message}`);
     }
   }
+  if (quote.updated.metals === now) trackMetalsChange(quote, now);
   await env.PRICES.put("latest", JSON.stringify(quote));
   return quote;
+}
+
+// The metals API has no daily change, so keep the last day and a half of metal quotes
+// and compare with the newest one that is at least 20 hours old. Drives in-game market events.
+function trackMetalsChange(quote, now) {
+  const t = Date.parse(now);
+  const history = (quote.metals_history || []).filter((s) => t - Date.parse(s.t) < 36 * 3600e3);
+  history.push({ t: now, ...quote.prices });
+  quote.metals_history = history;
+  const old = history.filter((s) => t - Date.parse(s.t) >= 20 * 3600e3).pop();
+  if (!old) return;
+  quote.metals_change = {};
+  for (const m of METALS) {
+    if (old[m] > 0 && quote.prices[m] > 0) quote.metals_change[m] = Math.round((quote.prices[m] / old[m] - 1) * 10000) / 100;
+  }
 }
 
 async function getJson(url, headers = {}) {
