@@ -66,11 +66,12 @@ func box(i: float, j: float, w: float, d: float, h: float, cols: Dictionary, z0 
 
 
 ## Text painted flat on the wall i = 0, centred between j0 and j1, cap line at height `z_top`.
-func text_on_i_wall(text: String, j0: float, j1: float, z_top: float, c: Color) -> void:
+func text_on_i_wall(text: String, j0: float, j1: float, z_top: float, c: Color, plot := Callable()) -> void:
 	var w := PixelFont.measure(text)
 	var start := j1 - ((j1 - j0) * HALF_W - w) / 2.0 / HALF_W
 	var base := p(0, start, z_top)
-	PixelFont.plot_text(text, func(x, y): canvas.px(floori(base.x) + x, floori(base.y) - floori(x / 2.0) + y, c))
+	var put := plot if plot.is_valid() else func(x, y): canvas.px(x, y, c)
+	PixelFont.plot_text(text, func(x, y): put.call(floori(base.x) + x, floori(base.y) - floori(x / 2.0) + y))
 
 
 ## Text painted flat on the wall j = 0, starting at `i0`, cap line at height `z_top`.
