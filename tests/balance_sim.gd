@@ -12,26 +12,32 @@ extends Node
 const STEP := 0.25 # shop-clock seconds per tick
 
 ## How each bot plays. Detection odds are per test it runs; `slow` is shop-clock seconds
-## the bot takes per button at the counter (customers lose patience meanwhile), and
-## `pack` is seconds per piece in the vault.
+## the bot takes per button at the counter (customers lose patience meanwhile),
+## `pack` is seconds per piece in the vault, and `bench` is seconds per coin test (half
+## again for jewellery and bars), which only costs shop time in a rush. `till_run` is how
+## full the till gets, as a share of its limit, before the bot takes it to the vault, and
+## `hire` lists [role, from tier] for the staff the bot takes on.
 const BOTS := {
 	"novice": {
 		"test": 0.75, "fake_easy": 0.8, "fake_hard": 0.45, "false_alarm": 0.1,
 		"grade": 0.5, "plated": 0.7, "stone": 0.5, "bar_easy": 0.8, "bar_hard": 0.4, "bar_core": 0.2,
 		"buy": 0.9, "max_buy": 0.97, "premium": 0.06, "min_premium": 0.03, "holds": 0,
 		"slow": 6.0, "pack": 4.0, "pack_order": "random", "buffer": 1.0, "shady_refuse": 0.0,
+		"bench": 25.0, "till_run": 2.0, "hire": [],
 	},
 	"average": {
 		"test": 0.85, "fake_easy": 0.95, "fake_hard": 0.75, "false_alarm": 0.04,
 		"grade": 0.75, "plated": 0.88, "stone": 0.75, "bar_easy": 0.95, "bar_hard": 0.7, "bar_core": 0.5,
 		"buy": 0.9, "max_buy": 0.95, "premium": 0.07, "min_premium": 0.04, "holds": 1,
 		"slow": 4.0, "pack": 2.5, "pack_order": "value", "buffer": 1.5, "shady_refuse": 0.3,
+		"bench": 15.0, "till_run": 0.9, "hire": [["clerk", 1]],
 	},
 	"expert": {
 		"test": 1.0, "fake_easy": 0.99, "fake_hard": 0.95, "false_alarm": 0.01,
 		"grade": 0.95, "plated": 0.98, "stone": 0.95, "bar_easy": 0.99, "bar_hard": 0.92, "bar_core": 0.85,
 		"buy": 0.88, "max_buy": 0.93, "premium": 0.08, "min_premium": 0.05, "holds": 2,
 		"slow": 2.5, "pack": 1.5, "pack_order": "value", "buffer": 2.0, "shady_refuse": 0.0,
+		"bench": 9.0, "till_run": 0.7, "hire": [["clerk", 0], ["guard", 1]],
 	},
 }
 ## The XRF analyzer reads the surface: plated and low-fineness bars stop fooling the bot.
@@ -40,13 +46,15 @@ const HARD_COIN_FAKES := ["clad", "tungsten"]
 const EASY_BAR_FAKES := ["brass", "copper"]
 const CORE_BAR_FAKES := ["lead_core", "tungsten_core"]
 ## Expert's upgrade order; the others buy the cheapest they can afford.
-const EXPERT_ORDER := ["alarm", "window_sign", "bench", "xrf_gun", "case_lights", "fraud_cover", "big_safe",
+const EXPERT_ORDER := ["alarm", "window_sign", "bench", "xrf_gun", "fraud_cover", "case_lights", "big_safe",
 	"radio_ads", "bar_dealer", "time_lock", "lounge", "billboard"]
 
 var shop: Node
 var bot := {}
 var rng := RandomNumberGenerator.new()
 var _busy := 0.0
+## A test in progress during a rush: {"c", "verdict", "left"}.
+var _bench := {}
 var _csv: FileAccess
 
 
@@ -94,7 +102,7 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 	shop.rng.seed = seed
 	var out := {"tier_day": [1, -1, -1, -1], "worth": [], "rep": [], "break_ins": 0, "stolen": 0.0, "fakes_bought": 0,
 		"caught": 0, "served": 0, "bills": 0.0, "overdrawn_days": 0, "upgrades": {}, "profit": 0.0,
-		"premium_income": 0.0, "lowest_cash": Shop.cash, "losses": {}, "gains": {}, "short_cash": 0, "out_of_stock": 0}
+		"premium_income": 0.0, "lowest_cash": Shop.cash, "losses": {}, "gains": {}, "short_cash": 0, "out_of_stock": 0, "walked_by": 0}
 	for d in days:
 		_morning(out)
 		_play_day(out)
@@ -132,24 +140,43 @@ func _morning(out: Dictionary) -> void:
 		if Shop.cash - Progress.upgrades[id].cost >= reserve:
 			Progress.buy(id)
 			out.upgrades[id] = Shop.day
+	for h in bot.hire:
+		if Progress.tier >= h[1] and Staff.can_hire(h[0]) and Shop.cash - Staff.ROLES[h[0]].fee >= Progress.weekly_rent() * bot.buffer + 8000.0:
+			Staff.hire(h[0])
+			out.upgrades[h[0]] = Shop.day
 	shop._open_shop()
 
 
 func _play_day(out: Dictionary) -> void:
 	_busy = 0.0
+	_bench = {}
 	var guard := 0
-	while guard < 20000:
+	while guard < 20000 and shop._vault == null:
 		guard += 1
-		if shop.closing and shop.queue.is_empty() and shop.leaving.is_empty():
-			break
+		# the shop opens the vault itself once the last customer is gone
 		shop._tick(STEP)
 		shop._walk(STEP)
 		_busy -= STEP
+		if not _bench.is_empty():
+			_bench.left -= STEP
+			if _bench.left <= 0.0:
+				_finish_test(_bench.c, _bench.verdict, out)
+				_bench = {}
+			continue
+		if _busy > 0.0 or shop.away > 0.0:
+			continue
+		if shop.till > RushHours.till_limit() * bot.till_run:
+			shop._on_action("vault_run")
+			continue
 		var c: Customer = shop._front()
-		if c != null and _busy <= 0.0:
+		if c != null:
 			_serve(c, out)
-	# fakes and pieces still in flight settle at closing
-	shop._tick(0.0)
+	out.walked_by += int(Shop.stats.get("walked_by", 0.0))
+	# the bot plays the vault itself, so the shop's own vault scene goes
+	if shop._vault:
+		shop._vault.get_parent().remove_child(shop._vault)
+		shop._vault.free()
+		shop._vault = null
 
 
 ## One button press (or a whole test) for the customer at the counter.
@@ -167,8 +194,8 @@ func _serve(c: Customer, out: Dictionary) -> void:
 		if c.archetype == "shady" and rng.randf() < bot.shady_refuse:
 			shop._on_action("refuse")
 			return
-		# the counter card tags nervous sellers, and only a novice lets that slide
-		if rng.randf() < (maxf(bot.test, 0.95) if c.archetype == "shady" and bot != BOTS.novice else bot.test):
+		# the counter card tags nervous sellers, and the tutorial's Slick teaches to test them
+		if rng.randf() < (maxf(bot.test, 0.95) if c.archetype == "shady" else bot.test):
 			_test(c, out)
 			return
 	_buy_from(c, out)
@@ -181,8 +208,7 @@ func _test(c: Customer, out: Dictionary) -> void:
 		var p := c.piece
 		var plated := p.true_grade == "plated"
 		if plated and rng.randf() < bot.plated:
-			shop._test = Control.new()
-			shop._on_test_finished("fake", c)
+			_finish_test(c, "fake", out)
 			return
 		var grade := p.true_grade if rng.randf() < bot.grade else p.claimed_grade
 		if plated:
@@ -206,9 +232,21 @@ func _test(c: Customer, out: Dictionary) -> void:
 			fake = rng.randf() < (bot.fake_hard if c.fake in HARD_COIN_FAKES else bot.fake_easy)
 		else:
 			fake = rng.randf() < bot.false_alarm
+	var verdict := "fake" if fake else "genuine"
+	if shop.rush.is_empty():
+		_finish_test(c, verdict, out)
+		return
+	# in a rush the shop clock runs on while the bot is at the bench
+	shop._testing = c
 	shop._test = Control.new()
-	shop._on_test_finished("fake" if fake else "genuine", c)
-	if fake:
+	_bench = {"c": c, "verdict": verdict, "left": bot.bench * (1.5 if c.piece or c.bar else 1.0)}
+
+
+func _finish_test(c: Customer, verdict: String, out: Dictionary) -> void:
+	if shop._test == null:
+		shop._test = Control.new()
+	shop._on_test_finished(verdict, c)
+	if verdict == "fake":
 		out.caught += 1
 
 
@@ -326,12 +364,15 @@ func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) ->
 		out.overdrawn_days += 1
 	var bills := 0.0
 	for e in report.get("ledger", []):
-		if e.label in ["Upkeep", "Rent", "Insurance", "Overdraft interest"]:
+		if e.label in ["Upkeep", "Rent", "Insurance", "Overdraft interest"] or String(e.label).begins_with("Wages"):
 			bills -= e.usd
+		elif e.label == "Snatched from the till":
+			_add(out.losses, "till snatches", -e.usd)
 	out.bills += bills
 	_add(out.losses, "bills", bills)
 	for e in report.get("ledger", []):
-		if Progress.upgrades.values().any(func(u): return u.name == e.label) or String(e.label).begins_with("Moving"):
+		if Progress.upgrades.values().any(func(u): return u.name == e.label) or String(e.label).begins_with("Moving") \
+				or String(e.label).begins_with("Hired"):
 			_add(out.losses, "upgrades and moves", -e.usd)
 	var st: Dictionary = report.get("stats", {})
 	out.profit += float(st.get("profit", 0.0))
@@ -369,7 +410,8 @@ func _print_summary(name: String, results: Array, days: int) -> void:
 		for k in totals:
 			bits.append("%s %s" % [k, Market.format_money(totals[k])])
 		print("  %s per run: %s" % [side, ", ".join(bits)])
-	print("  per run: %.1f sellers turned away for lack of cash, %.1f buyers we had no stock for" % [_sum(results, "short_cash") / n, _sum(results, "out_of_stock") / n])
+	print("  per run: %.1f sellers turned away for lack of cash, %.1f buyers we had no stock for, %.1f walked by in rushes" % [
+		_sum(results, "short_cash") / n, _sum(results, "out_of_stock") / n, _sum(results, "walked_by") / n])
 	var ups := {}
 	for r in results:
 		for id in r.upgrades:

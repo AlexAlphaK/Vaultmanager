@@ -11,8 +11,10 @@ const SATURDAY := {"name": "Saturday crowd", "from": 9 * 60 + 45, "to": 11 * 60}
 const SPAWN_GAP := 4.0
 ## Keep this much cash in the till and it is worth a snatch; scaled by the tier's deal size.
 const TILL_LIMIT := 5000.0
+## Share of the till a thief gets away with.
+const GRAB_SHARE := 0.35
 ## Chance per second of a snatch with the till at its limit (twice the limit doubles it).
-const GRAB_CHANCE := 0.008
+const GRAB_CHANCE := 0.005
 
 
 ## Today's rushes, earliest first. Saturdays bring a morning crowd; Sundays are quiet after lunch.

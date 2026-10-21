@@ -16,8 +16,8 @@ const REPUTATION := {
 	"honest": 0.05, # telling a seller their piece is better than they thought
 	"passed_tested": -0.02, # testing coins, then not buying them
 	"refused_genuine": -0.04, # turning away honest coins untested
-	"walked_out": -0.06, # a customer tired of waiting
-	"wrong_call": -0.15, # calling genuine coins fake
+	"walked_out": -0.04, # a customer tired of waiting
+	"wrong_call": -0.1, # calling genuine coins fake
 	"scammed": -0.15, # the assay lab, refiner or dealer found a fake you bought
 	"sold_fake": -0.4, # a customer found fakes in what you sold them
 }

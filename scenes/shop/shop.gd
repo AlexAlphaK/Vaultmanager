@@ -282,7 +282,10 @@ func _on_action(id: String) -> void:
 		"offer":
 			_offer(c)
 		"refuse":
-			if c.tested:
+			# nobody holds it against you when you can't pay what you offered
+			if c.offer_total() > Shop.cash:
+				_dismiss(c, "Couldn't afford %s's %s today." % [c.name, "bar" if c.bar else ("piece" if c.piece else "coins")])
+			elif c.tested:
 				Shop.reputation_for("passed_tested")
 				_dismiss(c, "Passed on %s's %s." % [c.name, "bar" if c.bar else "coins"])
 			else:
@@ -476,7 +479,7 @@ func _finish_vault_run() -> void:
 
 ## Someone reaches over the counter for an overfull till.
 func _till_grab() -> void:
-	var taken := till * 0.6
+	var taken := till * RushHours.GRAB_SHARE
 	till -= taken
 	Day.add_expense("Snatched from the till", taken)
 	Shop.note("stolen", taken)

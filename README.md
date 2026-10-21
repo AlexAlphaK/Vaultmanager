@@ -37,6 +37,7 @@ platinum and palladium prices follow the real market.
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons, sliders) |
 | `ui/settings_panel.gd` | The settings page shared by the title screen and the pause menu |
 | `tests/smoke_test.tscn` | Headless checks: run `godot --headless --path . res://tests/smoke_test.tscn` |
+| `tests/balance_sim.tscn` | Balance check: bot players run the real shop for many days (see Balance below) |
 | `price-service/` | Cloudflare Worker that polls the metals API and serves `GET /prices` |
 | `prototype/index.html` | Single-file browser prototype (simulated prices, coin testing minigame) |
 
@@ -179,6 +180,21 @@ A story does not repeat until its move has faded. Triggers and effects live in
    - `npx wrangler deploy`. `Market.service_url` points at the deployed worker; change it if you deploy your own.
 
 Design doc: https://claude.ai/artifact/VqviQgHanNwibT95FhXgLV
+
+## Balance
+
+`tests/balance_sim.tscn` has three bots (novice, average, expert) play the real shop scene
+headless: they test or skip the bench, misread some fakes, haggle with the -/+ buttons, grade
+jewellery, pack the vault, empty the till, hire staff and buy upgrades. Everything else is the
+game's own code. It prints when each bot reaches each tier, net worth and stars over time, and
+where the money came from and went.
+
+    godot --headless --path . res://tests/balance_sim.tscn -- --runs=6 --days=100
+
+Options: `--bots=novice,average,expert`, `--runs=N` seeds per bot, `--days=N`, `--seed=N`, and
+`--csv=PATH` for one row per bot per day. A 100-day run takes a few minutes per bot.
+The knobs it tunes live in `Shop.REPUTATION`, `Customer.FAKE_ODDS` / `FAKE_ODDS_MAX` and the
+customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Progress.TIERS` and `RushHours`.
 
 ## Data sources
 

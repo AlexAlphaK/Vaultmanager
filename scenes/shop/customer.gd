@@ -24,11 +24,13 @@ const BUYER_LINES_DOWN := ["Prices dipped, I'm buying.", "Stocks are a casino. I
 const BUYER_LINES_UP := ["Crypto burned me. I want something real.", "Adding to my stack.", "A gift for my granddaughter."]
 
 ## Odds an everyday seller's coins are fake: FAKE_ODDS.x on day 1, rising by FAKE_ODDS.y
-## a day up to FAKE_ODDS_MAX. Bars are faked less often, since a fake bar costs far more.
+## a day up to FAKE_ODDS_MAX for the shop's tier: bigger shops draw more crooks, so a
+## player still learning the bench at the corner counter is not swamped by them.
+## Bars are faked less often, since a fake bar costs far more.
 ## Tuned with tests/balance_sim.tscn: missing a fake costs the whole price, and a fair
 ## deal earns about a tenth of it, so a player who tests most coins should come out ahead.
 const FAKE_ODDS := Vector2(0.08, 0.005)
-const FAKE_ODDS_MAX := 0.2
+const FAKE_ODDS_MAX: Array[float] = [0.12, 0.16, 0.2, 0.22]
 const BAR_FAKE_SHARE := 0.6
 ## Odds a customer sells rather than buys (on a flat market), and the odds a seller
 ## brings jewellery, or else a bar, instead of coins. Only coin sellers stock the
@@ -138,8 +140,8 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 	return c
 
 
-static func fake_odds_on(day: int) -> float:
-	return minf(FAKE_ODDS_MAX, FAKE_ODDS.x + FAKE_ODDS.y * (day - 1))
+static func fake_odds_on(day: int, tier := Progress.tier) -> float:
+	return minf(FAKE_ODDS_MAX[clampi(tier, 0, FAKE_ODDS_MAX.size() - 1)], FAKE_ODDS.x + FAKE_ODDS.y * (day - 1))
 
 
 func set_look(look: Dictionary) -> void:

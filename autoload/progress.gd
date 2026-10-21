@@ -11,7 +11,7 @@ signal tier_changed(tier: int)
 ## `traffic` speeds up customer arrivals, `deal_size` scales how much each customer brings.
 ## `safe` is the vault capacity in coins, for the vault organizing minigame.
 const TIERS: Array[Dictionary] = [
-	{"name": "Corner counter", "rent": 1200.0, "upkeep": 40.0, "traffic": 1.0, "deal_size": 1.0, "safe": 60,
+	{"name": "Corner counter", "rent": 800.0, "upkeep": 25.0, "traffic": 1.0, "deal_size": 1.0, "safe": 60,
 		"need_worth": 0.0, "need_rep": 0.0, "cost": 0.0},
 	{"name": "Main Street shop", "rent": 3000.0, "upkeep": 90.0, "traffic": 1.25, "deal_size": 1.5, "safe": 160,
 		"need_worth": 60000.0, "need_rep": 3.0, "cost": 15000.0},
@@ -38,7 +38,7 @@ var upgrades := {
 		"desc": "Coins sparkle. Buyers accept 2% more premium.", "effects": {"premium": 0.02}},
 	"alarm": {"name": "Alarm system", "cost": 6000.0, "tier": 0,
 		"desc": "Insurance costs 30% less and robbers think twice.", "effects": {"insurance": -0.3, "robbery_risk": -0.4}},
-	"fraud_cover": {"name": "Fraud insurance", "cost": 8000.0, "tier": 1,
+	"fraud_cover": {"name": "Fraud insurance", "cost": 6000.0, "tier": 0,
 		"desc": "Pays back half of what you lose on fakes the assay lab catches.", "effects": {"fraud_refund": 0.5}},
 	"big_safe": {"name": "Second safe", "cost": 12000.0, "tier": 1,
 		"desc": "Adds a shelf to the wall safe for the nightly lock-up.", "effects": {"safe": 1.0}},
