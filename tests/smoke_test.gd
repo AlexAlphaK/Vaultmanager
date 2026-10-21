@@ -7,10 +7,16 @@ var failures := 0
 
 
 func _ready() -> void:
+	# never touch the player's real save
+	SaveGame.path = "user://smoke_test_save.json"
+	SaveGame.delete_save()
 	_check_coins()
 	_check_fakes_are_detectable()
 	_check_stock()
+	_check_bills_and_upgrades()
+	_check_save_load()
 	await _check_shop_day()
+	SaveGame.delete_save()
 	print("SMOKE TEST %s (%d failures)" % ["PASSED" if failures == 0 else "FAILED", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -66,10 +72,70 @@ func _check_stock() -> void:
 	Shop.reset()
 
 
+func _check_bills_and_upgrades() -> void:
+	SaveGame.new_game()
+	Day.begin_day()
+	var cash := Shop.cash
+	Day.open_shop()
+	Day.close_shop()
+	var report := Day.end_day()
+	expect(is_equal_approx(Shop.cash, cash - Progress.daily_upkeep()), "a weekday only costs upkeep")
+	expect(report.ledger.size() == 1 and report.next_bills_in == 6, "report lists upkeep and the next bill day")
+	Shop.day = 7
+	Day.begin_day()
+	cash = Shop.cash
+	var insurance := Progress.weekly_insurance()
+	Day.end_day()
+	expect(is_equal_approx(Shop.cash, cash - Progress.daily_upkeep() - Progress.weekly_rent() - insurance), "rent and insurance are due on day 7")
+	expect(Day.phase == Day.AFTER_HOURS, "the day ends after hours")
+	# upgrades
+	Day.begin_day()
+	expect(Progress.buy("bench"), "buy an upgrade")
+	expect(not Progress.buy("bench"), "an upgrade is bought once")
+	expect(not Progress.can_buy("radio_ads"), "tier 2 upgrades are locked at the corner counter")
+	var rng := RandomNumberGenerator.new()
+	var c := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	expect(is_equal_approx(c.max_patience, 70.0 * 1.25), "the bench makes customers more patient")
+	# expansion needs net worth, stars and cash
+	expect(Progress.expand_blocker() != "", "cannot expand on day one")
+	Shop.cash = 200000.0
+	Shop.reputation = 3.5
+	expect(Progress.expand() and Progress.tier == 1, "expand to Main Street")
+	expect(Progress.can_buy("radio_ads"), "Main Street unlocks more upgrades")
+	expect(Progress.weekly_rent() > Progress.TIERS[0].rent, "a bigger shop costs more rent")
+	SaveGame.new_game()
+	expect(Progress.tier == 0 and Progress.owned.is_empty() and Shop.day == 1, "new game resets progress")
+
+
+func _check_save_load() -> void:
+	SaveGame.new_game()
+	Shop.day = 5
+	Shop.cash = 12345.0
+	Shop.reputation = 3.2
+	Shop.add_stock(Shop.coins["krugerrand"], 2, 3000.0, "tungsten")
+	Progress.tier = 1
+	Progress.owned.append("alarm")
+	expect(SaveGame.save_game(), "the game saves")
+	var lots := Shop.stock.size()
+	Shop.reset()
+	Progress.reset()
+	expect(SaveGame.load_game(), "the save loads")
+	expect(Shop.day == 5 and is_equal_approx(Shop.cash, 12345.0) and is_equal_approx(Shop.reputation, 3.2), "day, cash and stars come back")
+	expect(Shop.stock.size() == lots and Shop.count_of("XAU") >= 2, "stock comes back")
+	expect(Shop.stock.any(func(l): return l.fake == "tungsten"), "hidden fakes stay hidden fakes")
+	expect(Progress.tier == 1 and Progress.has_upgrade("alarm"), "tier and upgrades come back")
+	SaveGame.new_game()
+	expect(not SaveGame.has_save(), "new game deletes the save")
+
+
 func _check_shop_day() -> void:
 	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
 	add_child(shop)
 	await get_tree().process_frame
+	expect(shop.paused and Day.phase == Day.MORNING, "the day starts in the morning, shop shut")
+	expect(SaveGame.has_save(), "the morning is saved")
+	shop._open_shop()
+	expect(not shop.paused and Day.phase == Day.OPEN, "open the shop")
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7
 	# a seller with fakes, bought untested: the assay lab catches it later
@@ -122,7 +188,10 @@ func _check_shop_day() -> void:
 	shop.leaving.clear()
 	shop.time = shop.DAY_SECONDS + 1.0
 	shop._tick(0.0)
-	expect(shop.paused, "the day closes when the shop empties")
+	expect(shop.paused and Day.phase == Day.AFTER_HOURS, "the day closes when the shop empties")
+	expect(shop.hud._panels.page == "summary", "the end-of-day summary is up")
 	shop._open_next_day()
-	expect(Shop.day == 2 and not shop.paused, "next day opens")
+	expect(Shop.day == 2 and shop.paused and Day.phase == Day.MORNING, "next morning starts")
+	shop._open_shop()
+	expect(not shop.paused, "day 2 opens")
 	shop.queue_free()
