@@ -1,0 +1,14 @@
+name = "vault-manager-prices"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+# Poll the provider every 5 minutes. The MetalCharts free tier allows about 200 calls a month,
+# so use "0 */4 * * *" (every 4 hours) on the free tier and every 5 minutes on a paid plan.
+[triggers]
+crons = ["0 */4 * * *"]
+
+[[kv_namespaces]]
+binding = "PRICES"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# Set the API key with: npx wrangler secret put METALCHARTS_KEY
