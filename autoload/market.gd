@@ -38,7 +38,7 @@ const COUNTRY_CURRENCY := {
 ## Last-resort seed when there is no network and no cache (first launch offline).
 const SEED_PRICES := {"XAU": 4473.37, "XAG": 73.31, "XPT": 1879.64, "XPD": 1520.0}
 
-@export var service_url := "http://127.0.0.1:8787/prices"
+@export var service_url := "https://vault-manager-prices.price-service.workers.dev/prices"
 
 var prices := {}
 var crypto := {} # symbol -> {"price": USD, "change_pct": 24h %}

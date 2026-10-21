@@ -23,7 +23,7 @@ platinum and palladium prices follow the real market.
    - `npx wrangler kv namespace create PRICES` and paste the id into `wrangler.toml`
    - Set the API keys as secrets (never commit them; for local `wrangler dev`, put them in `price-service/.dev.vars`, which is git-ignored):
      `npx wrangler secret put METALCHARTS_KEY`, `COINGECKO_KEY` (optional), `FINNHUB_KEY`
-   - `npx wrangler deploy`, then set `Market.service_url` to the worker's `/prices` URL.
+   - `npx wrangler deploy`. `Market.service_url` points at the deployed worker; change it if you deploy your own.
 
 Design doc: https://claude.ai/artifact/VqviQgHanNwibT95FhXgLV
 
