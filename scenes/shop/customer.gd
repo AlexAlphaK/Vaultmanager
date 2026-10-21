@@ -53,6 +53,8 @@ var say := ""
 var note := ""
 var tries := 0
 var tested := false
+## The clerk tried to serve this buyer and they wanted a better price.
+var clerk_tried := false
 var seed := 0
 var event_id := "" # the market event that brought them in, if any
 ## A piece of jewellery instead of coins (sellers only), and how the player graded it
@@ -124,7 +126,7 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 
 func set_look(look: Dictionary) -> void:
 	frames.clear()
-	for f in 3:
+	for f in PeopleArt.FRAMES:
 		frames.append(PeopleArt.paint(look, f).texture())
 
 
