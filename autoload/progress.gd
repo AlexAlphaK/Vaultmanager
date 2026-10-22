@@ -28,7 +28,13 @@ const INSURANCE_RATE := 0.002
 ##   premium       +premium buyers accept        insurance share off the insurance bill (negative)
 ##   fraud_refund  share of fake losses repaid   safe      +share of vault capacity
 ##   robbery_risk  share off robbery odds (negative), read by the vault minigame
+##   queue         extra waiting spots in the shop  till         +share the till holds before thieves notice
+##   clerk_speed   +share of the clerk's speed      calm_queue   share off queue impatience while you test
+##   refine        +share the refiner pays          deal_size    +share of what each customer brings
 ## Staff on the payroll add their effects too (see Staff.ROLES).
+## `line` groups an upgrade: "counter" and "tools" grow the counter and the testing
+## benches and show up on the shop floor, "room" builds a room on the floor plan (PlanArt).
+## `needs` names an upgrade that must be owned first.
 var upgrades := {
 	"bench": {"name": "Waiting bench", "cost": 1500.0, "tier": 0,
 		"desc": "Customers wait 25% longer before they give up.", "effects": {"patience": 0.25}},
@@ -44,13 +50,35 @@ var upgrades := {
 		"desc": "Adds a shelf to the wall safe for the nightly lock-up.", "effects": {"safe": 1.0}},
 	"radio_ads": {"name": "Radio ads", "cost": 18000.0, "tier": 1,
 		"desc": "The whole town hears about you: customers arrive 20% faster.", "effects": {"traffic": 0.2}},
-	"lounge": {"name": "Collector's lounge", "cost": 35000.0, "tier": 2,
+	"lounge": {"name": "Collector's lounge", "cost": 35000.0, "tier": 2, "line": "room",
 		"desc": "Comfy chairs and coffee. Buyers accept 3% more premium and wait 20% longer.",
 		"effects": {"premium": 0.03, "patience": 0.2}},
 	"time_lock": {"name": "Time-lock vault", "cost": 60000.0, "tier": 2,
 		"desc": "Robberies become very rare and insurance drops another 30%.", "effects": {"insurance": -0.3, "robbery_risk": -0.4}},
 	"billboard": {"name": "Highway billboard", "cost": 90000.0, "tier": 3,
 		"desc": "People drive in from the next town: customers arrive 30% faster.", "effects": {"traffic": 0.3}},
+	# the counter
+	"queue_ropes": {"name": "Brass queue ropes", "cost": 3000.0, "tier": 0, "line": "counter",
+		"desc": "Posts and a velvet rope snake the queue: 2 more customers can wait inside.", "effects": {"queue": 2.0}},
+	"long_counter": {"name": "Long counter", "cost": 14000.0, "tier": 1, "line": "counter",
+		"desc": "A second service window. The clerk rings up 40% faster, the till holds 50% more before thieves notice, and 1 more customer can wait.",
+		"effects": {"queue": 1.0, "till": 0.5, "clerk_speed": 0.4}},
+	"marble_counter": {"name": "Marble showroom counter", "cost": 40000.0, "tier": 2, "line": "counter", "needs": "long_counter",
+		"desc": "Marble, brass and glass. Buyers accept 2% more premium, wait 15% longer, and 1 more customer can wait.",
+		"effects": {"premium": 0.02, "patience": 0.15, "queue": 1.0}},
+	# the testing benches
+	"digital_gauges": {"name": "Digital gauges", "cost": 2500.0, "tier": 0, "line": "tools",
+		"desc": "The coin and bar benches compare each reading with the spec: green inside it, red outside.", "effects": {}},
+	"sigma_verifier": {"name": "Sigma metal verifier", "cost": 12000.0, "tier": 1, "line": "tools",
+		"desc": "A conductivity probe for the coin bench (key 6). It reads through plating and finds a tungsten core.", "effects": {}},
+	# rooms on the floor plan
+	"testing_lab": {"name": "Testing lab", "cost": 16000.0, "tier": 1, "line": "room",
+		"desc": "A back room with proper benches. In a rush the queue gets impatient half as fast while you test.",
+		"effects": {"calm_queue": 0.5}},
+	"workshop": {"name": "Refining workshop", "cost": 50000.0, "tier": 2, "line": "room",
+		"desc": "Melt scrap in-house: the refiner pays 6% more for the jewellery you buy.", "effects": {"refine": 0.06}},
+	"trading_desk": {"name": "Bullion trading desk", "cost": 150000.0, "tier": 3, "line": "room",
+		"desc": "A dealing room for investors and estates: every customer brings 25% more.", "effects": {"deal_size": 0.25}},
 }
 
 var tier := 0
@@ -99,11 +127,22 @@ func register_upgrade(id: String, data: Dictionary) -> void:
 	changed.emit()
 
 
-## Upgrades for sale at the current tier, cheapest first.
-func available_upgrades() -> Array[String]:
+## Whether an upgrade's tier and prerequisite are met (owned or not).
+func unlocked(id: String) -> bool:
+	var u: Dictionary = upgrades.get(id, {})
+	return not u.is_empty() and int(u.tier) <= tier and (not u.has("needs") or owned.has(u.needs))
+
+
+## The upgrade's group: "counter", "tools", "room" or "" for the rest.
+func line_of(id: String) -> String:
+	return str(upgrades.get(id, {}).get("line", ""))
+
+
+## Upgrades for sale at the current tier, cheapest first. `line` keeps one group only.
+func available_upgrades(line := "*") -> Array[String]:
 	var out: Array[String] = []
 	for id in upgrades:
-		if int(upgrades[id].tier) <= tier and not owned.has(id):
+		if unlocked(id) and not owned.has(id) and (line == "*" or line_of(id) == line):
 			out.append(id)
 	out.sort_custom(func(a, b): return upgrades[a].cost < upgrades[b].cost)
 	return out
@@ -112,13 +151,13 @@ func available_upgrades() -> Array[String]:
 func locked_upgrade_count() -> int:
 	var n := 0
 	for id in upgrades:
-		if int(upgrades[id].tier) > tier:
+		if not unlocked(id):
 			n += 1
 	return n
 
 
 func can_buy(id: String) -> bool:
-	return upgrades.has(id) and not owned.has(id) and int(upgrades[id].tier) <= tier and Shop.cash >= upgrades[id].cost
+	return unlocked(id) and not owned.has(id) and Shop.cash >= upgrades[id].cost
 
 
 func buy(id: String) -> bool:
@@ -170,7 +209,12 @@ func traffic() -> float:
 
 
 func deal_size() -> float:
-	return tier_info().deal_size
+	return tier_info().deal_size * (1.0 + effect("deal_size"))
+
+
+## How many customers can wait inside: the corner counter's 4 plus the counter upgrades.
+func queue_slots() -> int:
+	return mini(ShopArt.BASE_SLOTS + int(effect("queue")), ShopArt.SLOTS.size())
 
 
 func safe_capacity() -> int:

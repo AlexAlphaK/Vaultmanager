@@ -569,12 +569,12 @@ func serial_note() -> String:
 func _update_cells() -> void:
 	if _cells.is_empty():
 		return
-	_set_cell("weight", "%.2f g" % readings.g if used.has("scale") and _on_scale and _time - _t.scale > 1.1 else "")
+	_set_cell("weight", "%.2f g" % readings.g if used.has("scale") and _on_scale and _time - _t.scale > 1.1 else "", _gauge("weight"))
 	var cal: float = _time - _t.calipers
 	var measuring := _active == "calipers"
-	_set_cell("length", "%.1f mm" % readings.l if used.has("calipers") and (cal > 0.8 or not measuring) else "")
-	_set_cell("width", "%.1f mm" % readings.w if used.has("calipers") and (cal > 1.5 or not measuring) else "")
-	_set_cell("thick", "%.2f mm" % readings.t if used.has("calipers") and (cal > 2.1 or not measuring) else "")
+	_set_cell("length", "%.1f mm" % readings.l if used.has("calipers") and (cal > 0.8 or not measuring) else "", _gauge("length"))
+	_set_cell("width", "%.1f mm" % readings.w if used.has("calipers") and (cal > 1.5 or not measuring) else "", _gauge("width"))
+	_set_cell("thick", "%.2f mm" % readings.t if used.has("calipers") and (cal > 2.1 or not measuring) else "", _gauge("thick"))
 	if probe_on:
 		var e := bar.echo_at(probe_uv)
 		_set_cell("echo", "%.2f us" % e.back, Pal.BAD if bar.echo_off(probe_uv) else Pal.INK)
@@ -587,6 +587,25 @@ func _update_cells() -> void:
 			Pal.INK if bar.surface_pass(readings.surface) else Pal.BAD)
 	if serial_read:
 		_set_cell("serial", serial_note(), Pal.INK if serial_note() == "new" else Pal.BAD)
+
+
+## With digital gauges, a scale or caliper reading shows green inside the bar's
+## tolerance and red outside it; without them it stays plain.
+func _gauge(key: String) -> Color:
+	if not Progress.has_upgrade("digital_gauges"):
+		return Pal.INK
+	var s := bar.spec()
+	var ok: bool
+	match key:
+		"weight":
+			ok = readings.g >= s.g - 0.005 and readings.g <= s.g * (1.0 + BullionBar.WEIGHT_OVER)
+		"length":
+			ok = absf(readings.l - s.l) <= BullionBar.SIZE_TOL
+		"width":
+			ok = absf(readings.w - s.w) <= BullionBar.SIZE_TOL
+		_:
+			ok = absf(readings.t - bar.thickness_mm()) <= BullionBar.THICK_TOL
+	return Pal.GOOD if ok else Pal.BAD
 
 
 func _set_cell(key: String, text: String, col := Pal.INK) -> void:

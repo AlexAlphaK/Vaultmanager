@@ -1,6 +1,8 @@
 extends Control
 ## Coin testing minigame. The customer's coin lies on a felt mat; weigh it, measure it
 ## with calipers, ping it, try a magnet and inspect it under a loupe, then call it.
+## Bench upgrades: digital gauges colour each reading against the spec, and the sigma
+## verifier (key 6) reads the metal's conductivity through plating.
 ## Readings come from Counterfeit.readings(); the coin's look from CoinArt.
 
 signal finished(verdict: String) # "genuine", "fake" or "cancel"
@@ -16,7 +18,12 @@ const INSET := Rect2i(196, 20, 110, 44)
 const LOUPE_SIZE := 64
 const LOUPE_ZOOM := 4.0
 const TOOLS := ["scale", "calipers", "ping", "magnet", "loupe"]
-const TOOL_NAMES := {"scale": "Scale", "calipers": "Calipers", "ping": "Ping", "magnet": "Magnet", "loupe": "Loupe"}
+const TOOL_NAMES := {"scale": "Scale", "calipers": "Calipers", "ping": "Ping", "magnet": "Magnet", "loupe": "Loupe", "sigma": "Sigma"}
+## The sigma verifier's dial on the mat, and what it reads for each kind of coin.
+const SIGMA := Rect2i(12, 196, 104, 34)
+const SIGMA_READS := {"": "in band", "steel": "ferrous", "brass": "too low", "clad": "too low", "tungsten": "too low"}
+## How far off the spec a reading may be and still count as genuine (digital gauges).
+const TOLERANCE := {"g": 0.05, "mm": 0.1, "thick": 0.1}
 const LOUPE_SHADER := """
 shader_type canvas_item;
 uniform sampler2D coin_tex : filter_nearest;
@@ -45,7 +52,7 @@ var _coin_r := 0
 var _shadow: Texture2D
 var _coin_pos := HOME
 var _time := 0.0
-var _t := {"scale": -99.0, "calipers": -99.0, "ping": -99.0, "magnet": -99.0}
+var _t := {"scale": -99.0, "calipers": -99.0, "ping": -99.0, "magnet": -99.0, "sigma": -99.0}
 var _active := ""
 var _on_scale := false
 var _move_tween: Tween
@@ -120,6 +127,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			use_tool("magnet")
 		KEY_5, KEY_KP_5:
 			use_tool("loupe")
+		KEY_6, KEY_KP_6:
+			if has_sigma():
+				use_tool("sigma")
 		KEY_ESCAPE:
 			finished.emit("cancel")
 		_:
@@ -127,7 +137,27 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
+func has_sigma() -> bool:
+	return Progress.has_upgrade("sigma_verifier")
+
+
+func has_gauges() -> bool:
+	return Progress.has_upgrade("digital_gauges")
+
+
+## The bench's tools: the five basics, plus the sigma verifier once bought.
+func tools() -> Array:
+	return TOOLS + ["sigma"] if has_sigma() else TOOLS
+
+
+## What the sigma verifier reads for this coin.
+func sigma_reading() -> String:
+	return SIGMA_READS.get(fake, "too low")
+
+
 func use_tool(tool: String) -> void:
+	if tool == "sigma" and not has_sigma():
+		return
 	used[tool] = true
 	if tool == "loupe":
 		_loupe.visible = not _loupe.visible
@@ -166,6 +196,7 @@ func _draw() -> void:
 	_draw_glint(pos.round())
 	_draw_calipers()
 	_draw_magnet()
+	_draw_sigma()
 	_draw_tap()
 	BenchArt.draw_motes(self, _time, Rect2(0, 0, BENCH_W, 270))
 
@@ -323,6 +354,40 @@ func _draw_magnet() -> void:
 	_text("N", Vector2(x + 5, y + 6), Color("#c0392b"))
 
 
+## The sigma verifier: its sensor pad pressed on the coin and a dial that settles in
+## the green band for genuine metal, or swings out of it.
+func _draw_sigma() -> void:
+	if not used.has("sigma"):
+		return
+	var st: float = _time - _t.sigma
+	var r := SIGMA
+	draw_rect(Rect2(r.position + Vector2i(1, 2), r.size), Color(0, 0, 0, 0.3))
+	draw_rect(r, Color("#e8b020"))
+	draw_rect(Rect2(r.position, Vector2(r.size.x, 1)), Color("#ffd24a"))
+	draw_rect(Rect2(r.position + Vector2i(0, r.size.y - 1), Vector2(r.size.x, 1)), Color("#9a6a10"))
+	var dial := Rect2(r.position + Vector2i(4, 4), Vector2(r.size.x - 8, 14))
+	draw_rect(dial, Color("#14100c"))
+	var band := Rect2(dial.position + Vector2(dial.size.x * 0.55, 2), Vector2(dial.size.x * 0.2, dial.size.y - 4))
+	draw_rect(band, Color("#1f4a33"))
+	draw_rect(Rect2(band.position, Vector2(band.size.x, 1)), Pal.GOOD)
+	var reading := sigma_reading()
+	var target := {"in band": 0.65, "too low": 0.22, "ferrous": 0.97}[reading] as float
+	# the needle sweeps up from the left, wobbles and settles
+	var settle := clampf(st / 1.2, 0.0, 1.0)
+	var at := lerpf(0.04, target, settle) + (sin(st * 18.0) * 0.03 * (1.0 - settle) if st < 1.2 else 0.0)
+	var nx := roundf(dial.position.x + 1.0 + at * (dial.size.x - 3.0))
+	draw_rect(Rect2(nx, dial.position.y + 1, 1, dial.size.y - 2), Color("#ff6a3a"))
+	_text("SIGMA", Vector2(r.position.x + 4, r.end.y - 11), Color("#3a2a06"))
+	if st > 1.2:
+		_text(reading.to_upper(), Vector2(r.position.x + 38, r.end.y - 11), Color("#1f4a33") if reading == "in band" else Color("#8a1f1a"))
+	# the sensor pad on its cable, pressed on the coin while it reads
+	if _active == "sigma" and st >= 0.0 and st < 2.0 and not _on_scale:
+		var pad := HOME + Vector2(-8, _coin_r * 0.3)
+		draw_line(Vector2(r.position.x + 20, r.position.y), pad + Vector2(4, 8), Color("#1c2026"))
+		draw_rect(Rect2(pad, Vector2(12, 10)), Color("#1c2026"))
+		draw_rect(Rect2(pad + Vector2(1, 1), Vector2(10, 1)), Color("#59606b"))
+
+
 func _draw_tap() -> void:
 	var pt: float = _time - _t.ping
 	if pt < 0.0 or pt > 0.25:
@@ -374,6 +439,29 @@ func _update_cells() -> void:
 	_set_cell("ring", "%.1f s" % readings.ring if used.has("ping") and _time - _t.ping > readings.ring else "")
 	var magnet_text := {"strong": "snaps hard", "slight": "slight drag", "none": "no pull"}
 	_set_cell("magnet", magnet_text[readings.magnet] if used.has("magnet") and _time - _t.magnet > 1.4 else "")
+	if _cells.has("sigma"):
+		_set_cell("sigma", sigma_reading() if used.has("sigma") and _time - _t.sigma > 1.2 else "")
+
+
+## With digital gauges, whether a reading is inside the spec: true, false, or null without gauges.
+func in_spec(key: String) -> Variant:
+	if not has_gauges():
+		return null
+	var ring := item.ring_seconds()
+	match key:
+		"weight":
+			return absf(readings.g - item.weight_g) <= TOLERANCE.g
+		"diameter":
+			return absf(readings.mm - item.diameter_mm) <= TOLERANCE.mm
+		"thickness":
+			return absf(readings.thick - item.thickness_mm) <= TOLERANCE.thick
+		"ring":
+			return readings.ring >= ring.x
+		"magnet":
+			return readings.magnet == ("slight" if item.metal == "XAG" else "none")
+		"sigma":
+			return sigma_reading() == "in band"
+	return null
 
 
 func _set_cell(key: String, text: String) -> void:
@@ -385,7 +473,8 @@ func _set_cell(key: String, text: String) -> void:
 		return
 	l.set_meta("measured", true)
 	l.text = text
-	l.add_theme_color_override("font_color", Pal.INK)
+	var ok = in_spec(key)
+	l.add_theme_color_override("font_color", Pal.INK if ok == null else (Pal.GOOD if ok else Pal.BAD))
 
 
 func _build_panel() -> void:
@@ -410,29 +499,33 @@ func _build_panel() -> void:
 		["ring", "Ring", "%.1f-%.1f s" % [ring.x, ring.y]],
 		["magnet", "Magnet", "slight drag" if item.metal == "XAG" else "no pull"],
 	]
+	if has_sigma():
+		rows.append(["sigma", "Sigma", "in band"])
 	for n in rows.size():
 		var y := 56 + n * 9
 		_label(rows[n][1], Vector2(x, y), Pal.INK_DIM)
 		_label(rows[n][2], Vector2(x + 42, y), Pal.INK_DIM, 60, HORIZONTAL_ALIGNMENT_RIGHT)
 		_cells[rows[n][0]] = _label("-", Vector2(x + 104, y), Pal.INK_FAINT, 52, HORIZONTAL_ALIGNMENT_RIGHT)
-	_label("Melt today", Vector2(x, 106), Pal.INK_DIM)
-	_label(Market.format_money(customer.melt_total()), Vector2(x + 60, 106), Pal.INK, 96, HORIZONTAL_ALIGNMENT_RIGHT)
-	_label("Your offer", Vector2(x, 115), Pal.INK_DIM)
-	_label(Market.format_money(customer.offer_total()), Vector2(x + 60, 115), Pal.GOLD, 96, HORIZONTAL_ALIGNMENT_RIGHT)
-	for n in TOOLS.size():
-		var tool: String = TOOLS[n]
+	var below := 56 + rows.size() * 9 + 5
+	_label("Melt today", Vector2(x, below), Pal.INK_DIM)
+	_label(Market.format_money(customer.melt_total()), Vector2(x + 60, below), Pal.INK, 96, HORIZONTAL_ALIGNMENT_RIGHT)
+	_label("Your offer", Vector2(x, below + 9), Pal.INK_DIM)
+	_label(Market.format_money(customer.offer_total()), Vector2(x + 60, below + 9), Pal.GOLD, 96, HORIZONTAL_ALIGNMENT_RIGHT)
+	var bench_tools := tools()
+	for n in bench_tools.size():
+		var tool: String = bench_tools[n]
 		var b := Button.new()
 		add_child(b)
 		b.text = "%d %s" % [n + 1, TOOL_NAMES[tool]]
 		b.theme_type_variation = "ToolButton"
-		b.position = Vector2(x + (n % 2) * 80, 130 + (n / 2) * 14)
+		b.position = Vector2(x + (n % 2) * 80, below + 24 + (n / 2) * 14)
 		b.size = Vector2(76, 12)
 		b.focus_mode = Control.FOCUS_NONE
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.pressed.connect(use_tool.bind(tool))
 		_tool_buttons[tool] = b
 	_label("Genuine coins match the spec within 0.05 g and 0.1 mm, ring for over a second and ignore magnets. Silver drags a little. Look for a soft strike or typos under the loupe.",
-		Vector2(x, 174), Pal.INK_DIM, 156, HORIZONTAL_ALIGNMENT_LEFT, 56)
+		Vector2(x, below + 68), Pal.INK_DIM, 156, HORIZONTAL_ALIGNMENT_LEFT, 162 - below)
 	var genuine := Button.new()
 	add_child(genuine)
 	genuine.text = "Genuine"
