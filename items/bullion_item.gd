@@ -4,7 +4,10 @@ extends Resource
 ## live market price, never stored.
 
 @export var id := ""
-@export var display_name := ""
+## Reads back translated into the player's language (see locale/).
+@export var display_name := "":
+	get:
+		return tr(display_name)
 @export_enum("XAU", "XAG", "XPT", "XPD") var metal := "XAU"
 @export var weight_g := 31.1
 @export var purity := 0.9999

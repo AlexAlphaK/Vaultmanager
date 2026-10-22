@@ -114,7 +114,7 @@ static func fakes_for(metal_symbol: String, day: int, id := "") -> Array[String]
 
 
 static func label(kind: String) -> String:
-	return FAKES[kind].label if FAKES.has(kind) else "genuine"
+	return Loc.t(FAKES[kind].label if FAKES.has(kind) else "genuine")
 
 
 func make_fake(kind: String, rng: RandomNumberGenerator) -> void:
@@ -135,7 +135,7 @@ func metal() -> String:
 
 
 func display_name() -> String:
-	return spec().name
+	return tr(spec().name)
 
 
 func is_cast() -> bool:

@@ -543,15 +543,15 @@ func help_rows() -> Array:
 	if hook and hook.has_method("pad_help"):
 		rows.append_array(hook.pad_help())
 	rows.append_array([
-		["Left stick", "Move the pointer"],
-		["D-pad", "Jump to the next button"],
-		["A", "Click (hold to drag)"],
+		[tr("Left stick"), tr("Move the pointer")],
+		["D-pad", tr("Jump to the next button")],
+		["A", tr("Click (hold to drag)")],
 		["B", "Back"],
-		["X", "Right click"],
+		["X", tr("Right click")],
 		["Y", "Confirm"],
-		["Right stick", "Scroll"],
+		[tr("Right stick"), "Scroll"],
 		["Start", "Pause"],
-		["View", "Show or hide this"],
+		["View", tr("Show or hide this")],
 	])
 	return rows
 
@@ -565,4 +565,4 @@ func show_toast(text: String, seconds := 3.0) -> void:
 
 func _on_joy_connection(_id: int, connected: bool) -> void:
 	if connected:
-		show_toast("Controller connected. Press View for the controls.")
+		show_toast(tr("Controller connected. Press View for the controls."))

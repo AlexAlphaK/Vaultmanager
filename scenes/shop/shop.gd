@@ -97,9 +97,9 @@ func _ready() -> void:
 	if SaveGame.load_game():
 		if SaveGame.day_over: # saved at the end of the day: carry on with the next morning
 			Shop.next_day()
-		Shop.log_event("Welcome back. Day %d at your %s." % [Shop.day, Progress.tier_name()])
+		Shop.log_event(tr("Welcome back. Day %d at your %s.") % [Shop.day, Progress.tier_name()])
 	else:
-		Shop.log_event("Welcome to your shop. Test coins before you buy them.")
+		Shop.log_event(tr("Welcome to your shop. Test coins before you buy them."))
 	coach = Coach.new()
 	add_child(coach)
 	coach.attach(self)
@@ -156,7 +156,7 @@ func _tick(delta: float) -> void:
 	if not closing and time >= DAY_SECONDS:
 		closing = true
 		Day.close_shop()
-		Shop.log_event("Closing time. Serving the last customers.")
+		Shop.log_event(tr("Closing time. Serving the last customers."))
 	_update_rush()
 	MarketEvents.advance(delta)
 	_next_spawn -= delta
@@ -193,17 +193,17 @@ func _tick(delta: float) -> void:
 		c.patience -= (delta if c == _front() else delta * 0.5) * calm
 		if c.patience <= 0.0:
 			Shop.reputation_for("walked_out")
-			_dismiss(c, "%s got tired of waiting and left." % c.name, "bad")
+			_dismiss(c, tr("%s got tired of waiting and left.") % c.name, "bad")
 	for f in pending_fakes.duplicate():
 		if time >= f.at or closing:
 			pending_fakes.erase(f)
 			Shop.confiscate(f.item, f.fake)
 			Shop.note("scammed")
 			Shop.reputation_for("scammed")
-			Shop.log_event("Assay lab: the %d × %s were %s. Lost %s." % [f.qty, f.item.display_name, Counterfeit.label(f.fake), Market.format_money(f.paid)], "bad")
+			Shop.log_event(tr("Assay lab: the %d × %s were %s. Lost %s.") % [f.qty, f.item.display_name, Counterfeit.label(f.fake), Market.format_money(f.paid)], "bad")
 			var cover := Progress.effect("fraud_refund")
 			if cover > 0.0:
-				Day.add_income("Fraud insurance payout", f.paid * minf(cover, 1.0))
+				Day.add_income(tr("Fraud insurance payout"), f.paid * minf(cover, 1.0))
 	for j in pending_pieces.duplicate():
 		if time >= j.at or closing:
 			pending_pieces.erase(j)
@@ -225,12 +225,12 @@ func _update_rush() -> void:
 		return
 	rush = now
 	if rush.is_empty():
-		Shop.log_event("The rush is over. Catch your breath.")
+		Shop.log_event(tr("The rush is over. Catch your breath."))
 		return
 	_next_spawn = minf(_next_spawn, 1.0)
 	Sfx.play(self, Sfx.door_bell(), -4.0)
-	var help := "" if Staff.on_duty("clerk") else " A clerk would help."
-	Shop.log_event("%s! The queue keeps waiting while you test.%s" % [rush.name, help], "bad")
+	var help := "" if Staff.on_duty("clerk") else tr(" A clerk would help.")
+	Shop.log_event(tr("%s! The queue keeps waiting while you test.%s") % [tr(rush.name), help], "bad")
 
 
 func _spawn() -> void:
@@ -328,17 +328,17 @@ func _on_action(id: String) -> void:
 		"refuse":
 			# nobody holds it against you when you can't pay what you offered
 			if c.offer_total() > Shop.cash:
-				_dismiss(c, "Couldn't afford %s's %s today." % [c.name, "bar" if c.bar else ("piece" if c.piece else "coins")])
+				_dismiss(c, tr("Couldn't afford %s's %s today.") % [c.name, tr("bar") if c.bar else (tr("piece") if c.piece else tr("coins"))])
 			elif c.tested:
 				Shop.reputation_for("passed_tested")
-				_dismiss(c, "Passed on %s's %s." % [c.name, "bar" if c.bar else "coins"])
+				_dismiss(c, tr("Passed on %s's %s.") % [c.name, tr("bar") if c.bar else tr("coins")])
 			else:
 				Shop.reputation_for("refused_fake" if c.fake != "" or (c.piece and c.piece.scam) or (c.bar and c.bar.fake != "") else "refused_genuine")
-				_dismiss(c, "Turned %s away without testing." % c.name)
+				_dismiss(c, tr("Turned %s away without testing.") % c.name)
 		"sell":
 			_sell(c)
 		"decline":
-			_dismiss(c, "%s said goodbye." % c.name if c.kind == "visit" else "%s left without buying." % c.name)
+			_dismiss(c, tr("%s said goodbye.") % c.name if c.kind == "visit" else tr("%s left without buying.") % c.name)
 
 
 ## A collector asked for a special order: "sell" takes it, "decline" turns it down.
@@ -348,7 +348,7 @@ func _order_answer(c: Customer, id: String) -> void:
 		Sfx.play(self, Sfx.click(), -6.0)
 		_dismiss(c)
 	elif id == "decline":
-		_dismiss(c, "%s will ask another dealer." % c.name)
+		_dismiss(c, tr("%s will ask another dealer.") % c.name)
 
 
 func _offer(c: Customer) -> void:
@@ -372,7 +372,7 @@ func _offer(c: Customer) -> void:
 		pending_fakes.append({"at": time + 8.0, "item": c.item, "fake": c.fake, "qty": c.qty, "paid": offer})
 	Shop.reputation_for("bought")
 	Sfx.play(self, Sfx.register_chime(), -6.0)
-	_dismiss(c, "Bought %d × %s for %s." % [c.qty, c.item.display_name, Market.format_money(offer)])
+	_dismiss(c, tr("Bought %d × %s for %s.") % [c.qty, c.item.display_name, Market.format_money(offer)])
 
 
 func _buy_piece(c: Customer, offer: float) -> void:
@@ -381,7 +381,7 @@ func _buy_piece(c: Customer, offer: float) -> void:
 	pending_pieces.append({"at": time + 8.0, "piece": c.piece, "paid": offer, "name": c.name})
 	Shop.reputation_for("bought")
 	Sfx.play(self, Sfx.register_chime(), -6.0)
-	_dismiss(c, "Bought %s's %s for %s. Off to the refiner." % [c.name, c.piece.short_title(), Market.format_money(offer)])
+	_dismiss(c, tr("Bought %s's %s for %s. Off to the refiner.") % [c.name, c.piece.short_title(), Market.format_money(offer)])
 
 
 func _buy_bar(c: Customer, offer: float) -> void:
@@ -391,7 +391,7 @@ func _buy_bar(c: Customer, offer: float) -> void:
 	pending_bars.append({"at": time + 8.0, "bar": c.bar, "paid": offer, "name": c.name})
 	Shop.reputation_for("bought")
 	Sfx.play(self, Sfx.register_chime(), -6.0)
-	_dismiss(c, "Bought %s's %s for %s. Off to the bullion dealer." % [c.name, c.bar.display_name(), Market.format_money(offer)])
+	_dismiss(c, tr("Bought %s's %s for %s. Off to the bullion dealer.") % [c.name, c.bar.display_name(), Market.format_money(offer)])
 
 
 ## The bullion dealer checks every bar it buys from you, so a fake shows up here.
@@ -400,17 +400,17 @@ func _settle_bar(j: Dictionary) -> void:
 	var paid: float = j.paid
 	var payout := b.dealer_payout(Progress.effect("bar_payout"))
 	if payout > 0.0:
-		Day.add_income("Bullion dealer", payout)
+		Day.add_income(tr("Bullion dealer"), payout)
 	Shop.note("profit", payout - paid)
 	if b.fake == "":
-		Shop.log_event("Bullion dealer paid %s for %s's %s (profit %s)." % [Market.format_money(payout), j.name, b.display_name(), Market.format_money(payout - paid)], "good")
+		Shop.log_event(tr("Bullion dealer paid %s for %s's %s (profit %s).") % [Market.format_money(payout), j.name, b.display_name(), Market.format_money(payout - paid)], "good")
 		return
 	Shop.note("scammed")
 	Shop.reputation_for("scammed")
-	Shop.log_event("Bullion dealer: %s's %s was %s. Lost %s." % [j.name, b.display_name(), BullionBar.label(b.fake), Market.format_money(paid - payout)], "bad")
+	Shop.log_event(tr("Bullion dealer: %s's %s was %s. Lost %s.") % [j.name, b.display_name(), BullionBar.label(b.fake), Market.format_money(paid - payout)], "bad")
 	var cover := Progress.effect("fraud_refund")
 	if cover > 0.0 and paid > payout:
-		Day.add_income("Fraud insurance payout", (paid - payout) * minf(cover, 1.0))
+		Day.add_income(tr("Fraud insurance payout"), (paid - payout) * minf(cover, 1.0))
 
 
 ## The refiner melts a bought piece and the stone dealer takes any diamond.
@@ -419,23 +419,23 @@ func _settle_piece(j: Dictionary) -> void:
 	var p: JewelleryPiece = j.piece
 	var payout := p.refiner_payout() * (1.0 + Progress.effect("refine"))
 	var paid: float = j.paid
-	Day.add_income("Refiner and stone dealer", payout)
+	Day.add_income(tr("Refiner and stone dealer"), payout)
 	Shop.note("profit", payout - paid)
-	var what := "%s's %s" % [j.name, p.short_title()]
+	var what := tr("%s's %s") % [j.name, p.short_title()]
 	var reasons: Array[String] = []
 	if p.true_grade == "plated":
-		reasons.append("it was plated %s" % p.base_metal)
+		reasons.append(tr("it was plated %s") % tr(p.base_metal))
 	elif p.true_grade != p.claimed_grade:
-		reasons.append("it was %s" % p.true_grade)
+		reasons.append(tr("it was %s") % tr(p.true_grade))
 	if p.stone != "" and p.stone != "diamond":
-		reasons.append("the stone was %s" % STONE_NAMES[p.stone])
+		reasons.append(tr("the stone was %s") % tr(STONE_NAMES[p.stone]))
 	if p.true_grade == "plated" or payout < paid * 0.97:
 		if p.true_grade == "plated":
 			Shop.note("scammed")
 			Shop.reputation_for("scammed")
-		Shop.log_event("Refiner: %s%s. Lost %s." % [what, ": " + ", ".join(reasons) if not reasons.is_empty() else "", Market.format_money(paid - payout)], "bad")
+		Shop.log_event(tr("Refiner: %s%s. Lost %s.") % [what, ": " + ", ".join(reasons) if not reasons.is_empty() else "", Market.format_money(paid - payout)], "bad")
 	else:
-		Shop.log_event("Refiner paid %s for %s (profit %s)." % [Market.format_money(payout), what, Market.format_money(payout - paid)], "good")
+		Shop.log_event(tr("Refiner paid %s for %s (profit %s).") % [Market.format_money(payout), what, Market.format_money(payout - paid)], "good")
 
 
 func _sell(c: Customer) -> void:
@@ -464,9 +464,9 @@ func _ring_up(c: Customer) -> Dictionary:
 		Shop.add_cash(-refund)
 		till = maxf(0.0, till - refund)
 		Shop.reputation_for("sold_fake")
-		Shop.log_event("%s came back: %d of the coins you sold were fake! Refunded %s." % [c.name, taken.fakes, Market.format_money(refund)], "bad")
+		Shop.log_event(tr("%s came back: %d of the coins you sold were fake! Refunded %s.") % [c.name, taken.fakes, Market.format_money(refund)], "bad")
 	var profit: float = price - taken.cost
-	return {"text": "Sold %d coins for %s (profit %s)." % [c.qty, Market.format_money(price), Market.format_money(profit)],
+	return {"text": tr("Sold %d coins for %s (profit %s).") % [c.qty, Market.format_money(price), Market.format_money(profit)],
 		"mood": "good" if profit >= 0.0 else "bad"}
 
 
@@ -501,7 +501,7 @@ func _clerk_finish() -> void:
 	var clerk: String = Staff.ROLES.clerk.name
 	at_clerk = null
 	if c.stock_have() < c.qty:
-		_dismiss(c, "%s left: the coins sold out before %s could ring them up." % [c.name, clerk], "bad")
+		_dismiss(c, tr("%s left: the coins sold out before %s could ring them up.") % [c.name, clerk], "bad")
 		return
 	if c.hear_price(Shop.sell_premium):
 		var sale := _ring_up(c)
@@ -512,15 +512,15 @@ func _clerk_finish() -> void:
 	if rng.randf() < Staff.clerk_persuade():
 		var sold := _ring_up(c)
 		Staff.gain_xp("clerk", Staff.XP_PER_SALE)
-		_dismiss(c, "%s talked them round. %s" % [clerk, sold.text], sold.mood)
+		_dismiss(c, tr("%s talked them round. %s") % [clerk, sold.text], sold.mood)
 		return
 	# they want a better price than the clerk may give: back to the queue for you
 	c.clerk_tried = true
 	if queue.size() < Progress.queue_slots():
 		queue.append(c)
-		Shop.log_event("%s wants a better price. %s sent them to you." % [c.name, clerk])
+		Shop.log_event(tr("%s wants a better price. %s sent them to you.") % [c.name, clerk])
 	else:
-		_dismiss(c, "%s wouldn't pay your price and left." % c.name, "bad")
+		_dismiss(c, tr("%s wouldn't pay your price and left.") % c.name, "bad")
 
 
 func _start_vault_run() -> void:
@@ -533,7 +533,7 @@ func _start_vault_run() -> void:
 
 func _finish_vault_run() -> void:
 	away = 0.0
-	Shop.log_event("Locked %s from the till in the safe." % Market.format_money(till), "good")
+	Shop.log_event(tr("Locked %s from the till in the safe.") % Market.format_money(till), "good")
 	till = 0.0
 	_show_front()
 
@@ -542,23 +542,23 @@ func _finish_vault_run() -> void:
 func _till_grab() -> void:
 	var taken := RushHours.grab_amount(till)
 	till -= taken
-	Day.add_expense("Snatched from the till", taken)
+	Day.add_expense(tr("Snatched from the till"), taken)
 	Shop.note("stolen", taken)
-	Shop.log_event("A thief grabbed %s from the till and ran! Take cash to the vault." % Market.format_money(taken), "bad")
+	Shop.log_event(tr("A thief grabbed %s from the till and ran! Take cash to the vault.") % Market.format_money(taken), "bad")
 
 
 ## A robber joins the queue looking like anyone else, unless the guard spots them first.
 func _robber_walks_in() -> void:
 	if rng.randf() < Staff.guard_stop():
 		Shop.note("robbers_stopped")
-		Shop.log_event("%s stopped a man with a gun at the door. The police took him away." % Staff.ROLES.guard.name, "good")
+		Shop.log_event(tr("%s stopped a man with a gun at the door. The police took him away.") % Staff.ROLES.guard.name, "good")
 		Sfx.play(self, Sfx.door_bell(), -4.0)
 		return
 	robber = Security.robber(rng)
 	robber_revealed = false
 	queue.append(robber)
 	Sfx.play(self, Sfx.door_bell(), -8.0)
-	Shop.log_event("A man in a cap walked in and kept his head down.")
+	Shop.log_event(tr("A man in a cap walked in and kept his head down."))
 
 
 ## At the counter the robber pulls a gun, the queue scatters and the clock on them starts.
@@ -572,19 +572,19 @@ func _robber_tick(delta: float) -> void:
 		robber_revealed = true
 		Shop.note("holdups")
 		Sfx.play(self, Sfx.alarm(), -12.0)
-		Shop.log_event("Hold-up! The man in the cap pulled a gun at the counter.", "bad")
+		Shop.log_event(tr("Hold-up! The man in the cap pulled a gun at the counter."), "bad")
 		var fled := 0
 		for c in queue.duplicate():
 			if c != robber and c != _testing and rng.randf() < Security.QUEUE_FLEES:
 				fled += 1
 				_dismiss(c)
 		if fled > 0:
-			Shop.log_event("%d customer%s ran for the door." % [fled, "" if fled == 1 else "s"], "bad")
+			Shop.log_event(tr_n("%d customer ran for the door.", "%d customers ran for the door.", fled) % fled, "bad")
 		hud.show_customer(robber)
 		return
 	robber.patience -= delta
 	if robber.patience <= 0.0:
-		_robbed("You froze. He emptied the till")
+		_robbed(tr("You froze. He emptied the till"))
 
 
 ## Hands the till over: you lose the cash, and nobody gets hurt.
@@ -592,10 +592,10 @@ func _hand_over() -> void:
 	var taken := till
 	till = 0.0
 	if taken > 0.0:
-		Day.add_expense("Handed over in a hold-up", taken)
+		Day.add_expense(tr("Handed over in a hold-up"), taken)
 	Shop.note("stolen", taken)
 	_police_recover(taken)
-	_robber_leaves("You handed over %s from the till. He ran." % Market.format_money(taken))
+	_robber_leaves(tr("You handed over %s from the till. He ran.") % Market.format_money(taken))
 
 
 ## The panic button: the alarm may scare him off empty-handed, or he grabs everything in reach.
@@ -603,9 +603,9 @@ func _panic_button() -> void:
 	Sfx.play(self, Sfx.alarm(), -6.0)
 	if rng.randf() < Security.panic_odds():
 		Shop.note("robbers_stopped")
-		_robber_leaves("The alarm wailed and he bolted empty-handed!", "good")
+		_robber_leaves(tr("The alarm wailed and he bolted empty-handed!"), "good")
 		return
-	_robbed("The alarm didn't scare him. He emptied the till")
+	_robbed(tr("The alarm didn't scare him. He emptied the till"))
 
 
 ## The robber takes the till and sweeps the best coins out of the display case.
@@ -613,24 +613,24 @@ func _robbed(how: String) -> void:
 	var taken := till
 	till = 0.0
 	if taken > 0.0:
-		Day.add_expense("Taken in a hold-up", taken)
+		Day.add_expense(tr("Taken in a hold-up"), taken)
 	var grab := Security.case_grab()
 	var coins := Security.grab_value(grab)
 	for e in grab:
 		Shop.remove_from_lot(e[0], e[1])
 	Shop.note("stolen", taken + coins)
 	_police_recover(taken + coins)
-	var what := "%s: %s gone" % [how, Market.format_money(taken)]
+	var what := tr("%s: %s gone") % [how, Market.format_money(taken)]
 	if coins > 0.0:
-		what += ", plus %s in coins from the case" % Market.format_money(coins)
+		what += tr(", plus %s in coins from the case") % Market.format_money(coins)
 	_robber_leaves(what + ".", "bad")
 
 
 func _police_recover(usd: float) -> void:
 	var back := usd * Security.recover_share()
 	if back >= 1.0:
-		Day.add_income("Police recovered stolen goods", back)
-		Shop.log_event("The cameras caught his face. Police got back %s." % Market.format_money(back), "good")
+		Day.add_income(tr("Police recovered stolen goods"), back)
+		Shop.log_event(tr("The cameras caught his face. Police got back %s.") % Market.format_money(back), "good")
 
 
 func _robber_leaves(text: String, mood := "bad") -> void:
@@ -669,7 +669,7 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 	match verdict:
 		"genuine":
 			c.tested = true
-			c.say = "Told you it was real. So, what's your offer?" if c.bar else "Told you they were real. So, what's your offer?"
+			c.say = tr("Told you it was real. So, what's your offer?") if c.bar else tr("Told you they were real. So, what's your offer?")
 			if c.piece:
 				_appraised(c)
 			hud.show_customer(c)
@@ -677,27 +677,27 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 			if c.piece.true_grade == "plated":
 				Shop.note("caught")
 				Shop.reputation_for("caught")
-				_dismiss(c, "Caught %s's plated %s! Acid doesn't lie." % [c.name, c.piece.short_title()], "good")
+				_dismiss(c, tr("Caught %s's plated %s! Acid doesn't lie.") % [c.name, c.piece.short_title()], "good")
 			else:
 				Shop.reputation_for("wrong_call")
-				_dismiss(c, "You called %s's real %s plated. They stormed out." % [c.name, c.piece.short_title()], "bad")
+				_dismiss(c, tr("You called %s's real %s plated. They stormed out.") % [c.name, c.piece.short_title()], "bad")
 		"fake" when c.bar:
 			if c.bar.fake != "":
 				Shop.note("caught")
 				Shop.reputation_for("caught")
-				_dismiss(c, "Caught %s's %s bar!%s" % [c.name, BullionBar.label(c.bar.fake), " Its serial was cloned." if c.bar.cloned else ""], "good")
+				_dismiss(c, tr("Caught %s's %s bar!%s") % [c.name, BullionBar.label(c.bar.fake), tr(" Its serial was cloned.") if c.bar.cloned else ""], "good")
 			else:
 				Shop.reputation_for("wrong_call")
-				_dismiss(c, "You called %s's genuine bar fake. They stormed out." % c.name, "bad")
+				_dismiss(c, tr("You called %s's genuine bar fake. They stormed out.") % c.name, "bad")
 		"fake":
 			if c.fake != "":
 				c.caught = true
 				Shop.note("caught")
 				Shop.reputation_for("caught")
-				_dismiss(c, "Caught a %s fake from %s!" % [Counterfeit.label(c.fake), c.name], "good")
+				_dismiss(c, tr("Caught a %s fake from %s!") % [Counterfeit.label(c.fake), c.name], "good")
 			else:
 				Shop.reputation_for("wrong_call")
-				_dismiss(c, "You called %s's genuine coins fake. They stormed out." % c.name, "bad")
+				_dismiss(c, tr("You called %s's genuine coins fake. They stormed out.") % c.name, "bad")
 
 
 ## The customer's reaction to your grading, and credit for catching a bad claim.
@@ -707,18 +707,18 @@ func _appraised(c: Customer) -> void:
 	if a.grade == p.true_grade and p.true_grade != p.claimed_grade:
 		if JewelleryPiece.PURITY[p.true_grade] > JewelleryPiece.PURITY[p.claimed_grade]:
 			Shop.reputation_for("honest")
-			c.say = "It's %s, not %s? You could have kept quiet. Thank you." % [p.true_grade, p.claimed_grade]
-			Shop.log_event("Told %s their piece is better than they thought." % c.name, "good")
+			c.say = tr("It's %s, not %s? You could have kept quiet. Thank you.") % [tr(p.true_grade), tr(p.claimed_grade)]
+			Shop.log_event(tr("Told %s their piece is better than they thought.") % c.name, "good")
 		else:
-			c.say = "%s? Huh. My mother always said %s." % [p.true_grade, p.claimed_grade]
+			c.say = tr("%s? Huh. My mother always said %s.") % [tr(p.true_grade), tr(p.claimed_grade)]
 			Shop.note("caught")
-			Shop.log_event("The acid says %s's piece is %s, not %s." % [c.name, p.true_grade, p.claimed_grade], "good")
+			Shop.log_event(tr("The acid says %s's piece is %s, not %s.") % [c.name, tr(p.true_grade), tr(p.claimed_grade)], "good")
 	elif p.stone != "" and p.stone != "diamond" and not a.diamond:
 		Shop.note("caught")
-		c.say = "Not a diamond? Well, the gold's still gold." if not p.scam else "Fine. Pay me for the metal then."
-		Shop.log_event("Spotted that %s's stone is %s." % [c.name, STONE_NAMES[p.stone]], "good")
+		c.say = tr("Not a diamond? Well, the gold's still gold.") if not p.scam else tr("Fine. Pay me for the metal then.")
+		Shop.log_event(tr("Spotted that %s's stone is %s.") % [c.name, tr(STONE_NAMES[p.stone])], "good")
 	else:
-		c.say = "So, what's it worth to you?"
+		c.say = tr("So, what's it worth to you?")
 
 
 ## The morning session at the trading desk, over the morning panel.
@@ -752,15 +752,15 @@ func _on_vault_finished(night: Dictionary) -> void:
 	_vault = null
 	var report := Day.end_day()
 	if night.get("break_in", false):
-		report.lines.append("Break-in overnight: lost %s." % Market.format_money(night.value))
+		report.lines.append(tr("Break-in overnight: lost %s.") % Market.format_money(night.value))
 	var holdups := int(Shop.stats.get("holdups", 0.0))
 	if holdups > 0:
-		report.lines.append("%s held up the counter today.%s" % ["A robber" if holdups == 1 else "%d robbers" % holdups,
-			"" if Staff.on_duty("guard") else " A guard stops most of them at the door."])
+		report.lines.append(tr("%s held up the counter today.%s") % [tr("A robber") if holdups == 1 else tr("%d robbers") % holdups,
+			"" if Staff.on_duty("guard") else tr(" A guard stops most of them at the door.")])
 	var missed := int(Shop.stats.get("walked_by", 0.0))
 	if missed > 0:
-		report.lines.append("%d customer%s saw the queue in the rush and walked on.%s" % [missed, "" if missed == 1 else "s",
-			"" if Staff.on_duty("clerk") else " A clerk would keep the line moving."])
+		report.lines.append(tr_n("%d customer saw the queue in the rush and walked on.%s", "%d customers saw the queue in the rush and walked on.%s", missed) % [missed,
+			"" if Staff.on_duty("clerk") else tr(" A clerk would keep the line moving.")])
 	SaveGame.save_game() # autosave, so quitting on the summary does not replay the day
 	hud.show_day_summary(report)
 	summary_shown.emit()
@@ -789,10 +789,10 @@ func _open_shop() -> void:
 	paused = false
 	hud.hide_panels()
 	Day.open_shop()
-	Shop.log_event("%s, day %d. Shop open." % [Day.weekday(), Shop.day])
+	Shop.log_event(tr("%s, day %d. Shop open.") % [Day.weekday(), Shop.day])
 	var town := Calendar.today()
 	if not town.is_empty():
-		Shop.log_event("TOWN: " + Calendar.banner(town), town.mood)
+		Shop.log_event(tr("TOWN: ") + Calendar.banner(town), town.mood)
 
 
 func _new_game() -> void:
@@ -806,5 +806,5 @@ func _new_game() -> void:
 	pending_bars.clear()
 	SaveGame.new_game()
 	coach.restart()
-	Shop.log_event("A fresh start at the corner counter.")
+	Shop.log_event(tr("A fresh start at the corner counter."))
 	_start_morning()

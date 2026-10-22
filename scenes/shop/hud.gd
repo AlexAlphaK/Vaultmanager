@@ -81,8 +81,8 @@ func _process(delta: float) -> void:
 
 
 func set_clock(day: int, minutes: int, closing: bool, rush := false) -> void:
-	_day.text = "Day %d" % day
-	var when := "closing" if closing else ("RUSH" if rush else Day.weekday(day).substr(0, 3))
+	_day.text = tr("Day %d") % day
+	var when := tr("closing") if closing else (tr("RUSH") if rush else Day.weekday(day).substr(0, 3))
 	_clock.text = "%s %02d:%02d" % [when, minutes / 60, minutes % 60]
 	_clock.add_theme_color_override("font_color", Pal.WARN if rush else Pal.INK)
 
@@ -94,7 +94,7 @@ func set_till(usd: float, limit: float, away: float) -> void:
 		_till.text = "Off to the vault..."
 		_till.add_theme_color_override("font_color", Pal.INK_DIM)
 	else:
-		_till.text = "Till %s" % Market.format_money(usd)
+		_till.text = tr("Till %s") % Market.format_money(usd)
 		var hot := usd > limit
 		var flash := hot and fmod(Time.get_ticks_msec() / 1000.0, 0.8) < 0.4
 		_till.add_theme_color_override("font_color", Pal.BAD if flash else (Pal.WARN if hot else Pal.INK_DIM))
@@ -118,8 +118,8 @@ func show_customer(c: Customer, idle_text := "") -> void:
 	_avatar.texture = c.frames[0]
 	_who.text = c.name
 	var tag := Customers.tag(c)
-	_wants.text = {"seller": "wants to sell", "buyer": "wants to buy", "visit": "stopped by to talk", "robber": "HOLD-UP",
-		"order": "special order"}.get(c.kind, "")
+	_wants.text = {"seller": tr("wants to sell"), "buyer": tr("wants to buy"), "visit": tr("stopped by to talk"), "robber": tr("HOLD-UP"),
+		"order": tr("special order")}.get(c.kind, "")
 	if tag != "":
 		_wants.text = "%s · %s" % [tag, _wants.text]
 	_quote.text = "\"%s\"" % c.say
@@ -159,7 +159,7 @@ func _refresh() -> void:
 		var change := Market.day_change_percent(metal)
 		l.text = "%s %s %s%.1f%%" % [TICKER_NAMES[metal], Market.format_money(Market.prices[metal], 2 if metal == "XAG" else 0), "▲" if change >= 0.0 else "▼", absf(change)]
 		l.add_theme_color_override("font_color", Pal.GOOD if change >= 0.0 else Pal.BAD)
-	_feed.text = {"live": "● LIVE", "cached": "● CACHED", "simulated": "● OFFLINE"}.get(Market.source, "")
+	_feed.text = {"live": tr("● LIVE"), "cached": tr("● CACHED"), "simulated": tr("● OFFLINE")}.get(Market.source, "")
 	_feed.add_theme_color_override("font_color", {"live": Pal.GOOD, "cached": Pal.WARN}.get(Market.source, Pal.INK_FAINT))
 	var full := int(Shop.reputation)
 	var half := Shop.reputation - full >= 0.5
@@ -174,10 +174,10 @@ func _refresh() -> void:
 	if Progress.is_top_tier():
 		_goal_text.text = "Top of the town"
 	else:
-		_goal_text.text = "Next %s" % Market.format_money(Progress.tier_info(Progress.tier + 1).need_worth)
+		_goal_text.text = tr("Next %s") % Market.format_money(Progress.tier_info(Progress.tier + 1).need_worth)
 	_tier.text = Progress.tier_name()
-	_buy_label.text = "Pay sellers %d%% of melt" % roundi(Shop.buy_percent * 100.0)
-	_sell_label.text = "Charge buyers +%d%%" % roundi(Shop.sell_premium * 100.0)
+	_buy_label.text = tr("Pay sellers %d%% of melt") % roundi(Shop.buy_percent * 100.0)
+	_sell_label.text = tr("Charge buyers +%d%%") % roundi(Shop.sell_premium * 100.0)
 	var groups := {}
 	for lot in Shop.stock:
 		var key: String = lot.item.display_name
@@ -212,7 +212,7 @@ func _refresh_deal() -> void:
 		_deal[0].add_theme_color_override("font_color", Pal.BAD)
 		_deal[1].text = "He won't wait long."
 		_deal[1].add_theme_color_override("font_color", Pal.INK)
-		_deal[2].text = "Panic button works %d%%" % roundi(Security.panic_odds() * 100.0)
+		_deal[2].text = tr("Panic button works %d%%") % roundi(Security.panic_odds() * 100.0)
 		_deal[2].add_theme_color_override("font_color", Pal.WARN)
 		_buttons.decline.visible = true
 		_buttons.decline.text = "Hand over till"
@@ -224,9 +224,9 @@ func _refresh_deal() -> void:
 	if c.kind == "order":
 		var days: int = int(c.order.due) - Shop.day
 		_deal[0].text = "%d × %s" % [c.qty, c.item.display_name]
-		_deal[1].text = "By %s (%d days)  You hold %d" % [Day.weekday(int(c.order.due)), days, Shop.count_of_item(c.item)]
+		_deal[1].text = tr_n("By %s (%d day)  You hold %d", "By %s (%d days)  You hold %d", days) % [Day.weekday(int(c.order.due)), days, Shop.count_of_item(c.item)]
 		_deal[1].add_theme_color_override("font_color", Pal.INK)
-		_deal[2].text = "Pays %s  (+%d%%)" % [Market.format_money(c.sale_total()), roundi(float(c.order.premium) * 100.0)]
+		_deal[2].text = tr("Pays %s  (+%d%%)") % [Market.format_money(c.sale_total()), roundi(float(c.order.premium) * 100.0)]
 		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
 		_buttons.sell.visible = true
 		_buttons.sell.disabled = false
@@ -236,15 +236,15 @@ func _refresh_deal() -> void:
 		return
 	if c.kind == "seller":
 		if c.piece:
-			_deal[0].text = c.piece.short_title() + (" with stone" if c.piece.stone != "" else "")
-			_deal[1].text = "%s  %s" % ["Appraised" if c.tested else "As claimed", Market.format_money(c.melt_total())]
+			_deal[0].text = c.piece.short_title() + (tr(" with stone") if c.piece.stone != "" else "")
+			_deal[1].text = "%s  %s" % [tr("Appraised") if c.tested else tr("As claimed"), Market.format_money(c.melt_total())]
 		elif c.bar:
 			_deal[0].text = c.bar.display_name()
-			_deal[1].text = "Melt today  %s" % Market.format_money(c.melt_total())
+			_deal[1].text = tr("Melt today  %s") % Market.format_money(c.melt_total())
 		else:
 			_deal[0].text = "%d × %s" % [c.qty, c.item.display_name]
-			_deal[1].text = "Melt today  %s" % Market.format_money(c.melt_total())
-		_deal[2].text = "Your offer  %s%s" % [Market.format_money(c.offer_total()), "  tested" if c.tested else ""]
+			_deal[1].text = tr("Melt today  %s") % Market.format_money(c.melt_total())
+		_deal[2].text = tr("Your offer  %s%s") % [Market.format_money(c.offer_total()), tr("  tested") if c.tested else ""]
 		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
 		_buttons.test.visible = not c.tested
 		_buttons.test.text = "Examine" if c.piece else ("Test bar" if c.bar else "Test coin")
@@ -253,7 +253,7 @@ func _refresh_deal() -> void:
 		var short := c.offer_total() > Shop.cash
 		_buttons.offer.disabled = short
 		if short:
-			_deal[1].text = "Not enough cash: %s" % Market.format_money(Shop.cash)
+			_deal[1].text = tr("Not enough cash: %s") % Market.format_money(Shop.cash)
 			_deal[1].add_theme_color_override("font_color", Pal.BAD)
 		else:
 			_deal[1].add_theme_color_override("font_color", Pal.INK)
@@ -265,9 +265,9 @@ func _refresh_deal() -> void:
 		if c.wanted_exact:
 			_deal[0].text = "%d × %s" % [c.qty, c.item.display_name]
 		else:
-			_deal[0].text = "%d × %s coins" % [c.qty, {"XAU": "gold", "XAG": "silver", "XPT": "platinum"}.get(c.item.metal, "")]
-		_deal[1].text = "You hold %d" % have
-		_deal[2].text = "%s  %s" % ["Agreed" if not c.order.is_empty() else ("Pays" if c.fixed_price() else "Price"),
+			_deal[0].text = tr("%d × %s coins") % [c.qty, tr({"XAU": "gold", "XAG": "silver", "XPT": "platinum"}.get(c.item.metal, ""))]
+		_deal[1].text = tr("You hold %d") % have
+		_deal[2].text = "%s  %s" % [tr("Agreed") if not c.order.is_empty() else (tr("Pays") if c.fixed_price() else tr("Price")),
 			Market.format_money(c.sale_total())]
 		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
 		_buttons.sell.visible = true

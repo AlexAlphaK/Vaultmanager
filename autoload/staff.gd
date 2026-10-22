@@ -107,7 +107,7 @@ func is_grumpy(id: String) -> bool:
 
 
 func label(id: String) -> String:
-	return "%s the %s" % [ROLES[id].name, ROLES[id].title.to_lower()]
+	return tr("%s the %s") % [ROLES[id].name, tr(ROLES[id].title.to_lower())]
 
 
 func info(id: String) -> Dictionary:
@@ -163,12 +163,12 @@ func daily_wages() -> float:
 func mood_word(id: String) -> String:
 	var m := float(info(id).mood)
 	if m >= 75.0:
-		return "Happy"
+		return tr("Happy")
 	if m >= 50.0:
-		return "Content"
+		return tr("Content")
 	if m >= 25.0:
-		return "Fed up"
-	return "About to quit"
+		return tr("Fed up")
+	return tr("About to quit")
 
 
 ## Sum of one effect across the people at work today, with what their levels add.
@@ -211,10 +211,10 @@ func can_hire(id: String) -> bool:
 func hire(id: String) -> bool:
 	if not can_hire(id):
 		return false
-	Day.add_expense("Hired %s" % label(id), ROLES[id].fee)
+	Day.add_expense(tr("Hired %s") % label(id), ROLES[id].fee)
 	hired.append(id)
 	crew[id] = _fresh()
-	Shop.log_event("%s starts today." % label(id), "good")
+	Shop.log_event(tr("%s starts today.") % label(id), "good")
 	changed.emit()
 	Progress.changed.emit()
 	return true
@@ -225,7 +225,7 @@ func let_go(id: String) -> bool:
 	if not hired.has(id):
 		return false
 	_leave(id)
-	Shop.log_event("You let %s go." % label(id))
+	Shop.log_event(tr("You let %s go.") % label(id))
 	changed.emit()
 	Progress.changed.emit()
 	return true
@@ -241,7 +241,7 @@ func gain_xp(id: String, amount: int) -> void:
 		p.level = int(p.level) + 1
 		grew = true
 	if grew:
-		var line := "%s is now %s (level %d)." % [ROLES[id].name, LEVEL_NAMES[int(p.level) - 1].to_lower(), int(p.level)]
+		var line := tr("%s reached level %d: %s.") % [ROLES[id].name, int(p.level), tr(LEVEL_NAMES[int(p.level) - 1])]
 		_news.append(line)
 		Shop.log_event(line, "good")
 		changed.emit()
@@ -265,7 +265,7 @@ func agree_raise(id: String) -> bool:
 	p.asking = false
 	p.raises = int(p.raises) + 1
 	_cheer(id, RAISE_MOOD)
-	Shop.log_event("%s's wage is now %s a day." % [ROLES[id].name, Market.format_money(wage(id))], "good")
+	Shop.log_event(tr("%s's wage is now %s a day.") % [ROLES[id].name, Market.format_money(wage(id))], "good")
 	changed.emit()
 	return true
 
@@ -278,7 +278,7 @@ func refuse_raise(id: String) -> bool:
 	p.asking = false
 	p.asked_day = Shop.day
 	_cheer(id, REFUSE_MOOD)
-	Shop.log_event("%s didn't get the raise and isn't happy about it." % ROLES[id].name, "bad")
+	Shop.log_event(tr("%s didn't get the raise and isn't happy about it.") % ROLES[id].name, "bad")
 	changed.emit()
 	return true
 
@@ -289,12 +289,12 @@ func morning_line() -> String:
 	for id in hired:
 		var p := info(id)
 		if p.today == "sick":
-			bits.append("%s called in sick" % ROLES[id].name)
+			bits.append(tr("%s called in sick") % ROLES[id].name)
 		elif p.today == "grumpy":
-			bits.append("%s is in a foul mood" % ROLES[id].name)
+			bits.append(tr("%s is in a foul mood") % ROLES[id].name)
 		if p.asking:
-			bits.append("%s wants a raise" % ROLES[id].name)
-	return "" if bits.is_empty() else "Staff: %s." % ", ".join(bits)
+			bits.append(tr("%s wants a raise") % ROLES[id].name)
+	return "" if bits.is_empty() else tr("Staff: %s.") % ", ".join(bits)
 
 
 func _fresh() -> Dictionary:
@@ -326,7 +326,7 @@ func _morning(day: int) -> void:
 		rng.seed = hash([_seed, day, id])
 		if float(p.mood) <= 0.0:
 			_leave(id)
-			Shop.log_event("%s has had enough and quit. Pay staff what they're worth." % label(id), "bad")
+			Shop.log_event(tr("%s has had enough and quit. Pay staff what they're worth.") % label(id), "bad")
 			Progress.changed.emit()
 			continue
 		if not p.asking and raises_owed(id) > 0 and day - int(p.asked_day) >= ASK_AGAIN_DAYS:

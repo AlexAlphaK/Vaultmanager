@@ -18,6 +18,7 @@ func _ready() -> void:
 	SaveGame.legacy_path = "user://smoke_test_legacy.json"
 	_clear_slots()
 	SaveGame.set_slot(1)
+	TranslationServer.set_locale("en") # the checks read English text, whatever the device speaks
 	_check_coins()
 	_check_fakes_are_detectable()
 	_check_stock()
@@ -49,6 +50,7 @@ func _ready() -> void:
 	await _check_calendar()
 	await _check_story()
 	_check_settings()
+	_check_localization()
 	_check_music()
 	await _check_menus()
 	await _check_pad()
@@ -1293,7 +1295,7 @@ func _check_calendar() -> void:
 	var report := Day.end_day()
 	expect(Day.ledger.any(func(l): return l.label == "Tax Day" and is_equal_approx(l.usd, -1000.0)), "Tax Day is paid when the shop closes")
 	expect(report.lines.any(func(l): return str(l).begins_with("Tax Day: you paid")), "the summary explains the tax")
-	expect(report.lines.any(func(l): return "tax season is over" in str(l)), "the summary closes the event")
+	expect(report.lines.any(func(l): return str(l).to_lower().begins_with("tax season is over")), "the summary closes the event")
 	expect(int(Calendar.next_tax(12).day) == 67, "the next Tax Day is next spring")
 	expect(Calendar.taxable < 0.0, "Tax Day's own bill is not a cost, the day's upkeep is (%.0f)" % Calendar.taxable)
 	# served event customers are counted, and the best rush earns an achievement
@@ -1309,7 +1311,7 @@ func _check_calendar() -> void:
 	# the summary warns about tomorrow's event, and the season's end
 	report = {"lines": []}
 	Calendar._on_day_ended(47, report)
-	expect(report.lines.any(func(l): return str(l).begins_with("Tomorrow: holiday gift rush")), "the summary warns about tomorrow's event")
+	expect(report.lines.any(func(l): return str(l).to_lower().begins_with("tomorrow: holiday gift rush")), "the summary warns about tomorrow's event")
 	report = {"lines": []}
 	Calendar._on_day_ended(42, report)
 	expect(report.lines.any(func(l): return "Autumn is over" in str(l)), "the summary marks the end of a season")
@@ -2062,6 +2064,67 @@ func _check_settings() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
 	Settings.path = real_path
 	Settings.load_settings()
+	TranslationServer.set_locale("en")
+
+
+## The language setting, and every translation: complete, drawable in the pixel font, and with
+## the same %d / %s / {name} slots as the English, so formatting never breaks.
+func _check_localization() -> void:
+	var real_path := Settings.path
+	Settings.path = "user://smoke_test_settings.cfg"
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
+	Settings.load_settings()
+	expect(Settings.language == "auto" and TranslationServer.get_locale().begins_with(Settings.device_language()), "the language follows the device until one is picked")
+	Settings.set_language("de")
+	expect(tr("Settings") == "Einstellungen" and Loc.t("Settings") == "Einstellungen", "German shows German")
+	expect(Loc.n("%d more day", "%d more days", 1) == "noch %d Tag" and Loc.n("%d more day", "%d more days", 3) == "noch %d Tage", "German plurals")
+	expect(Market.format_money(1234567.0, 0).contains("1.234.567"), "German groups thousands with dots")
+	expect(Day.weekday_key(1) == "Monday" and Day.weekday(1) == "Montag", "weekday logic stays in English under German names")
+	Settings.language = "en"
+	Settings.load_settings()
+	expect(Settings.language == "de" and TranslationServer.get_locale().begins_with("de"), "the language comes back from disk")
+	Settings.set_language("fr")
+	expect(Loc.n("%d more day", "%d more days", 0) == "encore %d jour", "French counts zero as singular")
+	Settings.set_language("es")
+	expect(tr("Settings") != "Settings", "Spanish shows Spanish")
+	Settings.set_language("bogus")
+	expect(Settings.language == "es", "unknown languages are ignored")
+	Settings.set_language("en")
+	expect(tr("Settings") == "Settings", "English is the source text")
+
+	var slots := RegEx.create_from_string("%[-+0-9.]*[a-zA-Z%]|\\{[a-z_]+\\}")
+	var english := {}
+	for path in ProjectSettings.get_setting("internationalization/locale/translations"):
+		var t: Translation = load(path)
+		var bad_chars := {}
+		var bad_slots := []
+		for id in t.get_message_list():
+			english[id] = true
+			var text := String(t.get_message(id))
+			if text == "":
+				continue # not translated yet: the game shows the English
+			var want := []
+			for m in slots.search_all(id):
+				want.append(m.get_string())
+			var got := []
+			for m in slots.search_all(text):
+				got.append(m.get_string())
+			if want.filter(func(x): return x.begins_with("%")) != got.filter(func(x): return x.begins_with("%")):
+				bad_slots.append(id)
+			want.sort()
+			got.sort()
+			if want != got:
+				bad_slots.append(id)
+			for ch in slots.sub(text, "", true):
+				if ch != " " and ch != "\n" and not PixelFont.GLYPHS.has(ch) and not PixelFont.ACCENTED.has(ch):
+					bad_chars[ch] = true
+		expect(bad_slots.is_empty(), "%s keeps the format slots in order: %s" % [t.locale, bad_slots])
+		expect(bad_chars.is_empty(), "the pixel font draws every %s letter: %s" % [t.locale, bad_chars.keys()])
+	expect(english.size() > 1000, "the translations cover the game (%d strings)" % english.size())
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
+	Settings.path = real_path
+	Settings.load_settings()
+	TranslationServer.set_locale("en")
 
 
 func _check_music() -> void:

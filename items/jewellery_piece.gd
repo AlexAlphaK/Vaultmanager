@@ -139,14 +139,14 @@ func grade_options() -> Array[String]:
 
 ## "18K gold ring with a 0.50 ct diamond", as the customer describes it.
 func title() -> String:
-	var t := "%s %s" % [GRADE_NAMES[claimed_grade], KIND_NAMES[kind]]
+	var t := tr("{grade} {kind}").format({"grade": tr(GRADE_NAMES[claimed_grade]), "kind": tr(KIND_NAMES[kind])})
 	if stone != "":
-		t += " with a %.2f ct diamond" % carat
+		t += tr(" with a %.2f ct diamond") % carat
 	return t
 
 
 func short_title() -> String:
-	return "%s %s" % [claimed_grade if metal == "XAU" else GRADE_NAMES[claimed_grade], KIND_NAMES[kind]]
+	return tr("{grade} {kind}").format({"grade": claimed_grade if metal == "XAU" else tr(GRADE_NAMES[claimed_grade]), "kind": tr(KIND_NAMES[kind])})
 
 
 ## Metal value of `grams` gross at `grade`, plus the diamond if `diamond_real`.

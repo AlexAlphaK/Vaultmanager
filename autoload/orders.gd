@@ -154,8 +154,8 @@ func offer_customer(rng: RandomNumberGenerator) -> Customer:
 	o.item = item.id
 	var c := _collector(o, rng)
 	c.kind = "order"
-	c.say = (RARE_ASKS[rng.randi() % RARE_ASKS.size()] % item.display_name) if item.rare else \
-		(BULK_ASKS[rng.randi() % BULK_ASKS.size()] % [o.qty, item.display_name])
+	c.say = (tr(RARE_ASKS[rng.randi() % RARE_ASKS.size()]) % item.display_name) if item.rare else \
+		(tr(BULK_ASKS[rng.randi() % BULK_ASKS.size()]) % [o.qty, item.display_name])
 	return c
 
 
@@ -168,7 +168,7 @@ func pickup_customer(o: Dictionary, rng: RandomNumberGenerator) -> Customer:
 	c.max_premium = float(o.premium)
 	c.ceiling_premium = c.max_premium
 	var lines := PICKUP_LINES if Shop.day >= int(o.due) else EARLY_LINES
-	c.say = lines[rng.randi() % lines.size()] % item_of(o).display_name
+	c.say = tr(lines[rng.randi() % lines.size()]) % item_of(o).display_name
 	return c
 
 
@@ -217,7 +217,7 @@ func maybe_rare_seller(c: Customer, rng: RandomNumberGenerator) -> void:
 	if not kinds.is_empty() and (was_fake != "" or rng.randf() < Customer.fake_odds_on(Shop.day) * 0.5):
 		c.fake = kinds[rng.randi() % kinds.size()]
 	if c.archetype != "shady":
-		c.say = RARE_SELLER_LINES[rng.randi() % RARE_SELLER_LINES.size()]
+		c.say = tr(RARE_SELLER_LINES[rng.randi() % RARE_SELLER_LINES.size()])
 
 
 ## The player took the order on customer `c`'s card.
@@ -226,7 +226,7 @@ func accept(c: Customer) -> void:
 	o.id = _next_id
 	_next_id += 1
 	open.append(o)
-	Shop.log_event("%s ordered %d × %s by %s. Pays %s." % [o.name, o.qty, item_of(o).display_name,
+	Shop.log_event(tr("%s ordered %d × %s by %s. Pays %s.") % [o.name, o.qty, item_of(o).display_name,
 		Day.weekday(int(o.due)), Market.format_money(price_of(o))])
 	changed.emit()
 
@@ -240,18 +240,18 @@ func on_leave(c: Customer) -> void:
 		open.erase(o)
 		Shop.reputation_for("order_filled")
 		Shop.note("orders_filled")
-		Shop.log_event("%s collected their %s. Order filled!" % [o.name, item_of(o).display_name], "good")
-		Customers.add_story("%s picked up the %s you found for them. Collectors talk." % [o.name, item_of(o).display_name])
+		Shop.log_event(tr("%s collected their %s. Order filled!") % [o.name, item_of(o).display_name], "good")
+		Customers.add_story(tr("%s picked up the %s you found for them. Collectors talk.") % [o.name, item_of(o).display_name])
 		changed.emit()
 	elif Shop.day >= int(o.due):
 		open.erase(o)
 		Shop.reputation_for("order_failed")
 		Shop.note("orders_failed")
-		Shop.log_event("%s's order fell through. They won't forget it." % o.name, "bad")
-		Customers.add_story("You let %s down: no %s on the day you promised." % [o.name, item_of(o).display_name])
+		Shop.log_event(tr("%s's order fell through. They won't forget it.") % o.name, "bad")
+		Customers.add_story(tr("You let %s down: no %s on the day you promised.") % [o.name, item_of(o).display_name])
 		changed.emit()
 	else:
-		Shop.log_event("%s will come back on %s." % [o.name, Day.weekday(int(o.due))])
+		Shop.log_event(tr("%s will come back on %s.") % [o.name, Day.weekday(int(o.due))])
 
 
 # ---------------------------------------------------------------- dealer network
@@ -299,7 +299,7 @@ func dealer_buy(item: BullionItem) -> bool:
 	Shop.add_cash(-each)
 	Shop.add_stock(item, 1, each)
 	dealer[item.id] = dealer_left(item) - 1
-	Shop.log_event("Dealer network: 1 × %s for %s." % [item.display_name, Market.format_money(each)])
+	Shop.log_event(tr("Dealer network: 1 × %s for %s.") % [item.display_name, Market.format_money(each)])
 	changed.emit()
 	return true
 
@@ -316,7 +316,7 @@ func from_dict(d: Dictionary) -> void:
 	for o in d.get("open", []):
 		if typeof(o) != TYPE_DICTIONARY or not Shop.coins.has(o.get("item", "")):
 			continue
-		open.append({"id": int(o.get("id", 0)), "name": str(o.get("name", "A collector")), "look": int(o.get("look", 0)),
+		open.append({"id": int(o.get("id", 0)), "name": str(o.get("name", tr("A collector"))), "look": int(o.get("look", 0)),
 			"item": o.item, "qty": maxi(1, int(o.get("qty", 1))), "premium": float(o.get("premium", 0.1)),
 			"placed": int(o.get("placed", 0)), "due": int(o.get("due", 0)), "visited": int(o.get("visited", 0))})
 	changed.emit()

@@ -33,6 +33,11 @@ var opening_worth := 0.0
 
 
 func weekday(day := Shop.day) -> String:
+	return tr(weekday_key(day))
+
+
+## The weekday in English, for code that picks by day ("Saturday"); weekday() is for display.
+func weekday_key(day := Shop.day) -> String:
 	return WEEKDAYS[(day - 1) % WEEK_DAYS]
 
 
@@ -62,8 +67,8 @@ func add_expense(label: String, usd: float) -> void:
 ## The bills the next bill day will bring, at today's vault value.
 func upcoming_bills() -> Array[Dictionary]:
 	return [
-		{"label": "Rent", "usd": Progress.weekly_rent()},
-		{"label": "Insurance", "usd": Progress.weekly_insurance()},
+		{"label": tr("Rent"), "usd": Progress.weekly_rent()},
+		{"label": tr("Insurance"), "usd": Progress.weekly_insurance()},
 	]
 
 
@@ -95,12 +100,12 @@ func close_shop() -> void:
 func end_day() -> Dictionary:
 	if phase == AFTER_HOURS:
 		return {}
-	add_expense("Upkeep", Progress.daily_upkeep())
+	add_expense(tr("Upkeep"), Progress.daily_upkeep())
 	if is_bill_day():
 		for bill in upcoming_bills():
 			add_expense(bill.label, bill.usd)
 	if Shop.cash < 0.0:
-		add_expense("Overdraft interest", -Shop.cash * OVERDRAFT_RATE)
+		add_expense(tr("Overdraft interest"), -Shop.cash * OVERDRAFT_RATE)
 	_set_phase(AFTER_HOURS)
 	var report := {
 		"day": Shop.day,
@@ -112,7 +117,7 @@ func end_day() -> Dictionary:
 		"next_bills_in": days_until_bills(Shop.day + 1) + 1,
 	}
 	if Shop.cash < 0.0:
-		report.lines.append("You are overdrawn. The bank charges interest every night.")
+		report.lines.append(tr("You are overdrawn. The bank charges interest every night."))
 	day_ended.emit(Shop.day, report)
 	return report
 

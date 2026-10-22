@@ -171,7 +171,7 @@ func pad_action(name: String) -> bool:
 
 
 func pad_help() -> Array:
-	return [["LB / RB", "Previous / next tool"]]
+	return [[tr("LB / RB"), tr("Previous / next tool")]]
 
 
 func use_tool(tool: String) -> void:
@@ -398,7 +398,7 @@ func _draw_sigma() -> void:
 	draw_rect(Rect2(nx, dial.position.y + 1, 1, dial.size.y - 2), Color("#ff6a3a"))
 	_text("SIGMA", Vector2(r.position.x + 4, r.end.y - 11), Color("#3a2a06"))
 	if st > 1.2:
-		_text(reading.to_upper(), Vector2(r.position.x + 38, r.end.y - 11), Color("#1f4a33") if reading == "in band" else Color("#8a1f1a"))
+		_text(tr(reading).to_upper(), Vector2(r.position.x + 38, r.end.y - 11), Color("#1f4a33") if reading == "in band" else Color("#8a1f1a"))
 	# the sensor pad on its cable, pressed on the coin while it reads
 	if _active == "sigma" and st >= 0.0 and st < 2.0 and not _on_scale:
 		var pad := HOME + Vector2(-8, _coin_r * 0.3)
@@ -453,10 +453,10 @@ func _update_cells() -> void:
 		return
 	_set_cell("weight", "%.2f g" % readings.g if used.has("scale") and _on_scale and _time - _t.scale > 1.0 else "")
 	var cal: float = _time - _t.calipers
-	_set_cell("diameter", "%.2f mm" % readings.mm if used.has("calipers") and (cal > 0.8 or _active != "calipers") else "")
-	_set_cell("thickness", "%.2f mm" % readings.thick if used.has("calipers") and (cal > 1.5 or _active != "calipers") else "")
+	_set_cell("diameter", tr("%.2f mm") % readings.mm if used.has("calipers") and (cal > 0.8 or _active != "calipers") else "")
+	_set_cell("thickness", tr("%.2f mm") % readings.thick if used.has("calipers") and (cal > 1.5 or _active != "calipers") else "")
 	_set_cell("ring", "%.1f s" % readings.ring if used.has("ping") and _time - _t.ping > readings.ring else "")
-	var magnet_text := {"strong": "snaps hard", "slight": "slight drag", "none": "no pull"}
+	var magnet_text := {"strong": tr("snaps hard"), "slight": tr("slight drag"), "none": tr("no pull")}
 	_set_cell("magnet", magnet_text[readings.magnet] if used.has("magnet") and _time - _t.magnet > 1.4 else "")
 	if _cells.has("sigma"):
 		_set_cell("sigma", sigma_reading() if used.has("sigma") and _time - _t.sigma > 1.2 else "")
@@ -507,19 +507,19 @@ func _build_panel() -> void:
 	move_child(panel, 0)
 	_label("COIN TEST", Vector2(x, 4), Pal.INK_FAINT)
 	_label(item.display_name, Vector2(x, 13), Pal.GOLD, 156, HORIZONTAL_ALIGNMENT_LEFT, 18)
-	_label("%d coins from %s" % [customer.qty, customer.name], Vector2(x, 32), Pal.INK_DIM, 156)
+	_label(tr("%d coins from %s") % [customer.qty, customer.name], Vector2(x, 32), Pal.INK_DIM, 156)
 	_label("SPEC", Vector2(x + 52, 46), Pal.INK_FAINT, 50, HORIZONTAL_ALIGNMENT_RIGHT)
 	_label("READING", Vector2(x + 104, 46), Pal.INK_FAINT, 52, HORIZONTAL_ALIGNMENT_RIGHT)
 	var ring := item.ring_seconds()
 	var rows := [
 		["weight", "Weight", "%.2f g" % item.weight_g],
-		["diameter", "Diameter", "%.2f mm" % item.diameter_mm],
-		["thickness", "Thick", "%.2f mm" % item.thickness_mm],
+		["diameter", "Diameter", tr("%.2f mm") % item.diameter_mm],
+		["thickness", "Thick", tr("%.2f mm") % item.thickness_mm],
 		["ring", "Ring", "%.1f-%.1f s" % [ring.x, ring.y]],
-		["magnet", "Magnet", "slight drag" if item.metal == "XAG" else "no pull"],
+		["magnet", "Magnet", tr("slight drag") if item.metal == "XAG" else tr("no pull")],
 	]
 	if has_sigma():
-		rows.append(["sigma", "Sigma", "in band"])
+		rows.append(["sigma", "Sigma", tr("in band")])
 	for n in rows.size():
 		var y := 56 + n * 9
 		_label(rows[n][1], Vector2(x, y), Pal.INK_DIM)
@@ -535,7 +535,7 @@ func _build_panel() -> void:
 		var tool: String = bench_tools[n]
 		var b := Button.new()
 		add_child(b)
-		b.text = "%d %s" % [n + 1, TOOL_NAMES[tool]]
+		b.text = "%d %s" % [n + 1, tr(TOOL_NAMES[tool])]
 		b.theme_type_variation = "ToolButton"
 		b.position = Vector2(x + (n % 2) * 80, below + 24 + (n / 2) * 14)
 		b.size = Vector2(76, 12)
@@ -641,8 +641,8 @@ func _paint_bench() -> PixelCanvas:
 	var lcd := SCALE_LCD
 	c.rect(lcd.position.x - 2, lcd.position.y - 2, lcd.size.x + 4, lcd.size.y + 4, Color("#22262c"))
 	c.rect(lcd.position.x, lcd.position.y, lcd.size.x, lcd.size.y, Pal.LED_BG)
-	c.text("AURUM 200", s.position.x + 6, PAN.y + PAN_R + 6, Color("#848d9a"))
-	c.text("MAX 200G", s.end.x - 46, PAN.y + PAN_R + 6, Color("#5b616b"))
+	c.text(tr("AURUM 200"), s.position.x + 6, PAN.y + PAN_R + 6, Color("#848d9a"))
+	c.text(tr("MAX 200G"), s.end.x - 46, PAN.y + PAN_R + 6, Color("#5b616b"))
 	for bx in [s.position.x + 6, s.end.x - 24]:
 		c.rect(bx, PAN.y + PAN_R + 16, 18, 5, Color("#22262c"))
 		c.rect(bx + 1, PAN.y + PAN_R + 16, 16, 1, Color("#6b7380"))

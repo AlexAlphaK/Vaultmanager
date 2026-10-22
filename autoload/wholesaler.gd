@@ -85,6 +85,6 @@ func buy(item: BullionItem, qty: int) -> int:
 	Shop.add_stock(item, n, each)
 	lots[item.id] = left(item) - n
 	bought_today += each * n
-	Shop.log_event("Wholesaler: %d x %s for %s." % [n, item.display_name, Market.format_money(each * n)])
+	Shop.log_event(tr("Wholesaler: %d x %s for %s.") % [n, item.display_name, Market.format_money(each * n)])
 	changed.emit()
 	return n

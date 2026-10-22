@@ -1,0 +1,4661 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: autoload/calendar.gd
+msgid "%d more day"
+msgid_plural "%d more days"
+msgstr[0] "noch %d Tag"
+msgstr[1] "noch %d Tage"
+
+#: autoload/calendar.gd
+msgid "%s (in %d days)"
+msgstr "%s (in %d Tagen)"
+
+#: autoload/calendar.gd
+msgid "%s is over. %s starts tomorrow."
+msgstr "%s ist vorbei. %s beginnt morgen."
+
+#: autoload/calendar.gd
+msgid "%s is over. You served %d of its customers."
+msgstr "%s ist vorbei. Du hast %d der Kunden bedient."
+
+#: autoload/calendar.gd
+msgid "%s, day %d of %d"
+msgstr "%s, Tag %d von %d"
+
+#: autoload/calendar.gd
+msgid "A silver coin for my nephew's stocking, please."
+msgstr "Eine Silbermünze für den Strumpf meines Neffen, bitte."
+
+#: autoload/calendar.gd
+msgid "Autumn"
+msgstr "Herbst"
+
+#: autoload/calendar.gd
+msgid "COIN SHOW: collectors from three counties are in town for the weekend."
+msgstr "MÜNZMESSE: Sammler aus drei Landkreisen sind übers Wochenende in der Stadt."
+
+#: autoload/calendar.gd
+msgid "Coin show booth"
+msgstr "Messestand"
+
+#: autoload/calendar.gd
+msgid "Collectors pay well for exact coins and rare ones. A booth brings more of them."
+msgstr "Sammler zahlen gut für bestimmte und seltene Münzen. Ein Stand lockt mehr von ihnen an."
+
+#: autoload/calendar.gd
+msgid "Debug: skipped ahead to day %d, %s."
+msgstr "Debug: zu Tag %d gesprungen, %s."
+
+#: autoload/calendar.gd
+msgid "Everyone's paying up for gold this week. My turn."
+msgstr "Diese Woche zahlen alle mehr für Gold. Jetzt bin ich dran."
+
+#: autoload/calendar.gd
+msgid "GOLD FEVER: Prospector Days are on and the whole town wants gold."
+msgstr "GOLDFIEBER: Die Goldgräbertage laufen und die ganze Stadt will Gold."
+
+#: autoload/calendar.gd
+msgid "Gift buyers want small coins and pay a good premium. Keep the shelves full."
+msgstr "Geschenkkäufer wollen kleine Münzen und zahlen gut. Halte die Regale voll."
+
+#: autoload/calendar.gd
+msgid "Gift-wrapped, if you can. It's for my mum."
+msgstr "Als Geschenk verpackt, wenn's geht. Für meine Mama."
+
+#: autoload/calendar.gd
+msgid "Gold buyers pay more all week. Stock up on gold coins."
+msgstr "Goldkäufer zahlen die ganze Woche mehr. Deck dich mit Goldmünzen ein."
+
+#: autoload/calendar.gd
+msgid "Gold fever week"
+msgstr "Goldfieber-Woche"
+
+#: autoload/calendar.gd
+msgid "Gold fever, they call it. I've caught it."
+msgstr "Goldfieber nennen sie das. Mich hat's erwischt."
+
+#: autoload/calendar.gd
+msgid "HOLIDAY RUSH: shoppers want coins to give as gifts, and they pay for the wrapping."
+msgstr "FESTTAGSANSTURM: Kunden wollen Münzen zum Verschenken und zahlen fürs Einpacken."
+
+#: autoload/calendar.gd
+msgid "Holiday gift rush"
+msgstr "Festtagsansturm"
+
+#: autoload/calendar.gd
+msgid "In town for the show. What have you got?"
+msgstr "Bin wegen der Messe hier. Was haben Sie?"
+
+#: autoload/calendar.gd
+msgid "Last-minute present. You're a lifesaver."
+msgstr "Geschenk in letzter Minute. Sie retten mich."
+
+#: autoload/calendar.gd
+msgid "My accountant says sell. So I'm selling."
+msgstr "Mein Steuerberater sagt: verkaufen. Also verkaufe ich."
+
+#: autoload/calendar.gd
+msgid "Owe more than I thought this year. Cash, please."
+msgstr "Ich schulde mehr als gedacht. Bar, bitte."
+
+#: autoload/calendar.gd
+msgid "Panned this lot at the festival. Well, my grandpa did."
+msgstr "Das hab ich beim Fest gewaschen. Na ja, mein Opa."
+
+#: autoload/calendar.gd
+msgid "Prospector Days! I want real gold, not the fudge kind."
+msgstr "Goldgräbertage! Ich will echtes Gold, keine Schokotaler."
+
+#: autoload/calendar.gd
+msgid "Saw the parade. Now I want a gold coin of my own."
+msgstr "Hab den Umzug gesehen. Jetzt will ich eine eigene Goldmünze."
+
+#: autoload/calendar.gd
+msgid "Sellers want cash for their tax bills. Keep cash in the safe."
+msgstr "Verkäufer brauchen Bargeld für die Steuer. Halte Bargeld im Tresor."
+
+#: autoload/calendar.gd
+msgid "Something gold for my wife. Not too big, I'm not made of money."
+msgstr "Etwas aus Gold für meine Frau. Nicht zu groß, ich bin kein Krösus."
+
+#: autoload/calendar.gd
+msgid "Spring"
+msgstr "Frühling"
+
+#: autoload/calendar.gd
+msgid "Summer"
+msgstr "Sommer"
+
+#: autoload/calendar.gd
+msgid "TAX SEASON: the town is selling metal to pay the taxman. Tax Day is {last}."
+msgstr "STEUERZEIT: Die Stadt verkauft Metall, um das Finanzamt zu bezahlen. Steuertag ist {last}."
+
+#: autoload/calendar.gd
+msgid "Tax Day"
+msgstr "Steuertag"
+
+#: autoload/calendar.gd
+msgid "Tax Day: no profit since the last one, so no tax to pay."
+msgstr "Steuertag: kein Gewinn seit dem letzten, also keine Steuer."
+
+#: autoload/calendar.gd
+msgid "Tax Day: you paid %s, %d%% of your %s profit (after costs) since the last one."
+msgstr "Steuertag: Du hast %s gezahlt, %d%% deines Gewinns von %s (nach Kosten) seit dem letzten."
+
+#: autoload/calendar.gd
+msgid "Tax season"
+msgstr "Steuerzeit"
+
+#: autoload/calendar.gd
+msgid "The taxman wants his cut. These have to go."
+msgstr "Das Finanzamt will seinen Anteil. Die müssen weg."
+
+#: autoload/calendar.gd
+msgid "Tomorrow: %s. %s"
+msgstr "Morgen: %s. %s"
+
+#: autoload/calendar.gd
+msgid "Town coin show"
+msgstr "Münzmesse"
+
+#: autoload/calendar.gd
+msgid "Winter"
+msgstr "Winter"
+
+#: autoload/calendar.gd
+msgid "You booked a booth at the coin show. Collectors will find you."
+msgstr "Du hast einen Stand auf der Münzmesse gebucht. Sammler werden dich finden."
+
+#: autoload/calendar.gd
+msgid "collectors pay well."
+msgstr "Sammler zahlen gut."
+
+#: autoload/calendar.gd
+msgid "gold buyers pay more."
+msgstr "Goldkäufer zahlen mehr."
+
+#: autoload/calendar.gd
+msgid "last day"
+msgstr "letzter Tag"
+
+#: autoload/calendar.gd
+msgid "on %s"
+msgstr "am %s"
+
+#: autoload/calendar.gd
+msgid "small gifts sell well."
+msgstr "kleine Geschenke gehen gut."
+
+#: autoload/calendar.gd
+msgid "tax of about {tax} due {tax_day}."
+msgstr "Steuer von etwa {tax} fällig {tax_day}."
+
+#: autoload/calendar.gd scenes/shop/day_panels.gd
+msgid "today"
+msgstr "heute"
+
+#: autoload/calendar.gd
+msgid "tomorrow"
+msgstr "morgen"
+
+#: autoload/calendar.gd
+msgid "tonight"
+msgstr "heute Abend"
+
+#: autoload/customers.gd
+msgid "%s coins for the collection. I pay for quality."
+msgstr "%s-Münzen für die Sammlung. Ich zahle für Qualität."
+
+#: autoload/customers.gd
+msgid "%s has found another shop."
+msgstr "%s hat einen anderen Laden gefunden."
+
+#: autoload/customers.gd
+msgid "%s is back."
+msgstr "%s ist wieder da."
+
+#: autoload/customers.gd
+msgid "%s sold you fakes and walked off laughing."
+msgstr "%s hat dir Fälschungen verkauft und ist lachend gegangen."
+
+#: autoload/customers.gd
+msgid "%s walked in."
+msgstr "%s ist hereingekommen."
+
+#: autoload/customers.gd
+msgid "%s will come back when you have %s in stock."
+msgstr "%s kommt wieder, wenn du %s auf Lager hast."
+
+#: autoload/customers.gd
+msgid "%s won't be coming back."
+msgstr "%s kommt nicht mehr wieder."
+
+#: autoload/customers.gd
+msgid "%s%.1f stars"
+msgstr "%s%.1f Sterne"
+
+#: autoload/customers.gd
+msgid "Ada Okafor"
+msgstr "Ada Okafor"
+
+#: autoload/customers.gd
+msgid "Ada Okafor is your newest customer. Her grandma is very proud."
+msgstr "Ada Okafor ist deine neueste Kundin. Ihre Oma ist sehr stolz."
+
+#: autoload/customers.gd
+msgid "Ada got into the science programme! Ten more for the fund."
+msgstr "Ada hat den Platz im Wissenschaftsprogramm! Zehn mehr für den Fonds."
+
+#: autoload/customers.gd
+msgid "Any %s coins? Nice strike, no spots, please."
+msgstr "Haben Sie %s-Münzen? Schöne Prägung, keine Flecken, bitte."
+
+#: autoload/customers.gd
+msgid "Back from the dead! Diamond hands. Give me your shiniest."
+msgstr "Zurück von den Toten! Diamond Hands. Gib mir dein Glänzendstes."
+
+#: autoload/customers.gd
+msgid "Brayden"
+msgstr "Brayden"
+
+#: autoload/customers.gd
+msgid "Britannias next. Three, for a display on the history of coinage."
+msgstr "Als Nächstes Britannias. Drei, für eine Ausstellung zur Geschichte des Münzwesens."
+
+#: autoload/customers.gd
+msgid "Buying the crypto dip. Need cash for it, bro."
+msgstr "Ich kaufe den Krypto-Dip. Brauch Bargeld dafür, Bro."
+
+#: autoload/customers.gd
+msgid "Cash only. No paperwork. You understand."
+msgstr "Nur bar. Kein Papierkram. Sie verstehen."
+
+#: autoload/customers.gd
+msgid "Chad"
+msgstr "Chad"
+
+#: autoload/customers.gd
+msgid "Chad bought gold to 'diversify his bag'."
+msgstr "Chad hat Gold gekauft, um \"sein Portfolio zu streuen\"."
+
+#: autoload/customers.gd
+msgid "Chad posted your shop to all his followers. 'Based gold guy.'"
+msgstr "Chad hat deinen Laden bei all seinen Followern gepostet. \"Echter Gold-Typ.\""
+
+#: autoload/customers.gd
+msgid "Chad sold his gold back after a bad week in crypto."
+msgstr "Chad hat sein Gold nach einer miesen Krypto-Woche zurückverkauft."
+
+#: autoload/customers.gd
+msgid "Detective Ruiz"
+msgstr "Detective Ruiz"
+
+#: autoload/customers.gd
+msgid "Detective Ruiz paid you the reward for Vinnie's fakes."
+msgstr "Detective Ruiz hat dir die Belohnung für Vinnies Fälschungen gezahlt."
+
+#: autoload/customers.gd
+msgid "Detective Ruiz warned you about buying from Vinnie."
+msgstr "Detective Ruiz hat dich gewarnt, bei Vinnie zu kaufen."
+
+#: autoload/customers.gd
+msgid "Diversifying my bag. Need gold, like, now."
+msgstr "Ich streu mein Portfolio. Brauch Gold, so, sofort."
+
+#: autoload/customers.gd
+msgid "Don't ask about my portfolio. Just buy these."
+msgstr "Frag nicht nach meinem Portfolio. Kauf die einfach."
+
+#: autoload/customers.gd
+msgid "Dr. Vance is building a museum display on the history of coinage."
+msgstr "Dr. Vance baut eine Museumsausstellung zur Geschichte des Münzwesens auf."
+
+#: autoload/customers.gd
+msgid "Dr. Vance's display opens at the town museum next week."
+msgstr "Die Ausstellung von Dr. Vance öffnet nächste Woche im Stadtmuseum."
+
+#: autoload/customers.gd
+msgid "Dr. Vance, a collector, added your Krugerrand to her cabinet."
+msgstr "Dr. Vance, eine Sammlerin, hat deinen Krugerrand in ihre Vitrine gestellt."
+
+#: autoload/customers.gd
+msgid "Everything's negotiable, friend."
+msgstr "Alles ist verhandelbar, mein Freund."
+
+#: autoload/customers.gd
+msgid "Fresh from my uncle's estate. Very fresh. Cash, yeah?"
+msgstr "Frisch aus dem Nachlass meines Onkels. Sehr frisch. Bar, ja?"
+
+#: autoload/customers.gd
+msgid "Gold's the OG blockchain, bro."
+msgstr "Gold ist die Ur-Blockchain, Bro."
+
+#: autoload/customers.gd
+msgid "Got liquidated. Need those eagles turned back into fiat. Don't tell anyone."
+msgstr "Liquidiert worden. Die Eagles müssen wieder zu Fiat werden. Sag's keinem."
+
+#: autoload/customers.gd
+msgid "Got margin-called. Need fiat, fast."
+msgstr "Margin Call gekriegt. Brauch Fiat, schnell."
+
+#: autoload/customers.gd
+msgid "Grandma's silver paid for my first year. Now I'm starting my own stack."
+msgstr "Omas Silber hat mein erstes Jahr bezahlt. Jetzt fange ich meinen eigenen Stapel an."
+
+#: autoload/customers.gd
+msgid "Grandpa Lev"
+msgstr "Grandpa Lev"
+
+#: autoload/customers.gd
+msgid "Grandpa Lev sold you the first of his late wife's coins. He'll be back."
+msgstr "Grandpa Lev hat dir die ersten Münzen seiner verstorbenen Frau verkauft. Er kommt wieder."
+
+#: autoload/customers.gd
+msgid "Grandpa Lev sold you the last of Mira's coins. He looked lighter, somehow."
+msgstr "Grandpa Lev hat dir die letzten von Miras Münzen verkauft. Er wirkte irgendwie leichter."
+
+#: autoload/customers.gd
+msgid "Grandpa Lev told the whole bowling league about your shop."
+msgstr "Grandpa Lev hat dem ganzen Kegelverein von deinem Laden erzählt."
+
+#: autoload/customers.gd
+msgid "Grandpa Lev told you how Mira saved a coin from every trip they took."
+msgstr "Grandpa Lev hat erzählt, wie Mira von jeder Reise eine Münze aufhob."
+
+#: autoload/customers.gd
+msgid "Her favourite. I kept this one till last."
+msgstr "Ihre liebste. Die hab ich bis zuletzt behalten."
+
+#: autoload/customers.gd
+msgid "I collect %s coins. Nothing else will do."
+msgstr "Ich sammle %s-Münzen. Nichts anderes kommt in Frage."
+
+#: autoload/customers.gd
+msgid "I collect Krugerrands. Do you have one with a crisp springbok?"
+msgstr "Ich sammle Krugerrands. Haben Sie einen mit scharfem Springbock?"
+
+#: autoload/customers.gd
+msgid "I never pay sticker. Let's talk."
+msgstr "Ich zahle nie den Listenpreis. Reden wir."
+
+#: autoload/customers.gd
+msgid "Jaxon"
+msgstr "Jaxon"
+
+#: autoload/customers.gd
+msgid "Just took profits. Turn it into something shiny."
+msgstr "Gerade Gewinne mitgenommen. Mach was Glänzendes draus."
+
+#: autoload/customers.gd
+msgid "Last time, I promise. These ones are definitely real."
+msgstr "Letztes Mal, versprochen. Die sind wirklich echt."
+
+#: autoload/customers.gd
+msgid "Last top-up before she goes. Ten more, and wish her luck."
+msgstr "Letzte Aufstockung, bevor sie geht. Zehn mehr, und drücken Sie ihr die Daumen."
+
+#: autoload/customers.gd
+msgid "Let's not insult each other. What's your real number?"
+msgstr "Beleidigen wir uns nicht. Was ist Ihr echter Preis?"
+
+#: autoload/customers.gd
+msgid "Moonboy Mike"
+msgstr "Moonboy Mike"
+
+#: autoload/customers.gd
+msgid "More of Mira's collection. She'd want it to go to someone honest."
+msgstr "Mehr aus Miras Sammlung. Sie hätte gewollt, dass sie an jemand Ehrliches geht."
+
+#: autoload/customers.gd
+msgid "Mrs. Okafor finished Ada's college fund."
+msgstr "Mrs. Okafor hat Adas Studienfonds vollgemacht."
+
+#: autoload/customers.gd
+msgid "Mrs. Okafor started a college fund in silver for her granddaughter."
+msgstr "Mrs. Okafor hat für ihre Enkelin einen Studienfonds in Silber angelegt."
+
+#: autoload/customers.gd
+msgid "Mrs. Okafor's granddaughter got into the science programme."
+msgstr "Mrs. Okafors Enkelin hat einen Platz im Wissenschaftsprogramm."
+
+#: autoload/customers.gd
+msgid "My Mira bought one of these every birthday. Time to let a few go."
+msgstr "Meine Mira hat zu jedem Geburtstag eine davon gekauft. Zeit, ein paar abzugeben."
+
+#: autoload/customers.gd
+msgid "My cousin's coins. He's... away."
+msgstr "Die Münzen meines Cousins. Er ist... verreist."
+
+#: autoload/customers.gd
+msgid "My grandson graduates Friday. I want to buy him a gold coin, and I want it from you."
+msgstr "Mein Enkel macht Freitag seinen Abschluss. Ich will ihm eine Goldmünze kaufen, und zwar bei Ihnen."
+
+#: autoload/customers.gd
+msgid "My old teacher's eagles. I want them in good hands, not a fair price."
+msgstr "Die Eagles meines alten Lehrers. Ich will sie in guten Händen, nicht zum besten Preis."
+
+#: autoload/customers.gd
+msgid "New batch. Same uncle. Different estate."
+msgstr "Neue Ladung. Gleicher Onkel. Anderer Nachlass."
+
+#: autoload/customers.gd
+msgid "Priced to move. Don't ask where they're from."
+msgstr "Kampfpreis. Frag nicht, wo die herkommen."
+
+#: autoload/customers.gd autoload/orders.gd
+msgid "Professor Hale"
+msgstr "Professor Hale"
+
+#: autoload/customers.gd
+msgid "Quick deal, yeah? I'm double parked."
+msgstr "Schneller Deal, ja? Ich steh in zweiter Reihe."
+
+#: autoload/customers.gd
+msgid "Reward"
+msgstr "Belohnung"
+
+#: autoload/customers.gd autoload/story.gd
+msgid "Reward: "
+msgstr "Belohnung: "
+
+#: autoload/customers.gd
+msgid "Silver for my granddaughter Ada's college fund. Five, please."
+msgstr "Silber für den Studienfonds meiner Enkelin Ada. Fünf, bitte."
+
+#: autoload/customers.gd
+msgid "Some Guy"
+msgstr "Some Guy"
+
+#: autoload/customers.gd
+msgid "Tanner"
+msgstr "Tanner"
+
+#: autoload/customers.gd
+msgid "The centrepiece: a platinum eagle. The museum opens next week."
+msgstr "Das Herzstück: ein Platinum Eagle. Das Museum öffnet nächste Woche."
+
+#: autoload/customers.gd
+msgid "The museum display credits your shop. People are talking."
+msgstr "Die Museumsausstellung nennt deinen Laden. Die Leute reden."
+
+#: autoload/customers.gd
+msgid "Took some profits, bro. Gold's the original blockchain."
+msgstr "Hab Gewinne mitgenommen, Bro. Gold ist die Original-Blockchain."
+
+#: autoload/customers.gd
+msgid "Two-Phones Tony"
+msgstr "Two-Phones Tony"
+
+#: autoload/customers.gd
+msgid "Vinnie"
+msgstr "Vinnie"
+
+#: autoload/customers.gd
+msgid "Vinnie's been passing fakes all over town. Some ended up in your vault. Test your coins."
+msgstr "Vinnie verteilt Fälschungen in der ganzen Stadt. Einige sind in deinem Tresor gelandet. Prüf deine Münzen."
+
+#: autoload/customers.gd
+msgid "We picked up Vinnie's counterfeit ring. Your tips helped. The town's reward is yours."
+msgstr "Wir haben Vinnies Fälscherring hochgenommen. Ihre Hinweise haben geholfen. Die Belohnung der Stadt gehört Ihnen."
+
+#: autoload/customers.gd
+msgid "You caught %s's %s fakes. He'll try again."
+msgstr "Du hast %ss %s-Fälschungen erwischt. Er versucht es wieder."
+
+#: autoload/customers.gd
+msgid "You caught %s's fakes again. Word is the police are interested."
+msgstr "Du hast %ss Fälschungen wieder erwischt. Es heißt, die Polizei interessiert sich."
+
+#: autoload/customers.gd
+msgid "collector"
+msgstr "Sammler"
+
+#: autoload/customers.gd
+msgid "crypto bro"
+msgstr "Krypto-Bro"
+
+#: autoload/customers.gd
+msgid "haggler"
+msgstr "Feilscher"
+
+#: autoload/customers.gd
+msgid "looks nervous"
+msgstr "wirkt nervös"
+
+#: autoload/customers.gd
+msgid "old coin"
+msgstr "alte Münze"
+
+#: autoload/customers.gd
+msgid "regular"
+msgstr "Stammkunde"
+
+#: autoload/day.gd
+msgid "Friday"
+msgstr "Freitag"
+
+#: autoload/day.gd
+msgid "Insurance"
+msgstr "Versicherung"
+
+#: autoload/day.gd
+msgid "Monday"
+msgstr "Montag"
+
+#: autoload/day.gd
+msgid "Overdraft interest"
+msgstr "Überziehungszinsen"
+
+#: autoload/day.gd
+msgid "Rent"
+msgstr "Miete"
+
+#: autoload/day.gd scenes/shop/rush_hours.gd
+msgid "Saturday"
+msgstr "Samstag"
+
+#: autoload/day.gd
+msgid "Sunday"
+msgstr "Sonntag"
+
+#: autoload/day.gd
+msgid "Thursday"
+msgstr "Donnerstag"
+
+#: autoload/day.gd
+msgid "Tuesday"
+msgstr "Dienstag"
+
+#: autoload/day.gd
+msgid "Upkeep"
+msgstr "Unterhalt"
+
+#: autoload/day.gd
+msgid "Wednesday"
+msgstr "Mittwoch"
+
+#: autoload/day.gd
+msgid "You are overdrawn. The bank charges interest every night."
+msgstr "Du bist im Minus. Die Bank berechnet jede Nacht Zinsen."
+
+#: autoload/market_events.gd
+msgid "BITCOIN CRASHES {move}. Burned crypto traders want something real."
+msgstr "BITCOIN STÜRZT AB {move}. Verbrannte Krypto-Trader wollen etwas Echtes."
+
+#: autoload/market_events.gd
+msgid "BITCOIN SOARS {move}. Gold bugs sell up to chase crypto."
+msgstr "BITCOIN HEBT AB {move}. Goldfans verkaufen, um Krypto zu jagen."
+
+#: autoload/market_events.gd
+msgid "Buying the dip, like my dad taught me."
+msgstr "Ich kaufe den Dip, wie mein Vater es mir beigebracht hat."
+
+#: autoload/market_events.gd
+msgid "CHIP STOCKS PLUNGE: NVIDIA {move}. Tech money looks for shelter in silver."
+msgstr "CHIPAKTIEN BRECHEN EIN: NVIDIA {move}. Tech-Geld sucht Schutz in Silber."
+
+#: autoload/market_events.gd
+msgid "DOGECOIN MOONS {move}. Lucky winners want to lock in their gains in gold."
+msgstr "DOGECOIN GEHT ZUM MOND {move}. Glückliche Gewinner sichern ihre Gewinne in Gold."
+
+#: autoload/market_events.gd
+msgid "Dog money paid off. Turning it into real money."
+msgstr "Hundegeld hat sich gelohnt. Mach ich jetzt zu echtem Geld."
+
+#: autoload/market_events.gd
+msgid "Done with crypto. Give me something I can hold."
+msgstr "Schluss mit Krypto. Geben Sie mir was zum Anfassen."
+
+#: autoload/market_events.gd
+msgid "Forums say buy physical. How many do you have?"
+msgstr "In den Foren heißt es: physisch kaufen. Wie viele haben Sie?"
+
+#: autoload/market_events.gd
+msgid "GOLD JUMPS {move}. Folks dig out old coins to cash in at the top."
+msgstr "GOLD SPRINGT {move}. Die Leute kramen alte Münzen hervor, um oben zu verkaufen."
+
+#: autoload/market_events.gd
+msgid "GOLD SLIDES {move}. Panic sellers want out before it drops further."
+msgstr "GOLD RUTSCHT {move}. Panikverkäufer wollen raus, bevor es weiter fällt."
+
+#: autoload/market_events.gd
+msgid "Gold's boring. Selling to buy tech."
+msgstr "Gold ist langweilig. Ich verkaufe für Tech-Aktien."
+
+#: autoload/market_events.gd
+msgid "Gold's crashing! Take them before they're worth nothing."
+msgstr "Gold stürzt ab! Nehmen Sie die, bevor sie nichts mehr wert sind."
+
+#: autoload/market_events.gd
+msgid "Gold's up again. Time to cash in."
+msgstr "Gold steigt wieder. Zeit, Kasse zu machen."
+
+#: autoload/market_events.gd
+msgid "Heard spot is flying today. What'll you give me?"
+msgstr "Hab gehört, der Spot geht heute durch die Decke. Was geben Sie mir?"
+
+#: autoload/market_events.gd
+msgid "Lost a month's pay on chips today. Silver, please."
+msgstr "Heute einen Monatslohn mit Chips verloren. Silber, bitte."
+
+#: autoload/market_events.gd
+msgid "Much profit. Very gold. Wow."
+msgstr "Viel Gewinn. Sehr Gold. Wow."
+
+#: autoload/market_events.gd
+msgid "My broker isn't picking up. You'll buy these, right?"
+msgstr "Mein Broker geht nicht ran. Die kaufen Sie doch, oder?"
+
+#: autoload/market_events.gd
+msgid "My coins halved overnight. Gold doesn't do that, right?"
+msgstr "Meine Coins haben sich über Nacht halbiert. Das macht Gold nicht, oder?"
+
+#: autoload/market_events.gd
+msgid "My nephew says gold is a boomer rock. Buy these?"
+msgstr "Mein Neffe sagt, Gold ist ein Boomer-Stein. Kaufen Sie die?"
+
+#: autoload/market_events.gd
+msgid "My retirement account is red. Something safe, please."
+msgstr "Mein Rentenkonto ist rot. Was Sicheres, bitte."
+
+#: autoload/market_events.gd
+msgid "NEWS: "
+msgstr "NEWS: "
+
+#: autoload/market_events.gd
+msgid "Need cash fast, Bitcoin's taking off without me."
+msgstr "Brauch schnell Bargeld, Bitcoin hebt ohne mich ab."
+
+#: autoload/market_events.gd
+msgid "PLATINUM POPS {move}. Owners rush to sell."
+msgstr "PLATIN SCHIESST HOCH {move}. Besitzer eilen zum Verkauf."
+
+#: autoload/market_events.gd
+msgid "Platinum's finally moving. Selling while it lasts."
+msgstr "Platin bewegt sich endlich. Ich verkaufe, solange es geht."
+
+#: autoload/market_events.gd
+msgid "SILVER ON SALE: SILVER {move}. Bargain hunters line up."
+msgstr "SILBER IM ANGEBOT: SILBER {move}. Schnäppchenjäger stehen Schlange."
+
+#: autoload/market_events.gd
+msgid "SILVER SQUEEZE: SILVER {move}. Stackers storm the shops."
+msgstr "SILBER-SQUEEZE: SILBER {move}. Stapler stürmen die Läden."
+
+#: autoload/market_events.gd
+msgid "STOCKS RALLY: S&P 500 {move}. Metal holders sell to buy shares."
+msgstr "AKTIEN STEIGEN: S&P 500 {move}. Metallbesitzer verkaufen für Aktien."
+
+#: autoload/market_events.gd
+msgid "STOCKS TUMBLE: S&P 500 {move}. Investors run to safe-haven gold."
+msgstr "AKTIEN FALLEN: S&P 500 {move}. Anleger flüchten in sicheres Gold."
+
+#: autoload/market_events.gd
+msgid "Saw it on the news. I'm getting out now."
+msgstr "Hab's in den Nachrichten gesehen. Ich steig jetzt aus."
+
+#: autoload/market_events.gd
+msgid "Silver's going to the moon. I need tubes, now."
+msgstr "Silber geht zum Mond. Ich brauch Tubes, sofort."
+
+#: autoload/market_events.gd
+msgid "Silver's on sale. I'll take some."
+msgstr "Silber ist im Angebot. Ich nehm welches."
+
+#: autoload/market_events.gd
+msgid "Sold my Bitcoin at the bottom. Never again."
+msgstr "Meine Bitcoin am Tiefpunkt verkauft. Nie wieder."
+
+#: autoload/market_events.gd
+msgid "Stocks are flying. Moving my stack into the market."
+msgstr "Aktien fliegen. Ich schieb meinen Stapel in den Markt."
+
+#: autoload/market_events.gd
+msgid "Tech's crashing. I want something shiny I can hold."
+msgstr "Tech crasht. Ich will was Glänzendes zum Anfassen."
+
+#: autoload/market_events.gd
+msgid "The market's a bloodbath. I want gold."
+msgstr "Der Markt ist ein Blutbad. Ich will Gold."
+
+#: autoload/orders.gd
+msgid "%s collected their %s. Order filled!"
+msgstr "%s hat %s abgeholt. Auftrag erledigt!"
+
+#: autoload/orders.gd
+msgid "%s ordered %d × %s by %s. Pays %s."
+msgstr "%s hat %d × %s bis %s bestellt. Zahlt %s."
+
+#: autoload/orders.gd
+msgid "%s picked up the %s you found for them. Collectors talk."
+msgstr "%s hat %s abgeholt, das du gefunden hast. Sammler reden."
+
+#: autoload/orders.gd
+msgid "%s will come back on %s."
+msgstr "%s kommt am %s wieder."
+
+#: autoload/orders.gd
+msgid "%s's order fell through. They won't forget it."
+msgstr "%ss Auftrag ist geplatzt. Das wird nicht vergessen."
+
+#: autoload/orders.gd
+msgid "A %s, in decent condition. I'll pay a collector's price."
+msgstr "Ein %s in ordentlichem Zustand. Ich zahle einen Sammlerpreis."
+
+#: autoload/orders.gd
+msgid "A collector"
+msgstr "Ein Sammler"
+
+#: autoload/orders.gd
+msgid "Colonel Ashby"
+msgstr "Colonel Ashby"
+
+#: autoload/orders.gd
+msgid "Dealer network: 1 × %s for %s."
+msgstr "Händlernetz: 1 × %s für %s."
+
+#: autoload/orders.gd
+msgid "Did you find my %s? We agreed on today."
+msgstr "Haben Sie mein %s gefunden? Wir hatten heute gesagt."
+
+#: autoload/orders.gd
+msgid "Dug this out of the garden, believe it or not."
+msgstr "Im Garten ausgegraben, ob Sie's glauben oder nicht."
+
+#: autoload/orders.gd
+msgid "Found this old coin in grandad's desk. Is it worth anything?"
+msgstr "Diese alte Münze lag in Opas Schreibtisch. Ist die was wert?"
+
+#: autoload/orders.gd
+msgid "I heard you found my %s already!"
+msgstr "Ich hab gehört, Sie haben mein %s schon gefunden!"
+
+#: autoload/orders.gd
+msgid "I'm buying for a client. Can you get me %d %s coins?"
+msgstr "Ich kaufe für einen Kunden. Können Sie mir %d %s-Münzen besorgen?"
+
+#: autoload/orders.gd
+msgid "I'm here for the %s. Tell me you found it."
+msgstr "Ich bin wegen des %s hier. Sagen Sie, Sie haben es gefunden."
+
+#: autoload/orders.gd
+msgid "I've hunted a %s for years. Find me one?"
+msgstr "Ich suche seit Jahren ein %s. Finden Sie mir eins?"
+
+#: autoload/orders.gd
+msgid "It was my aunt's. Gold's gold, right?"
+msgstr "Das war von meiner Tante. Gold ist Gold, oder?"
+
+#: autoload/orders.gd
+msgid "Judge Amari"
+msgstr "Judge Amari"
+
+#: autoload/orders.gd
+msgid "My collection is missing a %s. Can you track one down?"
+msgstr "Meiner Sammlung fehlt ein %s. Können Sie eins auftreiben?"
+
+#: autoload/orders.gd
+msgid "Our company is giving %d %s coins to its staff. Can you source them?"
+msgstr "Unsere Firma schenkt den Mitarbeitern %d %s-Münzen. Können Sie die besorgen?"
+
+#: autoload/orders.gd
+msgid "Some old coin from a box of junk. Melt price is fine."
+msgstr "Irgendeine alte Münze aus einer Kiste Krempel. Schmelzpreis reicht."
+
+#: autoload/orders.gd
+msgid "Today's the day. Have you got my %s?"
+msgstr "Heute ist der Tag. Haben Sie mein %s?"
+
+#: autoload/orders.gd
+msgid "Wedding gifts for the whole family: %d %s coins."
+msgstr "Hochzeitsgeschenke für die ganze Familie: %d %s-Münzen."
+
+#: autoload/orders.gd
+msgid "Word is my %s came in. Is it ready?"
+msgstr "Es heißt, mein %s ist da. Ist es fertig?"
+
+#: autoload/orders.gd
+msgid "You let %s down: no %s on the day you promised."
+msgstr "Du hast %s enttäuscht: kein %s am versprochenen Tag."
+
+#: autoload/pad.gd scenes/shop/day_panels.gd ui/save_slots_panel.gd ui/settings_panel.gd
+msgid "Back"
+msgstr "Zurück"
+
+#: autoload/pad.gd
+msgid "Click (hold to drag)"
+msgstr "Klicken (halten zum Ziehen)"
+
+#: autoload/pad.gd
+msgid "Confirm"
+msgstr "Bestätigen"
+
+#: autoload/pad.gd
+msgid "Controller connected. Press View for the controls."
+msgstr "Controller verbunden. Drück View für die Steuerung."
+
+#: autoload/pad.gd
+msgid "Jump to the next button"
+msgstr "Zur nächsten Schaltfläche springen"
+
+#: autoload/pad.gd
+msgid "Left stick"
+msgstr "Linker Stick"
+
+#: autoload/pad.gd
+msgid "Move the pointer"
+msgstr "Zeiger bewegen"
+
+#: autoload/pad.gd
+msgid "Pause"
+msgstr "Pause"
+
+#: autoload/pad.gd
+msgid "Right click"
+msgstr "Rechtsklick"
+
+#: autoload/pad.gd
+msgid "Right stick"
+msgstr "Rechter Stick"
+
+#: autoload/pad.gd
+msgid "Show or hide this"
+msgstr "Diese Hilfe ein-/ausblenden"
+
+#: autoload/pad.gd
+msgid "Start"
+msgstr "Start"
+
+#: autoload/progress.gd
+msgid "A back room with proper benches. In a rush the queue gets impatient half as fast while you test."
+msgstr "Ein Hinterzimmer mit richtigen Werkbänken. Im Ansturm wird die Schlange beim Prüfen nur halb so schnell ungeduldig."
+
+#: autoload/progress.gd
+msgid "A conductivity probe for the coin bench (key 6). It reads through plating and finds a tungsten core."
+msgstr "Eine Leitfähigkeitssonde für den Münztisch (Taste 6). Sie misst durch Plattierung und findet Wolframkerne."
+
+#: autoload/progress.gd
+msgid "A dealing room with live screens. Each morning, trade metals, stocks and crypto and hedge your vault. Investors bring 25% more."
+msgstr "Ein Handelsraum mit Live-Bildschirmen. Handle jeden Morgen Metalle, Aktien und Krypto und sichere deinen Tresor ab. Anleger bringen 25% mehr."
+
+#: autoload/progress.gd
+msgid "A second service window. The clerk rings up 40% faster, the till holds 50% more before thieves notice, and 1 more customer can wait."
+msgstr "Ein zweiter Schalter. Der Verkäufer kassiert 40% schneller, die Kasse fasst 50% mehr, bevor Diebe aufmerksam werden, und 1 Kunde mehr kann warten."
+
+#: autoload/progress.gd
+msgid "Adds a shelf to the wall safe for the nightly lock-up."
+msgstr "Fügt dem Wandtresor ein Fach für das nächtliche Einschließen hinzu."
+
+#: autoload/progress.gd
+msgid "Alarm system"
+msgstr "Alarmanlage"
+
+#: autoload/progress.gd
+msgid "Bought %s."
+msgstr "%s gekauft."
+
+#: autoload/progress.gd
+msgid "Brass queue ropes"
+msgstr "Messing-Absperrkordeln"
+
+#: autoload/progress.gd
+msgid "Bullion house"
+msgstr "Edelmetallhaus"
+
+#: autoload/progress.gd
+msgid "Bullion trading desk"
+msgstr "Edelmetall-Handelstisch"
+
+#: autoload/progress.gd
+msgid "Coins sparkle. Buyers accept 2% more premium."
+msgstr "Münzen funkeln. Käufer akzeptieren 2% mehr Aufschlag."
+
+#: autoload/progress.gd
+msgid "Collector's lounge"
+msgstr "Sammler-Lounge"
+
+#: autoload/progress.gd
+msgid "Comfy chairs and coffee. Buyers accept 3% more premium and wait 20% longer."
+msgstr "Bequeme Sessel und Kaffee. Käufer akzeptieren 3% mehr Aufschlag und warten 20% länger."
+
+#: autoload/progress.gd
+msgid "Corner counter"
+msgstr "Eckladen"
+
+#: autoload/progress.gd
+msgid "Customers wait 25% longer before they give up."
+msgstr "Kunden warten 25% länger, bevor sie aufgeben."
+
+#: autoload/progress.gd
+msgid "Digital gauges"
+msgstr "Digitale Messgeräte"
+
+#: autoload/progress.gd
+msgid "Display case lights"
+msgstr "Vitrinenbeleuchtung"
+
+#: autoload/progress.gd
+msgid "Fraud insurance"
+msgstr "Betrugsversicherung"
+
+#: autoload/progress.gd
+msgid "Highway billboard"
+msgstr "Autobahn-Plakat"
+
+#: autoload/progress.gd
+msgid "Insurance costs 30% less and robbers think twice."
+msgstr "Die Versicherung kostet 30% weniger und Räuber überlegen es sich zweimal."
+
+#: autoload/progress.gd
+msgid "Long counter"
+msgstr "Lange Theke"
+
+#: autoload/progress.gd
+msgid "Main Street shop"
+msgstr "Laden an der Hauptstraße"
+
+#: autoload/progress.gd
+msgid "Marble showroom counter"
+msgstr "Marmor-Verkaufstheke"
+
+#: autoload/progress.gd
+msgid "Marble, brass and glass. Buyers accept 2% more premium, wait 15% longer, and 1 more customer can wait."
+msgstr "Marmor, Messing und Glas. Käufer akzeptieren 2% mehr Aufschlag, warten 15% länger und 1 Kunde mehr kann warten."
+
+#: autoload/progress.gd
+msgid "Melt scrap in-house: the refiner pays 6% more for the jewellery you buy."
+msgstr "Schrott im Haus einschmelzen: Die Scheideanstalt zahlt 6% mehr für deinen Schmuck."
+
+#: autoload/progress.gd
+msgid "More passers-by notice you: customers arrive 15% faster."
+msgstr "Mehr Passanten bemerken dich: Kunden kommen 15% schneller."
+
+#: autoload/progress.gd
+msgid "Moving to %s"
+msgstr "Umzug: %s"
+
+#: autoload/progress.gd
+msgid "Needs %.1f stars"
+msgstr "Braucht %.1f Sterne"
+
+#: autoload/progress.gd
+msgid "Needs %s cash"
+msgstr "Braucht %s Bargeld"
+
+#: autoload/progress.gd
+msgid "Needs net worth %s"
+msgstr "Braucht Nettovermögen %s"
+
+#: autoload/progress.gd
+msgid "Neon window sign"
+msgstr "Neon-Schaufensterschild"
+
+#: autoload/progress.gd
+msgid "Pays back half of what you lose on fakes the assay lab catches."
+msgstr "Erstattet die Hälfte dessen, was du an Fälschungen verlierst, die das Prüflabor findet."
+
+#: autoload/progress.gd
+msgid "People drive in from the next town: customers arrive 30% faster."
+msgstr "Leute kommen aus der Nachbarstadt: Kunden kommen 30% schneller."
+
+#: autoload/progress.gd
+msgid "Posts and a velvet rope snake the queue: 2 more customers can wait inside."
+msgstr "Pfosten und eine Samtkordel lenken die Schlange: 2 Kunden mehr können drinnen warten."
+
+#: autoload/progress.gd
+msgid "Radio ads"
+msgstr "Radiowerbung"
+
+#: autoload/progress.gd
+msgid "Refining workshop"
+msgstr "Raffinerie-Werkstatt"
+
+#: autoload/progress.gd
+msgid "Robberies become very rare and insurance drops another 30%."
+msgstr "Überfälle werden sehr selten und die Versicherung sinkt um weitere 30%."
+
+#: autoload/progress.gd
+msgid "Second safe"
+msgstr "Zweiter Tresor"
+
+#: autoload/progress.gd
+msgid "Sigma metal verifier"
+msgstr "Sigma-Metallprüfer"
+
+#: autoload/progress.gd
+msgid "Testing lab"
+msgstr "Prüflabor"
+
+#: autoload/progress.gd
+msgid "The coin and bar benches compare each reading with the spec: green inside it, red outside."
+msgstr "Münz- und Barrentisch vergleichen jeden Messwert mit der Spezifikation: grün innerhalb, rot außerhalb."
+
+#: autoload/progress.gd
+msgid "The whole town hears about you: customers arrive 20% faster."
+msgstr "Die ganze Stadt hört von dir: Kunden kommen 20% schneller."
+
+#: autoload/progress.gd
+msgid "Time-lock vault"
+msgstr "Zeitschloss-Tresor"
+
+#: autoload/progress.gd
+msgid "Town landmark"
+msgstr "Wahrzeichen der Stadt"
+
+#: autoload/progress.gd
+msgid "Waiting bench"
+msgstr "Wartebank"
+
+#: autoload/progress.gd
+msgid "Welcome to your %s!"
+msgstr "Willkommen im neuen Laden: %s!"
+
+#: autoload/progress.gd
+msgid "You run the biggest store in town."
+msgstr "Du hast den größten Laden der Stadt."
+
+#: autoload/records.gd
+msgid "Achievement earned: %s. %s"
+msgstr "Erfolg erzielt: %s. %s"
+
+#: autoload/records.gd
+msgid "Achievement: %s!"
+msgstr "Erfolg: %s!"
+
+#: autoload/records.gd
+msgid "Apprentice no more"
+msgstr "Kein Lehrling mehr"
+
+#: autoload/records.gd
+msgid "Bigger than Lucky's"
+msgstr "Größer als Lucky's"
+
+#: autoload/records.gd
+msgid "Biggest in town"
+msgstr "Größter der Stadt"
+
+#: autoload/records.gd
+msgid "Book a booth at the town coin show."
+msgstr "Buche einen Stand auf der Münzmesse."
+
+#: autoload/records.gd
+msgid "Busy counter"
+msgstr "Volle Theke"
+
+#: autoload/records.gd
+msgid "Catch your first fake."
+msgstr "Erwische deine erste Fälschung."
+
+#: autoload/records.gd
+msgid "Clean books"
+msgstr "Saubere Bücher"
+
+#: autoload/records.gd
+msgid "Close 100 deals, buying or selling."
+msgstr "Schließe 100 Geschäfte ab, Ankauf oder Verkauf."
+
+#: autoload/records.gd
+msgid "Close 500 deals, buying or selling."
+msgstr "Schließe 500 Geschäfte ab, Ankauf oder Verkauf."
+
+#: autoload/records.gd
+msgid "Collector's friend"
+msgstr "Freund der Sammler"
+
+#: autoload/records.gd
+msgid "End a day worth more than Lucky's Pawn & Loan."
+msgstr "Beende einen Tag mit mehr Wert als Lucky's Pawn & Loan."
+
+#: autoload/records.gd
+msgid "End a day worth more than Sterling Bullion Co."
+msgstr "Beende einen Tag mit mehr Wert als Sterling Bullion Co."
+
+#: autoload/records.gd
+msgid "Fake finder"
+msgstr "Fälschungsfinder"
+
+#: autoload/records.gd
+msgid "Fill 5 special orders for collectors."
+msgstr "Erfülle 5 Sonderaufträge für Sammler."
+
+#: autoload/records.gd
+msgid "Finish the story: Mags cuts the ribbon on your landmark."
+msgstr "Beende die Geschichte: Mags durchschneidet das Band an deinem Wahrzeichen."
+
+#: autoload/records.gd
+msgid "Finish your first week of trading."
+msgstr "Beende deine erste Handelswoche."
+
+#: autoload/records.gd
+msgid "First week"
+msgstr "Erste Woche"
+
+#: autoload/records.gd
+msgid "Five-star dealer"
+msgstr "Fünf-Sterne-Händler"
+
+#: autoload/records.gd
+msgid "Forger's nightmare"
+msgstr "Albtraum der Fälscher"
+
+#: autoload/records.gd
+msgid "Four seasons"
+msgstr "Vier Jahreszeiten"
+
+#: autoload/records.gd
+msgid "Go 7 days in a row without buying a fake."
+msgstr "7 Tage am Stück ohne gekaufte Fälschung."
+
+#: autoload/records.gd
+msgid "Good citizen"
+msgstr "Guter Bürger"
+
+#: autoload/records.gd
+msgid "Good day"
+msgstr "Guter Tag"
+
+#: autoload/records.gd
+msgid "Hot streak"
+msgstr "Glückssträhne"
+
+#: autoload/records.gd
+msgid "Keep someone on staff until they are a veteran (level 5)."
+msgstr "Behalte jemanden im Team, bis er ein Veteran ist (Stufe 5)."
+
+#: autoload/records.gd
+msgid "Make $1,000,000 profit in total."
+msgstr "Mach insgesamt $1.000.000 Gewinn."
+
+#: autoload/records.gd
+msgid "Make $100,000 profit in total."
+msgstr "Mach insgesamt $100.000 Gewinn."
+
+#: autoload/records.gd
+msgid "Make $25,000 profit in one day."
+msgstr "Mach $25.000 Gewinn an einem Tag."
+
+#: autoload/records.gd
+msgid "Make $5,000 profit in one day."
+msgstr "Mach $5.000 Gewinn an einem Tag."
+
+#: autoload/records.gd
+msgid "Make a profit 7 days in a row."
+msgstr "Mach 7 Tage am Stück Gewinn."
+
+#: autoload/records.gd
+msgid "Million in the till"
+msgstr "Million in der Kasse"
+
+#: autoload/records.gd
+msgid "Millionaire"
+msgstr "Millionär"
+
+#: autoload/records.gd
+msgid "Move the shop to Main Street."
+msgstr "Zieh mit dem Laden an die Hauptstraße."
+
+#: autoload/records.gd
+msgid "Moving up"
+msgstr "Aufstieg"
+
+#: autoload/records.gd
+msgid "Not today"
+msgstr "Nicht heute"
+
+#: autoload/records.gd
+msgid "Old hand"
+msgstr "Alter Hase"
+
+#: autoload/records.gd
+msgid "Open for business"
+msgstr "Geöffnet"
+
+#: autoload/records.gd
+msgid "Open the town landmark store."
+msgstr "Eröffne den Laden im Wahrzeichen der Stadt."
+
+#: autoload/records.gd
+msgid "Part of the family"
+msgstr "Gehört zur Familie"
+
+#: autoload/records.gd
+msgid "Reach 4 stars of reputation."
+msgstr "Erreiche 4 Sterne Ruf."
+
+#: autoload/records.gd
+msgid "Reach a full 5 stars."
+msgstr "Erreiche volle 5 Sterne."
+
+#: autoload/records.gd
+msgid "Reach a net worth of $1,000,000."
+msgstr "Erreiche ein Nettovermögen von $1.000.000."
+
+#: autoload/records.gd
+msgid "Reach a net worth of $100,000."
+msgstr "Erreiche ein Nettovermögen von $100.000."
+
+#: autoload/records.gd
+msgid "Record day"
+msgstr "Rekordtag"
+
+#: autoload/records.gd
+msgid "Season's greetings"
+msgstr "Frohes Fest"
+
+#: autoload/records.gd
+msgid "Sell coins to your first customer."
+msgstr "Verkaufe Münzen an deinen ersten Kunden."
+
+#: autoload/records.gd
+msgid "Serve 40 gift shoppers in one holiday rush."
+msgstr "Bediene 40 Geschenkkäufer in einem Festtagsansturm."
+
+#: autoload/records.gd
+msgid "Sharp eye"
+msgstr "Scharfes Auge"
+
+#: autoload/records.gd
+msgid "Show table"
+msgstr "Messestand"
+
+#: autoload/records.gd
+msgid "Six figures"
+msgstr "Sechsstellig"
+
+#: autoload/records.gd
+msgid "Stop a robber, with the guard or the panic button."
+msgstr "Halte einen Räuber auf, mit dem Wachmann oder dem Alarmknopf."
+
+#: autoload/records.gd
+msgid "Tip off the police about Lucky's stolen goods."
+msgstr "Gib der Polizei einen Tipp zu Lucky's Diebesgut."
+
+#: autoload/records.gd
+msgid "Top of the street"
+msgstr "Spitze der Straße"
+
+#: autoload/records.gd
+msgid "Town institution"
+msgstr "Institution der Stadt"
+
+#: autoload/records.gd
+msgid "Trade for 100 days."
+msgstr "Handle 100 Tage lang."
+
+#: autoload/records.gd
+msgid "Trade through a whole year, spring to winter."
+msgstr "Handle ein ganzes Jahr, vom Frühling bis zum Winter."
+
+#: autoload/records.gd
+msgid "Trusted name"
+msgstr "Vertrauter Name"
+
+#: autoload/records.gd
+msgid "Well stocked"
+msgstr "Gut bestückt"
+
+#: autoload/records.gd
+msgid "Your best day yet: %s profit."
+msgstr "Dein bester Tag bisher: %s Gewinn."
+
+#: autoload/rivals.gd
+msgid "%d customer went to the competition (%s). See the town map."
+msgid_plural "%d customers went to the competition (%s). See the town map."
+msgstr[0] "%d Kunde ging zur Konkurrenz (%s). Sieh dir den Stadtplan an."
+msgstr[1] "%d Kunden gingen zur Konkurrenz (%s). Sieh dir den Stadtplan an."
+
+#: autoload/rivals.gd
+msgid "%d to %s"
+msgstr "%d zu %s"
+
+#: autoload/rivals.gd
+msgid "%s (%d day left)"
+msgid_plural "%s (%d days left)"
+msgstr[0] "%s (noch %d Tag)"
+msgstr[1] "%s (noch %d Tage)"
+
+#: autoload/rivals.gd
+msgid "%s (%d days)"
+msgstr "%s (%d Tage)"
+
+#: autoload/rivals.gd
+msgid "%s went to %s instead (%s)."
+msgstr "%s ging stattdessen zu %s (%s)."
+
+#: autoload/rivals.gd
+msgid "A nasty review of your shop went up overnight. With your name, nobody believed it."
+msgstr "Über Nacht erschien eine fiese Bewertung deines Ladens. Bei deinem Ruf glaubte sie keiner."
+
+#: autoload/rivals.gd
+msgid "A one-star review of your shop went up overnight. It reads a lot like Sterling's ad copy."
+msgstr "Über Nacht erschien eine Ein-Stern-Bewertung deines Ladens. Sie klingt sehr nach Sterlings Werbetexten."
+
+#: autoload/rivals.gd
+msgid "Lucky Lou"
+msgstr "Lucky Lou"
+
+#: autoload/rivals.gd
+msgid "Lucky's"
+msgstr "Lucky's"
+
+#: autoload/rivals.gd
+msgid "Lucky's Pawn & Loan"
+msgstr "Lucky's Pawn & Loan"
+
+#: autoload/rivals.gd
+msgid "Lucky's Pawn has reopened after the raid."
+msgstr "Lucky's Pawn hat nach der Razzia wieder geöffnet."
+
+#: autoload/rivals.gd
+msgid "Lucky's is clearing out coins at spot +2%. Bargain hunters are lining up next door."
+msgstr "Lucky's verramscht Münzen zu Spot +2%. Schnäppchenjäger stehen nebenan Schlange."
+
+#: autoload/rivals.gd
+msgid "Newspaper ad"
+msgstr "Zeitungsanzeige"
+
+#: autoload/rivals.gd
+msgid "Police raided Lucky's Pawn on your tip. It's shut for %d days."
+msgstr "Die Polizei hat Lucky's Pawn nach deinem Tipp durchsucht. Der Laden ist %d Tage zu."
+
+#: autoload/rivals.gd
+msgid "Sterling"
+msgstr "Sterling"
+
+#: autoload/rivals.gd
+msgid "Sterling Bullion Co."
+msgstr "Sterling Bullion Co."
+
+#: autoload/rivals.gd
+msgid "Sterling Bullion slashed prices: it pays 92% of melt and sells at spot +3%."
+msgstr "Sterling Bullion senkt die Preise: zahlt 92% vom Schmelzwert und verkauft zu Spot +3%."
+
+#: autoload/rivals.gd
+msgid "Sterling's ads are all over the radio. Expect fewer walk-ins."
+msgstr "Sterlings Werbung läuft überall im Radio. Rechne mit weniger Laufkundschaft."
+
+#: autoload/rivals.gd
+msgid "Sterling's price war is over."
+msgstr "Sterlings Preiskampf ist vorbei."
+
+#: autoload/rivals.gd autoload/story.gd
+msgid "Victor Sterling"
+msgstr "Victor Sterling"
+
+#: autoload/rivals.gd
+msgid "Word is Lucky's is buying stolen goods. Shady sellers are going there. You could tip off the police."
+msgstr "Es heißt, Lucky's kauft Diebesgut. Zwielichtige Verkäufer gehen dorthin. Du könntest der Polizei einen Tipp geben."
+
+#: autoload/rivals.gd
+msgid "You passed %s in net worth."
+msgstr "Du hast %s beim Nettovermögen überholt."
+
+#: autoload/rivals.gd
+msgid "Your ad runs in the paper for %d days."
+msgstr "Deine Anzeige läuft %d Tage in der Zeitung."
+
+#: autoload/rivals.gd
+msgid "Your board now pays %d%% and sells at +%d%%."
+msgstr "Deine Tafel zahlt jetzt %d%% und verkauft zu +%d%%."
+
+#: autoload/rivals.gd scenes/shop/day_panels.gd
+msgid "Your shop"
+msgstr "Dein Laden"
+
+#: autoload/rivals.gd
+msgid "Your shop is now bigger than %s!"
+msgstr "Dein Laden ist jetzt größer als %s!"
+
+#: autoload/rivals.gd
+msgid "a better name"
+msgstr "einen besseren Ruf"
+
+#: autoload/rivals.gd
+msgid "better prices"
+msgstr "bessere Preise"
+
+#: autoload/rivals.gd
+msgid "no questions asked"
+msgstr "keine Fragen"
+
+#: autoload/save_game.gd
+msgid "Apr"
+msgstr "Apr."
+
+#: autoload/save_game.gd
+msgid "Aug"
+msgstr "Aug."
+
+#: autoload/save_game.gd
+msgid "Could not save to %s"
+msgstr "Konnte nicht speichern unter %s"
+
+#: autoload/save_game.gd
+msgid "Dec"
+msgstr "Dez."
+
+#: autoload/save_game.gd
+msgid "Feb"
+msgstr "Feb."
+
+#: autoload/save_game.gd
+msgid "Ignoring unreadable save at %s"
+msgstr "Unlesbarer Spielstand %s wird ignoriert"
+
+#: autoload/save_game.gd
+msgid "Jan"
+msgstr "Jan."
+
+#: autoload/save_game.gd
+msgid "Jul"
+msgstr "Juli"
+
+#: autoload/save_game.gd
+msgid "Jun"
+msgstr "Juni"
+
+#: autoload/save_game.gd
+msgid "Mar"
+msgstr "März"
+
+#: autoload/save_game.gd
+msgid "May"
+msgstr "Mai"
+
+#: autoload/save_game.gd
+msgid "Nov"
+msgstr "Nov."
+
+#: autoload/save_game.gd
+msgid "Oct"
+msgstr "Okt."
+
+#: autoload/save_game.gd
+msgid "Sep"
+msgstr "Sep."
+
+#: autoload/settings.gd
+msgid "Auto"
+msgstr "Auto"
+
+#: autoload/settings.gd
+msgid "Fill screen"
+msgstr "Bildschirm füllen"
+
+#: autoload/settings.gd ui/settings_panel.gd
+msgid "Music"
+msgstr "Musik"
+
+#: autoload/settings.gd
+msgid "Pixel perfect"
+msgstr "Pixelgenau"
+
+#: autoload/staff.gd
+msgid "%s called in sick"
+msgstr "%s hat sich krank gemeldet"
+
+#: autoload/staff.gd
+msgid "%s didn't get the raise and isn't happy about it."
+msgstr "%s bekommt keine Lohnerhöhung und ist sauer."
+
+#: autoload/staff.gd
+msgid "%s has had enough and quit. Pay staff what they're worth."
+msgstr "%s hat genug und kündigt. Bezahl dein Team, was es wert ist."
+
+#: autoload/staff.gd
+msgid "%s is in a foul mood"
+msgstr "%s hat schlechte Laune"
+
+#: autoload/staff.gd
+msgid "%s reached level %d: %s."
+msgstr "%s erreicht Stufe %d: %s."
+
+#: autoload/staff.gd
+msgid "%s starts today."
+msgstr "%s fängt heute an."
+
+#: autoload/staff.gd
+msgid "%s the %s"
+msgstr "%s, %s"
+
+#: autoload/staff.gd
+msgid "%s wants a raise"
+msgstr "%s will mehr Lohn"
+
+#: autoload/staff.gd
+msgid "%s's wage is now %s a day."
+msgstr "%s verdient jetzt %s am Tag."
+
+#: autoload/staff.gd
+msgid "About to quit"
+msgstr "Kurz vor der Kündigung"
+
+#: autoload/staff.gd
+msgid "Benny"
+msgstr "Benny"
+
+#: autoload/staff.gd
+msgid "Clerk"
+msgstr "Verkäufer"
+
+#: autoload/staff.gd
+msgid "Content"
+msgstr "Zufrieden"
+
+#: autoload/staff.gd
+msgid "Expert"
+msgstr "Experte"
+
+#: autoload/staff.gd
+msgid "Fed up"
+msgstr "Genervt"
+
+#: autoload/staff.gd
+msgid "Guard"
+msgstr "Wachmann"
+
+#: autoload/staff.gd
+msgid "Happy"
+msgstr "Glücklich"
+
+#: autoload/staff.gd
+msgid "Hired %s"
+msgstr "Eingestellt: %s"
+
+#: autoload/staff.gd ui/save_slots_panel.gd
+msgid "New"
+msgstr "Neu"
+
+#: autoload/staff.gd
+msgid "Rhonda"
+msgstr "Rhonda"
+
+#: autoload/staff.gd
+msgid "Skilled"
+msgstr "Geübt"
+
+#: autoload/staff.gd
+msgid "Staff: %s."
+msgstr "Team: %s."
+
+#: autoload/staff.gd
+msgid "Stands by the door. Break-ins drop by a third and nobody dares grab the till in a rush."
+msgstr "Steht an der Tür. Einbrüche sinken um ein Drittel und im Ansturm wagt keiner einen Griff in die Kasse."
+
+#: autoload/staff.gd
+msgid "Steady"
+msgstr "Solide"
+
+#: autoload/staff.gd
+msgid "Veteran"
+msgstr "Veteran"
+
+#: autoload/staff.gd
+msgid "Works the second till. Sells coins to buyers at your price while you test, so the queue keeps moving."
+msgstr "Bedient die zweite Kasse. Verkauft Münzen zu deinem Preis, während du prüfst, damit die Schlange weiterläuft."
+
+#: autoload/staff.gd
+msgid "You let %s go."
+msgstr "Du hast %s entlassen."
+
+#: autoload/story.gd
+msgid "%s is done! %s will drop by."
+msgstr "%s ist geschafft! %s schaut vorbei."
+
+#: autoload/story.gd
+msgid "+%.1f stars"
+msgstr "+%.1f Sterne"
+
+#: autoload/story.gd
+msgid "A bullion house. Victor's worried, I can tell. Beat him fair and square."
+msgstr "Ein Edelmetallhaus. Victor macht sich Sorgen, das sehe ich. Schlag ihn fair."
+
+#: autoload/story.gd
+msgid "Across the street"
+msgstr "Auf der anderen Straßenseite"
+
+#: autoload/story.gd
+msgid "All right. You win the street. If you ever need a buyer for scrap, I'm across the road."
+msgstr "Na gut. Die Straße gehört dir. Wenn du mal einen Abnehmer für Schrott brauchst: Ich bin gegenüber."
+
+#: autoload/story.gd
+msgid "Chapter %d: %s"
+msgstr "Kapitel %d: %s"
+
+#: autoload/story.gd
+msgid "Fill 3 special orders"
+msgstr "Erfülle 3 Sonderaufträge"
+
+#: autoload/story.gd
+msgid "Finish your first week"
+msgstr "Beende deine erste Woche"
+
+#: autoload/story.gd
+msgid "Forty years I ran this counter. Lesson one: test everything. I left you a list."
+msgstr "Vierzig Jahre stand ich hinter dieser Theke. Lektion eins: alles prüfen. Ich hab dir eine Liste dagelassen."
+
+#: autoload/story.gd
+msgid "Forty years at a corner counter, and look what my apprentice built. Cut the ribbon!"
+msgstr "Vierzig Jahre an einer kleinen Ecktheke, und schau, was mein Lehrling gebaut hat. Schneid das Band durch!"
+
+#: autoload/story.gd
+msgid "Get bigger than Lucky's Pawn"
+msgstr "Werde größer als Lucky's Pawn"
+
+#: autoload/story.gd
+msgid "Get bigger than Sterling Bullion"
+msgstr "Werde größer als Sterling Bullion"
+
+#: autoload/story.gd
+msgid "Gift from Mags"
+msgstr "Geschenk von Mags"
+
+#: autoload/story.gd
+msgid "Goal met: %s."
+msgstr "Ziel erreicht: %s."
+
+#: autoload/story.gd
+msgid "Hire your first staff"
+msgstr "Stelle deine ersten Mitarbeiter ein"
+
+#: autoload/story.gd
+msgid "I sold you this counter because you've got good eyes. Use them. Test every coin, keep the regulars happy, and get through your first week in one piece."
+msgstr "Ich hab dir diese Theke verkauft, weil du gute Augen hast. Nutze sie. Prüf jede Münze, halt die Stammkunden bei Laune und komm heil durch deine erste Woche."
+
+#: autoload/story.gd
+msgid "Mags Holloway"
+msgstr "Mags Holloway"
+
+#: autoload/story.gd
+msgid "Mags Holloway cut the ribbon on your Town landmark."
+msgstr "Mags Holloway hat das Band an deinem Wahrzeichen durchgeschnitten."
+
+#: autoload/story.gd
+msgid "Mags Holloway left you her list of goals. See Story on the morning panel."
+msgstr "Mags Holloway hat dir ihre Zielliste dagelassen. Siehe Geschichte im Morgenbildschirm."
+
+#: autoload/story.gd
+msgid "Mags is pleased. Next: make a name for the shop."
+msgstr "Mags ist zufrieden. Als Nächstes: Mach den Laden bekannt."
+
+#: autoload/story.gd
+msgid "Mags is proud of the move to Main Street."
+msgstr "Mags ist stolz auf den Umzug an die Hauptstraße."
+
+#: autoload/story.gd
+msgid "Mags says it's time to take on Sterling Bullion."
+msgstr "Mags sagt, es ist Zeit, es mit Sterling Bullion aufzunehmen."
+
+#: autoload/story.gd
+msgid "Mags showed you the old bank building on the square."
+msgstr "Mags hat dir das alte Bankgebäude am Platz gezeigt."
+
+#: autoload/story.gd
+msgid "Mags sold to you? Cute. Enjoy the corner while it lasts."
+msgstr "Mags hat an dich verkauft? Niedlich. Genieß die Ecke, solange es geht."
+
+#: autoload/story.gd
+msgid "Main Street"
+msgstr "Hauptstraße"
+
+#: autoload/story.gd
+msgid "Main Street is my street. Let's see how you like a price war."
+msgstr "Die Hauptstraße ist meine Straße. Mal sehen, wie dir ein Preiskampf gefällt."
+
+#: autoload/story.gd
+msgid "Main Street means collectors, and collectors remember who found them the coin. Fill their orders, take on staff, and work your way up to a proper bullion house."
+msgstr "Hauptstraße heißt Sammler, und Sammler merken sich, wer ihnen die Münze besorgt hat. Erfülle ihre Aufträge, stell Leute ein und arbeite dich zu einem richtigen Edelmetallhaus hoch."
+
+#: autoload/story.gd
+msgid "Main Street! Now give people a reason to come back. And hire some help."
+msgstr "Die Hauptstraße! Jetzt gib den Leuten einen Grund wiederzukommen. Und stell Hilfe ein."
+
+#: autoload/story.gd
+msgid "Making a name"
+msgstr "Sich einen Namen machen"
+
+#: autoload/story.gd
+msgid "Move to Main Street"
+msgstr "Zieh an die Hauptstraße"
+
+#: autoload/story.gd
+msgid "Move to the Bullion house"
+msgstr "Zieh ins Edelmetallhaus"
+
+#: autoload/story.gd
+msgid "Not bad, kid. Here's a little float. Now let's make the town know your name."
+msgstr "Nicht schlecht, Kleines. Hier ein kleines Polster. Jetzt soll die Stadt deinen Namen kennen."
+
+#: autoload/story.gd
+msgid "Open the Town landmark"
+msgstr "Eröffne das Wahrzeichen"
+
+#: autoload/story.gd
+msgid "Reach a net worth of $400,000"
+msgstr "Erreiche ein Nettovermögen von $400.000"
+
+#: autoload/story.gd
+msgid "Sixty years my family's been on this street. You won't outgrow us."
+msgstr "Seit sechzig Jahren ist meine Familie in dieser Straße. Uns wächst du nicht über den Kopf."
+
+#: autoload/story.gd
+msgid "Sterling Bullion has been the biggest shop in town since before you were born. Beat Victor on worth and on name, and build the vault the landmark will need."
+msgstr "Sterling Bullion ist der größte Laden der Stadt, seit du denken kannst. Schlag Victor bei Wert und Ruf und bau den Tresor, den das Wahrzeichen braucht."
+
+#: autoload/story.gd
+msgid "The corner counter"
+msgstr "Die Ecktheke"
+
+#: autoload/story.gd scenes/shop/day_panels.gd
+msgid "The end"
+msgstr "Das Ende"
+
+#: autoload/story.gd
+msgid "The landmark"
+msgstr "Das Wahrzeichen"
+
+#: autoload/story.gd
+msgid "The old bank on the square has marble floors and a vault door the size of a car. It's been empty for years, waiting for the biggest precious metal store in town."
+msgstr "Die alte Bank am Platz hat Marmorböden und eine Tresortür so groß wie ein Auto. Sie steht seit Jahren leer und wartet auf den größten Edelmetallladen der Stadt."
+
+#: autoload/story.gd
+msgid "Victor Sterling came over to size you up."
+msgstr "Victor Sterling kam vorbei, um dich abzuschätzen."
+
+#: autoload/story.gd
+msgid "Victor Sterling declared a price war. Beat Sterling on the town map answers it."
+msgstr "Victor Sterling hat einen Preiskampf erklärt. \"Sterling schlagen\" auf dem Stadtplan ist die Antwort."
+
+#: autoload/story.gd
+msgid "Victor Sterling is rattled."
+msgstr "Victor Sterling ist nervös."
+
+#: autoload/story.gd
+msgid "Victor Sterling offered me twice what you paid, just to shut this counter down. Show him it's no pushover. Earn your stars, get bigger than Lucky's, and move to Main Street."
+msgstr "Victor Sterling hat mir das Doppelte geboten, nur um diese Theke dichtzumachen. Zeig ihm, dass du kein leichtes Spiel bist. Verdien dir Sterne, werde größer als Lucky's und zieh an die Hauptstraße."
+
+#: autoload/story.gd
+msgid "Victor Sterling shook your hand. He meant it, mostly."
+msgstr "Victor Sterling hat dir die Hand geschüttelt. Größtenteils ernst gemeint."
+
+#: autoload/story.gd
+msgid "You've the name and the money. The old bank on the square is for sale. Buy it."
+msgstr "Du hast den Ruf und das Geld. Die alte Bank am Platz steht zum Verkauf. Kauf sie."
+
+#: autoload/story.gd
+msgid "mentor"
+msgstr "Mentorin"
+
+#: autoload/story.gd
+msgid "rival"
+msgstr "Rivale"
+
+#: autoload/wholesaler.gd
+msgid "Wholesaler: %d x %s for %s."
+msgstr "Großhändler: %d × %s für %s."
+
+#: data/coins/britannia_proof_1997.tres
+msgid "1997 Britannia Proof"
+msgstr "Britannia Proof 1997"
+
+#: data/coins/double_eagle_1924.tres
+msgid "1924 Double Eagle"
+msgstr "Double Eagle 1924"
+
+#: data/coins/gold_eagle.tres
+msgid "American Gold Eagle"
+msgstr "American Gold Eagle"
+
+#: data/coins/gold_maple.tres
+msgid "Gold Maple Leaf"
+msgstr "Gold Maple Leaf"
+
+#: data/coins/krugerrand.tres
+msgid "Krugerrand"
+msgstr "Krugerrand"
+
+#: data/coins/krugerrand_1967.tres
+msgid "1967 Krugerrand"
+msgstr "Krugerrand 1967"
+
+#: data/coins/morgan_dollar_1881.tres
+msgid "1881 Morgan Dollar"
+msgstr "Morgan Dollar 1881"
+
+#: data/coins/platinum_eagle.tres
+msgid "Platinum Eagle"
+msgstr "Platinum Eagle"
+
+#: data/coins/silver_britannia.tres
+msgid "Silver Britannia"
+msgstr "Silver Britannia"
+
+#: data/coins/silver_eagle.tres
+msgid "American Silver Eagle"
+msgstr "American Silver Eagle"
+
+#: data/coins/silver_maple.tres
+msgid "Silver Maple Leaf"
+msgstr "Silver Maple Leaf"
+
+#: data/coins/sovereign_1911.tres
+msgid "1911 Sovereign"
+msgstr "Sovereign 1911"
+
+#: items/bullion_bar.gd
+msgid "1 kilo gold bar"
+msgstr "1-kg-Goldbarren"
+
+#: items/bullion_bar.gd
+msgid "1 kilo silver bar"
+msgstr "1-kg-Silberbarren"
+
+#: items/bullion_bar.gd
+msgid "1 oz gold bar"
+msgstr "1-oz-Goldbarren"
+
+#: items/bullion_bar.gd
+msgid "1 oz platinum bar"
+msgstr "1-oz-Platinbarren"
+
+#: items/bullion_bar.gd
+msgid "10 oz gold bar"
+msgstr "10-oz-Goldbarren"
+
+#: items/bullion_bar.gd
+msgid "10 oz silver bar"
+msgstr "10-oz-Silberbarren"
+
+#: items/bullion_bar.gd
+msgid "100 g gold bar"
+msgstr "100-g-Goldbarren"
+
+#: items/bullion_bar.gd
+msgid "22 karat recast"
+msgstr "22-Karat-Umguss"
+
+#: items/bullion_bar.gd
+msgid "A handheld X-ray gun for the bar bench. It reads what a bar's surface is made of."
+msgstr "Eine handliche Röntgenpistole für den Barrentisch. Sie zeigt, woraus die Oberfläche eines Barrens besteht."
+
+#: items/bullion_bar.gd
+msgid "Bullion dealer account"
+msgstr "Konto beim Edelmetallhändler"
+
+#: items/bullion_bar.gd
+msgid "ROYAL ASSAY"
+msgstr "ROYAL ASSAY"
+
+#: items/bullion_bar.gd
+msgid "The bullion dealer pays 99.5% of melt for genuine bars instead of 98%."
+msgstr "Der Edelmetallhändler zahlt 99,5% vom Schmelzwert für echte Barren statt 98%."
+
+#: items/bullion_bar.gd
+msgid "XRF analyzer"
+msgstr "RFA-Analysator"
+
+#: items/bullion_bar.gd
+msgid "gold-plated brass"
+msgstr "vergoldetes Messing"
+
+#: items/bullion_bar.gd
+msgid "gold-plated tungsten"
+msgstr "vergoldetes Wolfram"
+
+#: items/bullion_bar.gd
+msgid "lead-core silver"
+msgstr "Silber mit Bleikern"
+
+#: items/bullion_bar.gd
+msgid "silver-plated copper"
+msgstr "versilbertes Kupfer"
+
+#: items/bullion_bar.gd
+msgid "tungsten-core gold"
+msgstr "Gold mit Wolframkern"
+
+#: items/counterfeit.gd
+msgid "brass copy"
+msgstr "Messingkopie"
+
+#: items/counterfeit.gd
+msgid "copper-nickel clad"
+msgstr "Kupfer-Nickel-plattiert"
+
+#: items/counterfeit.gd
+msgid "gold-plated steel"
+msgstr "vergoldeter Stahl"
+
+#: items/counterfeit.gd
+msgid "tungsten core"
+msgstr "Wolframkern"
+
+#: items/jewellery_piece.gd
+msgid " with a %.2f ct diamond"
+msgstr " mit %.2f-ct-Diamant"
+
+#: items/jewellery_piece.gd
+msgid "10K gold"
+msgstr "10K-Gold"
+
+#: items/jewellery_piece.gd
+msgid "14K gold"
+msgstr "14K-Gold"
+
+#: items/jewellery_piece.gd
+msgid "18K gold"
+msgstr "18K-Gold"
+
+#: items/jewellery_piece.gd
+msgid "22K gold"
+msgstr "22K-Gold"
+
+#: items/jewellery_piece.gd
+msgid "RH PL"
+msgstr "RH PL"
+
+#: items/jewellery_piece.gd
+msgid "STER"
+msgstr "STER"
+
+#: items/jewellery_piece.gd
+msgid "bracelet"
+msgstr "Armband"
+
+#: items/jewellery_piece.gd
+msgid "chain"
+msgstr "Kette"
+
+#: items/jewellery_piece.gd
+msgid "pendant"
+msgstr "Anhänger"
+
+#: items/jewellery_piece.gd scenes/jewellery_test/jewellery_test.gd
+msgid "plated"
+msgstr "plattiert"
+
+#: items/jewellery_piece.gd scenes/shop/hud.gd
+msgid "platinum"
+msgstr "Platin"
+
+#: items/jewellery_piece.gd
+msgid "ring"
+msgstr "Ring"
+
+#: items/jewellery_piece.gd
+msgid "sterling silver"
+msgstr "Sterlingsilber"
+
+#: items/jewellery_piece.gd
+msgid "{grade} {kind}"
+msgstr "{kind} aus {grade}"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%.1f mm"
+msgstr "%.1f mm"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%.2f US"
+msgstr "%.2f US"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "%.2f mm"
+msgstr "%.2f mm"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%.2f us"
+msgstr "%.2f us"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%d off gate"
+msgstr "%d AUS GATE"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%d spots ok"
+msgstr "%d PUNKTE OK"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%s, from %s"
+msgstr "%s, von %s"
+
+#: scenes/bar_test/bar_test.gd
+msgid "AURUM 2000"
+msgstr "AURUM 2000"
+
+#: scenes/bar_test/bar_test.gd
+msgid "BAR TEST"
+msgstr "BARRENTEST"
+
+#: scenes/bar_test/bar_test.gd
+msgid "BUY ONE IN THE"
+msgstr "KAUF EINEN IN DEN"
+
+#: scenes/bar_test/bar_test.gd
+msgid "BW %.2f"
+msgstr "BW %.2f"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Buy the XRF analyzer in the morning upgrades."
+msgstr "Kauf den RFA-Analysator bei den Upgrades am Morgen."
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Calipers"
+msgstr "Messschieber"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Echo"
+msgstr "Echo"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Esc: back to the counter"
+msgstr "Esc: zurück zur Theke"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Fake"
+msgstr "Falsch"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Genuine"
+msgstr "Echt"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd scenes/trading_desk/trading_desk.gd
+msgid "LB / RB"
+msgstr "LB / RB"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Length"
+msgstr "Länge"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Loupe"
+msgstr "Lupe"
+
+#: scenes/bar_test/bar_test.gd
+msgid "MAX 2KG"
+msgstr "MAX 2KG"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Melt today"
+msgstr "Schmelzwert heute"
+
+#: scenes/bar_test/bar_test.gd
+msgid "NO XRF GUN"
+msgstr "KEIN RFA-GERÄT"
+
+#: scenes/bar_test/bar_test.gd
+msgid "PROBE OFF"
+msgstr "SONDE AUS"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Previous / next tool"
+msgstr "Vorheriges / nächstes Werkzeug"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "READING"
+msgstr "MESSWERT"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Real bars weigh their stated weight to +0.1%, size within 0.2 mm. Sweep the probe all over: the echo must stay in the gate. Tungsten hides in the middle."
+msgstr "Echte Barren wiegen ihr Nenngewicht auf +0,1%, Maße auf 0,2 mm genau. Fahr die Sonde überall entlang: Das Echo muss im Gate bleiben. Wolfram versteckt sich in der Mitte."
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "SPEC"
+msgstr "SOLL"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Scale"
+msgstr "Waage"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Scan"
+msgstr "Scan"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Serial"
+msgstr "Seriennr."
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Thick"
+msgstr "Dicke"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Ultrasound"
+msgstr "Ultraschall"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Weight"
+msgstr "Gewicht"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Width"
+msgstr "Breite"
+
+#: scenes/bar_test/bar_test.gd
+msgid "XRF"
+msgstr "RFA"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Your offer"
+msgstr "Dein Angebot"
+
+#: scenes/bar_test/bar_test.gd
+msgid "all in gate"
+msgstr "alles im Gate"
+
+#: scenes/bar_test/bar_test.gd
+msgid "seen day %d"
+msgstr "gesehen Tag %d"
+
+#: scenes/coin_test/coin_test.gd
+msgid "%d coins from %s"
+msgstr "%d Münzen von %s"
+
+#: scenes/coin_test/coin_test.gd
+msgid "AURUM 200"
+msgstr "AURUM 200"
+
+#: scenes/coin_test/coin_test.gd
+msgid "COIN TEST"
+msgstr "MÜNZTEST"
+
+#: scenes/coin_test/coin_test.gd
+msgid "Diameter"
+msgstr "Durchmesser"
+
+#: scenes/coin_test/coin_test.gd
+msgid "Genuine coins match the spec within 0.05 g and 0.1 mm, ring for over a second and ignore magnets. Silver drags a little. Look for a soft strike or typos under the loupe."
+msgstr "Echte Münzen treffen die Spezifikation auf 0,05 g und 0,1 mm, klingen über eine Sekunde und ignorieren Magnete. Silber zieht leicht. Achte unter der Lupe auf weiche Prägung oder Tippfehler."
+
+#: scenes/coin_test/coin_test.gd
+msgid "MAX 200G"
+msgstr "MAX 200G"
+
+#: scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Magnet"
+msgstr "Magnet"
+
+#: scenes/coin_test/coin_test.gd
+msgid "Ping"
+msgstr "Klang"
+
+#: scenes/coin_test/coin_test.gd
+msgid "Ring"
+msgstr "Klang"
+
+#: scenes/coin_test/coin_test.gd
+msgid "Sigma"
+msgstr "Sigma"
+
+#: scenes/coin_test/coin_test.gd
+msgid "ferrous"
+msgstr "magnetisch"
+
+#: scenes/coin_test/coin_test.gd
+msgid "in band"
+msgstr "im Band"
+
+#: scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "no pull"
+msgstr "zieht nicht"
+
+#: scenes/coin_test/coin_test.gd
+msgid "slight drag"
+msgstr "zieht leicht"
+
+#: scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "snaps hard"
+msgstr "schnappt fest"
+
+#: scenes/coin_test/coin_test.gd
+msgid "too low"
+msgstr "zu niedrig"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "(claimed weight)"
+msgstr "(angegebenes Gewicht)"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "AG %s"
+msgstr "AG %s"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "AG red"
+msgstr "AG rot"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Acid"
+msgstr "Säure"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "CLAIM"
+msgstr "ANGABE"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Click (or D) to pay for the stone or not"
+msgstr "Klick (oder D): Stein bezahlen oder nicht"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Click (or G) to change the grade you pay for"
+msgstr "Klick (oder G): Feingehalt ändern, den du zahlst"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "DIAMOND"
+msgstr "DIAMANT"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Diamond or not"
+msgstr "Diamant oder nicht"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Esc: back   G/D: grade   Q-Y: acids"
+msgstr "Esc: zurück   G/D: Gehalt   Q-Y: Säuren"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Finish appraisal"
+msgstr "Schätzung beenden"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "JEWELLERY APPRAISAL"
+msgstr "SCHMUCKSCHÄTZUNG"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Metal %s"
+msgstr "Metall %s"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Metal: %s"
+msgstr "Metall: %s"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Next grade"
+msgstr "Nächster Gehalt"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "No stone to test"
+msgstr "Kein Stein zum Prüfen"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "PT %s"
+msgstr "PT %s"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "PT holds"
+msgstr "PT hält"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Read the stamp under the loupe. A streak survives acids up to its karat; base metal fizzes. Moissanite fools the tester: look for doubled facet edges."
+msgstr "Lies den Stempel unter der Lupe. Ein Strich übersteht Säuren bis zu seinem Karat; unedles Metall schäumt. Moissanit täuscht den Tester: Achte auf doppelte Facettenkanten."
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "SIMULANT"
+msgstr "IMITAT"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Stamp"
+msgstr "Stempel"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Stone"
+msgstr "Stein"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Stone: %s"
+msgstr "Stein: %s"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "THERMAL TESTER"
+msgstr "THERMOTESTER"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Tester"
+msgstr "Tester"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "about %s g"
+msgstr "ca. %s g"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "clasp only"
+msgstr "nur Verschluss"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "diamond"
+msgstr "Diamant"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "fake"
+msgstr "falsch"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "from %s"
+msgstr "von %s"
+
+#: scenes/menu/pause_menu.gd scenes/shop/day_panels.gd
+msgid "%s, day %d"
+msgstr "%s, Tag %d"
+
+#: scenes/menu/pause_menu.gd
+msgid "Paused"
+msgstr "Pause"
+
+#: scenes/menu/pause_menu.gd
+msgid "Quit game"
+msgstr "Spiel beenden"
+
+#: scenes/menu/pause_menu.gd
+msgid "Quit to title"
+msgstr "Zum Titelbild"
+
+#: scenes/menu/pause_menu.gd
+msgid "Resume"
+msgstr "Weiter"
+
+#: scenes/menu/pause_menu.gd scenes/menu/title_screen.gd ui/settings_panel.gd
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: scenes/menu/pause_menu.gd
+msgid "Slot %d · saved morning and night"
+msgstr "Platz %d · morgens und abends gespeichert"
+
+#: scenes/menu/title_screen.gd
+msgid "Continue"
+msgstr "Fortsetzen"
+
+#: scenes/menu/title_screen.gd
+msgid "Day %d · %s"
+msgstr "Tag %d · %s"
+
+#: scenes/menu/title_screen.gd
+msgid "Every slot is full. Delete one to start a new shop."
+msgstr "Alle Plätze sind belegt. Lösch einen, um einen neuen Laden zu starten."
+
+#: scenes/menu/title_screen.gd
+msgid "Fetching prices...      "
+msgstr "Preise werden geladen...      "
+
+#: scenes/menu/title_screen.gd
+msgid "GOLD"
+msgstr "GOLD"
+
+#: scenes/menu/title_screen.gd scenes/shop/day_panels.gd
+msgid "New game"
+msgstr "Neues Spiel"
+
+#: scenes/menu/title_screen.gd
+msgid "No saved shop yet"
+msgstr "Noch kein gespeicherter Laden"
+
+#: scenes/menu/title_screen.gd
+msgid "PALLADIUM"
+msgstr "PALLADIUM"
+
+#: scenes/menu/title_screen.gd
+msgid "PLATINUM"
+msgstr "PLATIN"
+
+#: scenes/menu/title_screen.gd
+msgid "Quit"
+msgstr "Beenden"
+
+#: scenes/menu/title_screen.gd
+msgid "Run the biggest gold shop in town"
+msgstr "Führe den größten Goldladen"
+
+#: scenes/menu/title_screen.gd
+msgid "SILVER"
+msgstr "SILBER"
+
+#: scenes/menu/title_screen.gd ui/save_slots_panel.gd
+msgid "Save slots"
+msgstr "Spielstände"
+
+#: scenes/menu/title_screen.gd scenes/shop/hud.gd
+msgid "● CACHED"
+msgstr "● CACHE"
+
+#: scenes/menu/title_screen.gd scenes/shop/hud.gd
+msgid "● LIVE"
+msgstr "● LIVE"
+
+#: scenes/menu/title_screen.gd scenes/shop/hud.gd
+msgid "● OFFLINE"
+msgstr "● OFFLINE"
+
+#: scenes/shop/customer.gd
+msgid "%d%%. That's my floor, take it or I walk."
+msgstr "%d%%. Das ist meine Grenze, nehmen oder ich gehe."
+
+#: scenes/shop/customer.gd
+msgid "A gift for my granddaughter."
+msgstr "Ein Geschenk für meine Enkelin."
+
+#: scenes/shop/customer.gd
+msgid "Adding to my stack."
+msgstr "Für meinen Stapel."
+
+#: scenes/shop/customer.gd
+msgid "Big Earl"
+msgstr "Big Earl"
+
+#: scenes/shop/customer.gd
+msgid "Bought it years ago. Time to sell."
+msgstr "Vor Jahren gekauft. Zeit zu verkaufen."
+
+#: scenes/shop/customer.gd
+msgid "Bought them online, need cash fast."
+msgstr "Online gekauft, brauche schnell Bargeld."
+
+#: scenes/shop/customer.gd
+msgid "Bro. %d%%. I'm literally losing money here."
+msgstr "Bro. %d%%. Ich verliere hier echt Geld."
+
+#: scenes/shop/customer.gd
+msgid "Cleaning out the jewellery box."
+msgstr "Ich räume das Schmuckkästchen aus."
+
+#: scenes/shop/customer.gd
+msgid "Clearing out my late husband's collection."
+msgstr "Ich löse die Sammlung meines verstorbenen Mannes auf."
+
+#: scenes/shop/customer.gd
+msgid "Come on. %d%% and we shake on it."
+msgstr "Komm schon. %d%% und wir schlagen ein."
+
+#: scenes/shop/customer.gd
+msgid "Comes with the card, but I lost it."
+msgstr "Mit Zertifikat, aber das hab ich verloren."
+
+#: scenes/shop/customer.gd
+msgid "Crypto burned me. I want something real."
+msgstr "Krypto hat mich verbrannt. Ich will was Echtes."
+
+#: scenes/shop/customer.gd
+msgid "Dale"
+msgstr "Dale"
+
+#: scenes/shop/customer.gd
+msgid "Divorce. Don't ask."
+msgstr "Scheidung. Fragen Sie nicht."
+
+#: scenes/shop/customer.gd
+msgid "Fine, fine. Ring it up."
+msgstr "Na gut, na gut. Tippen Sie's ein."
+
+#: scenes/shop/customer.gd
+msgid "Found it at an estate sale. It's stamped."
+msgstr "Auf einem Nachlassverkauf gefunden. Ist gestempelt."
+
+#: scenes/shop/customer.gd
+msgid "Found these in a drawer. Real deal, trust me."
+msgstr "Lagen in einer Schublade. Echt, glauben Sie mir."
+
+#: scenes/shop/customer.gd
+msgid "Got it cheap from a guy. Real, I promise."
+msgstr "Günstig von einem Typen gekriegt. Echt, versprochen."
+
+#: scenes/shop/customer.gd
+msgid "Grandpa Joe"
+msgstr "Grandpa Joe"
+
+#: scenes/shop/customer.gd
+msgid "Had it appraised for twice that, honest."
+msgstr "Wurde doppelt so hoch geschätzt, ehrlich."
+
+#: scenes/shop/customer.gd
+msgid "How about %d%%? Meet me halfway."
+msgstr "Wie wär's mit %d%%? Treffen wir uns in der Mitte."
+
+#: scenes/shop/customer.gd
+msgid "I could stretch to %d%% over. Deal?"
+msgstr "Ich könnte %d%% drauflegen. Abgemacht?"
+
+#: scenes/shop/customer.gd
+msgid "I pay well for quality, but not that well. %d%% over."
+msgstr "Ich zahle gut für Qualität, aber nicht so gut. %d%% drauf."
+
+#: scenes/shop/customer.gd
+msgid "Inherited this bar. I'd rather have cash."
+msgstr "Den Barren hab ich geerbt. Bargeld wäre mir lieber."
+
+#: scenes/shop/customer.gd
+msgid "It's been sitting in my safe deposit box."
+msgstr "Lag in meinem Schließfach."
+
+#: scenes/shop/customer.gd
+msgid "June"
+msgstr "June"
+
+#: scenes/shop/customer.gd
+msgid "Kevin"
+msgstr "Kevin"
+
+#: scenes/shop/customer.gd
+msgid "Look, I'd take %d%% of what it's worth. That's fair."
+msgstr "Hören Sie, ich nehme %d%% vom Wert. Das ist fair."
+
+#: scenes/shop/customer.gd
+msgid "Marco"
+msgstr "Marco"
+
+#: scenes/shop/customer.gd
+msgid "Melt it down if you don't believe me."
+msgstr "Schmelzen Sie's ein, wenn Sie mir nicht glauben."
+
+#: scenes/shop/customer.gd
+msgid "My cousin says these are worth a fortune."
+msgstr "Mein Cousin sagt, die sind ein Vermögen wert."
+
+#: scenes/shop/customer.gd
+msgid "My uncle's a jeweller, he says it's the real thing."
+msgstr "Mein Onkel ist Juwelier, er sagt, das ist echt."
+
+#: scenes/shop/customer.gd
+msgid "Need a bit of cash for the car."
+msgstr "Brauche etwas Geld fürs Auto."
+
+#: scenes/shop/customer.gd
+msgid "Need the money for a down payment."
+msgstr "Brauche das Geld für eine Anzahlung."
+
+#: scenes/shop/customer.gd
+msgid "No receipt, but they're solid. Swear."
+msgstr "Keine Quittung, aber die sind massiv. Ehrenwort."
+
+#: scenes/shop/customer.gd
+msgid "No. I know what this is worth."
+msgstr "Nein. Ich weiß, was das wert ist."
+
+#: scenes/shop/customer.gd
+msgid "Okay, %d%%, but that's as low as I go."
+msgstr "Okay, %d%%, aber tiefer gehe ich nicht."
+
+#: scenes/shop/customer.gd
+msgid "Old Sal"
+msgstr "Old Sal"
+
+#: scenes/shop/customer.gd
+msgid "Price is up, time to cash in."
+msgstr "Der Preis ist hoch, Zeit zu verkaufen."
+
+#: scenes/shop/customer.gd
+msgid "Prices dipped, I'm buying."
+msgstr "Die Preise sind gefallen, ich kaufe."
+
+#: scenes/shop/customer.gd
+msgid "Priya"
+msgstr "Priya"
+
+#: scenes/shop/customer.gd
+msgid "Quick deal? I've got another buyer waiting."
+msgstr "Schneller Deal? Ein anderer Käufer wartet schon."
+
+#: scenes/shop/customer.gd
+msgid "Quick sale. No questions, right?"
+msgstr "Schneller Verkauf. Keine Fragen, oder?"
+
+#: scenes/shop/customer.gd
+msgid "Selling part of my stack."
+msgstr "Ich verkaufe einen Teil meines Stapels."
+
+#: scenes/shop/customer.gd
+msgid "Solid gold, real stone. Need cash today."
+msgstr "Massives Gold, echter Stein. Brauche heute Bargeld."
+
+#: scenes/shop/customer.gd
+msgid "Spot plus %d%%, final offer."
+msgstr "Spot plus %d%%, letztes Angebot."
+
+#: scenes/shop/customer.gd
+msgid "Spot plus %d%%? I'd pay maybe %d%% over."
+msgstr "Spot plus %d%%? Ich zahle vielleicht %d%% drauf."
+
+#: scenes/shop/customer.gd
+msgid "Sterling across the street is cheaper."
+msgstr "Sterling gegenüber ist billiger."
+
+#: scenes/shop/customer.gd
+msgid "Still too low. I know what spot is today."
+msgstr "Immer noch zu wenig. Ich weiß, wo der Spot heute steht."
+
+#: scenes/shop/customer.gd
+msgid "Stocks are a casino. I want metal."
+msgstr "Aktien sind ein Casino. Ich will Metall."
+
+#: scenes/shop/customer.gd
+msgid "That's a lowball for a piece like this. Look again."
+msgstr "Das ist ein Witzangebot für so ein Stück. Schauen Sie nochmal."
+
+#: scenes/shop/customer.gd
+msgid "That's a lowball. I was hoping for closer to %d%%."
+msgstr "Das ist zu wenig. Ich hatte eher an %d%% gedacht."
+
+#: scenes/shop/customer.gd
+msgid "This was my grandmother's. Never wear it."
+msgstr "Das war von meiner Oma. Ich trag's nie."
+
+#: scenes/shop/customer.gd
+msgid "Ugh. Fine. You drive a hard bargain."
+msgstr "Uff. Na gut. Sie verhandeln hart."
+
+#: scenes/shop/day_panels.gd
+msgid " %d%% there."
+msgstr " %d%% geschafft."
+
+#: scenes/shop/day_panels.gd
+msgid " (%d to build)"
+msgstr " (%d zu bauen)"
+
+#: scenes/shop/day_panels.gd
+msgid " (fair: %s)"
+msgstr " (fair: %s)"
+
+#: scenes/shop/day_panels.gd
+msgid " Earned on day %d."
+msgstr " Erzielt an Tag %d."
+
+#: scenes/shop/day_panels.gd
+msgid " Talks %d%% of fussy buyers round."
+msgstr " Überredet %d%% der wählerischen Käufer."
+
+#: scenes/shop/day_panels.gd
+msgid "%.1f stars"
+msgstr "%.1f Sterne"
+
+#: scenes/shop/day_panels.gd
+msgid "%.1f★  pays %d%%  +%d%%"
+msgstr "%.1f★  zahlt %d%%  +%d%%"
+
+#: scenes/shop/day_panels.gd
+msgid "%d day (best %d)"
+msgid_plural "%d days (best %d)"
+msgstr[0] "%d Tag (bester %d)"
+msgstr[1] "%d Tage (bester %d)"
+
+#: scenes/shop/day_panels.gd
+msgid "%d day of trading. %d of %d achievements earned."
+msgid_plural "%d days of trading. %d of %d achievements earned."
+msgstr[0] "%d Handelstag. %d von %d Erfolgen erzielt."
+msgstr[1] "%d Handelstage. %d von %d Erfolgen erzielt."
+
+#: scenes/shop/day_panels.gd
+msgid "%d more upgrade unlocks as the shop grows."
+msgid_plural "%d more upgrades unlock as the shop grows."
+msgstr[0] "%d weiteres Upgrade wird freigeschaltet, wenn der Laden wächst."
+msgstr[1] "%d weitere Upgrades werden freigeschaltet, wenn der Laden wächst."
+
+#: scenes/shop/day_panels.gd
+msgid "%d of %d earned. Hover one to see how to earn it."
+msgstr "%d von %d erzielt. Fahr über einen, um zu sehen, wie."
+
+#: scenes/shop/day_panels.gd
+msgid "%d xp to go"
+msgstr "noch %d EP"
+
+#: scenes/shop/day_panels.gd
+msgid "%s (in %d day)"
+msgid_plural "%s (in %d days)"
+msgstr[0] "%s (in %d Tag)"
+msgstr[1] "%s (in %d Tagen)"
+
+#: scenes/shop/day_panels.gd
+msgid "%s Wage %s a day."
+msgstr "%s Lohn %s pro Tag."
+
+#: scenes/shop/day_panels.gd
+msgid "%s a day%s"
+msgstr "%s am Tag%s"
+
+#: scenes/shop/day_panels.gd
+msgid "%s asks for a raise of %s a day."
+msgstr "%s bittet um %s mehr am Tag."
+
+#: scenes/shop/day_panels.gd
+msgid "%s is down %.1f%%. Bargain hunters will be out."
+msgstr "%s ist %.1f%% gefallen. Schnäppchenjäger sind unterwegs."
+
+#: scenes/shop/day_panels.gd
+msgid "%s is up %.1f%%. Expect more sellers cashing in."
+msgstr "%s ist %.1f%% gestiegen. Rechne mit mehr Verkäufern."
+
+#: scenes/shop/day_panels.gd
+msgid "%s to move up."
+msgstr "%s, um aufzusteigen."
+
+#: scenes/shop/day_panels.gd
+msgid "%s wants %d × %s %s. You hold %d."
+msgstr "%s möchte %d × %s bis %s. Du hast %d."
+
+#: scenes/shop/day_panels.gd
+msgid "%s · %d/%d goals"
+msgstr "%s · %d/%d Ziele"
+
+#: scenes/shop/day_panels.gd
+msgid "%s · %s. Set your prices, then open up."
+msgstr "%s · %s. Setz deine Preise, dann öffne."
+
+#: scenes/shop/day_panels.gd
+msgid "%s, %s (level %d)"
+msgstr "%s, %s (Stufe %d)"
+
+#: scenes/shop/day_panels.gd
+msgid "%s: the plot next door opens when you move to the %s. %s"
+msgstr "%s: Das Grundstück nebenan wird frei, wenn du umziehst in: %s. %s"
+
+#: scenes/shop/day_panels.gd
+msgid ", when Mags drops by."
+msgstr ", wenn Mags vorbeischaut."
+
+#: scenes/shop/day_panels.gd
+msgid "A NOTE FROM MAGS HOLLOWAY"
+msgstr "EINE NACHRICHT VON MAGS HOLLOWAY"
+
+#: scenes/shop/day_panels.gd
+msgid "A quiet morning on Main Street. Your share of the town's customers: %d%%."
+msgstr "Ein ruhiger Morgen an der Hauptstraße. Dein Anteil an der Kundschaft der Stadt: %d%%."
+
+#: scenes/shop/day_panels.gd
+msgid "Achievements"
+msgstr "Erfolge"
+
+#: scenes/shop/day_panels.gd
+msgid "Achievements (%d/%d)"
+msgstr "Erfolge (%d/%d)"
+
+#: scenes/shop/day_panels.gd
+msgid "Ad runs %d more day"
+msgid_plural "Ad runs %d more days"
+msgstr[0] "Anzeige läuft noch %d Tag"
+msgstr[1] "Anzeige läuft noch %d Tage"
+
+#: scenes/shop/day_panels.gd
+msgid "An ad in the town paper: for %d days more customers pick your shop over the others."
+msgstr "Eine Anzeige in der Stadtzeitung: %d Tage lang wählen mehr Kunden deinen Laden."
+
+#: scenes/shop/day_panels.gd
+msgid "At work"
+msgstr "Bei der Arbeit"
+
+#: scenes/shop/day_panels.gd
+msgid "BEST DAYS"
+msgstr "BESTE TAGE"
+
+#: scenes/shop/day_panels.gd
+msgid "BILLS"
+msgstr "RECHNUNGEN"
+
+#: scenes/shop/day_panels.gd
+msgid "Beat Sterling"
+msgstr "Sterling schlagen"
+
+#: scenes/shop/day_panels.gd
+msgid "Best reputation"
+msgstr "Bester Ruf"
+
+#: scenes/shop/day_panels.gd
+msgid "Book a table at the coin show: more collectors come, and they pay more."
+msgstr "Buch einen Tisch auf der Münzmesse: Mehr Sammler kommen, und sie zahlen mehr."
+
+#: scenes/shop/day_panels.gd
+msgid "Booth "
+msgstr "Stand "
+
+#: scenes/shop/day_panels.gd
+msgid "Booth booked"
+msgstr "Stand gebucht"
+
+#: scenes/shop/day_panels.gd
+msgid "Bought from customers"
+msgstr "Von Kunden gekauft"
+
+#: scenes/shop/day_panels.gd
+msgid "Bought this morning: %s."
+msgstr "Heute Morgen gekauft: %s."
+
+#: scenes/shop/day_panels.gd
+msgid "Build"
+msgstr "Bauen"
+
+#: scenes/shop/day_panels.gd
+msgid "Built"
+msgstr "Gebaut"
+
+#: scenes/shop/day_panels.gd scenes/trading_desk/trading_desk.gd
+msgid "Buy"
+msgstr "Kaufen"
+
+#: scenes/shop/day_panels.gd
+msgid "Buy %d for %s."
+msgstr "%d für %s kaufen."
+
+#: scenes/shop/day_panels.gd
+msgid "Buy coins from the wholesaler before you open."
+msgstr "Kauf Münzen beim Großhändler, bevor du öffnest."
+
+#: scenes/shop/day_panels.gd
+msgid "CHAPTERS"
+msgstr "KAPITEL"
+
+#: scenes/shop/day_panels.gd
+msgid "Cash %s. Hover an upgrade to see what it does."
+msgstr "Bargeld %s. Fahr über ein Upgrade, um zu sehen, was es tut."
+
+#: scenes/shop/day_panels.gd
+msgid "Cash change today"
+msgstr "Bargeld heute"
+
+#: scenes/shop/day_panels.gd
+msgid "Cash to move"
+msgstr "Bargeld für den Umzug"
+
+#: scenes/shop/day_panels.gd
+msgid "Close a day in profit to start the list."
+msgstr "Beende einen Tag mit Gewinn, um die Liste zu beginnen."
+
+#: scenes/shop/day_panels.gd
+msgid "Coin"
+msgstr "Münze"
+
+#: scenes/shop/day_panels.gd
+msgid "Coins at spot plus %d%%, delivered before you open. Cash %s."
+msgstr "Münzen zu Spot plus %d%%, geliefert vor Öffnung. Bargeld %s."
+
+#: scenes/shop/day_panels.gd
+msgid "Collector"
+msgstr "Sammler"
+
+#: scenes/shop/day_panels.gd
+msgid "Collectors' special orders and the dealer network."
+msgstr "Sonderaufträge von Sammlern und das Händlernetz."
+
+#: scenes/shop/day_panels.gd
+msgid "DEALER NETWORK"
+msgstr "HÄNDLERNETZ"
+
+#: scenes/shop/day_panels.gd
+msgid "Day %d closed"
+msgstr "Tag %d beendet"
+
+#: scenes/shop/day_panels.gd
+msgid "Day %d, %s · %d fake caught"
+msgid_plural "Day %d, %s · %d fakes caught"
+msgstr[0] "Tag %d, %s · %d Fälschung erwischt"
+msgstr[1] "Tag %d, %s · %d Fälschungen erwischt"
+
+#: scenes/shop/day_panels.gd
+msgid "Dealers charge most of the collector's premium. Sellers bring old coins too."
+msgstr "Händler verlangen den Großteil des Sammleraufschlags. Verkäufer bringen auch alte Münzen."
+
+#: scenes/shop/day_panels.gd
+msgid "Deals closed (buys / sales)"
+msgstr "Geschäfte (Ankauf / Verkauf)"
+
+#: scenes/shop/day_panels.gd
+msgid "Due"
+msgstr "Fällig"
+
+#: scenes/shop/day_panels.gd
+msgid "Each"
+msgstr "Stück"
+
+#: scenes/shop/day_panels.gd
+msgid "Each move up opens a plot next door. Build a room there to add it to your shop."
+msgstr "Jeder Umzug öffnet ein Grundstück nebenan. Bau dort einen Raum, um deinen Laden zu erweitern."
+
+#: scenes/shop/day_panels.gd
+msgid "Fakes caught / missed"
+msgstr "Fälschungen erwischt / verpasst"
+
+#: scenes/shop/day_panels.gd
+msgid "Find the coins by the day agreed. Coins for an order are set aside."
+msgstr "Besorg die Münzen bis zum vereinbarten Tag. Münzen für einen Auftrag werden zurückgelegt."
+
+#: scenes/shop/day_panels.gd
+msgid "Floor plan"
+msgstr "Grundriss"
+
+#: scenes/shop/day_panels.gd
+msgid "Floor plan%s"
+msgstr "Grundriss%s"
+
+#: scenes/shop/day_panels.gd
+msgid "GOALS"
+msgstr "ZIELE"
+
+#: scenes/shop/day_panels.gd
+msgid "Give the raise"
+msgstr "Erhöhen"
+
+#: scenes/shop/day_panels.gd
+msgid "Gold"
+msgstr "Gold"
+
+#: scenes/shop/day_panels.gd
+msgid "Have"
+msgstr "Hast"
+
+#: scenes/shop/day_panels.gd
+msgid "Highest net worth"
+msgstr "Höchstes Nettovermögen"
+
+#: scenes/shop/day_panels.gd
+msgid "Hire"
+msgstr "Einstellen"
+
+#: scenes/shop/day_panels.gd
+msgid "Hire a %s"
+msgstr "%s einstellen"
+
+#: scenes/shop/day_panels.gd
+msgid "How your staff are getting on: levels, mood and pay."
+msgstr "Wie es deinem Team geht: Stufen, Laune und Lohn."
+
+#: scenes/shop/day_panels.gd
+msgid "In a foul mood"
+msgstr "Schlechte Laune"
+
+#: scenes/shop/day_panels.gd
+msgid "Keep growing your vault and reputation."
+msgstr "Lass deinen Tresor und deinen Ruf weiter wachsen."
+
+#: scenes/shop/day_panels.gd
+msgid "Keep trading: the town is yours."
+msgstr "Handle weiter: Die Stadt gehört dir."
+
+#: scenes/shop/day_panels.gd
+msgid "Ledger"
+msgstr "Kassenbuch"
+
+#: scenes/shop/day_panels.gd
+msgid "Left"
+msgstr "Übrig"
+
+#: scenes/shop/day_panels.gd
+msgid "Let go"
+msgstr "Entlassen"
+
+#: scenes/shop/day_panels.gd
+msgid "Level %d"
+msgstr "Stufe %d"
+
+#: scenes/shop/day_panels.gd
+msgid "Lifetime profit"
+msgstr "Gewinn insgesamt"
+
+#: scenes/shop/day_panels.gd
+msgid "Lock up and go home"
+msgstr "Abschließen und heimgehen"
+
+#: scenes/shop/day_panels.gd
+msgid "Locked"
+msgstr "Gesperrt"
+
+#: scenes/shop/day_panels.gd
+msgid "Lost to thieves"
+msgstr "An Diebe verloren"
+
+#: scenes/shop/day_panels.gd
+msgid "Mags's goals for this chapter of the story."
+msgstr "Mags' Ziele für dieses Kapitel der Geschichte."
+
+#: scenes/shop/day_panels.gd
+msgid "Metals are calm this morning. Expect a normal day."
+msgstr "Die Metalle sind heute Morgen ruhig. Rechne mit einem normalen Tag."
+
+#: scenes/shop/day_panels.gd
+msgid "Mood"
+msgstr "Laune"
+
+#: scenes/shop/day_panels.gd
+msgid "Morning wholesaler"
+msgstr "Großhändler am Morgen"
+
+#: scenes/shop/day_panels.gd
+msgid "Move"
+msgstr "Umziehen"
+
+#: scenes/shop/day_panels.gd
+msgid "Move to %s"
+msgstr "Umziehen: %s"
+
+#: scenes/shop/day_panels.gd
+msgid "NEXT: %s"
+msgstr "NÄCHSTES: %s"
+
+#: scenes/shop/day_panels.gd scenes/shop/hud.gd
+msgid "Net worth"
+msgstr "Nettovermögen"
+
+#: scenes/shop/day_panels.gd
+msgid "Net worth at today's prices"
+msgstr "Nettovermögen zu heutigen Preisen"
+
+#: scenes/shop/day_panels.gd
+msgid "Newspaper ad %s"
+msgstr "Zeitungsanzeige %s"
+
+#: scenes/shop/day_panels.gd
+msgid "Next rent and insurance in %d day."
+msgid_plural "Next rent and insurance in %d days."
+msgstr[0] "Nächste Miete und Versicherung in %d Tag."
+msgstr[1] "Nächste Miete und Versicherung in %d Tagen."
+
+#: scenes/shop/day_panels.gd
+msgid "Off sick (unpaid)"
+msgstr "Krank (unbezahlt)"
+
+#: scenes/shop/day_panels.gd
+msgid "Open the shop"
+msgstr "Laden öffnen"
+
+#: scenes/shop/day_panels.gd
+msgid "Orders (%d)"
+msgstr "Aufträge (%d)"
+
+#: scenes/shop/day_panels.gd
+msgid "Owned"
+msgstr "Gekauft"
+
+#: scenes/shop/day_panels.gd
+msgid "Palladium"
+msgstr "Palladium"
+
+#: scenes/shop/day_panels.gd
+msgid "Pays %s in all on delivery."
+msgstr "Zahlt insgesamt %s bei Lieferung."
+
+#: scenes/shop/day_panels.gd
+msgid "Platinum"
+msgstr "Platin"
+
+#: scenes/shop/day_panels.gd
+msgid "Profit on sales"
+msgstr "Gewinn aus Verkäufen"
+
+#: scenes/shop/day_panels.gd
+msgid "Profit streak"
+msgstr "Gewinnserie"
+
+#: scenes/shop/day_panels.gd
+msgid "Raided: shut %d day"
+msgid_plural "Raided: shut %d days"
+msgstr[0] "Razzia: %d Tag zu"
+msgstr[1] "Razzia: %d Tage zu"
+
+#: scenes/shop/day_panels.gd
+msgid "Rent %s a week. More customers, bigger deals and more upgrades. %s"
+msgstr "Miete %s pro Woche. Mehr Kunden, größere Geschäfte und mehr Upgrades. %s"
+
+#: scenes/shop/day_panels.gd
+msgid "Rent and insurance"
+msgstr "Miete und Versicherung"
+
+#: scenes/shop/day_panels.gd
+msgid "Reputation"
+msgstr "Ruf"
+
+#: scenes/shop/day_panels.gd
+msgid "Restock"
+msgstr "Nachkaufen"
+
+#: scenes/shop/day_panels.gd
+msgid "Rings up a buyer in %.1f s."
+msgstr "Bedient einen Käufer in %.1f s."
+
+#: scenes/shop/day_panels.gd
+msgid "Say no"
+msgstr "Ablehnen"
+
+#: scenes/shop/day_panels.gd
+msgid "Set your board a point better than Sterling's: pay %d%% of melt, sell at spot +%d%%."
+msgstr "Setz deine Tafel einen Punkt besser als Sterling: zahl %d%% vom Schmelzwert, verkauf zu Spot +%d%%."
+
+#: scenes/shop/day_panels.gd
+msgid "Silver"
+msgstr "Silber"
+
+#: scenes/shop/day_panels.gd
+msgid "Sold to customers"
+msgstr "An Kunden verkauft"
+
+#: scenes/shop/day_panels.gd
+msgid "Special orders"
+msgstr "Sonderaufträge"
+
+#: scenes/shop/day_panels.gd
+msgid "Staff"
+msgstr "Team"
+
+#: scenes/shop/day_panels.gd
+msgid "Staff wages tonight"
+msgstr "Löhne heute Abend"
+
+#: scenes/shop/day_panels.gd
+msgid "Staff%s"
+msgstr "Team%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Stops %d%% of robbers at the door."
+msgstr "Hält %d%% der Räuber an der Tür auf."
+
+#: scenes/shop/day_panels.gd
+msgid "Story"
+msgstr "Story"
+
+#: scenes/shop/day_panels.gd
+msgid "Sure? Click again"
+msgstr "Sicher? Nochmal klicken"
+
+#: scenes/shop/day_panels.gd
+msgid "Tell Detective Ruiz about Lucky's stolen goods. A raid shuts the pawn shop for %d days."
+msgstr "Erzähl Detective Ruiz von Lucky's Diebesgut. Eine Razzia schließt das Pfandhaus für %d Tage."
+
+#: scenes/shop/day_panels.gd
+msgid "The desk has traded today. Back tomorrow morning."
+msgstr "Am Tisch wurde heute schon gehandelt. Morgen früh wieder."
+
+#: scenes/shop/day_panels.gd
+msgid "The ledger"
+msgstr "Das Kassenbuch"
+
+#: scenes/shop/day_panels.gd
+msgid "The rival shops, their prices and what they are up to."
+msgstr "Die Konkurrenz, ihre Preise und was sie vorhat."
+
+#: scenes/shop/day_panels.gd
+msgid "They leave today. The signing fee is not refunded."
+msgstr "Geht heute. Die Antrittsprämie gibt es nicht zurück."
+
+#: scenes/shop/day_panels.gd
+msgid "Tip off police"
+msgstr "Polizei-Tipp"
+
+#: scenes/shop/day_panels.gd
+msgid "Today"
+msgstr "Heute"
+
+#: scenes/shop/day_panels.gd
+msgid "Town map"
+msgstr "Stadtplan"
+
+#: scenes/shop/day_panels.gd
+msgid "Town map%s"
+msgstr "Stadtplan%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Town: "
+msgstr "Stadt: "
+
+#: scenes/shop/day_panels.gd
+msgid "Trade at the desk this morning."
+msgstr "Heute Morgen am Tisch handeln."
+
+#: scenes/shop/day_panels.gd scenes/trading_desk/desk_session.gd
+msgid "Trading desk"
+msgstr "Handelstisch"
+
+#: scenes/shop/day_panels.gd
+msgid "Upgrades"
+msgstr "Ausbauten"
+
+#: scenes/shop/day_panels.gd
+msgid "Upgrades (%d)%s"
+msgstr "Upgrades (%d)%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Upgrades and staff"
+msgstr "Upgrades und Personal"
+
+#: scenes/shop/day_panels.gd
+msgid "Upkeep tonight"
+msgstr "Unterhalt heute Abend"
+
+#: scenes/shop/day_panels.gd
+msgid "Wage"
+msgstr "Lohn"
+
+#: scenes/shop/day_panels.gd
+msgid "Wages tonight %s. Pay staff what their level is worth."
+msgstr "Löhne heute Abend %s. Bezahl dein Team nach seiner Stufe."
+
+#: scenes/shop/day_panels.gd
+msgid "Walk-in sellers are cheaper. Restock what buyers ask for."
+msgstr "Laufkundschaft verkauft billiger. Kauf nach, was Käufer verlangen."
+
+#: scenes/shop/day_panels.gd
+msgid "Wants"
+msgstr "Will"
+
+#: scenes/shop/day_panels.gd
+msgid "Worth %s"
+msgstr "Wert %s"
+
+#: scenes/shop/day_panels.gd
+msgid "YOU RUN THE BIGGEST STORE IN TOWN"
+msgstr "DU HAST DEN GRÖSSTEN LADEN DER STADT"
+
+#: scenes/shop/day_panels.gd
+msgid "You run the biggest precious metal store in town. Mags tells everyone she taught you all you know, and Victor Sterling buys his scrap from you now."
+msgstr "Du führst den größten Edelmetallladen der Stadt. Mags erzählt allen, sie hätte dir alles beigebracht, und Victor Sterling kauft seinen Schrott jetzt bei dir."
+
+#: scenes/shop/day_panels.gd
+msgid "Your table at the coin show %s."
+msgstr "Dein Tisch auf der Münzmesse %s."
+
+#: scenes/shop/day_panels.gd
+msgid "done"
+msgstr "erledigt"
+
+#: scenes/shop/day_panels.gd
+msgid "none today"
+msgstr "heute keine"
+
+#: scenes/shop/day_panels.gd
+msgid "top level"
+msgstr "höchste Stufe"
+
+#: scenes/shop/hud.gd
+msgid "  tested"
+msgstr "  geprüft"
+
+#: scenes/shop/hud.gd
+msgid " with stone"
+msgstr " mit Stein"
+
+#: scenes/shop/hud.gd
+msgid "%d × %s coins"
+msgstr "%d × %s-Münzen"
+
+#: scenes/shop/hud.gd
+msgid "Agreed"
+msgstr "Vereinbart"
+
+#: scenes/shop/hud.gd
+msgid "Appraised"
+msgstr "Geschätzt"
+
+#: scenes/shop/hud.gd
+msgid "As claimed"
+msgstr "Laut Angabe"
+
+#: scenes/shop/hud.gd
+msgid "Buy as is"
+msgstr "So kaufen"
+
+#: scenes/shop/hud.gd
+msgid "By %s (%d day)  You hold %d"
+msgid_plural "By %s (%d days)  You hold %d"
+msgstr[0] "Bis %s (%d Tag)  Du hast %d"
+msgstr[1] "Bis %s (%d Tage)  Du hast %d"
+
+#: scenes/shop/hud.gd
+msgid "Cash"
+msgstr "Bargeld"
+
+#: scenes/shop/hud.gd
+msgid "Charge buyers +%d%%"
+msgstr "Aufschlag für Käufer +%d%%"
+
+#: scenes/shop/hud.gd
+msgid "Day %d"
+msgstr "Tag %d"
+
+#: scenes/shop/hud.gd
+msgid "Decline"
+msgstr "Ablehnen"
+
+#: scenes/shop/hud.gd
+msgid "Empty vault."
+msgstr "Tresor leer."
+
+#: scenes/shop/hud.gd
+msgid "Examine"
+msgstr "Prüfen"
+
+#: scenes/shop/hud.gd
+msgid "Goodbye"
+msgstr "Tschüss"
+
+#: scenes/shop/hud.gd
+msgid "HOLD-UP"
+msgstr "ÜBERFALL"
+
+#: scenes/shop/hud.gd
+msgid "Hand over till"
+msgstr "Kasse geben"
+
+#: scenes/shop/hud.gd
+msgid "He won't wait long."
+msgstr "Er wartet nicht lange."
+
+#: scenes/shop/hud.gd
+msgid "IN THE VAULT"
+msgstr "IM TRESOR"
+
+#: scenes/shop/hud.gd
+msgid "Make offer"
+msgstr "Bieten"
+
+#: scenes/shop/hud.gd
+msgid "Melt today  %s"
+msgstr "Schmelzwert heute  %s"
+
+#: scenes/shop/hud.gd
+msgid "Menu"
+msgstr "Menü"
+
+#: scenes/shop/hud.gd
+msgid "Next %s"
+msgstr "Ziel %s"
+
+#: scenes/shop/hud.gd
+msgid "No thanks"
+msgstr "Nein danke"
+
+#: scenes/shop/hud.gd
+msgid "Not enough cash: %s"
+msgstr "Zu wenig Bargeld: %s"
+
+#: scenes/shop/hud.gd
+msgid "Not now"
+msgstr "Nicht jetzt"
+
+#: scenes/shop/hud.gd
+msgid "Off to the vault..."
+msgstr "Ab zum Tresor..."
+
+#: scenes/shop/hud.gd
+msgid "Out of stock"
+msgstr "Ausverkauft"
+
+#: scenes/shop/hud.gd
+msgid "Panic button"
+msgstr "Alarmknopf"
+
+#: scenes/shop/hud.gd
+msgid "Panic button works %d%%"
+msgstr "Alarmknopf wirkt zu %d%%"
+
+#: scenes/shop/hud.gd
+msgid "Pause, settings and quit (Esc)"
+msgstr "Pause, Einstellungen und Beenden (Esc)"
+
+#: scenes/shop/hud.gd
+msgid "Pay sellers %d%% of melt"
+msgstr "Ankauf: %d%% Schmelzwert"
+
+#: scenes/shop/hud.gd
+msgid "Pays"
+msgstr "Zahlt"
+
+#: scenes/shop/hud.gd
+msgid "Pays %s  (+%d%%)"
+msgstr "Zahlt %s  (+%d%%)"
+
+#: scenes/shop/hud.gd
+msgid "Price"
+msgstr "Preis"
+
+#: scenes/shop/hud.gd scenes/shop/shop.gd
+msgid "Quiet for now. Customers arrive every few seconds."
+msgstr "Gerade ruhig. Alle paar Sekunden kommen Kunden."
+
+#: scenes/shop/hud.gd
+msgid "RUSH"
+msgstr "ANSTURM"
+
+#: scenes/shop/hud.gd
+msgid "Refuse"
+msgstr "Ablehnen"
+
+#: scenes/shop/hud.gd scenes/trading_desk/trading_desk.gd
+msgid "Sell"
+msgstr "Verkaufen"
+
+#: scenes/shop/hud.gd
+msgid "Stock at spot"
+msgstr "Bestand zu Spot"
+
+#: scenes/shop/hud.gd
+msgid "Take order"
+msgstr "Annehmen"
+
+#: scenes/shop/hud.gd
+msgid "Take the till's cash to the vault (3 seconds away from the counter)"
+msgstr "Bring das Bargeld der Kasse in den Tresor (3 Sekunden weg von der Theke)"
+
+#: scenes/shop/hud.gd
+msgid "Test bar"
+msgstr "Prüfen"
+
+#: scenes/shop/hud.gd
+msgid "Test coin"
+msgstr "Prüfen"
+
+#: scenes/shop/hud.gd
+msgid "The shop opens when you press Open the shop."
+msgstr "Der Laden öffnet, wenn du auf \"Laden öffnen\" drückst."
+
+#: scenes/shop/hud.gd
+msgid "Till %s"
+msgstr "Kasse %s"
+
+#: scenes/shop/hud.gd
+msgid "To vault"
+msgstr "Tresor"
+
+#: scenes/shop/hud.gd
+msgid "Top of the town"
+msgstr "Spitze der Stadt"
+
+#: scenes/shop/hud.gd
+msgid "Wants the till and the case"
+msgstr "Will die Kasse und die Vitrine"
+
+#: scenes/shop/hud.gd
+msgid "You hold %d"
+msgstr "Du hast %d"
+
+#: scenes/shop/hud.gd
+msgid "Your offer  %s%s"
+msgstr "Dein Angebot  %s%s"
+
+#: scenes/shop/hud.gd
+msgid "closing"
+msgstr "Schluss"
+
+#: scenes/shop/hud.gd
+msgid "gold"
+msgstr "Gold"
+
+#: scenes/shop/hud.gd
+msgid "silver"
+msgstr "Silber"
+
+#: scenes/shop/hud.gd
+msgid "special order"
+msgstr "Sonderauftrag"
+
+#: scenes/shop/hud.gd
+msgid "stopped by to talk"
+msgstr "kommt zum Plaudern"
+
+#: scenes/shop/hud.gd
+msgid "wants to buy"
+msgstr "will kaufen"
+
+#: scenes/shop/hud.gd
+msgid "wants to sell"
+msgstr "will verkaufen"
+
+#: scenes/shop/news_banner.gd
+msgid "NEWS"
+msgstr "NEWS"
+
+#: scenes/shop/news_banner.gd
+msgid "TOWN"
+msgstr "STADT"
+
+#: scenes/shop/rush_hours.gd
+msgid "After-work rush"
+msgstr "Feierabend-Ansturm"
+
+#: scenes/shop/rush_hours.gd
+msgid "Lunch rush"
+msgstr "Mittagsansturm"
+
+#: scenes/shop/rush_hours.gd
+msgid "Rush hours: %s."
+msgstr "Stoßzeiten: %s."
+
+#: scenes/shop/rush_hours.gd
+msgid "Saturday crowd"
+msgstr "Samstagsandrang"
+
+#: scenes/shop/rush_hours.gd
+msgid "after-work"
+msgstr "Feierabend"
+
+#: scenes/shop/rush_hours.gd
+msgid "lunch"
+msgstr "Mittag"
+
+#: scenes/shop/rush_strip.gd
+msgid " · TILL!"
+msgstr " · KASSE!"
+
+#: scenes/shop/rush_strip.gd
+msgid "%s · %d waiting%s"
+msgstr "%s · %d warten%s"
+
+#: scenes/shop/security.gd
+msgid "A crew forced the back door at 3 a.m. and went to work on the safes."
+msgstr "Eine Bande hat um 3 Uhr nachts die Hintertür aufgebrochen und sich über die Tresore hergemacht."
+
+#: scenes/shop/security.gd
+msgid "A safecracking crew"
+msgstr "Eine Tresorknacker-Bande"
+
+#: scenes/shop/security.gd
+msgid "Fill the bag. No alarms, no heroes."
+msgstr "Füll die Tasche. Kein Alarm, keine Helden."
+
+#: scenes/shop/security.gd
+msgid "Hands where I can see them. The cash, now."
+msgstr "Hände so, dass ich sie sehe. Das Bargeld, sofort."
+
+#: scenes/shop/security.gd
+msgid "Hold-ups drop by 40%, and the police get back a third of what robbers and burglars take."
+msgstr "Überfälle sinken um 40%, und die Polizei holt ein Drittel dessen zurück, was Räuber und Einbrecher mitnehmen."
+
+#: scenes/shop/security.gd
+msgid "Kids smashed the back window and ran with what they could carry."
+msgstr "Jugendliche haben das Hinterfenster eingeschlagen und mitgenommen, was sie tragen konnten."
+
+#: scenes/shop/security.gd
+msgid "Man in a cap"
+msgstr "Mann mit Mütze"
+
+#: scenes/shop/security.gd
+msgid "Nobody move. Empty the till, slowly."
+msgstr "Keiner bewegt sich. Leer die Kasse, langsam."
+
+#: scenes/shop/security.gd
+msgid "Professionals"
+msgstr "Profis"
+
+#: scenes/shop/security.gd
+msgid "Professionals cut the phone line and drilled straight for the wall safe."
+msgstr "Profis haben die Telefonleitung gekappt und sich direkt zum Wandtresor gebohrt."
+
+#: scenes/shop/security.gd
+msgid "Security cameras"
+msgstr "Überwachungskameras"
+
+#: scenes/shop/security.gd
+msgid "Smash-and-grab kids"
+msgstr "Einbruchs-Kids"
+
+#: scenes/shop/security.gd
+msgid "This is a robbery. Don't touch anything under the counter."
+msgstr "Das ist ein Überfall. Fass nichts unter der Theke an."
+
+#: scenes/shop/shop.gd
+msgid " A clerk would help."
+msgstr " Ein Verkäufer würde helfen."
+
+#: scenes/shop/shop.gd
+msgid " A clerk would keep the line moving."
+msgstr " Ein Verkäufer hielte die Schlange in Bewegung."
+
+#: scenes/shop/shop.gd
+msgid " A guard stops most of them at the door."
+msgstr " Ein Wachmann stoppt die meisten an der Tür."
+
+#: scenes/shop/shop.gd
+msgid " Its serial was cloned."
+msgstr " Die Seriennummer war geklont."
+
+#: scenes/shop/shop.gd
+msgid "%d customer ran for the door."
+msgid_plural "%d customers ran for the door."
+msgstr[0] "%d Kunde ist zur Tür gerannt."
+msgstr[1] "%d Kunden sind zur Tür gerannt."
+
+#: scenes/shop/shop.gd
+msgid "%d customer saw the queue in the rush and walked on.%s"
+msgid_plural "%d customers saw the queue in the rush and walked on.%s"
+msgstr[0] "%d Kunde sah die Schlange im Ansturm und ging weiter.%s"
+msgstr[1] "%d Kunden sahen die Schlange im Ansturm und gingen weiter.%s"
+
+#: scenes/shop/shop.gd
+msgid "%d robbers"
+msgstr "%d Räuber"
+
+#: scenes/shop/shop.gd
+msgid "%s came back: %d of the coins you sold were fake! Refunded %s."
+msgstr "%s kam zurück: %d der verkauften Münzen waren falsch! %s erstattet."
+
+#: scenes/shop/shop.gd
+msgid "%s got tired of waiting and left."
+msgstr "%s hatte genug vom Warten und ging."
+
+#: scenes/shop/shop.gd
+msgid "%s held up the counter today.%s"
+msgstr "%s hat heute die Theke überfallen.%s"
+
+#: scenes/shop/shop.gd
+msgid "%s left without buying."
+msgstr "%s ging, ohne zu kaufen."
+
+#: scenes/shop/shop.gd
+msgid "%s left: the coins sold out before %s could ring them up."
+msgstr "%s ging: Die Münzen waren ausverkauft, bevor %s kassieren konnte."
+
+#: scenes/shop/shop.gd
+msgid "%s said goodbye."
+msgstr "%s hat sich verabschiedet."
+
+#: scenes/shop/shop.gd
+msgid "%s stopped a man with a gun at the door. The police took him away."
+msgstr "%s hat an der Tür einen Mann mit Waffe aufgehalten. Die Polizei hat ihn abgeführt."
+
+#: scenes/shop/shop.gd
+msgid "%s talked them round. %s"
+msgstr "%s hat überzeugt. %s"
+
+#: scenes/shop/shop.gd
+msgid "%s wants a better price. %s sent them to you."
+msgstr "%s will einen besseren Preis. %s hat sie zu dir geschickt."
+
+#: scenes/shop/shop.gd
+msgid "%s will ask another dealer."
+msgstr "%s fragt einen anderen Händler."
+
+#: scenes/shop/shop.gd
+msgid "%s wouldn't pay your price and left."
+msgstr "%s wollte deinen Preis nicht zahlen und ging."
+
+#: scenes/shop/shop.gd
+msgid "%s! The queue keeps waiting while you test.%s"
+msgstr "%s! Die Schlange wartet, während du prüfst.%s"
+
+#: scenes/shop/shop.gd
+msgid "%s's %s"
+msgstr "%s: %s"
+
+#: scenes/shop/shop.gd
+msgid "%s, day %d. Shop open."
+msgstr "%s, Tag %d. Laden geöffnet."
+
+#: scenes/shop/shop.gd
+msgid "%s: %s gone"
+msgstr "%s: %s weg"
+
+#: scenes/shop/shop.gd
+msgid "%s? Huh. My mother always said %s."
+msgstr "%s? Hm. Meine Mutter sagte immer %s."
+
+#: scenes/shop/shop.gd
+msgid ", plus %s in coins from the case"
+msgstr ", plus %s in Münzen aus der Vitrine"
+
+#: scenes/shop/shop.gd
+msgid "A customer is walking up to the counter."
+msgstr "Ein Kunde kommt zur Theke."
+
+#: scenes/shop/shop.gd
+msgid "A fresh start at the corner counter."
+msgstr "Ein Neuanfang an der Ecktheke."
+
+#: scenes/shop/shop.gd
+msgid "A man in a cap walked in and kept his head down."
+msgstr "Ein Mann mit Mütze kam herein und hielt den Kopf gesenkt."
+
+#: scenes/shop/shop.gd
+msgid "A robber"
+msgstr "Ein Räuber"
+
+#: scenes/shop/shop.gd
+msgid "A thief grabbed %s from the till and ran! Take cash to the vault."
+msgstr "Ein Dieb hat %s aus der Kasse geschnappt und ist abgehauen! Bring Bargeld in den Tresor."
+
+#: scenes/shop/shop.gd
+msgid "Assay lab: the %d × %s were %s. Lost %s."
+msgstr "Prüflabor: Die %d × %s waren %s. Verlust %s."
+
+#: scenes/shop/shop.gd
+msgid "Back in a moment: taking the till to the vault."
+msgstr "Gleich zurück: Ich bring die Kasse zum Tresor."
+
+#: scenes/shop/shop.gd
+msgid "Bought %d × %s for %s."
+msgstr "%d × %s für %s gekauft."
+
+#: scenes/shop/shop.gd
+msgid "Bought %s's %s for %s. Off to the bullion dealer."
+msgstr "Von %s: %s für %s gekauft. Ab zum Edelmetallhändler."
+
+#: scenes/shop/shop.gd
+msgid "Bought %s's %s for %s. Off to the refiner."
+msgstr "Von %s: %s für %s gekauft. Ab zur Scheideanstalt."
+
+#: scenes/shop/shop.gd
+msgid "Break-in overnight: lost %s."
+msgstr "Einbruch über Nacht: %s verloren."
+
+#: scenes/shop/shop.gd
+msgid "Bullion dealer"
+msgstr "Edelmetallhändler"
+
+#: scenes/shop/shop.gd
+msgid "Bullion dealer paid %s for %s's %s (profit %s)."
+msgstr "Edelmetallhändler zahlte %s für %s: %s (Gewinn %s)."
+
+#: scenes/shop/shop.gd
+msgid "Bullion dealer: %s's %s was %s. Lost %s."
+msgstr "Edelmetallhändler: %s, %s war %s. Verlust %s."
+
+#: scenes/shop/shop.gd
+msgid "Caught %s's %s bar!%s"
+msgstr "%s erwischt: Barren aus %s!%s"
+
+#: scenes/shop/shop.gd
+msgid "Caught %s's plated %s! Acid doesn't lie."
+msgstr "%s erwischt: %s ist plattiert! Säure lügt nicht."
+
+#: scenes/shop/shop.gd
+msgid "Caught a %s fake from %s!"
+msgstr "Fälschung (%s) von %s erwischt!"
+
+#: scenes/shop/shop.gd
+msgid "Closing time. Serving the last customers."
+msgstr "Feierabend. Die letzten Kunden werden bedient."
+
+#: scenes/shop/shop.gd
+msgid "Closing up for the day."
+msgstr "Schluss für heute."
+
+#: scenes/shop/shop.gd
+msgid "Couldn't afford %s's %s today."
+msgstr "Konntest dir %s (%s) heute nicht leisten."
+
+#: scenes/shop/shop.gd
+msgid "Fine. Pay me for the metal then."
+msgstr "Na gut. Dann zahlen Sie mir das Metall."
+
+#: scenes/shop/shop.gd
+msgid "Fraud insurance payout"
+msgstr "Auszahlung Betrugsversicherung"
+
+#: scenes/shop/shop.gd
+msgid "Handed over in a hold-up"
+msgstr "Bei Überfall abgegeben"
+
+#: scenes/shop/shop.gd
+msgid "Hold-up! The man in the cap pulled a gun at the counter."
+msgstr "Überfall! Der Mann mit der Mütze hat an der Theke eine Waffe gezogen."
+
+#: scenes/shop/shop.gd
+msgid "It's %s, not %s? You could have kept quiet. Thank you."
+msgstr "Es ist %s, nicht %s? Sie hätten schweigen können. Danke."
+
+#: scenes/shop/shop.gd
+msgid "Locked %s from the till in the safe."
+msgstr "%s aus der Kasse im Tresor eingeschlossen."
+
+#: scenes/shop/shop.gd
+msgid "Not a diamond? Well, the gold's still gold."
+msgstr "Kein Diamant? Na ja, Gold bleibt Gold."
+
+#: scenes/shop/shop.gd
+msgid "Passed on %s's %s."
+msgstr "%s abgelehnt (%s)."
+
+#: scenes/shop/shop.gd scenes/vault/vault_layout.gd
+msgid "Police recovered stolen goods"
+msgstr "Polizei fand Diebesgut wieder"
+
+#: scenes/shop/shop.gd
+msgid "Refiner and stone dealer"
+msgstr "Scheideanstalt und Steinhändler"
+
+#: scenes/shop/shop.gd
+msgid "Refiner paid %s for %s (profit %s)."
+msgstr "Scheideanstalt zahlte %s für %s (Gewinn %s)."
+
+#: scenes/shop/shop.gd
+msgid "Refiner: %s%s. Lost %s."
+msgstr "Scheideanstalt: %s%s. Verlust %s."
+
+#: scenes/shop/shop.gd
+msgid "Snatched from the till"
+msgstr "Aus der Kasse geschnappt"
+
+#: scenes/shop/shop.gd
+msgid "So, what's it worth to you?"
+msgstr "Also, was ist es Ihnen wert?"
+
+#: scenes/shop/shop.gd
+msgid "Sold %d coins for %s (profit %s)."
+msgstr "%d Münzen für %s verkauft (Gewinn %s)."
+
+#: scenes/shop/shop.gd
+msgid "Spotted that %s's stone is %s."
+msgstr "Bemerkt, dass %ss Stein %s ist."
+
+#: scenes/shop/shop.gd
+msgid "TOWN: "
+msgstr "STADT: "
+
+#: scenes/shop/shop.gd
+msgid "Taken in a hold-up"
+msgstr "Bei Überfall geraubt"
+
+#: scenes/shop/shop.gd
+msgid "The acid says %s's piece is %s, not %s."
+msgstr "Laut Säure ist %ss Stück %s, nicht %s."
+
+#: scenes/shop/shop.gd
+msgid "The alarm didn't scare him. He emptied the till"
+msgstr "Der Alarm hat ihn nicht verschreckt. Er hat die Kasse geleert"
+
+#: scenes/shop/shop.gd
+msgid "The alarm wailed and he bolted empty-handed!"
+msgstr "Der Alarm heulte und er floh mit leeren Händen!"
+
+#: scenes/shop/shop.gd
+msgid "The cameras caught his face. Police got back %s."
+msgstr "Die Kameras haben sein Gesicht erfasst. Die Polizei holte %s zurück."
+
+#: scenes/shop/shop.gd
+msgid "The rush is over. Catch your breath."
+msgstr "Der Ansturm ist vorbei. Durchatmen."
+
+#: scenes/shop/shop.gd
+msgid "Told %s their piece is better than they thought."
+msgstr "Du hast %s gesagt, dass das Stück besser ist als gedacht."
+
+#: scenes/shop/shop.gd
+msgid "Told you it was real. So, what's your offer?"
+msgstr "Hab doch gesagt, dass er echt ist. Also, was bieten Sie?"
+
+#: scenes/shop/shop.gd
+msgid "Told you they were real. So, what's your offer?"
+msgstr "Hab doch gesagt, dass sie echt sind. Also, was bieten Sie?"
+
+#: scenes/shop/shop.gd
+msgid "Turned %s away without testing."
+msgstr "%s ohne Prüfung abgewiesen."
+
+#: scenes/shop/shop.gd
+msgid "Welcome back. Day %d at your %s."
+msgstr "Willkommen zurück. Tag %d in deinem Laden: %s."
+
+#: scenes/shop/shop.gd
+msgid "Welcome to your shop. Test coins before you buy them."
+msgstr "Willkommen in deinem Laden. Prüf Münzen, bevor du sie kaufst."
+
+#: scenes/shop/shop.gd
+msgid "You called %s's genuine bar fake. They stormed out."
+msgstr "Du hast %ss echten Barren für falsch erklärt. Wütend gegangen."
+
+#: scenes/shop/shop.gd
+msgid "You called %s's genuine coins fake. They stormed out."
+msgstr "Du hast %ss echte Münzen für falsch erklärt. Wütend gegangen."
+
+#: scenes/shop/shop.gd
+msgid "You called %s's real %s plated. They stormed out."
+msgstr "Du hast %ss echtes Stück (%s) für plattiert erklärt. Wütend gegangen."
+
+#: scenes/shop/shop.gd
+msgid "You froze. He emptied the till"
+msgstr "Du bist erstarrt. Er hat die Kasse geleert"
+
+#: scenes/shop/shop.gd
+msgid "You handed over %s from the till. He ran."
+msgstr "Du hast %s aus der Kasse übergeben. Er ist weggerannt."
+
+#: scenes/shop/shop.gd
+msgid "bar"
+msgstr "Barren"
+
+#: scenes/shop/shop.gd
+msgid "coins"
+msgstr "Münzen"
+
+#: scenes/shop/shop.gd
+msgid "cubic zirconia"
+msgstr "Zirkonia"
+
+#: scenes/shop/shop.gd
+msgid "glass"
+msgstr "Glas"
+
+#: scenes/shop/shop.gd
+msgid "it was %s"
+msgstr "es war %s"
+
+#: scenes/shop/shop.gd
+msgid "it was plated %s"
+msgstr "es war plattiertes %s"
+
+#: scenes/shop/shop.gd
+msgid "moissanite"
+msgstr "Moissanit"
+
+#: scenes/shop/shop.gd
+msgid "piece"
+msgstr "Stück"
+
+#: scenes/shop/shop.gd
+msgid "the stone was %s"
+msgstr "der Stein war %s"
+
+#: scenes/shop/shop_room.gd
+msgid "AG"
+msgstr "AG"
+
+#: scenes/shop/shop_room.gd
+msgid "AU"
+msgstr "AU"
+
+#: scenes/shop/shop_room.gd
+msgid "PD"
+msgstr "PD"
+
+#: scenes/shop/shop_room.gd
+msgid "PT"
+msgstr "PT"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "AAPL"
+msgstr "AAPL"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "BTC"
+msgstr "BTC"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "DOGE"
+msgstr "DOGE"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "ETH"
+msgstr "ETH"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "NVDA"
+msgstr "NVDA"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "SOL"
+msgstr "SOL"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "SPY"
+msgstr "SPY"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "TSLA"
+msgstr "TSLA"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "The trading desk lost %s this morning."
+msgstr "Der Handelstisch hat heute Morgen %s verloren."
+
+#: scenes/trading_desk/desk_session.gd
+msgid "The trading desk made %s this morning."
+msgstr "Der Handelstisch hat heute Morgen %s verdient."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "1-%d pick a row. Esc closes out."
+msgstr "1-%d wählt eine Zeile. Esc schließt alles."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "At the desk's limit. Close something first."
+msgstr "Tischlimit erreicht. Schließ zuerst etwas."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Back to the morning"
+msgstr "Zurück zum Morgen"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Buy if you think it rises, Sell to go short if you think it falls. At 17:00 everything closes and the result goes on today's ledger."
+msgstr "Kauf, wenn du glaubst, es steigt, Verkauf, um short zu gehen, wenn es fällt. Um 17:00 wird alles geschlossen und das Ergebnis kommt ins heutige Kassenbuch."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Close out now (Enter)"
+msgstr "Jetzt schließen (Enter)"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Closed"
+msgstr "Geschlossen"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Closing bell: %s"
+msgstr "Schlussglocke: %s"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Desk limit used"
+msgstr "Genutztes Tischlimit"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Desk lost %s today, after %s in fees."
+msgstr "Der Tisch hat heute %s verloren, nach %s Gebühren."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Desk made %s today, after %s in fees."
+msgstr "Der Tisch hat heute %s verdient, nach %s Gebühren."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Desk profit"
+msgstr "Tischgewinn"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Each tape replays a day that ends near today's live price, so the real 24h move is your edge. Hedge vault protects your stock if metals fall."
+msgstr "Jedes Band spielt einen Tag ab, der nahe am heutigen Live-Kurs endet, also ist die echte 24h-Bewegung dein Vorteil. Tresor absichern schützt deinen Bestand, wenn Metalle fallen."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Esc leaves without trading."
+msgstr "Esc geht ohne Handel."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Hedge vault (H)"
+msgstr "Absichern (H)"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Its profit"
+msgstr "Sein Gewinn"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "LT"
+msgstr "LT"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Lifetime at the desk: %s."
+msgstr "Insgesamt am Tisch: %s."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Market"
+msgstr "Markt"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Morning session"
+msgstr "Morgenhandel"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "No metal in the vault to hedge."
+msgstr "Kein Metall im Tresor zum Absichern."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Offline: the tapes are simulated."
+msgstr "Offline: Die Bänder sind simuliert."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "On today's tape your vault gained %s on paper."
+msgstr "Auf dem heutigen Band hat dein Tresor %s auf dem Papier gewonnen."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "On today's tape your vault lost %s on paper."
+msgstr "Auf dem heutigen Band hat dein Tresor %s auf dem Papier verloren."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "POSITION"
+msgstr "POSITION"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "PRICE"
+msgstr "PREIS"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Position"
+msgstr "Position"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Pre-market"
+msgstr "Vorbörse"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Previous / next row"
+msgstr "Vorherige / nächste Zeile"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "RT"
+msgstr "RT"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Ring the opening bell"
+msgstr "Zur Eröffnung läuten"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Short the gold, silver and platinum in your vault, ounce for ounce, with up to half the desk's limit."
+msgstr "Verkauf das Gold, Silber und Platin in deinem Tresor short, Unze für Unze, mit bis zur Hälfte des Tischlimits."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Shorted the vault's metal with up to half the desk's limit."
+msgstr "Das Metall im Tresor mit bis zur Hälfte des Tischlimits shortgesetzt."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "TODAY"
+msgstr "HEUTE"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "TRADING DESK"
+msgstr "HANDELSTISCH"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Together"
+msgstr "Zusammen"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Trade %d%% of the desk's limit per click."
+msgstr "Handle %d%% des Tischlimits pro Klick."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Vault on paper"
+msgstr "Tresor auf Papier"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "You watched the tape all day without a trade."
+msgstr "Du hast den ganzen Tag das Band beobachtet, ohne zu handeln."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Your hedge offset %d%% of the vault's move."
+msgstr "Deine Absicherung hat %d%% der Tresorbewegung ausgeglichen."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "long "
+msgstr "long "
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "short "
+msgstr "short "
+
+#: scenes/tutorial/coach.gd
+msgid "A customer"
+msgstr "Ein Kunde"
+
+#: scenes/tutorial/coach.gd
+msgid "Are you sure?"
+msgstr "Bist du sicher?"
+
+#: scenes/tutorial/coach.gd
+msgid "Bar test"
+msgstr "Barrentest"
+
+#: scenes/tutorial/coach.gd
+msgid "Bills come out each night, and the day's numbers land here. Tomorrow morning, spend your profit on upgrades and keep an eye on the ticker. Good luck!"
+msgstr "Rechnungen werden jede Nacht abgebucht, und die Zahlen des Tages landen hier. Morgen früh steck deinen Gewinn in Upgrades und behalte den Ticker im Auge. Viel Glück!"
+
+#: scenes/tutorial/coach.gd
+msgid "Bought!"
+msgstr "Gekauft!"
+
+#: scenes/tutorial/coach.gd
+msgid "Burglars take whatever's left on the tray. Drag your stock into the safes: the floor safe never gets cracked, the wall safe sometimes does. Right-click turns a piece. The longer the lights stay on, the riskier it gets, so be quick."
+msgstr "Einbrecher nehmen, was auf dem Tablett liegt. Zieh deinen Bestand in die Tresore: Der Bodentresor wird nie geknackt, der Wandtresor manchmal. Rechtsklick dreht ein Teil. Je länger das Licht brennt, desto riskanter, also beeil dich."
+
+#: scenes/tutorial/coach.gd
+msgid "Catching fakes earns reputation. Fakes you buy cost you the money and your stars when the assay lab checks them."
+msgstr "Fälschungen erwischen bringt Ruf. Gekaufte Fälschungen kosten dich das Geld und Sterne, wenn das Prüflabor sie findet."
+
+#: scenes/tutorial/coach.gd
+msgid "Caught in the act"
+msgstr "Auf frischer Tat"
+
+#: scenes/tutorial/coach.gd
+msgid "Caught!"
+msgstr "Erwischt!"
+
+#: scenes/tutorial/coach.gd
+msgid "Day one done"
+msgstr "Tag eins geschafft"
+
+#: scenes/tutorial/coach.gd
+msgid "Each tool checks one thing. Press 1 for the Scale and 2 for the Calipers, then compare each READING with the SPEC next to it."
+msgstr "Jedes Werkzeug prüft eine Sache. Drück 1 für die Waage und 2 für den Messschieber, dann vergleiche jeden MESSWERT mit dem SOLL daneben."
+
+#: scenes/tutorial/coach.gd
+msgid "Five silver coins, please. A birthday present."
+msgstr "Fünf Silbermünzen, bitte. Ein Geburtstagsgeschenk."
+
+#: scenes/tutorial/coach.gd
+msgid "Got it"
+msgstr "Verstanden"
+
+#: scenes/tutorial/coach.gd
+msgid "Here comes someone else. Keep an eye on this one."
+msgstr "Da kommt noch jemand. Behalte den hier im Auge."
+
+#: scenes/tutorial/coach.gd
+msgid "Jewellery appraisal"
+msgstr "Schmuckschätzung"
+
+#: scenes/tutorial/coach.gd
+msgid "June left without selling. That's fine; there's always another customer."
+msgstr "June ist gegangen, ohne zu verkaufen. Kein Problem, es kommt immer ein nächster Kunde."
+
+#: scenes/tutorial/coach.gd
+msgid "June wants to sell %d Silver Eagles. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin."
+msgstr "June möchte %d Silver Eagles verkaufen. Schmelzwert heute ist, was das Silber darin wert ist. Dein Angebot ist, was du zahlen würdest. Kauf nie ungeprüfte Münzen: Drück Prüfen."
+
+#: scenes/tutorial/coach.gd
+msgid "June's coins are in your vault now. You can see them under IN THE VAULT."
+msgstr "Junes Münzen sind jetzt in deinem Tresor. Du siehst sie unter IM TRESOR."
+
+#: scenes/tutorial/coach.gd
+msgid "Live prices"
+msgstr "Live-Preise"
+
+#: scenes/tutorial/coach.gd
+msgid "Lock up"
+msgstr "Abschließen"
+
+#: scenes/tutorial/coach.gd
+msgid "Make an offer"
+msgstr "Ein Angebot machen"
+
+#: scenes/tutorial/coach.gd
+msgid "My dad's old Silver Eagles. I'd like a fair price."
+msgstr "Die alten Silver Eagles meines Vaters. Ich hätte gern einen fairen Preis."
+
+#: scenes/tutorial/coach.gd
+msgid "Next"
+msgstr "Weiter"
+
+#: scenes/tutorial/coach.gd
+msgid "No deal"
+msgstr "Kein Geschäft"
+
+#: scenes/tutorial/coach.gd
+msgid "Now you're on your own. Customers keep coming until 17:00, then you lock up the vault. Jewellery and bars have their own benches; you'll get a quick intro to each the first time."
+msgstr "Jetzt bist du allein. Kunden kommen bis 17:00, dann schließt du den Tresor ab. Schmuck und Barren haben eigene Werkbänke; beim ersten Mal gibt es jeweils eine kurze Einführung."
+
+#: scenes/tutorial/coach.gd
+msgid "One more. This one wants to buy."
+msgstr "Noch einer. Dieser will kaufen."
+
+#: scenes/tutorial/coach.gd
+msgid "Open up"
+msgstr "Aufmachen"
+
+#: scenes/tutorial/coach.gd
+msgid "Played it safe"
+msgstr "Auf Nummer sicher"
+
+#: scenes/tutorial/coach.gd
+msgid "Press Open the shop when you're ready."
+msgstr "Drück \"Laden öffnen\", wenn du bereit bist."
+
+#: scenes/tutorial/coach.gd
+msgid "Priya wants 5 silver coins from your vault. She pays melt plus your premium. Press Sell."
+msgstr "Priya möchte 5 Silbermünzen aus deinem Tresor. Sie zahlt Schmelzwert plus deinen Aufschlag. Drück Verkaufen."
+
+#: scenes/tutorial/coach.gd
+msgid "Read the bench"
+msgstr "Lies den Tisch"
+
+#: scenes/tutorial/coach.gd
+msgid "Real coins. Press Make offer to buy them at your price."
+msgstr "Echte Münzen. Drück Bieten, um sie zu deinem Preis zu kaufen."
+
+#: scenes/tutorial/coach.gd
+msgid "Real silver only drags a little. This coin snapped to the magnet: it's plated steel. Press Fake."
+msgstr "Echtes Silber zieht nur leicht. Diese Münze ist am Magneten geklebt: plattierter Stahl. Drück Falsch."
+
+#: scenes/tutorial/coach.gd
+msgid "Selling"
+msgstr "Verkaufen"
+
+#: scenes/tutorial/coach.gd
+msgid "Show me"
+msgstr "Zeig her"
+
+#: scenes/tutorial/coach.gd
+msgid "Silver Eagles, cheap. Cash only, no questions, yeah?"
+msgstr "Silver Eagles, billig. Nur bar, keine Fragen, ja?"
+
+#: scenes/tutorial/coach.gd
+msgid "Skip tutorial"
+msgstr "Tutorial überspringen"
+
+#: scenes/tutorial/coach.gd
+msgid "Slick's in a hurry and won't haggle. Cheap coins from a nervous seller are often fake. Test them too."
+msgstr "Slick hat es eilig und feilscht nicht. Billige Münzen von nervösen Verkäufern sind oft falsch. Prüf auch sie."
+
+#: scenes/tutorial/coach.gd
+msgid "Sold!"
+msgstr "Verkauft!"
+
+#: scenes/tutorial/coach.gd
+msgid "Start the clock"
+msgstr "Uhr starten"
+
+#: scenes/tutorial/coach.gd
+msgid "Steel fakes give themselves away to a magnet. Press 4."
+msgstr "Stahlfälschungen verraten sich am Magneten. Drück 4."
+
+#: scenes/tutorial/coach.gd
+msgid "That's the counter"
+msgstr "Das ist die Theke"
+
+#: scenes/tutorial/coach.gd
+msgid "The coin test"
+msgstr "Der Münztest"
+
+#: scenes/tutorial/coach.gd
+msgid "The magnet"
+msgstr "Der Magnet"
+
+#: scenes/tutorial/coach.gd
+msgid "The ticker shows today's spot prices from the real market. Every coin's value follows them, so the same coin is worth more on some days than others."
+msgstr "Der Ticker zeigt die heutigen Spotpreise vom echten Markt. Jeder Münzwert folgt ihnen, also ist dieselbe Münze an manchen Tagen mehr wert als an anderen."
+
+#: scenes/tutorial/coach.gd
+msgid "Those coins snapped to the magnet. You can still press Refuse."
+msgstr "Die Münzen klebten am Magneten. Du kannst noch Ablehnen drücken."
+
+#: scenes/tutorial/coach.gd
+msgid "Those were plated steel. The assay lab will catch them soon and you'll lose what you paid. Always test first."
+msgstr "Das war plattierter Stahl. Das Prüflabor findet das bald und du verlierst, was du gezahlt hast. Immer erst prüfen."
+
+#: scenes/tutorial/coach.gd
+msgid "Too good to be true?"
+msgstr "Zu schön, um wahr zu sein?"
+
+#: scenes/tutorial/coach.gd
+msgid "Tungsten weighs almost the same as gold, so the scale isn't enough. Press 3 and sweep the ultrasound probe over the whole bar: the echo must stay inside the gate, and an early echo means tungsten inside. Read the serial under the loupe; a copied serial gets flagged. The XRF gun comes as an upgrade."
+msgstr "Wolfram wiegt fast so viel wie Gold, die Waage reicht also nicht. Drück 3 und fahr die Ultraschallsonde über den ganzen Barren: Das Echo muss im Gate bleiben, ein frühes Echo heißt Wolfram innen. Lies die Seriennummer unter der Lupe; eine kopierte wird markiert. Die RFA-Pistole gibt es als Upgrade."
+
+#: scenes/tutorial/coach.gd
+msgid "Turning away untested coins is safe. Testing them proves it, and catching a fake earns reputation."
+msgstr "Ungeprüfte Münzen abzulehnen ist sicher. Prüfen beweist es, und eine erwischte Fälschung bringt Ruf."
+
+#: scenes/tutorial/coach.gd
+msgid "Tutorial skipped. Good luck!"
+msgstr "Tutorial übersprungen. Viel Glück!"
+
+#: scenes/tutorial/coach.gd
+msgid "Uh oh"
+msgstr "Oh oh"
+
+#: scenes/tutorial/coach.gd
+msgid "Weigh the piece. Then press 2 to rub a streak on the touchstone and drop acids on it (Q-Y): the streak survives acids up to its karat, and base metal fizzes. The Tester checks a stone; moissanite fools it, so look for doubled facet edges under the loupe. Set the grade (G) and the stone (D), then Finish appraisal."
+msgstr "Wieg das Stück. Dann drück 2, reib einen Strich auf den Prüfstein und gib Säuren darauf (Q-Y): Der Strich übersteht Säuren bis zu seinem Karat, unedles Metall schäumt. Der Tester prüft einen Stein; Moissanit täuscht ihn, also achte unter der Lupe auf doppelte Facettenkanten. Stell den Gehalt (G) und den Stein (D) ein, dann Schätzung beenden."
+
+#: scenes/tutorial/coach.gd
+msgid "Weight, diameter and thickness all match the spec. This is a real Silver Eagle. Press Genuine."
+msgstr "Gewicht, Durchmesser und Dicke passen zur Spezifikation. Das ist ein echter Silver Eagle. Drück Echt."
+
+#: scenes/tutorial/coach.gd
+msgid "Welcome to your shop"
+msgstr "Willkommen in deinem Laden"
+
+#: scenes/tutorial/coach.gd
+msgid "You buy and sell gold, silver and platinum at real market prices. Your goal: the biggest store in town. Let's serve your first customers together."
+msgstr "Du kaufst und verkaufst Gold, Silber und Platin zu echten Marktpreisen. Dein Ziel: der größte Laden der Stadt. Bedienen wir zusammen deine ersten Kunden."
+
+#: scenes/tutorial/coach.gd
+msgid "You pay sellers a little under melt and charge buyers a little over it. That gap is your profit. The -/+ buttons change both, but push too far and customers walk."
+msgstr "Du zahlst Verkäufern etwas unter dem Schmelzwert und verlangst von Käufern etwas darüber. Die Spanne ist dein Gewinn. Die -/+-Knöpfe ändern beides, aber übertreib es, und die Kunden gehen."
+
+#: scenes/tutorial/coach.gd
+msgid "Your first customer"
+msgstr "Dein erster Kunde"
+
+#: scenes/tutorial/coach.gd
+msgid "Your first customer is walking up to the counter."
+msgstr "Dein erster Kunde kommt zur Theke."
+
+#: scenes/tutorial/coach.gd
+msgid "Your margins"
+msgstr "Deine Spanne"
+
+#: scenes/vault/vault.gd
+msgid "Alarm: -%d%% risk"
+msgstr "Alarm: -%d%% Risiko"
+
+#: scenes/vault/vault.gd
+msgid "Break-in overnight! Lost %s."
+msgstr "Einbruch über Nacht! %s verloren."
+
+#: scenes/vault/vault.gd
+msgid "Break-in risk"
+msgstr "Einbruchsrisiko"
+
+#: scenes/vault/vault.gd
+msgid "Break-in risk was %d%%, with %d%% of the value locked away."
+msgstr "Das Einbruchsrisiko lag bei %d%%, mit %d%% des Werts weggeschlossen."
+
+#: scenes/vault/vault.gd
+msgid "Break-in: %s!"
+msgstr "Einbruch: %s!"
+
+#: scenes/vault/vault.gd
+msgid "Burglars can't crack it"
+msgstr "Einbrecher knacken ihn nicht"
+
+#: scenes/vault/vault.gd
+msgid "Closing time"
+msgstr "Feierabend"
+
+#: scenes/vault/vault.gd
+msgid "Cracked the wall safe: %s."
+msgstr "Wandtresor geknackt: %s."
+
+#: scenes/vault/vault.gd
+msgid "Crews crack it %d%% of the time"
+msgstr "Banden knacken ihn zu %d%%"
+
+#: scenes/vault/vault.gd
+msgid "Crews crack it %d%%, pros %d%%"
+msgstr "Banden knacken ihn zu %d%%, Profis zu %d%%"
+
+#: scenes/vault/vault.gd
+msgid "Drag stock into the safes. Right-click or R turns a piece. What's left on the tray is easy pickings, and the longer the lights stay on, the likelier a break-in."
+msgstr "Zieh den Bestand in die Tresore. Rechtsklick oder R dreht ein Teil. Was auf dem Tablett bleibt, ist leichte Beute, und je länger das Licht brennt, desto wahrscheinlicher ein Einbruch."
+
+#: scenes/vault/vault.gd
+msgid "Enter locks up. At zero it locks itself."
+msgstr "Enter schließt ab. Bei null schließt es von selbst."
+
+#: scenes/vault/vault.gd
+msgid "FLOOR SAFE"
+msgstr "BODENTRESOR"
+
+#: scenes/vault/vault.gd
+msgid "Grabbed the best of the counter tray: %s. They left the rest."
+msgstr "Haben das Beste vom Thekentablett geschnappt: %s. Den Rest ließen sie liegen."
+
+#: scenes/vault/vault.gd
+msgid "Insurance pays back %s."
+msgstr "Die Versicherung erstattet %s."
+
+#: scenes/vault/vault.gd
+msgid "Left on the tray"
+msgstr "Auf dem Tablett"
+
+#: scenes/vault/vault.gd
+msgid "Lights out in"
+msgstr "Licht aus in"
+
+#: scenes/vault/vault.gd
+msgid "Lock up now"
+msgstr "Jetzt abschließen"
+
+#: scenes/vault/vault.gd
+msgid "Locked away"
+msgstr "Weggeschlossen"
+
+#: scenes/vault/vault.gd
+msgid "Nobody came, and everything was locked away."
+msgstr "Niemand kam, und alles war weggeschlossen."
+
+#: scenes/vault/vault.gd
+msgid "Nobody came. Lucky: %s sat out on the counter all night."
+msgstr "Niemand kam. Glück gehabt: %s lag die ganze Nacht auf der Theke."
+
+#: scenes/vault/vault.gd
+msgid "Quiet night"
+msgstr "Ruhige Nacht"
+
+#: scenes/vault/vault.gd
+msgid "Quiet night. The vault was untouched."
+msgstr "Ruhige Nacht. Der Tresor blieb unberührt."
+
+#: scenes/vault/vault.gd
+msgid "See the day's results"
+msgstr "Tagesergebnis ansehen"
+
+#: scenes/vault/vault.gd
+msgid "The cameras caught them. Police got back %s."
+msgstr "Die Kameras haben sie erfasst. Die Polizei holte %s zurück."
+
+#: scenes/vault/vault.gd
+msgid "The customer ledger is gone. Reputation -%.1f."
+msgstr "Das Kundenbuch ist weg. Ruf -%.1f."
+
+#: scenes/vault/vault.gd
+msgid "The floor safe held."
+msgstr "Der Bodentresor hielt."
+
+#: scenes/vault/vault.gd
+msgid "They couldn't crack the wall safe."
+msgstr "Den Wandtresor bekamen sie nicht auf."
+
+#: scenes/vault/vault.gd
+msgid "They never touched the safes."
+msgstr "Die Tresore haben sie nicht angerührt."
+
+#: scenes/vault/vault.gd
+msgid "Took everything on the counter tray: %s."
+msgstr "Alles vom Thekentablett mitgenommen: %s."
+
+#: scenes/vault/vault.gd
+msgid "Total lost: %s."
+msgstr "Verlust gesamt: %s."
+
+#: scenes/vault/vault.gd
+msgid "VAULT LOCK-UP"
+msgstr "TRESOR ABSCHLIESSEN"
+
+#: scenes/vault/vault.gd
+msgid "WALL SAFE"
+msgstr "WANDTRESOR"
+
+#: scenes/vault/vault.gd
+msgid "Worth %s today"
+msgstr "Heute %s wert"
+
+#: scenes/vault/vault.gd
+msgid "and more"
+msgstr "und mehr"
+
+#: scenes/vault/vault_layout.gd
+msgid "%s in notes"
+msgstr "%s in Scheinen"
+
+#: scenes/vault/vault_layout.gd
+msgid "Cash straps"
+msgstr "Geldbündel"
+
+#: scenes/vault/vault_layout.gd
+msgid "Counter tray"
+msgstr "Thekentablett"
+
+#: scenes/vault/vault_layout.gd
+msgid "Customer ledger"
+msgstr "Kundenbuch"
+
+#: scenes/vault/vault_layout.gd
+msgid "Floor safe"
+msgstr "Bodentresor"
+
+#: scenes/vault/vault_layout.gd
+msgid "Gold coin box"
+msgstr "Goldmünzenbox"
+
+#: scenes/vault/vault_layout.gd
+msgid "Insurance payout"
+msgstr "Versicherungsleistung"
+
+#: scenes/vault/vault_layout.gd
+msgid "Lose it: -%.1f reputation"
+msgstr "Weg damit: -%.1f Ruf"
+
+#: scenes/vault/vault_layout.gd
+msgid "Monster box"
+msgstr "Monsterbox"
+
+#: scenes/vault/vault_layout.gd
+msgid "Names and addresses."
+msgstr "Namen und Adressen."
+
+#: scenes/vault/vault_layout.gd
+msgid "Platinum box"
+msgstr "Platinbox"
+
+#: scenes/vault/vault_layout.gd
+msgid "Silver tube"
+msgstr "Silberrolle"
+
+#: scenes/vault/vault_layout.gd
+msgid "Wall safe"
+msgstr "Wandtresor"
+
+#: ui/save_slots_panel.gd
+msgid "%s · saved %s"
+msgstr "%s · gespeichert %s"
+
+#: ui/save_slots_panel.gd
+msgid "Delete"
+msgstr "Löschen"
+
+#: ui/save_slots_panel.gd
+msgid "Each slot saves every morning and every night."
+msgstr "Jeder Platz speichert jeden Morgen und jeden Abend."
+
+#: ui/save_slots_panel.gd
+msgid "Play"
+msgstr "Spielen"
+
+#: ui/save_slots_panel.gd
+msgid "Slot %d deleted."
+msgstr "Platz %d gelöscht."
+
+#: ui/save_slots_panel.gd
+msgid "Slot %d · Day %d · %s"
+msgstr "Platz %d · Tag %d · %s"
+
+#: ui/save_slots_panel.gd
+msgid "Slot %d · empty"
+msgstr "Platz %d · leer"
+
+#: ui/save_slots_panel.gd
+msgid "Start a new shop here"
+msgstr "Hier einen neuen Laden starten"
+
+#: ui/save_slots_panel.gd
+msgid "Sure?"
+msgstr "Sicher?"
+
+#: ui/settings_panel.gd
+msgid "Auto (%s)"
+msgstr "Auto (%s)"
+
+#: ui/settings_panel.gd
+msgid "Currency"
+msgstr "Währung"
+
+#: ui/settings_panel.gd
+msgid "Effects"
+msgstr "Effekte"
+
+#: ui/settings_panel.gd
+msgid "Fullscreen"
+msgstr "Vollbild"
+
+#: ui/settings_panel.gd
+msgid "Language"
+msgstr "Sprache"
+
+#: ui/settings_panel.gd
+msgid "Off"
+msgstr "Aus"
+
+#: ui/settings_panel.gd
+msgid "On"
+msgstr "An"
+
+#: ui/settings_panel.gd
+msgid "Scaling"
+msgstr "Skalierung"
+
+#: ui/settings_panel.gd
+msgid "Volume"
+msgstr "Lautstärke"

@@ -137,8 +137,8 @@ func _clear() -> void:
 
 func _build_morning() -> void:
 	_clear()
-	_title("%s, day %d" % [Day.weekday(), Shop.day])
-	_text("%s · %s. Set your prices, then open up." % [Progress.tier_name(), Calendar.label()], Pal.INK_DIM)
+	_title(tr("%s, day %d") % [Day.weekday(), Shop.day])
+	_text(tr("%s · %s. Set your prices, then open up.") % [Progress.tier_name(), Calendar.label()], Pal.INK_DIM)
 	var town := _town_hint()
 	if town != "":
 		_text(town, Pal.GOLD)
@@ -152,11 +152,11 @@ func _build_morning() -> void:
 		_text(_orders_hint(), Pal.GOLD)
 	if not Rivals.news.is_empty():
 		# one line, so a busy morning still fits; the town map has the whole story
-		var rivals := _text("Town: " + Rivals.news[0], Pal.WARN)
+		var rivals := _text(tr("Town: ") + Rivals.news[0], Pal.WARN)
 		rivals.clip_text = true
 		rivals.text_overrun_behavior = TextServer.OVERRUN_TRIM_WORD_ELLIPSIS
 	if Story.synced and not Story.is_finished():
-		_text("%s · %d/%d goals" % [Story.chapter_title(), Story.goals_met_count(), Story.current().goals.size()], Pal.GOLD)
+		_text(tr("%s · %d/%d goals") % [Story.chapter_title(), Story.goals_met_count(), Story.current().goals.size()], Pal.GOLD)
 	_gap()
 	_heading("BILLS")
 	var grid := _grid()
@@ -168,14 +168,14 @@ func _build_morning() -> void:
 		weekly += bill.usd
 	var due := Day.days_until_bills()
 	_pair(grid, "Rent and insurance", Market.format_money(weekly), Pal.BAD if due == 0 else Pal.INK)
-	_pair(grid, "Due", "tonight" if due == 0 else "%s (in %d day%s)" % [Day.weekday(Shop.day + due), due, "" if due == 1 else "s"], Pal.INK_DIM)
+	_pair(grid, "Due", "tonight" if due == 0 else tr_n("%s (in %d day)", "%s (in %d days)", due) % [Day.weekday(Shop.day + due), due], Pal.INK_DIM)
 	_gap()
 	if Progress.goal_reached():
 		_heading("YOU RUN THE BIGGEST STORE IN TOWN")
 		_text("Keep growing your vault and reputation.", Pal.INK_DIM)
 	else:
 		var next := Progress.tier_info(Progress.tier + 1)
-		_heading("NEXT: %s" % next.name.to_upper())
+		_heading(tr("NEXT: %s") % tr(next.name).to_upper())
 		var req := _grid()
 		_requirement(req, "Net worth", Shop.net_worth(), next.need_worth, true)
 		_requirement(req, "Reputation", Shop.reputation, next.need_rep, false)
@@ -186,13 +186,13 @@ func _build_morning() -> void:
 	_box.add_child(pages)
 	var count := Progress.available_upgrades().size() + Staff.ROLES.size() - Staff.hired.size()
 	var expand_ready := Progress.expand_blocker() == "" and not Progress.is_top_tier()
-	_button(pages, "Upgrades (%d)%s" % [count, " !" if expand_ready else ""], "Button", show_upgrades)
+	_button(pages, tr("Upgrades (%d)%s") % [count, " !" if expand_ready else ""], "Button", show_upgrades)
 	if not Staff.hired.is_empty():
-		_button(pages, "Staff%s" % (" !" if not Staff.raise_requests().is_empty() else ""), "Button", show_staff).tooltip_text = "How your staff are getting on: levels, mood and pay."
+		_button(pages, tr("Staff%s") % (" !" if not Staff.raise_requests().is_empty() else ""), "Button", show_staff).tooltip_text = "How your staff are getting on: levels, mood and pay."
 	_button(pages, "Restock", "Button", show_wholesale).tooltip_text = "Buy coins from the wholesaler before you open."
-	_button(pages, "Town map%s" % (" !" if not Rivals.news.is_empty() else ""), "Button", show_town).tooltip_text = "The rival shops, their prices and what they are up to."
+	_button(pages, tr("Town map%s") % (" !" if not Rivals.news.is_empty() else ""), "Button", show_town).tooltip_text = "The rival shops, their prices and what they are up to."
 	if not Orders.open.is_empty():
-		_button(pages, "Orders (%d)" % Orders.open.size(), "Button", show_orders).tooltip_text = "Collectors' special orders and the dealer network."
+		_button(pages, tr("Orders (%d)") % Orders.open.size(), "Button", show_orders).tooltip_text = "Collectors' special orders and the dealer network."
 	_button(pages, "Ledger", "Button", show_ledger)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
@@ -202,17 +202,17 @@ func _build_morning() -> void:
 	if Progress.has_upgrade("trading_desk"):
 		var desk := _button(row, "Trading desk", "Button", func(): desk_requested.emit())
 		desk.disabled = not DeskSession.available()
-		desk.tooltip_text = "Trade at the desk this morning." if not desk.disabled else "The desk has traded today. Back tomorrow morning."
+		desk.tooltip_text = "Trade at the desk this morning." if not desk.disabled else tr("The desk has traded today. Back tomorrow morning.")
 	var show := Calendar.booth_event()
 	if not show.is_empty():
 		var booked := Calendar.has_booth(show)
-		var booth := _button(row, "Booth booked" if booked else "Booth " + Market.format_money(Calendar.booth_cost()),
+		var booth := _button(row, tr("Booth booked") if booked else tr("Booth ") + Market.format_money(Calendar.booth_cost()),
 			"Button" if booked else "PrimaryButton", func(): Calendar.book_booth())
 		booth.disabled = not Calendar.can_book_booth()
-		booth.tooltip_text = "Your table at the coin show %s." % Calendar.when(Calendar.first_day(show)) if booked \
-			else "Book a table at the coin show: more collectors come, and they pay more."
-	_button(row, "Story%s" % (" !" if Story.has_new_letter() else ""), "Button", show_story).tooltip_text = "Mags's goals for this chapter of the story."
-	_button(row, "Sure? Click again" if _confirm_new else "New game", "DangerButton", _on_new_game)
+		booth.tooltip_text = tr("Your table at the coin show %s.") % Calendar.when(Calendar.first_day(show)) if booked \
+			else tr("Book a table at the coin show: more collectors come, and they pay more.")
+	_button(row, tr("Story") + ("!" if Story.has_new_letter() else ""), "Button", show_story).tooltip_text = "Mags's goals for this chapter of the story."
+	_button(row, tr("Sure? Click again") if _confirm_new else tr("New game"), "DangerButton", _on_new_game)
 
 
 ## Today's town event, or one coming in the next few days, for the morning briefing.
@@ -233,8 +233,8 @@ func _orders_hint() -> String:
 		if int(o.due) < int(next.due):
 			next = o
 	var have := Orders.have_for(next)
-	var when := "today" if Orders.days_left(next) <= 0 else Day.weekday(int(next.due))
-	return "%s wants %d × %s %s. You hold %d." % [next.name, next.qty, Orders.item_of(next).display_name, when, have]
+	var when := tr("today") if Orders.days_left(next) <= 0 else Day.weekday(int(next.due))
+	return tr("%s wants %d × %s %s. You hold %d.") % [next.name, next.qty, Orders.item_of(next).display_name, when, have]
 
 
 func _market_hint() -> String:
@@ -246,16 +246,16 @@ func _market_hint() -> String:
 			best = metal
 			best_change = change
 	if best == "" or absf(best_change) < 0.3:
-		return "Metals are calm this morning. Expect a normal day."
+		return tr("Metals are calm this morning. Expect a normal day.")
 	if best_change > 0.0:
-		return "%s is up %.1f%%. Expect more sellers cashing in." % [METAL_NAMES[best], best_change]
-	return "%s is down %.1f%%. Bargain hunters will be out." % [METAL_NAMES[best], absf(best_change)]
+		return tr("%s is up %.1f%%. Expect more sellers cashing in.") % [tr(METAL_NAMES[best]), best_change]
+	return tr("%s is down %.1f%%. Bargain hunters will be out.") % [tr(METAL_NAMES[best]), absf(best_change)]
 
 
 func _requirement(grid: GridContainer, caption: String, have: float, need: float, money: bool) -> void:
 	var ok := have >= need
-	var fmt := func(v): return Market.format_money(v) if money else "%.1f stars" % v
-	_pair(grid, ("● " if ok else "○ ") + caption, "%s / %s" % [fmt.call(have), fmt.call(need)], Pal.GOOD if ok else Pal.INK)
+	var fmt := func(v): return Market.format_money(v) if money else tr("%.1f stars") % v
+	_pair(grid, ("● " if ok else "○ ") + tr(caption), "%s / %s" % [fmt.call(have), fmt.call(need)], Pal.GOOD if ok else Pal.INK)
 
 
 func _on_new_game() -> void:
@@ -272,7 +272,7 @@ func _on_new_game() -> void:
 func _build_upgrades() -> void:
 	_clear()
 	_title("Upgrades and staff")
-	_text("Cash %s. Hover an upgrade to see what it does." % Market.format_money(Shop.cash), Pal.INK_DIM)
+	_text(tr("Cash %s. Hover an upgrade to see what it does.") % Market.format_money(Shop.cash), Pal.INK_DIM)
 	_gap()
 	# the list outgrows the panel as the shop grows, so it scrolls
 	var scroll := ScrollContainer.new()
@@ -286,8 +286,8 @@ func _build_upgrades() -> void:
 	if not Progress.is_top_tier():
 		var next := Progress.tier_info(Progress.tier + 1)
 		var blocker := Progress.expand_blocker()
-		_upgrade_row(grid, "Move to %s" % next.name, next.cost, blocker == "", "Move",
-			"Rent %s a week. More customers, bigger deals and more upgrades. %s" % [Market.format_money(next.rent), blocker],
+		_upgrade_row(grid, tr("Move to %s") % tr(next.name), next.cost, blocker == "", "Move",
+			tr("Rent %s a week. More customers, bigger deals and more upgrades. %s") % [Market.format_money(next.rent), blocker],
 			func(): Progress.expand(), Pal.GOLD)
 	# rooms are built on the floor plan page
 	for id in Progress.owned:
@@ -301,19 +301,19 @@ func _build_upgrades() -> void:
 		_upgrade_row(grid, u.name, u.cost, Progress.can_buy(id), "Buy", u.desc, func(): Progress.buy(id))
 	for id in Staff.ROLES:
 		var role: Dictionary = Staff.ROLES[id]
-		var desc := "%s Wage %s a day." % [role.desc, Market.format_money(Staff.wage(id))]
+		var desc := tr("%s Wage %s a day.") % [tr(role.desc), Market.format_money(Staff.wage(id))]
 		if Staff.has(id):
-			_upgrade_row(grid, "%s, %s (level %d)" % [role.name, role.title.to_lower(), Staff.level(id)], -1.0, true, "Staff", desc, show_staff, Pal.GOOD)
+			_upgrade_row(grid, tr("%s, %s (level %d)") % [role.name, tr(role.title.to_lower()), Staff.level(id)], -1.0, true, "Staff", desc, show_staff, Pal.GOOD)
 		elif int(role.tier) <= Progress.tier:
-			_upgrade_row(grid, "Hire a %s" % role.title.to_lower(), role.fee, Staff.can_hire(id), "Hire", desc, func(): Staff.hire(id))
+			_upgrade_row(grid, tr("Hire a %s") % tr(role.title.to_lower()), role.fee, Staff.can_hire(id), "Hire", desc, func(): Staff.hire(id))
 	var locked := Progress.locked_upgrade_count()
 	if locked > 0:
-		_text("%d more upgrade%s unlock as the shop grows." % [locked, "" if locked == 1 else "s"], Pal.INK_FAINT)
+		_text(tr_n("%d more upgrade unlocks as the shop grows.", "%d more upgrades unlock as the shop grows.", locked) % locked, Pal.INK_FAINT)
 	_hint = _text("", Pal.INK)
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint.custom_minimum_size = Vector2(0, 17)
 	if not Progress.is_top_tier() and Progress.expand_blocker() != "":
-		_hint.text = "To move up: %s." % Progress.expand_blocker().to_lower()
+		_hint.text = tr("%s to move up.") % Progress.expand_blocker()
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
 	_box.add_child(row)
@@ -321,7 +321,7 @@ func _build_upgrades() -> void:
 	if not Staff.hired.is_empty():
 		_button(row, "Staff", "Button", show_staff)
 	var rooms := Progress.available_upgrades("room").size()
-	_button(row, "Floor plan%s" % (" (%d to build)" % rooms if rooms > 0 else ""), "Button", show_plan)
+	_button(row, tr("Floor plan%s") % (tr(" (%d to build)") % rooms if rooms > 0 else ""), "Button", show_plan)
 
 
 # ---------------------------------------------------------------- staff
@@ -329,7 +329,7 @@ func _build_upgrades() -> void:
 func _build_staff() -> void:
 	_clear()
 	_title("Staff")
-	_text("Wages tonight %s. Pay staff what their level is worth." % Market.format_money(Staff.daily_wages()), Pal.INK_DIM)
+	_text(tr("Wages tonight %s. Pay staff what their level is worth.") % Market.format_money(Staff.daily_wages()), Pal.INK_DIM)
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -346,8 +346,8 @@ func _build_staff() -> void:
 		if not Staff.has(id):
 			if int(role.tier) <= Progress.tier:
 				var hire := _grid(3)
-				_upgrade_row(hire, "Hire a %s" % role.title.to_lower(), role.fee, Staff.can_hire(id), "Hire",
-					"%s Wage %s a day." % [role.desc, Market.format_money(Staff.wage(id))], func(): Staff.hire(id))
+				_upgrade_row(hire, tr("Hire a %s") % tr(role.title.to_lower()), role.fee, Staff.can_hire(id), "Hire",
+					tr("%s Wage %s a day.") % [tr(role.desc), Market.format_money(Staff.wage(id))], func(): Staff.hire(id))
 			continue
 		_staff_card(id)
 	_box = outer
@@ -365,21 +365,21 @@ func _build_staff() -> void:
 func _staff_card(id: String) -> void:
 	var role: Dictionary = Staff.ROLES[id]
 	var p := Staff.info(id)
-	_heading("%s, %s · %s" % [role.name.to_upper(), role.title.to_upper(), Staff.level_name(id).to_upper()])
+	_heading("%s, %s · %s" % [role.name.to_upper(), tr(role.title).to_upper(), tr(Staff.level_name(id)).to_upper()])
 	var grid := _grid()
 	var next := Staff.xp_to_next(id)
-	_pair(grid, "Level %d" % Staff.level(id), "top level" if next == 0 else "%d xp to go" % next, Pal.GOLD)
+	_pair(grid, tr("Level %d") % Staff.level(id), tr("top level") if next == 0 else tr("%d xp to go") % next, Pal.GOLD)
 	var mood := float(p.mood)
 	_pair(grid, "Mood", "%s (%d)" % [Staff.mood_word(id), roundi(mood)], Pal.GOOD if mood >= 50.0 else (Pal.WARN if mood >= 25.0 else Pal.BAD))
 	var owed := Staff.raises_owed(id)
-	_pair(grid, "Wage", "%s a day%s" % [Market.format_money(Staff.wage(id)), "" if owed == 0 else " (fair: %s)" % Market.format_money(Staff.fair_wage(id))],
+	_pair(grid, "Wage", tr("%s a day%s") % [Market.format_money(Staff.wage(id)), "" if owed == 0 else tr(" (fair: %s)") % Market.format_money(Staff.fair_wage(id))],
 		Pal.INK if owed == 0 else Pal.WARN)
 	var today: String = {"sick": "Off sick (unpaid)", "grumpy": "In a foul mood"}.get(str(p.today), "At work")
-	_pair(grid, "Today", today, Pal.INK if str(p.today) == "" else Pal.BAD)
+	_pair(grid, "Today", tr(today), Pal.INK if str(p.today) == "" else Pal.BAD)
 	_text(_skill_line(id), Pal.INK_DIM).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if bool(p.asking):
 		var raise := Staff.wage(id) * Staff.RAISE / (1.0 + Staff.RAISE * int(p.raises))
-		_text("%s asks for a raise of %s a day." % [role.name, Market.format_money(raise)], Pal.WARN)
+		_text(tr("%s asks for a raise of %s a day.") % [role.name, Market.format_money(raise)], Pal.WARN)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
 	_box.add_child(row)
@@ -394,13 +394,13 @@ func _staff_card(id: String) -> void:
 func _skill_line(id: String) -> String:
 	var lvl := Staff.level(id)
 	if id == "clerk":
-		var line := "Rings up a buyer in %.1f s." % Staff.clerk_seconds()
+		var line := tr("Rings up a buyer in %.1f s.") % Staff.clerk_seconds()
 		if lvl > 1:
-			line += " Talks %d%% of fussy buyers round." % roundi(float(Staff.SKILL.clerk.persuade) * (lvl - 1) * 100.0)
+			line += tr(" Talks %d%% of fussy buyers round.") % roundi(float(Staff.SKILL.clerk.persuade) * (lvl - 1) * 100.0)
 		return line
 	if id == "guard":
 		var odds := Security.GUARD_STOP + float(Staff.SKILL.guard.guard_stop) * (lvl - 1)
-		return "Stops %d%% of robbers at the door." % roundi(minf(odds, 0.95) * 100.0)
+		return tr("Stops %d%% of robbers at the door.") % roundi(minf(odds, 0.95) * 100.0)
 	return ""
 
 
@@ -450,17 +450,17 @@ func _room_entry(list: VBoxContainer, room: Dictionary) -> void:
 		"built":
 			b.text = "Built"
 			b.disabled = true
-			desc = "%s. %s" % [u.name, u.desc]
+			desc = "%s. %s" % [tr(u.name), tr(u.desc)]
 		"shell":
 			b.text = "Build"
 			b.theme_type_variation = "PrimaryButton" if Progress.can_buy(id) else "Button"
 			b.disabled = not Progress.can_buy(id)
 			b.pressed.connect(func(): Progress.buy(id))
-			desc = "%s, %s. %s" % [u.name, Market.format_money(u.cost), u.desc]
+			desc = "%s, %s. %s" % [tr(u.name), Market.format_money(u.cost), tr(u.desc)]
 		_:
 			b.text = "Locked"
 			b.disabled = true
-			desc = "%s: the plot next door opens when you move to the %s. %s" % [u.name, Progress.tier_name(int(u.tier)), u.desc]
+			desc = tr("%s: the plot next door opens when you move to the %s. %s") % [tr(u.name), Progress.tier_name(int(u.tier)), tr(u.desc)]
 	b.tooltip_text = desc
 	list.add_child(b)
 	var hover := func():
@@ -497,7 +497,7 @@ func _upgrade_row(grid: GridContainer, title: String, cost: float, enabled: bool
 func _build_wholesale() -> void:
 	_clear()
 	_title("Morning wholesaler")
-	_text("Coins at spot plus %d%%, delivered before you open. Cash %s." % [roundi(Wholesaler.markup() * 100.0),
+	_text(tr("Coins at spot plus %d%%, delivered before you open. Cash %s.") % [roundi(Wholesaler.markup() * 100.0),
 		Market.format_money(Shop.cash)], Pal.INK_DIM)
 	_text("Walk-in sellers are cheaper. Restock what buyers ask for.", Pal.INK_FAINT)
 	_gap()
@@ -521,11 +521,11 @@ func _build_wholesale() -> void:
 			b.focus_mode = Control.FOCUS_NONE
 			b.disabled = Wholesaler.affordable(item, qty) < qty
 			b.theme_type_variation = "Button" if b.disabled else "PrimaryButton"
-			b.tooltip_text = "Buy %d for %s." % [qty, Market.format_money(Wholesaler.price(item) * qty)]
+			b.tooltip_text = tr("Buy %d for %s.") % [qty, Market.format_money(Wholesaler.price(item) * qty)]
 			b.pressed.connect(func(): Wholesaler.buy(item, qty))
 			grid.add_child(b)
 	if Wholesaler.bought_today > 0.0:
-		_text("Bought this morning: %s." % Market.format_money(Wholesaler.bought_today), Pal.GOOD)
+		_text(tr("Bought this morning: %s.") % Market.format_money(Wholesaler.bought_today), Pal.GOOD)
 	_spacer()
 	var row := HBoxContainer.new()
 	_box.add_child(row)
@@ -560,7 +560,7 @@ func _build_town() -> void:
 	for line in Rivals.news.slice(0, 2):
 		_text(line, Pal.WARN).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if Rivals.news.is_empty():
-		_text("A quiet morning on Main Street. Your share of the town's customers: %d%%." % roundi(Rivals.overall_share() * 100.0),
+		_text(tr("A quiet morning on Main Street. Your share of the town's customers: %d%%.") % roundi(Rivals.overall_share() * 100.0),
 			Pal.INK_DIM).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_spacer()
 	_hint = _text("", Pal.INK)
@@ -569,23 +569,23 @@ func _build_town() -> void:
 	buttons.add_theme_constant_override("separation", 4)
 	_box.add_child(buttons)
 	_button(buttons, "Back", "Button", show_morning)
-	var ad := "Ad runs %d more day%s" % [Rivals.ad_days, "" if Rivals.ad_days == 1 else "s"] if Rivals.ad_days > 0 \
-		else "Newspaper ad %s" % Market.format_money(Rivals.ad_cost())
+	var ad := tr_n("Ad runs %d more day", "Ad runs %d more days", Rivals.ad_days) % Rivals.ad_days if Rivals.ad_days > 0 \
+		else tr("Newspaper ad %s") % Market.format_money(Rivals.ad_cost())
 	_town_button(buttons, ad, Rivals.can_run_ad(), func(): Rivals.run_ad(),
-		"An ad in the town paper: for %d days more customers pick your shop over the others." % Rivals.AD_DAYS)
+		tr("An ad in the town paper: for %d days more customers pick your shop over the others.") % Rivals.AD_DAYS)
 	_town_button(buttons, "Beat Sterling", true, func(): Rivals.beat_sterling(),
-		"Set your board a point better than Sterling's: pay %d%% of melt, sell at spot +%d%%." % [
+		tr("Set your board a point better than Sterling's: pay %d%% of melt, sell at spot +%d%%.") % [
 			roundi(minf(1.0, Rivals.buy_of("sterling") + 0.01) * 100.0), roundi(maxf(0.0, Rivals.premium_of("sterling") - 0.01) * 100.0)])
 	if Rivals.can_tip_off():
 		_town_button(buttons, "Tip off police", true, func(): Rivals.tip_off(),
-			"Tell Detective Ruiz about Lucky's stolen goods. A raid shuts the pawn shop for %d days." % Rivals.RAID_DAYS)
+			tr("Tell Detective Ruiz about Lucky's stolen goods. A raid shuts the pawn shop for %d days.") % Rivals.RAID_DAYS)
 
 
 ## One shop's line on the town map: its name and place, then stars, prices and worth.
 func _shop_card(list: VBoxContainer, id: String, place: int) -> void:
 	var you := id == "you"
 	var name_label := Label.new()
-	name_label.text = "#%d %s" % [place, "Your shop" if you else Rivals.name_of(id)]
+	name_label.text = "#%d %s" % [place, tr("Your shop") if you else Rivals.name_of(id)]
 	name_label.add_theme_color_override("font_color", Pal.GOLD if you else Pal.INK)
 	list.add_child(name_label)
 	var stars := Shop.reputation if you else Rivals.stars_of(id)
@@ -593,14 +593,14 @@ func _shop_card(list: VBoxContainer, id: String, place: int) -> void:
 	var premium := Shop.sell_premium if you else Rivals.premium_of(id)
 	var info := Label.new()
 	if not you and not Rivals.is_open(id):
-		info.text = "Raided: shut %d day%s" % [int(Rivals.state[id].closed), "" if int(Rivals.state[id].closed) == 1 else "s"]
+		info.text = tr_n("Raided: shut %d day", "Raided: shut %d days", int(Rivals.state[id].closed)) % int(Rivals.state[id].closed)
 		info.add_theme_color_override("font_color", Pal.BAD)
 	else:
-		info.text = "%.1f★  pays %d%%  +%d%%" % [stars, roundi(pays * 100.0), roundi(premium * 100.0)]
+		info.text = tr("%.1f★  pays %d%%  +%d%%") % [stars, roundi(pays * 100.0), roundi(premium * 100.0)]
 		info.add_theme_color_override("font_color", Pal.INK_DIM)
 	list.add_child(info)
 	var worth := Label.new()
-	worth.text = "Worth %s" % Market.format_money(Shop.net_worth() if you else Rivals.worth_of(id))
+	worth.text = tr("Worth %s") % Market.format_money(Shop.net_worth() if you else Rivals.worth_of(id))
 	worth.add_theme_color_override("font_color", Pal.INK_FAINT)
 	list.add_child(worth)
 
@@ -634,7 +634,7 @@ func _build_orders() -> void:
 	var pays := 0.0
 	for o in Orders.open:
 		pays += Orders.price_of(o)
-	_text("Pays %s in all on delivery." % Market.format_money(pays), Pal.GOLD)
+	_text(tr("Pays %s in all on delivery.") % Market.format_money(pays), Pal.GOLD)
 	_gap()
 	var wanted := Orders.wanted_rare()
 	if not wanted.is_empty():
@@ -683,10 +683,10 @@ func _build_story() -> void:
 		var grid := _grid()
 		for i in ch.goals.size():
 			var done := Story.goal_met(i)
-			_pair(grid, ("● " if done else "○ ") + ch.goals[i].text, "done" if done else Story.goal_count(i), Pal.GOOD if done else Pal.INK)
+			_pair(grid, ("● " if done else "○ ") + tr(ch.goals[i].text), tr("done") if done else Story.goal_count(i), Pal.GOOD if done else Pal.INK)
 		var reward := Story.reward_text(ch.reward)
 		if reward != "":
-			_text(reward + ", when Mags drops by.", Pal.GOLD)
+			_text(reward + tr(", when Mags drops by."), Pal.GOLD)
 	_spacer()
 	_heading("CHAPTERS")
 	var marks := ""
@@ -703,7 +703,7 @@ func _build_story() -> void:
 func _build_ledger() -> void:
 	_clear()
 	_title("The ledger")
-	_text("%d day%s of trading. %d of %d achievements earned." % [Records.totals.days, "" if Records.totals.days == 1 else "s",
+	_text(tr_n("%d day of trading. %d of %d achievements earned.", "%d days of trading. %d of %d achievements earned.", Records.totals.days) % [Records.totals.days,
 		Records.earned.size(), Records.ACHIEVEMENTS.size()], Pal.INK_DIM)
 	_gap()
 	var grid := _grid()
@@ -715,8 +715,8 @@ func _build_ledger() -> void:
 	_pair(grid, "Fakes caught / missed", "%d / %d (%d%%)" % [Records.total("caught"), Records.total("scammed"), roundi(Records.catch_rate() * 100.0)])
 	_pair(grid, "Lost to thieves", Market.format_money(Records.total("stolen")), Pal.BAD if Records.total("stolen") > 0.0 else Pal.INK)
 	_pair(grid, "Highest net worth", Market.format_money(Records.peaks.worth), Pal.GOLD)
-	_pair(grid, "Best reputation", "%.1f stars" % Records.peaks.rep)
-	_pair(grid, "Profit streak", "%d day%s (best %d)" % [Records.streak, "" if Records.streak == 1 else "s", Records.peaks.streak])
+	_pair(grid, "Best reputation", tr("%.1f stars") % Records.peaks.rep)
+	_pair(grid, "Profit streak", tr_n("%d day (best %d)", "%d days (best %d)", Records.streak) % [Records.streak, Records.peaks.streak])
 	_gap()
 	_heading("BEST DAYS")
 	if Records.best_days.is_empty():
@@ -725,33 +725,33 @@ func _build_ledger() -> void:
 		var best := _grid()
 		for entry in Records.best_days.slice(0, 3):
 			var d := int(entry.day)
-			_pair(best, "Day %d, %s · %d fake%s caught" % [d, Day.weekday(d), int(entry.caught), "" if int(entry.caught) == 1 else "s"],
+			_pair(best, tr_n("Day %d, %s · %d fake caught", "Day %d, %s · %d fakes caught", int(entry.caught)) % [d, Day.weekday(d), int(entry.caught)],
 				"+" + Market.format_money(entry.profit), Pal.GOOD)
 	_spacer()
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
 	_box.add_child(row)
 	_button(row, "Back", "Button", show_morning)
-	_button(row, "Achievements (%d/%d)" % [Records.earned.size(), Records.ACHIEVEMENTS.size()], "PrimaryButton", show_achievements)
+	_button(row, tr("Achievements (%d/%d)") % [Records.earned.size(), Records.ACHIEVEMENTS.size()], "PrimaryButton", show_achievements)
 
 
 func _build_achievements() -> void:
 	_clear()
 	_title("Achievements")
-	_text("%d of %d earned. Hover one to see how to earn it." % [Records.earned.size(), Records.ACHIEVEMENTS.size()], Pal.INK_DIM)
+	_text(tr("%d of %d earned. Hover one to see how to earn it.") % [Records.earned.size(), Records.ACHIEVEMENTS.size()], Pal.INK_DIM)
 	_gap()
 	var grid := _grid()
 	for id in Records.ACHIEVEMENTS:
 		var a: Dictionary = Records.ACHIEVEMENTS[id]
 		var done := Records.is_earned(id)
-		var label := _cell(grid, ("★ " if done else "☆ ") + a.name, Pal.GOLD if done else Pal.INK_FAINT)
+		var label := _cell(grid, ("★ " if done else "☆ ") + tr(a.name), Pal.GOLD if done else Pal.INK_FAINT)
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		label.mouse_filter = Control.MOUSE_FILTER_PASS
-		var desc: String = a.desc
+		var desc: String = tr(a.desc)
 		if done:
-			desc += " Earned on day %d." % Records.earned[id]
+			desc += tr(" Earned on day %d.") % Records.earned[id]
 		else:
-			desc += " %d%% there." % floori(Records.progress_of(id) * 100.0)
+			desc += tr(" %d%% there.") % floori(Records.progress_of(id) * 100.0)
 		label.tooltip_text = desc
 		label.mouse_entered.connect(func():
 			if _hint:
@@ -770,7 +770,7 @@ func _build_achievements() -> void:
 func _build_summary(report: Dictionary) -> void:
 	_clear()
 	var stats: Dictionary = report.get("stats", {})
-	_title("Day %d closed" % report.get("day", Shop.day))
+	_title(tr("Day %d closed") % report.get("day", Shop.day))
 	# a busy day can fill more lines than the panel holds: they scroll, and the
 	# button stays in reach
 	var scroll := ScrollContainer.new()
@@ -797,7 +797,7 @@ func _build_summary(report: Dictionary) -> void:
 	for line in report.get("lines", []):
 		_text(str(line), Pal.WARN).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var bills_in: int = report.get("next_bills_in", 0)
-	_text("Next rent and insurance in %d day%s." % [bills_in, "" if bills_in == 1 else "s"], Pal.INK_FAINT)
+	_text(tr_n("Next rent and insurance in %d day.", "Next rent and insurance in %d days.", bills_in) % bills_in, Pal.INK_FAINT)
 	for l in _box.get_children():
 		if l is Label:
 			l.custom_minimum_size.x = 0.0 # the scroll bar takes some of the width
