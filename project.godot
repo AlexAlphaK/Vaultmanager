@@ -20,6 +20,7 @@ Staff="*res://autoload/staff.gd"
 Settings="*res://autoload/settings.gd"
 Music="*res://autoload/music.gd"
 Tutorial="*res://autoload/tutorial.gd"
+Records="*res://autoload/records.gd"
 
 [display]
 
