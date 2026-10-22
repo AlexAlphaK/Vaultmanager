@@ -171,7 +171,7 @@ func pad_action(name: String) -> bool:
 
 
 func pad_help() -> Array:
-	return [["LB / RB", "Previous / next tool"], ["LT / RT", "Lower / higher grade"]]
+	return [[tr("LB / RB"), tr("Previous / next tool")], [tr("LT / RT"), tr("Lower / higher grade")]]
 
 
 # ---------------------------------------------------------------- actions
@@ -276,7 +276,7 @@ func _draw() -> void:
 		draw_arc(c.floor() + Vector2(0.5, 0.5), 3.5, 0.0, TAU, 12, Color("#79d184"), 1.0)
 	if _time - _miss_at < 0.5:
 		var at := _loupe_centre()
-		_text("NO MARK", at + Vector2(-14, LOUPE_SIZE / 2.0 + 6), Pal.INK_DIM)
+		_text(tr("NO MARK"), at + Vector2(-PixelFont.measure(tr("NO MARK")) / 2.0, LOUPE_SIZE / 2.0 + 6), Pal.INK_DIM)
 	if guide_open:
 		_draw_guide()
 
@@ -315,17 +315,18 @@ func _draw_guide() -> void:
 	draw_rect(r, Color("#efe6cf"))
 	draw_rect(r.grow(-2), Color("#e6dcc2"))
 	draw_rect(Rect2(r.position, Vector2(r.size.x, 1)), Color("#fffaf0"))
-	_text("GRADING GUIDE", r.position + Vector2(8, 6), Color("#5a3a1a"))
-	_text("click or Esc to close", r.position + Vector2(r.size.x - 92, 6), Color("#8a7a5a"))
+	_text(tr("GRADING GUIDE"), r.position + Vector2(8, 6), Color("#5a3a1a"))
+	_text(tr("click or Esc to close"), r.position + Vector2(r.size.x - 4 - PixelFont.measure(tr("click or Esc to close")), 6), Color("#8a7a5a"))
 	var y := r.position.y + 18
 	for g in CoinGrade.GRADES:
 		_text(g.id, Vector2(r.position.x + 8, y), Color("#7a1e12"))
-		var lines := _wrap(g.guide, 46)
+		var lines := _wrap(tr(g.guide), 46)
 		for k in lines.size():
 			_text(lines[k], Vector2(r.position.x + 44, y + k * 8), Color("#3a2a1a"))
 		y += 8 * lines.size() + 4
-	_text("CLEANED: fine hairlines all one way, seen under", Vector2(r.position.x + 8, y + 2), Color("#7a1e12"))
-	_text("the loupe with the lamp low. Dull, no cartwheel.", Vector2(r.position.x + 8, y + 10), Color("#7a1e12"))
+	var cleaned_lines := _wrap(tr("CLEANED: fine hairlines all one way, seen under the loupe with the lamp low. Dull, no cartwheel."), 54)
+	for k in cleaned_lines.size():
+		_text(cleaned_lines[k], Vector2(r.position.x + 8, y + 2 + k * 8), Color("#7a1e12"))
 
 
 static func _wrap(text: String, width: int) -> Array[String]:
@@ -385,9 +386,9 @@ func _update_cells() -> void:
 	var from := ""
 	if el < 70.0:
 		var a := rad_to_deg(atan2(l.y, l.x))
-		from = " from the " + ["right", "lower right", "bottom", "lower left", "left", "upper left", "top", "upper right"][posmod(roundi(a / 45.0), 8)]
-	_cells.light.text = ("high" if el > 55.0 else ("raking" if el < 25.0 else "low")) + from
-	_cells.marks.text = "%d tagged" % tagged.size()
+		from = ", " + tr(["from the right", "from lower right", "from the bottom", "from lower left", "from the left", "from upper left", "from the top", "from upper right"][posmod(roundi(a / 45.0), 8)])
+	_cells.light.text = (tr("high") if el > 55.0 else (tr("raking") if el < 25.0 else tr("low"))) + from
+	_cells.marks.text = tr("%d tagged") % tagged.size()
 
 
 # ---------------------------------------------------------------- the panel
@@ -403,13 +404,13 @@ func _build_panel() -> void:
 	move_child(panel, 0)
 	_label("COIN GRADING", Vector2(x, 4), Pal.INK_FAINT)
 	_label(coin.item.display_name, Vector2(x, 13), Pal.GOLD, 156)
-	_label("The owner hopes for %s" % CoinGrade.grade_id(coin.hoped), Vector2(x, 23), Pal.INK_DIM, 156)
-	_label("Fee %s, more if you're spot on" % Market.format_money(CoinGrade.fee()), Vector2(x, 32), Pal.INK_DIM, 156)
+	_label(tr("The owner hopes for %s") % CoinGrade.grade_id(coin.hoped), Vector2(x, 23), Pal.INK_DIM, 156)
+	_label(tr("Fee %s, more if you're spot on") % Market.format_money(CoinGrade.fee()), Vector2(x, 32), Pal.INK_DIM, 156)
 	for n in TOOLS.size():
 		var tool: String = TOOLS[n]
 		var b := Button.new()
 		add_child(b)
-		b.text = "%d %s" % [n + 1, TOOL_NAMES[tool]]
+		b.text = "%d %s" % [n + 1, tr(TOOL_NAMES[tool])]
 		b.theme_type_variation = "ToolButton"
 		b.position = Vector2(x + n * 52, 44)
 		b.size = Vector2(50, 12)
@@ -467,10 +468,15 @@ func _refresh_tools() -> void:
 func _refresh_grades() -> void:
 	for i in _grade_buttons.size():
 		_grade_buttons[i].set_pressed_no_signal(i == pick)
-	_guide_text.text = CoinGrade.GRADES[pick].guide if pick >= 0 else "Pick a grade: Left/Right or click. 3 opens the guide."
-	_clean_button.text = "[%s] Cleaned (C)" % ("x" if cleaned else " ")
+	_guide_text.text = tr(CoinGrade.GRADES[pick].guide) if pick >= 0 else "Pick a grade: Left/Right or click. 3 opens the guide."
+	_clean_button.text = "[%s] " % ("x" if cleaned else " ") + tr("Cleaned (C)")
 	_done_button.disabled = pick < 0
-	_done_button.text = "Grade it %s%s" % [CoinGrade.grade_id(pick), " cleaned" if cleaned else ""] if pick >= 0 else "Grade it"
+	if pick < 0:
+		_done_button.text = tr("Grade it")
+	elif cleaned:
+		_done_button.text = tr("Grade it %s cleaned") % CoinGrade.grade_id(pick)
+	else:
+		_done_button.text = tr("Grade it %s") % CoinGrade.grade_id(pick)
 
 
 func _label(text: String, pos: Vector2, col: Color, width := 0, align := HORIZONTAL_ALIGNMENT_LEFT, wrap_height := 0) -> Label:

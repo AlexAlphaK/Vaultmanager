@@ -538,6 +538,10 @@ func _top_up() -> void:
 		Shop.add_cash(2000000.0 - Shop.cash)
 	# and enough stars to move up
 	Shop.reputation = maxf(Shop.reputation, 4.6)
+	# and the smelter and grading lamp, which a random clicker seldom buys, so it plays them
+	for id in ["furnace", "grading_lamp"]:
+		if not Progress.has_upgrade(id) and Progress.can_buy(id):
+			Progress.buy(id)
 	Shop.changed.emit()
 	SaveGame.save_game()
 

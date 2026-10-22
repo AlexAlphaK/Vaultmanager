@@ -327,7 +327,7 @@ func _on_action(id: String) -> void:
 		if id == "test":
 			_open_test(c)
 		elif id == "decline":
-			_dismiss(c, "%s will find another grader." % c.name)
+			_dismiss(c, tr("%s will find another grader.") % c.name)
 		return
 	if c == robber:
 		if id == "decline":

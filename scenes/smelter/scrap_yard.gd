@@ -140,7 +140,7 @@ static func buy(i: int) -> bool:
 	offers.remove_at(i)
 	Day.add_expense("Scrap dealer", lot.cost)
 	bin.append(lot)
-	Shop.log_event("Bought %s (%s g) from the scrap dealer for %s." % [lot.name.to_lower(), _grams(gross(lot)), Market.format_money(lot.cost)])
+	Shop.log_event(Loc.t("Bought scrap for %s: %s, %s g.") % [Market.format_money(lot.cost), Loc.t(lot.name), _grams(gross(lot))])
 	return true
 
 
@@ -182,9 +182,12 @@ static func sell_bar(payout: float, cost: float, metal: String) -> void:
 	Shop.note("profit", payout - cost)
 	if payout > 0.0:
 		Day.add_income("Bullion dealer (cast bars)", payout)
-	var what := "gold" if metal == "XAU" else "silver"
-	Shop.log_event("The bullion dealer paid %s for your %s bar (%s %s)." % [Market.format_money(payout), what,
-		"profit" if payout >= cost else "loss", Market.format_money(absf(payout - cost))], "good" if payout >= cost else "bad")
+	var line := ""
+	if metal == "XAU":
+		line = Loc.t("The bullion dealer paid %s for your gold bar (profit %s).") if payout >= cost else Loc.t("The bullion dealer paid %s for your gold bar (loss %s).")
+	else:
+		line = Loc.t("The bullion dealer paid %s for your silver bar (profit %s).") if payout >= cost else Loc.t("The bullion dealer paid %s for your silver bar (loss %s).")
+	Shop.log_event(line % [Market.format_money(payout), Market.format_money(absf(payout - cost))], "good" if payout >= cost else "bad")
 
 
 static func _grams(g: float) -> String:

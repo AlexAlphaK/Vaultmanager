@@ -167,7 +167,7 @@ func pad_action(name: String) -> bool:
 
 
 func pad_help() -> Array:
-	return [["LB / RB", "Gas down / up"], ["LT", "A pinch of borax"], ["RT", "Magnet (sorting)"], ["A on Pour", "Hold to pour"]]
+	return [[tr("LB / RB"), tr("Gas down / up")], ["LT", tr("A pinch of borax")], ["RT", tr("Magnet (sorting)")], [tr("A on Pour"), tr("Hold to pour")]]
 
 
 # ---------------------------------------------------------------- actions
@@ -741,11 +741,11 @@ func _build_yard() -> void:
 	for i in ScrapYard.offers.size():
 		var lot: Dictionary = ScrapYard.offers[i]
 		_label(lot.name, Vector2(x, y), Pal.INK, 156)
-		_label("%s g, stamped %s" % [ScrapYard._grams(ScrapYard.gross(lot)), lot.stamp], Vector2(x, y + 8), Pal.INK_DIM, 156)
+		_label(tr("%s g, stamped %s") % [ScrapYard._grams(ScrapYard.gross(lot)), lot.stamp], Vector2(x, y + 8), Pal.INK_DIM, 156)
 		_label(Market.format_money(lot.cost), Vector2(x, y + 16), Pal.GOLD, 100)
 		var b := _button("Buy", Rect2(x + 118, y + 14, 38, 11), "PrimaryButton", buy.bind(i))
 		b.disabled = not ScrapYard.can_buy(i)
-		b.tooltip_text = "Melt value as stamped: %s" % Market.format_money(ScrapYard.claimed_value(lot))
+		b.tooltip_text = tr("Melt value as stamped: %s") % Market.format_money(ScrapYard.claimed_value(lot))
 		y += 27
 	y = maxi(y + 2, 112)
 	_label("SCRAP BIN", Vector2(x, y), Pal.INK_FAINT)
@@ -757,19 +757,19 @@ func _build_yard() -> void:
 			grams += ScrapYard.gross(lot)
 		var name := "Gold" if metal == "XAU" else "Silver"
 		_label(name, Vector2(x, y), Pal.INK)
-		_label("%d lot%s, %s g" % [lots.size(), "" if lots.size() == 1 else "s", ScrapYard._grams(grams)] if not lots.is_empty() else "empty",
+		_label(tr_n("%d lot, %s g", "%d lots, %s g", lots.size()) % [lots.size(), ScrapYard._grams(grams)] if not lots.is_empty() else tr("empty"),
 			Vector2(x + 30, y), Pal.INK_DIM, 84)
 		var b := _button("Melt", Rect2(x + 118, y - 2, 38, 11), "Button", begin.bind(metal))
 		b.disabled = lots.is_empty()
 		y += 13
 	y += 4
-	_label("The bullion dealer buys your bars at %d%% of spot for the fine metal the assay finds." % roundi(ScrapYard.cast_share() * 100.0),
+	_label(tr("The bullion dealer buys your bars at %d%% of spot for the fine metal the assay finds.") % roundi(ScrapYard.cast_share() * 100.0),
 		Vector2(x, y), Pal.INK_DIM, 156, HORIZONTAL_ALIGNMENT_LEFT, 26)
 	if ScrapYard.bars_cast > 0:
-		_label("Bars cast: %d. Profit so far: %s" % [ScrapYard.bars_cast, Market.format_money(ScrapYard.lifetime)],
+		_label(tr("Bars cast: %d. Profit so far: %s") % [ScrapYard.bars_cast, Market.format_money(ScrapYard.lifetime)],
 			Vector2(x, y + 30), Pal.GOOD if ScrapYard.lifetime >= 0.0 else Pal.BAD, 156, HORIZONTAL_ALIGNMENT_LEFT, 18)
 	_button("Back to the morning", Rect2(x, 240, 156, 13), "Button", func(): finished.emit())
-	_label("Esc: back", Vector2(x, 256), Pal.INK_FAINT)
+	_label(tr("Esc: back"), Vector2(x, 256), Pal.INK_FAINT)
 
 
 func _build_sort() -> void:
@@ -781,14 +781,14 @@ func _build_sort() -> void:
 		_label(lot.name, Vector2(x, y), Pal.GOLD, 156)
 		y += 9
 	if melt.lots.size() > 4:
-		_label("and %d more" % (melt.lots.size() - 4), Vector2(x, y), Pal.INK_DIM)
+		_label(tr("and %d more") % (melt.lots.size() - 4), Vector2(x, y), Pal.INK_DIM)
 		y += 9
-	_label("%s g in all" % ScrapYard._grams(melt.grams + melt.steel_g), Vector2(x, y), Pal.INK_DIM)
+	_label(tr("%s g in all") % ScrapYard._grams(melt.grams + melt.steel_g), Vector2(x, y), Pal.INK_DIM)
 	y += 14
 	_label("Clasp springs, knife blades and candlestick rods are steel. Steel doesn't melt at these heats: it spoils the bar. Sweep the magnet over the tray to pull it out.",
 		Vector2(x, y), Pal.INK_DIM, 156, HORIZONTAL_ALIGNMENT_LEFT, 58)
 	_live.pulled = _label("", Vector2(x, 150), Pal.INK, 156)
-	var m := _button("1 Magnet", Rect2(x, 166, 76, 12), "ToolButton", toggle_magnet)
+	var m := _button(tr("1 Magnet"), Rect2(x, 166, 76, 12), "ToolButton", toggle_magnet)
 	m.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_button("Load the crucible", Rect2(x, 222, 156, 13), "PrimaryButton", load_crucible)
 	_label("Esc: put it back in the bin", Vector2(x, 256), Pal.INK_FAINT)
@@ -797,11 +797,10 @@ func _build_sort() -> void:
 func _build_melt() -> void:
 	_clear()
 	var x := PANEL_X + 4
-	var metal_name := "gold" if melt.metal == "XAU" else "silver"
 	_label("MELT", Vector2(x, 4), Pal.INK_FAINT)
-	_label("%s g of scrap %s" % [ScrapYard._grams(melt.grams + melt.steel_g), metal_name], Vector2(x, 13), Pal.GOLD, 156)
+	_label((tr("%s g of scrap gold") if melt.metal == "XAU" else tr("%s g of scrap silver")) % ScrapYard._grams(melt.grams + melt.steel_g), Vector2(x, 13), Pal.GOLD, 156)
 	var b := melt.band()
-	var rows := [["Melts at", "about %d C" % (roundi(melt.melting_point / 10.0) * 10)],
+	var rows := [["Melts at", tr("about %d C") % (roundi(melt.melting_point / 10.0) * 10)],
 		["Pour at", "%d-%d C" % [roundi(b.x / 10.0) * 10, roundi(b.y / 10.0) * 10]],
 		["Fumes above", "%d C" % (roundi((melt.melting_point + Melt.FUME_FROM) / 10.0) * 10)]]
 	for n in rows.size():
@@ -837,23 +836,22 @@ func _build_melt() -> void:
 	_label("Up/Down or W/S set the gas. Bring the furnace into the pour band and hold it there till all of it melts. Drop borax until the scum is gone and the melt shines; too much makes glassy slag that traps metal. Then hold Space to pour: steady, not too fast, and before it cools.",
 		Vector2(x, 124), Pal.INK_DIM, 156, HORIZONTAL_ALIGNMENT_LEFT, 104)
 	_live.hint = _label("", Vector2(x, 232), Pal.WARN, 156, HORIZONTAL_ALIGNMENT_LEFT, 18)
-	_label("Esc: stop", Vector2(x, 256), Pal.INK_FAINT)
+	_label(tr("Esc: stop"), Vector2(x, 256), Pal.INK_FAINT)
 
 
 func _build_result() -> void:
 	_clear()
 	var x := PANEL_X + 4
-	var metal_name := "gold" if melt.metal == "XAU" else "silver"
 	_label("ASSAY", Vector2(x, 4), Pal.INK_FAINT)
 	var y := 14
 	if float(assay.fine) <= 0.0:
 		_label("Nothing made it into the mould. The scrap is back in the bin.", Vector2(x, y), Pal.WARN, 156, HORIZONTAL_ALIGNMENT_LEFT, 26)
 	else:
-		_label("Cast %s bar" % metal_name, Vector2(x, y), Pal.GOLD)
+		_label("Cast gold bar" if melt.metal == "XAU" else "Cast silver bar", Vector2(x, y), Pal.GOLD)
 		y += 12
-		var rows := [["Weight", "%.2f g" % assay.grams], ["Fineness", "%.1f" % (assay.purity * 1000.0)],
-			["Fine %s" % metal_name, "%.2f g" % assay.fine], ["Recovered", "%.1f%%" % (assay.recovery * 100.0)],
-			["Stamps said", "%.1f g fine" % (melt.claimed_fine * clampf(melt.poured, 0.0, 1.0))]]
+		var rows := [["Weight", "%.2f g" % assay.grams], [tr("Fineness"), "%.1f" % (assay.purity * 1000.0)],
+			["Fine gold" if melt.metal == "XAU" else "Fine silver", "%.2f g" % assay.fine], [tr("Recovered"), "%.1f%%" % (assay.recovery * 100.0)],
+			["Stamps said", tr("%.1f g fine") % (melt.claimed_fine * clampf(melt.poured, 0.0, 1.0))]]
 		for row in rows:
 			_label(row[0], Vector2(x, y), Pal.INK_DIM)
 			_label(row[1], Vector2(x + 60, y), Pal.INK, 96, HORIZONTAL_ALIGNMENT_RIGHT)
@@ -880,7 +878,7 @@ func _build_result() -> void:
 		y += 13
 		_label(_verdict(), Vector2(x, y), Pal.INK_DIM, 156, HORIZONTAL_ALIGNMENT_LEFT, 44)
 	if not assay.skull.is_empty():
-		_label("%s g froze in the crucible. It's back in the bin." % ScrapYard._grams(float(assay.skull.grams)),
+		_label(tr("%s g froze in the crucible. It's back in the bin.") % ScrapYard._grams(float(assay.skull.grams)),
 			Vector2(x, 214), Pal.WARN, 156, HORIZONTAL_ALIGNMENT_LEFT, 18)
 	_button("Done", Rect2(x, 236, 156, 13), "PrimaryButton", _show_yard)
 
@@ -905,7 +903,7 @@ func _verdict() -> String:
 
 func _refresh_live() -> void:
 	if phase == "sort" and _live.has("pulled"):
-		_live.pulled.text = "Steel pulled out: %d" % melt.steel_pulled
+		_live.pulled.text = tr("Steel pulled out: %d") % melt.steel_pulled
 	if phase != "melt" or melt == null or not _live.has("temp"):
 		return
 	_live.temp.text = "%d C" % roundi(melt.temp)

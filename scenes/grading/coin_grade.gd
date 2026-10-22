@@ -142,37 +142,37 @@ func judge(called: int, called_cleaned: bool, owner: String) -> Dictionary:
 	var steps := absi(called - grade)
 	var cleaned_ok := called_cleaned == cleaned
 	var out := {"steps": steps, "cleaned_ok": cleaned_ok, "pay": 0.0, "rep": 0.0, "mood": "good"}
-	var truth := id() + (" (cleaned)" if cleaned else "")
+	var truth := tr("%s (cleaned)") % id() if cleaned else id()
 	if not cleaned_ok and cleaned:
 		out.rep = -0.05
 		out.mood = "bad"
-		out.say = "The grading service says it's been cleaned. You didn't see the hairlines?"
-		out.log = "%s's coin had been cleaned and you missed it. It's %s." % [owner, truth]
+		out.say = tr("The grading service says it's been cleaned. You didn't see the hairlines?")
+		out.log = tr("%s's coin had been cleaned and you missed it. It's %s.") % [owner, truth]
 	elif not cleaned_ok:
 		out.rep = -0.03
 		out.mood = "bad"
-		out.say = "Cleaned? It has never touched a cloth. I'll take it elsewhere."
-		out.log = "You called %s's original %s coin cleaned. It wasn't." % [owner, id()]
+		out.say = tr("Cleaned? It has never touched a cloth. I'll take it elsewhere.")
+		out.log = tr("You called %s's original %s coin cleaned. It wasn't.") % [owner, id()]
 	elif steps == 0:
 		out.pay = fee() * (1.0 + TIP)
 		out.rep = 0.03
-		out.say = "Spot on. You've got the eye. Here, keep the change."
-		out.log = "Graded %s's coin %s, spot on. Fee and tip %s." % [owner, truth, Market.format_money(out.pay)]
+		out.say = tr("Spot on. You've got the eye. Here, keep the change.")
+		out.log = tr("Graded %s's coin %s, spot on. Fee and tip %s.") % [owner, truth, Market.format_money(out.pay)]
 	elif steps == 1:
 		out.pay = fee()
 		out.rep = 0.01
-		out.say = "Close enough for me. Thank you."
-		out.log = "Graded %s's coin %s; it's %s. Fee %s." % [owner, grade_id(called), truth, Market.format_money(out.pay)]
+		out.say = tr("Close enough for me. Thank you.")
+		out.log = tr("Graded %s's coin %s; it's %s. Fee %s.") % [owner, grade_id(called), truth, Market.format_money(out.pay)]
 	elif steps == 2:
 		out.mood = "bad"
 		out.rep = -0.02
-		out.say = "Hm. That's not what I'd have said."
-		out.log = "Graded %s's coin %s, but it's %s. No fee." % [owner, grade_id(called), truth]
+		out.say = tr("Hm. That's not what I'd have said.")
+		out.log = tr("Graded %s's coin %s, but it's %s. No fee.") % [owner, grade_id(called), truth]
 	else:
 		out.mood = "bad"
 		out.rep = -0.06
-		out.say = "%s? Really? I don't think you know coins." % grade_id(called)
-		out.log = "Graded %s's coin %s, but it's %s. They left grumbling." % [owner, grade_id(called), truth]
+		out.say = tr("%s? Really? I don't think you know coins.") % grade_id(called)
+		out.log = tr("Graded %s's coin %s, but it's %s. They left grumbling.") % [owner, grade_id(called), truth]
 	return out
 
 
@@ -196,7 +196,7 @@ static func customer(rng: RandomNumberGenerator, g := -1) -> Customer:
 	c.item = coins[rng.randi() % mini(coins.size(), 8)] if rng.randf() < 0.75 else coins[rng.randi() % coins.size()]
 	c.qty = 1
 	c.grading = create(rng, c.item, g)
-	c.say = ASK_LINES[rng.randi() % ASK_LINES.size()]
+	c.say = Loc.t(ASK_LINES[rng.randi() % ASK_LINES.size()])
 	c.max_patience = 90.0 * (1.0 + Progress.effect("patience"))
 	c.patience = c.max_patience
 	c.set_look(PeopleArt.random_look(rng))

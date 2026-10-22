@@ -238,9 +238,9 @@ func _refresh_deal() -> void:
 		return
 	if c.kind == "grade":
 		_deal[0].text = c.item.display_name
-		_deal[1].text = "Hopes for %s" % CoinGrade.grade_id(c.grading.hoped)
+		_deal[1].text = tr("Hopes for %s") % CoinGrade.grade_id(c.grading.hoped)
 		_deal[1].add_theme_color_override("font_color", Pal.INK)
-		_deal[2].text = "Fee %s if you grade it right" % Market.format_money(CoinGrade.fee())
+		_deal[2].text = tr("Fee %s if you grade it right") % Market.format_money(CoinGrade.fee())
 		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
 		_buttons.test.visible = true
 		_buttons.test.text = "Grade it"

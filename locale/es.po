@@ -446,7 +446,7 @@ msgstr "Nuevo lote. Mismo tío. Otra herencia."
 msgid "Priced to move. Don't ask where they're from."
 msgstr "A precio de ganga. No preguntes de dónde salen."
 
-#: autoload/customers.gd autoload/orders.gd
+#: autoload/customers.gd autoload/orders.gd scenes/grading/coin_grade.gd
 msgid "Professor Hale"
 msgstr "Professor Hale"
 
@@ -967,8 +967,8 @@ msgid "Marble, brass and glass. Buyers accept 2% more premium, wait 15% longer, 
 msgstr "Mármol, latón y cristal. Los compradores aceptan un 2% más de prima, esperan un 15% más y cabe 1 cliente más."
 
 #: autoload/progress.gd
-msgid "Melt scrap in-house: the refiner pays 6% more for the jewellery you buy."
-msgstr "Funde la chatarra en casa: el refinador paga un 6% más por las joyas que compras."
+msgid "Melt scrap in-house: the refiner pays 6% more for the jewellery you buy, and with a melting furnace the scrap dealer brings lots twice the size."
+msgstr "Funde chatarra en casa: la refinería paga un 6% más por las joyas que compras, y con horno de fundición el chatarrero trae lotes del doble de tamaño."
 
 #: autoload/progress.gd
 msgid "More passers-by notice you: customers arrive 15% faster."
@@ -1087,6 +1087,10 @@ msgid "Busy counter"
 msgstr "Mostrador ajetreado"
 
 #: autoload/records.gd
+msgid "Cast 10 bars at the smelter."
+msgstr "Funde 10 lingotes en la fundición."
+
+#: autoload/records.gd
 msgid "Catch your first fake."
 msgstr "Pilla tu primera falsificación."
 
@@ -1105,6 +1109,10 @@ msgstr "Cierra 500 tratos, comprando o vendiendo."
 #: autoload/records.gd
 msgid "Collector's friend"
 msgstr "Amigo de los coleccionistas"
+
+#: autoload/records.gd
+msgid "Eagle eye"
+msgstr "Ojo de lince"
 
 #: autoload/records.gd
 msgid "End a day worth more than Lucky's Pawn & Loan."
@@ -1157,6 +1165,14 @@ msgstr "Buen ciudadano"
 #: autoload/records.gd
 msgid "Good day"
 msgstr "Buen día"
+
+#: autoload/records.gd
+msgid "Grade 10 coins spot on for collectors."
+msgstr "Gradúa 10 monedas con total acierto para coleccionistas."
+
+#: autoload/records.gd
+msgid "Hot metal"
+msgstr "Metal al rojo"
 
 #: autoload/records.gd
 msgid "Hot streak"
@@ -1978,7 +1994,7 @@ msgstr "Calibre"
 msgid "Echo"
 msgstr "Eco"
 
-#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/grading/grading_bench.gd
 msgid "Esc: back to the counter"
 msgstr "Esc: volver al mostrador"
 
@@ -1990,7 +2006,7 @@ msgstr "Falso"
 msgid "Genuine"
 msgstr "Auténtico"
 
-#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd scenes/trading_desk/trading_desk.gd
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/grading/grading_bench.gd scenes/jewellery_test/jewellery_test.gd scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
 msgid "LB / RB"
 msgstr "LB / RB"
 
@@ -1998,7 +2014,7 @@ msgstr "LB / RB"
 msgid "Length"
 msgstr "Largo"
 
-#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/grading/grading_bench.gd scenes/jewellery_test/jewellery_test.gd
 msgid "Loupe"
 msgstr "Lupa"
 
@@ -2018,7 +2034,7 @@ msgstr "SIN PISTOLA XRF"
 msgid "PROBE OFF"
 msgstr "SONDA OFF"
 
-#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/grading/grading_bench.gd scenes/jewellery_test/jewellery_test.gd
 msgid "Previous / next tool"
 msgstr "Herramienta anterior / siguiente"
 
@@ -2141,6 +2157,298 @@ msgstr "pega fuerte"
 #: scenes/coin_test/coin_test.gd
 msgid "too low"
 msgstr "muy bajo"
+
+#: scenes/grading/coin_grade.gd
+msgid "%s (cleaned)"
+msgstr "%s (limpiada)"
+
+#: scenes/grading/coin_grade.gd
+msgid "%s's coin had been cleaned and you missed it. It's %s."
+msgstr "La moneda de %s estaba limpiada y no lo viste. Es %s."
+
+#: scenes/grading/coin_grade.gd
+msgid "%s? Really? I don't think you know coins."
+msgstr "%s? ¿En serio? No creo que sepa de monedas."
+
+#: scenes/grading/coin_grade.gd
+msgid "A rub on the high points. Half the lustre left: the cartwheel is broken."
+msgstr "Roce en los puntos altos. Queda medio brillo: la rueda de luz está rota."
+
+#: scenes/grading/coin_grade.gd
+msgid "About Uncirculated"
+msgstr "Casi sin circular"
+
+#: scenes/grading/coin_grade.gd
+msgid "About half the detail left. Wide smooth plateaus on the design."
+msgstr "Queda la mitad del detalle. Mesetas lisas y anchas en el diseño."
+
+#: scenes/grading/coin_grade.gd
+msgid "All the detail, light wear on the very top. A little lustre near the letters."
+msgstr "Todo el detalle, desgaste leve en lo más alto. Algo de brillo junto a las letras."
+
+#: scenes/grading/coin_grade.gd
+msgid "Arthur Bell"
+msgstr "Arthur Bell"
+
+#: scenes/grading/coin_grade.gd
+msgid "Before I send it off to be slabbed, what's your grade?"
+msgstr "Antes de mandarla a encapsular, ¿qué grado le pone?"
+
+#: scenes/grading/coin_grade.gd
+msgid "Bought it at an estate sale. I think it's a beauty."
+msgstr "La compré en una venta de herencia. Creo que es una belleza."
+
+#: scenes/grading/coin_grade.gd
+msgid "Choice About Unc."
+msgstr "Casi SC, selecta"
+
+#: scenes/grading/coin_grade.gd
+msgid "Cleaned? It has never touched a cloth. I'll take it elsewhere."
+msgstr "¿Limpiada? Nunca ha tocado un trapo. Me la llevo a otro sitio."
+
+#: scenes/grading/coin_grade.gd
+msgid "Close enough for me. Thank you."
+msgstr "Me basta. Gracias."
+
+#: scenes/grading/coin_grade.gd
+msgid "Collectors start bringing old coins to be graded. Read the wear, the lustre and the bag marks: a right grade earns a fee and a good word."
+msgstr "Los coleccionistas traen monedas antiguas para graduar. Lee el desgaste, el brillo y las marcas de saca: un grado correcto trae honorarios y buena fama."
+
+#: scenes/grading/coin_grade.gd
+msgid "Extremely Fine"
+msgstr "Extrafina"
+
+#: scenes/grading/coin_grade.gd
+msgid "Fine"
+msgstr "Bien conservada"
+
+#: scenes/grading/coin_grade.gd
+msgid "Gem Mint State"
+msgstr "SC gema"
+
+#: scenes/grading/coin_grade.gd
+msgid "Good"
+msgstr "Regular"
+
+#: scenes/grading/coin_grade.gd
+msgid "Graded %s's coin %s, but it's %s. No fee."
+msgstr "Graduaste la moneda de %s como %s, pero es %s. Sin honorarios."
+
+#: scenes/grading/coin_grade.gd
+msgid "Graded %s's coin %s, but it's %s. They left grumbling."
+msgstr "Graduaste la moneda de %s como %s, pero es %s. Se fue refunfuñando."
+
+#: scenes/grading/coin_grade.gd
+msgid "Graded %s's coin %s, spot on. Fee and tip %s."
+msgstr "Graduaste la moneda de %s como %s, exacto. Honorarios y propina %s."
+
+#: scenes/grading/coin_grade.gd
+msgid "Graded %s's coin %s; it's %s. Fee %s."
+msgstr "Graduaste la moneda de %s como %s; es %s. Honorarios %s."
+
+#: scenes/grading/coin_grade.gd
+msgid "Grading lamp and loupe"
+msgstr "Lámpara y lupa de graduar"
+
+#: scenes/grading/coin_grade.gd
+msgid "Hm. That's not what I'd have said."
+msgstr "Hm. Yo no habría dicho eso."
+
+#: scenes/grading/coin_grade.gd
+msgid "I've had this since I was a boy. What grade is it?"
+msgstr "La tengo desde niño. ¿Qué grado tiene?"
+
+#: scenes/grading/coin_grade.gd
+msgid "Lena Fox"
+msgstr "Lena Fox"
+
+#: scenes/grading/coin_grade.gd
+msgid "Letters and rim all there. The design is worn flat, no detail inside it."
+msgstr "Letras y canto completos. El diseño está gastado y plano, sin detalle."
+
+#: scenes/grading/coin_grade.gd
+msgid "Mint State"
+msgstr "Sin circular"
+
+#: scenes/grading/coin_grade.gd
+msgid "Most of the detail left. The high points are flat and dull."
+msgstr "Queda casi todo el detalle. Los puntos altos están planos y apagados."
+
+#: scenes/grading/coin_grade.gd
+msgid "No wear at all. Lots of bag marks: count 9 or more."
+msgstr "Sin desgaste. Muchas marcas de saca: 9 o más."
+
+#: scenes/grading/coin_grade.gd
+msgid "No wear, full lustre, a few bag marks: 4 to 6."
+msgstr "Sin desgaste, brillo pleno, pocas marcas de saca: de 4 a 6."
+
+#: scenes/grading/coin_grade.gd
+msgid "No wear, full lustre, a mark at most. A gem."
+msgstr "Sin desgaste, brillo pleno, una marca como mucho. Una joya."
+
+#: scenes/grading/coin_grade.gd
+msgid "Rim worn into the letters. The design is a flat outline."
+msgstr "Canto gastado hasta las letras. El diseño es un contorno plano."
+
+#: scenes/grading/coin_grade.gd
+msgid "Settle an argument with my brother: what grade?"
+msgstr "Zanje una discusión con mi hermano: ¿qué grado?"
+
+#: scenes/grading/coin_grade.gd
+msgid "Spot on. You've got the eye. Here, keep the change."
+msgstr "Exacto. Tiene buen ojo. Tenga, quédese el cambio."
+
+#: scenes/grading/coin_grade.gd
+msgid "Superb Gem"
+msgstr "SC gema superior"
+
+#: scenes/grading/coin_grade.gd
+msgid "The grading service says it's been cleaned. You didn't see the hairlines?"
+msgstr "El servicio de graduación dice que está limpiada. ¿No vio las rayitas?"
+
+#: scenes/grading/coin_grade.gd
+msgid "The slightest rub on the very top. The cartwheel only breaks there."
+msgstr "El más leve roce en lo más alto. La rueda de luz solo se rompe ahí."
+
+#: scenes/grading/coin_grade.gd
+msgid "Very Fine"
+msgstr "Muy bien conservada"
+
+#: scenes/grading/coin_grade.gd
+msgid "Very Good"
+msgstr "Bien"
+
+#: scenes/grading/coin_grade.gd
+msgid "What would you call this one? Be honest."
+msgstr "¿Qué grado le daría? Sea sincero."
+
+#: scenes/grading/coin_grade.gd
+msgid "You called %s's original %s coin cleaned. It wasn't."
+msgstr "Llamaste limpiada a la moneda original de %s (%s). No lo estaba."
+
+#: scenes/grading/grading_bench.gd
+msgid "%d tagged"
+msgstr "%d marcadas"
+
+#: scenes/grading/grading_bench.gd
+msgid "Bag marks"
+msgstr "Marcas de saca"
+
+#: scenes/grading/grading_bench.gd
+msgid "C: the coin has been cleaned (hairlines, no real lustre)"
+msgstr "C: la moneda está limpiada (rayitas, sin brillo real)"
+
+#: scenes/grading/grading_bench.gd
+msgid "CLEANED: fine hairlines all one way, seen under the loupe with the lamp low. Dull, no cartwheel."
+msgstr "LIMPIADA: rayitas finas en una sola dirección, vistas con la lupa y la lámpara baja. Apagada, sin rueda de luz."
+
+#: scenes/grading/grading_bench.gd
+msgid "COIN GRADING"
+msgstr "GRADUAR MONEDAS"
+
+#: scenes/grading/grading_bench.gd
+msgid "Cleaned (C)"
+msgstr "Limpiada (C)"
+
+#: scenes/grading/grading_bench.gd
+msgid "Fee %s, more if you're spot on"
+msgstr "Honorarios %s, más si aciertas"
+
+#: scenes/grading/grading_bench.gd
+msgid "GRADE"
+msgstr "GRADO"
+
+#: scenes/grading/grading_bench.gd
+msgid "GRADING GUIDE"
+msgstr "GUÍA DE GRADOS"
+
+#: scenes/grading/grading_bench.gd scenes/shop/hud.gd
+msgid "Grade it"
+msgstr "Graduar"
+
+#: scenes/grading/grading_bench.gd
+msgid "Grade it %s"
+msgstr "Graduar: %s"
+
+#: scenes/grading/grading_bench.gd
+msgid "Grade it %s cleaned"
+msgstr "Graduar: %s limpiada"
+
+#: scenes/grading/grading_bench.gd
+msgid "Guide"
+msgstr "Guía"
+
+#: scenes/grading/grading_bench.gd
+msgid "LT / RT"
+msgstr "LT / RT"
+
+#: scenes/grading/grading_bench.gd
+msgid "Lamp"
+msgstr "Lámpara"
+
+#: scenes/grading/grading_bench.gd
+msgid "Lower / higher grade"
+msgstr "Grado menor / mayor"
+
+#: scenes/grading/grading_bench.gd
+msgid "NO MARK"
+msgstr "SIN MARCA"
+
+#: scenes/grading/grading_bench.gd
+msgid "Pick a grade: Left/Right or click. 3 opens the guide."
+msgstr "Elige un grado: Izq./Der. o clic. 3 abre la guía."
+
+#: scenes/grading/grading_bench.gd
+msgid "The owner hopes for %s"
+msgstr "El dueño espera %s"
+
+#: scenes/grading/grading_bench.gd
+msgid "click or Esc to close"
+msgstr "clic o Esc para cerrar"
+
+#: scenes/grading/grading_bench.gd
+msgid "from lower left"
+msgstr "desde abajo a la izq."
+
+#: scenes/grading/grading_bench.gd
+msgid "from lower right"
+msgstr "desde abajo a la der."
+
+#: scenes/grading/grading_bench.gd
+msgid "from the bottom"
+msgstr "desde abajo"
+
+#: scenes/grading/grading_bench.gd
+msgid "from the left"
+msgstr "desde la izquierda"
+
+#: scenes/grading/grading_bench.gd
+msgid "from the right"
+msgstr "desde la derecha"
+
+#: scenes/grading/grading_bench.gd
+msgid "from the top"
+msgstr "desde arriba"
+
+#: scenes/grading/grading_bench.gd
+msgid "from upper left"
+msgstr "desde arriba a la izq."
+
+#: scenes/grading/grading_bench.gd
+msgid "from upper right"
+msgstr "desde arriba a la der."
+
+#: scenes/grading/grading_bench.gd
+msgid "high"
+msgstr "alta"
+
+#: scenes/grading/grading_bench.gd
+msgid "low"
+msgstr "baja"
+
+#: scenes/grading/grading_bench.gd
+msgid "raking"
+msgstr "rasante"
 
 #: scenes/jewellery_test/jewellery_test.gd
 msgid "(claimed weight)"
@@ -2724,7 +3032,7 @@ msgstr "Construir"
 msgid "Built"
 msgstr "Construido"
 
-#: scenes/shop/day_panels.gd scenes/trading_desk/trading_desk.gd
+#: scenes/shop/day_panels.gd scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
 msgid "Buy"
 msgstr "Comprar"
 
@@ -2735,6 +3043,10 @@ msgstr "Comprar %d por %s."
 #: scenes/shop/day_panels.gd
 msgid "Buy coins from the wholesaler before you open."
 msgstr "Compra monedas al mayorista antes de abrir."
+
+#: scenes/shop/day_panels.gd
+msgid "Buy the scrap dealer's lots and melt scrap into bars."
+msgstr "Compra los lotes del chatarrero y funde la chatarra en lingotes."
 
 #: scenes/shop/day_panels.gd
 msgid "CHAPTERS"
@@ -2987,6 +3299,10 @@ msgid "Silver"
 msgstr "Plata"
 
 #: scenes/shop/day_panels.gd
+msgid "Smelter"
+msgstr "Fundición"
+
+#: scenes/shop/day_panels.gd
 msgid "Sold to customers"
 msgstr "Vendido a clientes"
 
@@ -3149,6 +3465,10 @@ msgid "Examine"
 msgstr "Examinar"
 
 #: scenes/shop/hud.gd
+msgid "Fee %s if you grade it right"
+msgstr "Honorarios %s si aciertas el grado"
+
+#: scenes/shop/hud.gd
 msgid "Goodbye"
 msgstr "Adiós"
 
@@ -3163,6 +3483,10 @@ msgstr "Dar la caja"
 #: scenes/shop/hud.gd
 msgid "He won't wait long."
 msgstr "No esperará mucho."
+
+#: scenes/shop/hud.gd
+msgid "Hopes for %s"
+msgstr "Espera %s"
 
 #: scenes/shop/hud.gd
 msgid "IN THE VAULT"
@@ -3315,6 +3639,10 @@ msgstr "pedido especial"
 #: scenes/shop/hud.gd
 msgid "stopped by to talk"
 msgstr "viene a charlar"
+
+#: scenes/shop/hud.gd
+msgid "wants a coin graded"
+msgstr "quiere graduar una moneda"
 
 #: scenes/shop/hud.gd
 msgid "wants to buy"
@@ -3485,6 +3813,10 @@ msgid "%s will ask another dealer."
 msgstr "%s probará con otro comerciante."
 
 #: scenes/shop/shop.gd
+msgid "%s will find another grader."
+msgstr "%s buscará otro graduador."
+
+#: scenes/shop/shop.gd
 msgid "%s wouldn't pay your price and left."
 msgstr "%s no quiso pagar tu precio y se fue."
 
@@ -3599,6 +3931,10 @@ msgstr "Bueno. Págueme el metal, entonces."
 #: scenes/shop/shop.gd
 msgid "Fraud insurance payout"
 msgstr "Pago del seguro antifraude"
+
+#: scenes/shop/shop.gd
+msgid "Grading fees"
+msgstr "Honorarios de graduación"
 
 #: scenes/shop/shop.gd
 msgid "Handed over in a hold-up"
@@ -3780,6 +4116,360 @@ msgstr "PD"
 msgid "PT"
 msgstr "PT"
 
+#: scenes/smelter/melt.gd
+msgid "Metal left in the crucible"
+msgstr "Metal que quedó en el crisol"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "A gas furnace in the back. Each morning the scrap dealer offers broken gold and silver: melt it into bars at the Smelter and sell them to the bullion dealer."
+msgstr "Un horno de gas en la trastienda. Cada mañana el chatarrero ofrece oro y plata rotos: fúndelos en lingotes en la Fundición y véndelos al comerciante de metales."
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Bought scrap for %s: %s, %s g."
+msgstr "Chatarra comprada por %s: %s, %s g."
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Broken gold chains"
+msgstr "Cadenas de oro rotas"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Broken silver chains"
+msgstr "Cadenas de plata rotas"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Bullion dealer (cast bars)"
+msgstr "Comerciante de metales (lingotes)"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Coin silver spoons"
+msgstr "Cucharas de plata de ley"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Dental gold"
+msgstr "Oro dental"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Melting furnace"
+msgstr "Horno de fundición"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Odd earrings and rings"
+msgstr "Pendientes y anillos sueltos"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Old class rings"
+msgstr "Anillos de promoción viejos"
+
+#: scenes/smelter/scrap_yard.gd scenes/smelter/smelter.gd
+msgid "Scrap dealer"
+msgstr "Chatarrero"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Sterling flatware"
+msgstr "Cubertería de plata 925"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Tarnished candlesticks"
+msgstr "Candelabros ennegrecidos"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "The bullion dealer paid %s for your gold bar (loss %s)."
+msgstr "El comerciante pagó %s por tu lingote de oro (pérdida %s)."
+
+#: scenes/smelter/scrap_yard.gd
+msgid "The bullion dealer paid %s for your gold bar (profit %s)."
+msgstr "El comerciante pagó %s por tu lingote de oro (beneficio %s)."
+
+#: scenes/smelter/scrap_yard.gd
+msgid "The bullion dealer paid %s for your silver bar (loss %s)."
+msgstr "El comerciante pagó %s por tu lingote de plata (pérdida %s)."
+
+#: scenes/smelter/scrap_yard.gd
+msgid "The bullion dealer paid %s for your silver bar (profit %s)."
+msgstr "El comerciante pagó %s por tu lingote de plata (beneficio %s)."
+
+#: scenes/smelter/smelter.gd
+msgid "%.1f g fine"
+msgstr "%.1f g finos"
+
+#: scenes/smelter/smelter.gd
+msgid "%d lot, %s g"
+msgid_plural "%d lots, %s g"
+msgstr[0] "%d lote, %s g"
+msgstr[1] "%d lotes, %s g"
+
+#: scenes/smelter/smelter.gd
+msgid "%s g froze in the crucible. It's back in the bin."
+msgstr "%s g se solidificaron en el crisol. Vuelven al cubo."
+
+#: scenes/smelter/smelter.gd
+msgid "%s g in all"
+msgstr "%s g en total"
+
+#: scenes/smelter/smelter.gd
+msgid "%s g of scrap gold"
+msgstr "%s g de oro de chatarra"
+
+#: scenes/smelter/smelter.gd
+msgid "%s g of scrap silver"
+msgstr "%s g de plata de chatarra"
+
+#: scenes/smelter/smelter.gd
+msgid "%s g, stamped %s"
+msgstr "%s g, contraste %s"
+
+#: scenes/smelter/smelter.gd
+msgid "1 Magnet"
+msgstr "1 Imán"
+
+#: scenes/smelter/smelter.gd
+msgid "A on Pour"
+msgstr "A en Verter"
+
+#: scenes/smelter/smelter.gd
+msgid "A pinch of borax"
+msgstr "Una pizca de bórax"
+
+#: scenes/smelter/smelter.gd
+msgid "A textbook melt. The dealer asked who taught you."
+msgstr "Una fundición de manual. El comerciante preguntó quién te enseñó."
+
+#: scenes/smelter/smelter.gd
+msgid "ASSAY"
+msgstr "ENSAYO"
+
+#: scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
+msgid "Back to the morning"
+msgstr "Volver a la mañana"
+
+#: scenes/smelter/smelter.gd
+msgid "Bars cast: %d. Profit so far: %s"
+msgstr "Lingotes fundidos: %d. Beneficio hasta ahora: %s"
+
+#: scenes/smelter/smelter.gd
+msgid "Cast gold bar"
+msgstr "Lingote de oro fundido"
+
+#: scenes/smelter/smelter.gd
+msgid "Cast silver bar"
+msgstr "Lingote de plata fundido"
+
+#: scenes/smelter/smelter.gd
+msgid "Clasp springs, knife blades and candlestick rods are steel. Steel doesn't melt at these heats: it spoils the bar. Sweep the magnet over the tray to pull it out."
+msgstr "Muelles de cierres, hojas de cuchillo y varillas de candelabro son de acero. El acero no se funde a estas temperaturas: estropea el lingote. Pasa el imán por la bandeja para sacarlo."
+
+#: scenes/smelter/smelter.gd
+msgid "Clean bar, no flaws."
+msgstr "Lingote limpio, sin defectos."
+
+#: scenes/smelter/smelter.gd
+msgid "Cold shut where the pour paused: -1%"
+msgstr "Junta fría donde paró el vertido: -1%"
+
+#: scenes/smelter/smelter.gd
+msgid "Dealer pays"
+msgstr "El comerciante paga"
+
+#: scenes/smelter/smelter.gd
+msgid "Done"
+msgstr "Hecho"
+
+#: scenes/smelter/smelter.gd
+msgid "Esc: back"
+msgstr "Esc: volver"
+
+#: scenes/smelter/smelter.gd
+msgid "Esc: put it back in the bin"
+msgstr "Esc: devolver al cubo"
+
+#: scenes/smelter/smelter.gd
+msgid "Esc: stop"
+msgstr "Esc: parar"
+
+#: scenes/smelter/smelter.gd
+msgid "F  Borax"
+msgstr "F  Bórax"
+
+#: scenes/smelter/smelter.gd
+msgid "Fine gold"
+msgstr "Oro fino"
+
+#: scenes/smelter/smelter.gd
+msgid "Fine silver"
+msgstr "Plata fina"
+
+#: scenes/smelter/smelter.gd
+msgid "Fineness"
+msgstr "Ley"
+
+#: scenes/smelter/smelter.gd
+msgid "Fumes above"
+msgstr "Humo desde"
+
+#: scenes/smelter/smelter.gd
+msgid "Furnace"
+msgstr "Horno"
+
+#: scenes/smelter/smelter.gd
+msgid "GAS"
+msgstr "GAS"
+
+#: scenes/smelter/smelter.gd
+msgid "Gas down / up"
+msgstr "Gas menos / más"
+
+#: scenes/smelter/smelter.gd
+msgid "Hold the button, or Space"
+msgstr "Mantén el botón, o Espacio"
+
+#: scenes/smelter/smelter.gd
+msgid "Hold to pour"
+msgstr "Mantén: verter"
+
+#: scenes/smelter/smelter.gd
+msgid "It's cooling fast. Pour!"
+msgstr "Se enfría rápido. ¡Vierte!"
+
+#: scenes/smelter/smelter.gd
+msgid "Load the crucible"
+msgstr "Cargar el crisol"
+
+#: scenes/smelter/smelter.gd
+msgid "Loss"
+msgstr "Pérdida"
+
+#: scenes/smelter/smelter.gd
+msgid "MELT"
+msgstr "FUNDIR"
+
+#: scenes/smelter/smelter.gd
+msgid "Magnet (sorting)"
+msgstr "Imán (clasificar)"
+
+#: scenes/smelter/smelter.gd
+msgid "Melt"
+msgstr "Fundir"
+
+#: scenes/smelter/smelter.gd
+msgid "Melt value as stamped: %s"
+msgstr "Valor de fundición según contraste: %s"
+
+#: scenes/smelter/smelter.gd
+msgid "Melts at"
+msgstr "Funde a"
+
+#: scenes/smelter/smelter.gd
+msgid "Molten"
+msgstr "Fundido"
+
+#: scenes/smelter/smelter.gd
+msgid "Nothing made it into the mould. The scrap is back in the bin."
+msgstr "No llegó nada al molde. La chatarra vuelve al cubo."
+
+#: scenes/smelter/smelter.gd
+msgid "Pour at"
+msgstr "Verter a"
+
+#: scenes/smelter/smelter.gd
+msgid "Poured"
+msgstr "Vertido"
+
+#: scenes/smelter/smelter.gd
+msgid "Poured too fast: beads splashed over the hearth."
+msgstr "Vertiste muy rápido: salpicaron gotas por el hogar."
+
+#: scenes/smelter/smelter.gd
+msgid "Profit"
+msgstr "Beneficio"
+
+#: scenes/smelter/smelter.gd
+msgid "Put the scrap back in the bin."
+msgstr "Devuelve la chatarra al cubo."
+
+#: scenes/smelter/smelter.gd
+msgid "Recovered"
+msgstr "Recuperado"
+
+#: scenes/smelter/smelter.gd
+msgid "SCRAP BIN"
+msgstr "CUBO DE CHATARRA"
+
+#: scenes/smelter/smelter.gd
+msgid "SMELTER"
+msgstr "FUNDICIÓN"
+
+#: scenes/smelter/smelter.gd
+msgid "SORT THE SCRAP"
+msgstr "CLASIFICA LA CHATARRA"
+
+#: scenes/smelter/smelter.gd
+msgid "Scrap cost"
+msgstr "Coste chatarra"
+
+#: scenes/smelter/smelter.gd
+msgid "Scum left on the melt ended up in the bar. More borax next time."
+msgstr "La escoria que quedó acabó en el lingote. Más bórax la próxima vez."
+
+#: scenes/smelter/smelter.gd
+msgid "Scum trapped in the bar: -1.5%"
+msgstr "Escoria atrapada en el lingote: -1.5%"
+
+#: scenes/smelter/smelter.gd
+msgid "Sold out. Back tomorrow morning."
+msgstr "Agotado. Vuelve mañana por la mañana."
+
+#: scenes/smelter/smelter.gd
+msgid "Splashing! Ease off."
+msgstr "¡Salpica! Más despacio."
+
+#: scenes/smelter/smelter.gd
+msgid "Stamps said"
+msgstr "Según contraste"
+
+#: scenes/smelter/smelter.gd
+msgid "Steel in the bar: -3%"
+msgstr "Acero en el lingote: -3%"
+
+#: scenes/smelter/smelter.gd
+msgid "Steel pulled out: %d"
+msgstr "Acero retirado: %d"
+
+#: scenes/smelter/smelter.gd
+msgid "The assay came in well under the stamps: that lot was salted with plated junk."
+msgstr "El ensayo salió muy por debajo del contraste: el lote venía mezclado con baratijas chapadas."
+
+#: scenes/smelter/smelter.gd
+msgid "The bullion dealer buys your bars at %d%% of spot for the fine metal the assay finds."
+msgstr "El comerciante compra tus lingotes al %d%% del spot por el metal fino del ensayo."
+
+#: scenes/smelter/smelter.gd
+msgid "Too hot! Metal is fuming away."
+msgstr "¡Demasiado caliente! El metal se evapora."
+
+#: scenes/smelter/smelter.gd
+msgid "Too hot: metal fumed away up the hood. Keep it in the band."
+msgstr "Demasiado caliente: el metal se fue por la campana. Mantenlo en la franja."
+
+#: scenes/smelter/smelter.gd
+msgid "Too much borax: the glassy slag kept beads of metal."
+msgstr "Demasiado bórax: la escoria vítrea atrapó gotas de metal."
+
+#: scenes/smelter/smelter.gd
+msgid "Up/Down or W/S set the gas. Bring the furnace into the pour band and hold it there till all of it melts. Drop borax until the scum is gone and the melt shines; too much makes glassy slag that traps metal. Then hold Space to pour: steady, not too fast, and before it cools."
+msgstr "Arriba/Abajo o W/S ajustan el gas. Lleva el horno a la franja de vertido y mantenlo hasta que todo se funda. Echa bórax hasta que se vaya la escoria y el baño brille; demasiado crea escoria vítrea que atrapa metal. Luego mantén Espacio para verter: firme, no muy rápido y antes de que se enfríe."
+
+#: scenes/smelter/smelter.gd
+msgid "about %d C"
+msgstr "unos %d C"
+
+#: scenes/smelter/smelter.gd
+msgid "and %d more"
+msgstr "y %d más"
+
+#: scenes/smelter/smelter.gd
+msgid "empty"
+msgstr "vacío"
+
 #: scenes/trading_desk/desk_session.gd
 msgid "AAPL"
 msgstr "AAPL"
@@ -3827,10 +4517,6 @@ msgstr "1-%d elige una fila. Esc lo cierra todo."
 #: scenes/trading_desk/trading_desk.gd
 msgid "At the desk's limit. Close something first."
 msgstr "Límite de la mesa alcanzado. Cierra algo antes."
-
-#: scenes/trading_desk/trading_desk.gd
-msgid "Back to the morning"
-msgstr "Volver a la mañana"
 
 #: scenes/trading_desk/trading_desk.gd
 msgid "Buy if you think it rises, Sell to go short if you think it falls. At 17:00 everything closes and the result goes on today's ledger."
@@ -4021,6 +4707,10 @@ msgid "Caught!"
 msgstr "¡Pillado!"
 
 #: scenes/tutorial/coach.gd
+msgid "Coin grading"
+msgstr "Graduar monedas"
+
+#: scenes/tutorial/coach.gd
 msgid "Day one done"
 msgstr "Primer día hecho"
 
@@ -4067,6 +4757,10 @@ msgstr "Cerrar"
 #: scenes/tutorial/coach.gd
 msgid "Make an offer"
 msgstr "Hacer una oferta"
+
+#: scenes/tutorial/coach.gd
+msgid "Move the lamp round the coin with the mouse: close in it shines from above, far out it rakes low. Worn high points stay flat and dull and break the lustre's spinning cartwheel. Press 2 for the loupe and click bag marks to count them; 3 opens the guide. Tick Cleaned if fine hairlines show under a low light."
+msgstr "Mueve la lámpara alrededor de la moneda con el ratón: cerca ilumina desde arriba, lejos roza rasante. Los puntos altos gastados quedan planos y apagados y rompen la rueda de luz que gira. Pulsa 2 para la lupa y haz clic en las marcas de saca para contarlas; 3 abre la guía. Marca Limpiada si aparecen rayitas finas con luz baja."
 
 #: scenes/tutorial/coach.gd
 msgid "My dad's old Silver Eagles. I'd like a fair price."
