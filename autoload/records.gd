@@ -36,6 +36,9 @@ const ACHIEVEMENTS := {
 	"robber_1": {"name": "Not today", "desc": "Stop a robber, with the guard or the panic button.", "key": "robbers_stopped", "goal": 1},
 	"tier_1": {"name": "Moving up", "desc": "Move the shop to Main Street.", "key": "tier", "goal": 1},
 	"tier_top": {"name": "Biggest in town", "desc": "Open the town landmark store.", "key": "tier", "goal": 3},
+	"pass_pawn": {"name": "Bigger than Lucky's", "desc": "End a day worth more than Lucky's Pawn & Loan.", "key": "passed_pawn", "goal": 1},
+	"pass_sterling": {"name": "Top of the street", "desc": "End a day worth more than Sterling Bullion Co.", "key": "passed_sterling", "goal": 1},
+	"tip_off": {"name": "Good citizen", "desc": "Tip off the police about Lucky's stolen goods.", "key": "tipped_off", "goal": 1},
 }
 
 ## Lifetime sums of the day reports. Deal counts come from Shop.noted.
@@ -72,7 +75,7 @@ func _ready() -> void:
 
 func reset() -> void:
 	totals = {"days": 0, "bought": 0.0, "sold": 0.0, "profit": 0.0, "caught": 0, "scammed": 0,
-		"stolen": 0.0, "buys": 0, "sales": 0, "robbers_stopped": 0}
+		"stolen": 0.0, "buys": 0, "sales": 0, "robbers_stopped": 0, "tipped_off": 0}
 	peaks = {"worth": 0.0, "rep": 0.0, "best_day": 0.0, "streak": 0, "clean": 0}
 	streak = 0
 	clean_streak = 0
@@ -117,6 +120,12 @@ func value_of(key: String) -> float:
 			return peaks.clean
 		"tier":
 			return Progress.tier
+		"passed_pawn":
+			return 1.0 if Rivals.passed.has("pawn") else 0.0
+		"passed_sterling":
+			return 1.0 if Rivals.passed.has("sterling") else 0.0
+		"tipped_off":
+			return totals.get("tipped_off", 0) + float(_today.get("tipped_off", 0))
 	return total(key)
 
 
@@ -150,6 +159,8 @@ func _on_noted(key: String, _amount: float) -> void:
 			_today["buys"] = int(_today.get("buys", 0)) + 1
 		"served":
 			_today["sales"] = int(_today.get("sales", 0)) + 1
+		"tipped_off":
+			_today["tipped_off"] = int(_today.get("tipped_off", 0)) + 1
 	check()
 
 
@@ -174,6 +185,7 @@ func _on_day_ended(day: int, report: Dictionary) -> void:
 	totals.robbers_stopped = int(totals.get("robbers_stopped", 0)) + int(stats.get("robbers_stopped", 0.0))
 	totals.buys = int(totals.buys) + int(_today.get("buys", 0))
 	totals.sales = int(totals.sales) + int(_today.get("sales", 0))
+	totals.tipped_off = int(totals.get("tipped_off", 0)) + int(_today.get("tipped_off", 0))
 	_today.clear()
 	streak = streak + 1 if profit > 0.0 else 0
 	clean_streak = clean_streak + 1 if scammed == 0 else 0
