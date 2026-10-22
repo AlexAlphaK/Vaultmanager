@@ -2888,7 +2888,7 @@ msgstr "Les objectifs de Mags pour ce chapitre."
 
 #: scenes/shop/day_panels.gd
 msgid "Metals are calm this morning. Expect a normal day."
-msgstr "Les métaux sont calmes ce matin. Attendez-vous à une journée normale."
+msgstr "Métaux calmes ce matin : journée normale en vue."
 
 #: scenes/shop/day_panels.gd
 msgid "Morning wholesaler"

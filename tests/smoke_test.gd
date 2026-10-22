@@ -50,6 +50,7 @@ func _ready() -> void:
 	await _check_story()
 	_check_settings()
 	_check_localization()
+	await _check_translated_panels()
 	_check_music()
 	await _check_menus()
 	await _check_pad()
@@ -2051,6 +2052,32 @@ func _check_localization() -> void:
 	Settings.path = real_path
 	Settings.load_settings()
 	TranslationServer.set_locale("en")
+
+
+
+## Longer translations must not push the morning pages wider than their area, or buttons
+## run off screen (the bug bots caught the dealer's Buy buttons doing that in German).
+func _check_translated_panels() -> void:
+	Tutorial.skip_all()
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	var panels: Control = shop.hud._panels
+	for item in Shop.rare_list().slice(0, Orders.MAX_OPEN.max()):
+		Orders.open.append({"id": Orders.open.size(), "name": "Professor Okonkwo-Hargreaves", "qty": 3, "item": item.id,
+			"due": Shop.day + 2, "premium": 0.5})
+		Orders.dealer[item.id] = 2
+	for lang in ["en", "de", "es", "fr"]:
+		TranslationServer.set_locale(lang)
+		for page in ["show_morning", "show_upgrades", "show_plan", "show_wholesale", "show_town", "show_orders", "show_ledger"]:
+			panels.call(page)
+			await get_tree().process_frame
+			expect(panels.size.x <= panels.AREA.size.x, "%s %s fits the panel width (%d px)" % [lang, page, panels.size.x])
+	TranslationServer.set_locale("en")
+	Orders.reset()
+	shop.queue_free()
+	await get_tree().process_frame
+	Shop.reset()
 
 
 func _check_music() -> void:

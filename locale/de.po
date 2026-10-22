@@ -2976,7 +2976,7 @@ msgstr "Ruf"
 
 #: scenes/shop/day_panels.gd
 msgid "Restock"
-msgstr "Nachkaufen"
+msgstr "Einkauf"
 
 #: scenes/shop/day_panels.gd
 msgid "Set your board a point better than Sterling's: pay %d%% of melt, sell at spot +%d%%."
