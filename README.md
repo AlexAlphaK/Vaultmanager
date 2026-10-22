@@ -15,7 +15,7 @@ platinum and palladium prices follow the real market.
 | `autoload/day.gd` | `Day` singleton: day phases (morning, open, closing, after hours), the week, bills and the day's ledger |
 | `autoload/progress.gd` | `Progress` singleton: the four shop tiers, upgrades and their effects |
 | `autoload/staff.gd` | `Staff` singleton: the clerk and the guard you can hire, their signing fees, daily wages and effects |
-| `autoload/save_game.gd` | `SaveGame` singleton: saves to `user://save.json` every morning, loads on launch |
+| `autoload/save_game.gd` | `SaveGame` singleton: three save slots (`user://save_1.json` to `save_3.json`), saved every morning and at the end of each day; an old `save.json` becomes slot 1 |
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
@@ -36,6 +36,7 @@ platinum and palladium prices follow the real market.
 | `audio/music_synth.gd` | The music, synthesised at runtime: a music-box title theme and a slow jazzy shop loop |
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons, sliders) |
 | `ui/settings_panel.gd` | The settings page shared by the title screen and the pause menu |
+| `ui/save_slots_panel.gd` | The save slots page on the title screen: play, start or delete each slot |
 | `tests/smoke_test.tscn` | Headless checks: run `godot --headless --path . res://tests/smoke_test.tscn` |
 | `tests/balance_sim.tscn` | Balance check: bot players run the real shop for many days (see Balance below) |
 | `price-service/` | Cloudflare Worker that polls the metals API and serves `GET /prices` |
@@ -58,8 +59,11 @@ keeps your shop. The build is made by `.github/workflows/windows-build.yml` from
 
 ## How to play
 
-The game opens on the title screen. **Continue** picks up your saved shop (the game saves
-every morning), **New game** starts over on day 1 (click twice if you have a save), and
+The game opens on the title screen. **Continue** picks up the shop you played last. There are
+three save slots, and each one saves every morning and again at the end of the day, so quitting
+on the summary carries on with the next morning. **Save slots** lists them with their day, shop,
+cash and save time, to play one, start a new shop in an empty one, or delete one (click twice).
+**New game** starts day 1 in the first empty slot and never erases a save, and
 **Settings** sets the currency, the volume of everything, music and effects, and fullscreen.
 In the shop, **Esc** or the **Menu** button pauses the game. **F11** toggles fullscreen anywhere.
 

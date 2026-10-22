@@ -9,14 +9,18 @@ var failures := 0
 
 
 func _ready() -> void:
-	# never touch the player's real save
-	SaveGame.path = "user://smoke_test_save.json"
-	SaveGame.delete_save()
+	# never touch the player's real saves
+	SaveGame.slot_prefix = "user://smoke_test_slot_"
+	SaveGame.meta_path = "user://smoke_test_slots.cfg"
+	SaveGame.legacy_path = "user://smoke_test_legacy.json"
+	_clear_slots()
+	SaveGame.set_slot(1)
 	_check_coins()
 	_check_fakes_are_detectable()
 	_check_stock()
 	_check_bills_and_upgrades()
 	_check_save_load()
+	_check_save_slots()
 	_check_jewellery()
 	_check_bars()
 	_check_vault_layout()
@@ -33,7 +37,8 @@ func _ready() -> void:
 	_check_music()
 	await _check_menus()
 	await _check_tutorial()
-	SaveGame.delete_save()
+	_clear_slots()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveGame.meta_path))
 	print("SMOKE TEST %s (%d failures)" % ["PASSED" if failures == 0 else "FAILED", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -143,6 +148,45 @@ func _check_save_load() -> void:
 	expect(Progress.tier == 1 and Progress.has_upgrade("alarm"), "tier and upgrades come back")
 	SaveGame.new_game()
 	expect(not SaveGame.has_save(), "new game deletes the save")
+
+
+func _clear_slots() -> void:
+	for n in range(1, SaveGame.SLOTS + 1):
+		SaveGame.delete_slot(n)
+
+
+func _check_save_slots() -> void:
+	_clear_slots()
+	expect(SaveGame.first_empty_slot() == 1 and SaveGame.continue_slot() == 0, "no saves: slot 1 is free, nothing to continue")
+	SaveGame.set_slot(1)
+	SaveGame.new_game()
+	Shop.day = 4
+	SaveGame.save_game()
+	SaveGame.set_slot(2)
+	SaveGame.new_game()
+	Shop.day = 11
+	SaveGame.save_game()
+	expect(SaveGame.peek(1).day == 4 and SaveGame.peek(2).day == 11, "each slot keeps its own shop")
+	expect(SaveGame.first_empty_slot() == 3, "the next new game goes in the empty slot")
+	SaveGame.set_slot(1)
+	expect(SaveGame.load_game() and Shop.day == 4, "switching slots loads that slot's shop")
+	expect(SaveGame.continue_slot() == 1, "Continue opens the slot played last")
+	var cfg := ConfigFile.new()
+	cfg.load(SaveGame.meta_path)
+	expect(int(cfg.get_value("saves", "last_slot", 0)) == 1, "the last slot played is remembered")
+	SaveGame.delete_slot(1)
+	expect(not SaveGame.slot_has_save(1) and SaveGame.slot_has_save(2), "deleting a slot leaves the others alone")
+	expect(SaveGame.continue_slot() == 2, "Continue falls back to the newest save")
+	expect(SaveGame.format_time(1761060240) != "", "save times format for the slots page")
+	# the single save from before slots becomes slot 1
+	var f := FileAccess.open(SaveGame.legacy_path, FileAccess.WRITE)
+	f.store_string(JSON.stringify({"version": 1, "shop": {"day": 7}}))
+	f.close()
+	SaveGame._migrate_legacy_save()
+	expect(SaveGame.peek(1).get("day", 0) == 7 and not FileAccess.file_exists(SaveGame.legacy_path), "an old save moves into slot 1")
+	_clear_slots()
+	SaveGame.set_slot(1)
+	SaveGame.new_game()
 
 
 func _check_market_events() -> void:
@@ -397,8 +441,16 @@ func _check_shop_day() -> void:
 	shop._vault.finished.emit(shop._vault.report)
 	expect(shop._vault == null and Day.phase == Day.AFTER_HOURS, "the day closes after the lock-up")
 	expect(shop.hud._panels.page == "summary", "the end-of-day summary is up")
-	shop._open_next_day()
-	expect(Shop.day == 2 and shop.paused and Day.phase == Day.MORNING, "next morning starts")
+	var night_save := SaveGame.peek()
+	expect(night_save.get("day_over", false) and night_save.get("day", 0) == 1, "the end of the day is autosaved")
+	# quit on the summary and launch again: the game carries on with the next morning
+	shop.queue_free()
+	await get_tree().process_frame
+	shop = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	expect(Shop.day == 2 and shop.paused and Day.phase == Day.MORNING, "a save from the night opens on the next morning")
+	expect(not SaveGame.peek().get("day_over", true), "the next morning is saved as a fresh day")
 	shop._open_shop()
 	expect(not shop.paused, "day 2 opens")
 	shop.queue_free()
@@ -961,15 +1013,31 @@ func _check_menus() -> void:
 		expect(false, "the title script loads")
 		return
 	expect(not title._continue.disabled and "Day 9" in title._save_info.text, "Continue shows the saved shop")
-	title._on_new_game()
-	expect(SaveGame.has_save() and title._confirm_new, "New game asks before erasing a save")
+	expect(SaveGame.first_empty_slot() == 2, "New game would start in a free slot, keeping day 9")
 	title._open_settings()
 	await get_tree().process_frame
 	expect(title._settings != null and not title._menu.visible, "Settings opens from the title")
 	title._settings.close()
 	expect(title._settings == null and title._menu.visible, "Settings closes back to the menu")
+	# fill every slot: New game then opens the slots page instead of erasing one
+	for n in range(2, SaveGame.SLOTS + 1):
+		SaveGame.set_slot(n)
+		SaveGame.save_game()
+	SaveGame.set_slot(1)
+	title._on_new_game()
+	await get_tree().process_frame
+	expect(title._slots != null and not title._menu.visible and "full" in title._slots._hint.text, "New game with every slot full opens the slots page")
+	expect(title._slots._rows.get_child_count() == SaveGame.SLOTS, "the slots page lists every slot")
+	title._slots._on_delete(3)
+	expect(SaveGame.slot_has_save(3), "Delete asks first")
+	title._slots._on_delete(3)
+	expect(not SaveGame.slot_has_save(3) and SaveGame.slot_has_save(2), "pressing Delete again clears only that slot")
+	title._slots.close()
+	await get_tree().process_frame
+	expect(title._slots == null and title._menu.visible and not title._continue.disabled, "the slots page closes back to the menu")
 	title.queue_free()
-	SaveGame.delete_save()
+	_clear_slots()
+	SaveGame.set_slot(1)
 	title = load("res://scenes/menu/title_screen.tscn").instantiate()
 	add_child(title)
 	await get_tree().process_frame
