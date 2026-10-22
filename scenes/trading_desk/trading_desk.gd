@@ -38,6 +38,8 @@ func _ready() -> void:
 	theme = UiTheme.get_theme()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	add_to_group("pad_hooks")
+	add_to_group("pad_targets")
 	if get_tree().current_scene == self:
 		start.call_deferred()
 		finished.connect(func(_p): get_tree().reload_current_scene())
@@ -111,6 +113,39 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 
 # ---------------------------------------------------------------- actions
+
+## Gamepad: LB and RB pick the row, RT buys and LT sells.
+func pad_action(name: String) -> bool:
+	if session == null:
+		return false
+	match name:
+		"lb":
+			select(posmod(selected - 1, session.board.size()))
+		"rb":
+			select(posmod(selected + 1, session.board.size()))
+		"rt":
+			buy()
+		"lt":
+			sell()
+		_:
+			return false
+	return true
+
+
+func pad_help() -> Array:
+	return [["LB / RB", "Previous / next row"], ["RT", "Buy"], ["LT", "Sell"]]
+
+
+## The board's rows are drawn, not buttons, so the d-pad is told where they are.
+func pad_targets() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	if session == null or closed:
+		return out
+	var xf := get_global_transform_with_canvas()
+	for i in session.board.size():
+		out.append(xf * Rect2(14, BOARD_Y + ROW_H * (i + 1), 288, ROW_H))
+	return out
+
 
 func select(i: int) -> void:
 	selected = clampi(i, 0, session.board.size() - 1)
