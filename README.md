@@ -18,7 +18,7 @@ platinum and palladium prices follow the real market.
 | `autoload/orders.gd` | `Orders` singleton: collectors' special orders, the rare coins they want, coins set aside for them and the dealer network |
 | `autoload/rivals.gd` | `Rivals` singleton: the rival shops in town (Sterling Bullion and Lucky's Pawn), how customers choose between them and you, the rivals' morning moves and your answers; saved with the game |
 | `autoload/calendar.gd` | `Calendar` singleton: the four seasons, the town events (tax season and Tax Day, gold fever week, the coin show and its booth, the holiday gift rush) and the customers they bring; saved with the game |
-| `autoload/staff.gd` | `Staff` singleton: the clerk and the guard you can hire, their signing fees, daily wages and effects |
+| `autoload/staff.gd` | `Staff` singleton: the clerk and the guard you can hire, their signing fees, daily wages and effects, and how they grow (levels, mood, raises, bad days) |
 | `autoload/save_game.gd` | `SaveGame` singleton: three save slots (`user://save_1.json` to `save_3.json`), saved every morning and at the end of each day; an old `save.json` becomes slot 1 |
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses, fullscreen and screen scaling, saved in `user://settings.cfg` |
 | `autoload/pad.gd` | `Pad` singleton: gamepad controls (a pointer on the left stick, d-pad jumps between buttons, scene shortcuts on the bumpers and triggers, the controls list) |
@@ -162,6 +162,18 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   **Rhonda the guard** stands by the door: break-ins drop by a third, till snatches almost
   stop, and she stops 70% of armed robbers before they reach the counter. Each costs a signing fee once and a daily wage at closing time, which rises as the shop
   grows. **Let go** takes them off the payroll.
+- **Staff progression.** Staff learn on the job: every day worked, every buyer the clerk serves
+  and every robber the guard stops is experience, up to level 5 (New, Steady, Skilled, Expert,
+  Veteran). Each level makes the clerk quicker and better at talking fussy buyers round to your
+  price, and the guard stops more robbers and break-ins. A better hand expects better pay: once
+  their wage lags their level they get fed up a little each day and ask for a raise in the
+  morning (**Staff** button on the morning panel). **Give the raise** lifts their wage 12% and
+  their mood; **Say no** stings, and they ask again a few days later. Low mood brings bad days: a
+  grumpy clerk is slow and won't haggle, a grumpy guard watches the door half as well, and
+  sometimes they call in sick (no wage that day). Anyone whose mood hits zero quits. The
+  **Staff** page shows each person's level, mood, wage and today's state.
+
+  ![The Staff page: levels, mood, wages and a raise request](docs/screenshots/staff.png)
 - **Hold-ups.** From day 2, now and then a man in a cap joins the queue. At the counter he pulls
   a gun and half the queue runs for the door. **Hand over till** loses the till's cash and nothing
   else. **Panic button** sets off the alarm: it scares him off 45% of the time (more with the

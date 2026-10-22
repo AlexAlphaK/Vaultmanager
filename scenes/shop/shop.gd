@@ -32,7 +32,6 @@ const JewelleryTestScene := preload("res://scenes/jewellery_test/jewellery_test.
 const BarTestScene := preload("res://scenes/bar_test/bar_test.tscn")
 const TradingDeskScene := preload("res://scenes/trading_desk/trading_desk.tscn")
 const STONE_NAMES := {"cz": "cubic zirconia", "glass": "glass", "moissanite": "moissanite"}
-const CLERK_SECONDS := 5.0 # how long the clerk takes to ring up a sale
 const VAULT_RUN_SECONDS := 3.0 # away from the counter while you take the till to the vault
 
 @onready var room: Node2D = $Room
@@ -230,7 +229,7 @@ func _update_rush() -> void:
 		return
 	_next_spawn = minf(_next_spawn, 1.0)
 	Sfx.play(self, Sfx.door_bell(), -4.0)
-	var help := "" if Staff.has("clerk") else " A clerk would help."
+	var help := "" if Staff.on_duty("clerk") else " A clerk would help."
 	Shop.log_event("%s! The queue keeps waiting while you test.%s" % [rush.name, help], "bad")
 
 
@@ -474,7 +473,7 @@ func _ring_up(c: Customer) -> Dictionary:
 ## The clerk takes a buyer from the queue to the second till. They leave you the
 ## customer at your counter, sellers (they don't test) and anyone they already sent back.
 func _clerk_tick(delta: float) -> void:
-	if not Staff.has("clerk"):
+	if not Staff.on_duty("clerk"):
 		return
 	if at_clerk:
 		if not at_clerk.walking:
@@ -490,7 +489,7 @@ func _clerk_tick(delta: float) -> void:
 			continue
 		queue.erase(c)
 		at_clerk = c
-		clerk_left = CLERK_SECONDS / (1.0 + Progress.effect("clerk_speed"))
+		clerk_left = Staff.clerk_seconds()
 		if c == _shown:
 			_shown = null
 			_show_front()
@@ -506,7 +505,14 @@ func _clerk_finish() -> void:
 		return
 	if c.hear_price(Shop.sell_premium):
 		var sale := _ring_up(c)
+		Staff.gain_xp("clerk", Staff.XP_PER_SALE)
 		_dismiss(c, "%s: %s" % [clerk, sale.text], sale.mood)
+		return
+	# a seasoned clerk can sometimes talk them round
+	if rng.randf() < Staff.clerk_persuade():
+		var sold := _ring_up(c)
+		Staff.gain_xp("clerk", Staff.XP_PER_SALE)
+		_dismiss(c, "%s talked them round. %s" % [clerk, sold.text], sold.mood)
 		return
 	# they want a better price than the clerk may give: back to the queue for you
 	c.clerk_tried = true
@@ -543,7 +549,7 @@ func _till_grab() -> void:
 
 ## A robber joins the queue looking like anyone else, unless the guard spots them first.
 func _robber_walks_in() -> void:
-	if Staff.has("guard") and rng.randf() < Security.GUARD_STOP:
+	if rng.randf() < Staff.guard_stop():
 		Shop.note("robbers_stopped")
 		Shop.log_event("%s stopped a man with a gun at the door. The police took him away." % Staff.ROLES.guard.name, "good")
 		Sfx.play(self, Sfx.door_bell(), -4.0)
@@ -750,11 +756,11 @@ func _on_vault_finished(night: Dictionary) -> void:
 	var holdups := int(Shop.stats.get("holdups", 0.0))
 	if holdups > 0:
 		report.lines.append("%s held up the counter today.%s" % ["A robber" if holdups == 1 else "%d robbers" % holdups,
-			"" if Staff.has("guard") else " A guard stops most of them at the door."])
+			"" if Staff.on_duty("guard") else " A guard stops most of them at the door."])
 	var missed := int(Shop.stats.get("walked_by", 0.0))
 	if missed > 0:
 		report.lines.append("%d customer%s saw the queue in the rush and walked on.%s" % [missed, "" if missed == 1 else "s",
-			"" if Staff.has("clerk") else " A clerk would keep the line moving."])
+			"" if Staff.on_duty("clerk") else " A clerk would keep the line moving."])
 	SaveGame.save_game() # autosave, so quitting on the summary does not replay the day
 	hud.show_day_summary(report)
 	summary_shown.emit()

@@ -162,6 +162,10 @@ func _morning(out: Dictionary) -> void:
 		if Progress.tier >= h[1] and Staff.can_hire(h[0]) and Shop.cash - Staff.ROLES[h[0]].fee >= Progress.weekly_rent() * bot.buffer + 8000.0:
 			Staff.hire(h[0])
 			out.upgrades[h[0]] = Shop.day
+	# the average and expert bots keep their staff happy; the novice never answers
+	if bot != BOTS.novice:
+		for id in Staff.raise_requests():
+			Staff.agree_raise(id)
 	_source_orders(out)
 	_restock(out)
 	# the average and expert bots read the town map and tip off the police
