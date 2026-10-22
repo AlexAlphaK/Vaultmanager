@@ -47,6 +47,8 @@ platinum and palladium prices follow the real market.
 | `tests/smoke_test.tscn` | Headless checks: run `godot --headless --path . res://tests/smoke_test.tscn` |
 | `tests/balance_sim.tscn` | Balance check: bot players run the real shop for many days (see Balance below) |
 | `tests/bug_bot.tscn` | Bug sweep: a bot clicks through the real game looking for stuck screens and save bugs (see Bug bots below) |
+| `tools/store/` | Steam store page capture: `capture.gd` plays a staged late-game day for the screenshots and the trailer, `key_art.gd` paints the capsules and the icon (see Steam store page below) |
+| `store/` | The Steam store page kit: screenshots, trailer, capsule art, icons and the store text (`store/store_page.md`) |
 | `price-service/` | Cloudflare Worker that polls the metals API and serves `GET /prices` |
 | `prototype/index.html` | Single-file browser prototype (simulated prices, coin testing minigame) |
 
@@ -370,6 +372,27 @@ main before the pass (6 seeds × 100 days, novice over 18 seeds): novice day-100
 → about $17-25k with 1-12 overdrawn days instead of 23, and some novices reach Main Street;
 average Main Street day 42 → 27 and Bullion house day 86 (4 of 6 runs) → 73 (all runs); expert
 unchanged at about day 16 / 34-40 / 71-76.
+
+## Steam store page
+
+`store/` holds everything for a Steam store page, made from the real game: nine 1920x1080
+screenshots, an 84-second 1080p trailer with the game's own music and sound, the capsule and
+library art at Steam's sizes, the icons, and the store text with a list of which file goes in
+which Steamworks field (`store/store_page.md`). The vault door icon is also the game's window icon.
+
+To rebuild it after the game changes (needs Godot 4.3, xvfb-run, ffmpeg and ImageMagick):
+
+```
+GODOT=path/to/godot tools/store/make_store_assets.sh               # everything, about 5 minutes
+GODOT=path/to/godot tools/store/make_store_assets.sh shots art     # skip the trailer
+```
+
+`tools/store/capture.gd` sets up a shop forty days in (the Town landmark with every upgrade, both
+staff and a full vault, in its own save slot), then plays the morning, the shop floor, each testing
+bench, a hold-up and the vault lock-up. With `--shots` it saves a screenshot at each stop; with
+`--trailer` it shows captions and Godot's movie maker records it. `tools/store/key_art.gd` paints the
+capsules from the title screen's art (the night sky, the shop at dusk and the gold logo), small, and
+scales them up by whole numbers so the pixels stay sharp.
 
 ## Bug bots
 
