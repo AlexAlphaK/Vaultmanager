@@ -1,6 +1,7 @@
 extends Control
 ## Breaking-news strip over the shop floor while a market event runs.
 ## The headline scrolls when it is wider than the strip; the line under it shows time left.
+## On a town event day (Calendar) it shows the event under a TOWN tag while no news breaks.
 
 const RECT := Rect2(2, 14, 312, 13)
 const TAG_W := 25
@@ -16,6 +17,8 @@ var _text: Label
 var _bar: ColorRect
 var _period := 0
 var _t := 0.0
+## The town event on show, or "" when the strip shows market news or nothing.
+var _town_id := ""
 
 
 func _ready() -> void:
@@ -46,34 +49,54 @@ func _ready() -> void:
 	_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	MarketEvents.started.connect(_show)
 	MarketEvents.ended.connect(func(_e): visible = false)
+	Day.phase_changed.connect(func(_p): _town_id = "")
 	visible = false
 	if not MarketEvents.active.is_empty():
 		_show(MarketEvents.active)
 
 
 func _process(delta: float) -> void:
-	if not visible:
-		return
 	var e := MarketEvents.active
 	if e.is_empty():
-		visible = false
+		_show_town()
+	if not visible:
 		return
 	_t += delta
-	_bar.size.x = floorf((size.x - 2) * clampf(float(e.left) / MarketEvents.EVENT_SECONDS, 0.0, 1.0))
-	# blink the tag while the story is breaking
-	_tag.visible = _t > 3.0 or fmod(_t, 0.5) < 0.35
+	if _town_id == "":
+		_bar.size.x = floorf((size.x - 2) * clampf(float(e.left) / MarketEvents.EVENT_SECONDS, 0.0, 1.0))
+		# blink the tag while the story is breaking
+		_tag.visible = _t > 3.0 or fmod(_t, 0.5) < 0.35
 	if _period > 0:
 		var shift := maxf(0.0, _t - HOLD_SECONDS) * SCROLL_SPEED
 		_text.position.x = -floorf(fmod(shift, _period))
 
 
+## While the shop is open on a town event day and no market news is breaking.
+func _show_town() -> void:
+	var town := Calendar.today() if Day.is_open() else {}
+	if town.is_empty():
+		_town_id = ""
+		visible = false
+		return
+	if _town_id == town.id and visible:
+		return
+	_town_id = town.id
+	_set_text(Calendar.banner(town), "TOWN", Pal.GOLD)
+	_tag.visible = true
+	_bar.size.x = size.x - 2
+
+
 func _show(e: Dictionary) -> void:
+	_town_id = ""
 	var good: bool = e.get("mood", "") == "good"
-	var accent := Pal.GOOD if good else Pal.BAD
+	_set_text(MarketEvents.headline(e), "NEWS", Pal.GOOD if good else Pal.BAD)
+
+
+func _set_text(line: String, tag: String, accent: Color) -> void:
+	_tag_label.text = tag
 	_tag.add_theme_stylebox_override("panel", UiTheme.box(accent.darkened(0.55), accent))
 	_tag_label.add_theme_color_override("font_color", accent.lightened(0.5))
 	_bar.color = accent.darkened(0.2)
-	var line := MarketEvents.headline(e)
 	_text.add_theme_color_override("font_color", Pal.INK)
 	if PixelFont.measure(line) > _clip.size.x:
 		_period = PixelFont.measure(line + GAP) + 1

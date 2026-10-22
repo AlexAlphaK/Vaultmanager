@@ -1,15 +1,16 @@
 class_name SettingsPanel
 extends PanelContainer
 ## The settings page, shared by the title screen and the pause menu: display currency,
-## volume for everything, music and effects, and fullscreen. Changes apply and save at once.
+## volume for everything, music and effects, fullscreen and scaling. Changes apply and save at once.
 
 signal closed
 
-const SIZE := Vector2(232, 118)
+const SIZE := Vector2(232, 134)
 const SLIDERS := [["Master", "Volume"], ["Music", "Music"], ["SFX", "Effects"]]
 
 var _percent := {}
 var _fullscreen: Button
+var _scaling: Button
 var _last_blip := 0
 
 
@@ -74,6 +75,16 @@ func _ready() -> void:
 	grid.add_child(_fullscreen)
 	_caption(grid, "F11", Pal.INK_FAINT)
 
+	_caption(grid, "Scaling")
+	_scaling = Button.new()
+	_scaling.custom_minimum_size = Vector2(72, 11)
+	_scaling.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_scaling.pressed.connect(func():
+		var next: int = (Settings.SCALINGS.find(Settings.scaling) + 1) % Settings.SCALINGS.size()
+		Settings.set_scaling(Settings.SCALINGS[next]))
+	grid.add_child(_scaling)
+	grid.add_child(Control.new())
+
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	box.add_child(spacer)
@@ -106,6 +117,7 @@ func _refresh() -> void:
 		_percent[bus].text = "%d%%" % roundi(Settings.volume[bus] * 100.0)
 	_fullscreen.set_pressed_no_signal(Settings.fullscreen)
 	_fullscreen.text = "On" if Settings.fullscreen else "Off"
+	_scaling.text = Settings.SCALING_NAMES[Settings.scaling]
 
 
 func _on_volume(value: float, bus: String) -> void:

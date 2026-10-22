@@ -1,7 +1,7 @@
 extends Node
-## Player settings: volume for the Master, Music and SFX buses, and fullscreen.
+## Player settings: volume for the Master, Music and SFX buses, fullscreen and screen scaling.
 ## Saved next to the currency choice in user://settings.cfg (Market keeps the currency).
-## F11 toggles fullscreen anywhere in the game.
+## F11 toggles fullscreen anywhere in the game. On a Steam Deck the game starts fullscreen.
 
 signal changed
 
@@ -12,12 +12,22 @@ var path := Market.SETTINGS_PATH
 ## Linear volume 0-1 per bus name.
 var volume := DEFAULTS.duplicate()
 var fullscreen := false
+## How the 480x270 picture is scaled up: "pixel" keeps every pixel the same size (whole
+## multiples, with a border if needed), "fill" fills the screen, "auto" picks pixel unless that
+## would waste a lot of the screen (the Steam Deck's 1280x800 would only get 960x540).
+var scaling := "auto"
+
+const SCALINGS := ["auto", "pixel", "fill"]
+const SCALING_NAMES := {"auto": "Auto", "pixel": "Pixel perfect", "fill": "Fill screen"}
+## In auto, whole-pixel scaling must use at least this much of what filling would.
+const AUTO_KEEP := 0.85
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_ensure_buses()
 	load_settings()
+	get_tree().root.size_changed.connect(_apply_scaling)
 
 
 func load_settings() -> void:
@@ -26,8 +36,12 @@ func load_settings() -> void:
 	for bus in BUSES:
 		volume[bus] = clampf(float(cfg.get_value("audio", bus.to_lower(), DEFAULTS[bus])), 0.0, 1.0)
 		_apply_volume(bus)
-	fullscreen = bool(cfg.get_value("video", "fullscreen", false))
+	fullscreen = bool(cfg.get_value("video", "fullscreen", on_steam_deck()))
+	scaling = str(cfg.get_value("video", "scaling", "auto"))
+	if not scaling in SCALINGS:
+		scaling = "auto"
 	_apply_fullscreen()
+	_apply_scaling()
 	changed.emit()
 
 
@@ -45,6 +59,37 @@ func set_fullscreen(on: bool) -> void:
 	_apply_fullscreen()
 	_save()
 	changed.emit()
+
+
+func set_scaling(mode: String) -> void:
+	if not mode in SCALINGS:
+		return
+	scaling = mode
+	_apply_scaling()
+	_save()
+	changed.emit()
+
+
+## Steam sets SteamDeck=1 for games on the Deck; its screen is also a telltale 1280x800.
+static func on_steam_deck() -> bool:
+	if OS.get_environment("SteamDeck") == "1":
+		return true
+	return DisplayServer.get_name() != "headless" and DisplayServer.screen_get_size() == Vector2i(1280, 800)
+
+
+## True if a window this size shows the game in whole-pixel steps.
+func whole_pixels(window: Vector2) -> bool:
+	if scaling != "auto":
+		return scaling == "pixel"
+	var fit := minf(window.x / 480.0, window.y / 270.0)
+	var whole := floorf(fit)
+	return whole >= 1.0 and whole / fit >= AUTO_KEEP
+
+
+func _apply_scaling() -> void:
+	var root := get_tree().root
+	var on := whole_pixels(Vector2(root.size))
+	root.content_scale_stretch = Window.CONTENT_SCALE_STRETCH_INTEGER if on else Window.CONTENT_SCALE_STRETCH_FRACTIONAL
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -84,4 +129,5 @@ func _save() -> void:
 	for bus in BUSES:
 		cfg.set_value("audio", bus.to_lower(), volume[bus])
 	cfg.set_value("video", "fullscreen", fullscreen)
+	cfg.set_value("video", "scaling", scaling)
 	cfg.save(path)

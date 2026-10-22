@@ -17,11 +17,13 @@ platinum and palladium prices follow the real market.
 | `autoload/wholesaler.gd` | `Wholesaler` singleton: the morning wholesaler's lots and prices (spot plus a markup that shrinks as the shop grows) |
 | `autoload/orders.gd` | `Orders` singleton: collectors' special orders, the rare coins they want, coins set aside for them and the dealer network |
 | `autoload/rivals.gd` | `Rivals` singleton: the rival shops in town (Sterling Bullion and Lucky's Pawn), how customers choose between them and you, the rivals' morning moves and your answers; saved with the game |
+| `autoload/calendar.gd` | `Calendar` singleton: the four seasons, the town events (tax season and Tax Day, gold fever week, the coin show and its booth, the holiday gift rush) and the customers they bring; saved with the game |
 | `autoload/staff.gd` | `Staff` singleton: the clerk and the guard you can hire, their signing fees, daily wages and effects |
 | `autoload/save_game.gd` | `SaveGame` singleton: three save slots (`user://save_1.json` to `save_3.json`), saved every morning and at the end of each day; an old `save.json` becomes slot 1 |
-| `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
+| `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses, fullscreen and screen scaling, saved in `user://settings.cfg` |
+| `autoload/pad.gd` | `Pad` singleton: gamepad controls (a pointer on the left stick, d-pad jumps between buttons, scene shortcuts on the bumpers and triggers, the controls list) |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
-| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 25 achievements; saved with the game |
+| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 28 achievements; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
@@ -61,6 +63,31 @@ Saves and settings live in `%APPDATA%\Godot\app_userdata\Vault Manager`, so a ne
 keeps your shop. The build is made by `.github/workflows/windows-build.yml` from the
 "Windows Desktop" preset in `export_presets.cfg`; to export by hand in the editor use
 **Project > Export > Windows Desktop**.
+
+## Controller and Steam Deck
+
+Any gamepad works (Xbox, PlayStation, Switch Pro, the Steam Deck's own controls). The game
+switches to the pad the moment you touch it and back to the mouse when you move the mouse.
+
+| Button | Does |
+| --- | --- |
+| Left stick | Move the pointer (push further to go faster) |
+| D-pad | Jump the pointer to the next button that way; on a volume slider, left and right change it; in the vault it stops on each piece, then cell by cell while you carry one |
+| A | Click; hold it to drag (vault pieces) |
+| B | Back (like Esc) |
+| X | Right click (turn a vault piece) |
+| Y | Confirm (like Enter: lock up the vault, finish an appraisal) |
+| LB / RB | Benches: previous / next tool. Trading desk: previous / next row |
+| LT / RT | Trading desk: sell / buy. Jewellery: diamond or not / next grade |
+| Right stick | Scroll lists |
+| Start | Pause menu |
+| View (Select) | Show the controls |
+
+**Scaling** (Settings): *Auto* keeps every pixel the same size unless that wastes a lot of the
+screen, *Pixel perfect* always does, *Fill screen* always fills it. On the Steam Deck (1280x800)
+Auto fills the screen at 2.67x with thin bars top and bottom, and the game starts fullscreen.
+To play on the Deck, add the Windows build to Steam as a non-Steam game and force Proton in its
+compatibility settings.
 
 ## How to play
 
@@ -190,7 +217,7 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   day to the next. The LED board on the back wall shows today's spot prices.
 - **The ledger.** The **Ledger** button on the morning panel shows your lifetime record: deals,
   money bought and sold, profit, fakes caught and missed, losses to thieves, your highest net
-  worth and stars, your profit streak and your three best days. **Achievements** lists 25 goals
+  worth and stars, your profit streak and your three best days. **Achievements** lists 28 goals
   (hover one to see how to earn it and how close you are). Earning one pops up in the log, and
   the day's summary lists what you earned and tells you when you've had your best day yet.
 
@@ -214,6 +241,60 @@ Fair deals build their loyalty (and slightly better prices); finish a story for 
 boost or a reward. Turn a regular away twice and they find another shop. If a regular wants a
 coin you don't have, they come back for it later. Story moments show up in the end-of-day
 summary, and everything is saved. The stories live in `Customers.REGULARS`.
+
+## Seasons and town events
+
+The town has a year of four seasons, two weeks each: day 1 is the first Monday of spring, and
+after winter the year starts again. Summer streets are a little busier and winter ones a
+little quieter. The tree outside the shop window blossoms, turns green, goes orange and
+loses its leaves, and in winter it snows. Each season brings one town event. The morning
+panel names the season and warns you a few days ahead, a gold TOWN strip runs over the shop
+while the event is on, and the shop opens with its first customers already at the door:
+
+| Season | Event | When | Who walks in |
+| --- | --- | --- | --- |
+| Spring | **Tax season** | days 8-11 | Sellers raising cash for their tax bills, taking a little less. On the last day, **Tax Day** takes 10% of your profit since the last Tax Day after bills, wages, theft and upgrades, so buying upgrades before it cuts the bill (the morning panel shows it) |
+| Summer | **Gold fever week** | days 1-7 | The town's Prospector Days festival: gold buyers paying 4 points more, and some sellers cashing in |
+| Autumn | **Town coin show** | the second weekend | Collectors. Book a **booth** on the morning panel (the day before or on the day, $1,500 times your deal size) and more of them come, paying 4 points more, and your name grows |
+| Winter | **Holiday gift rush** | days 6-12 | Gift shoppers who want small coins and pay a good premium |
+
+Town event customers shop around like anyone else, so the rival shops can still take them.
+The day's summary tells you how many event customers you served and what tomorrow brings.
+Three achievements go with them: Four seasons (trade a whole year), Show table (book a booth)
+and Season's greetings (serve 40 gift shoppers in one holiday rush). The events, dates and
+numbers live in `Calendar.EVENTS`, the window in `ShopArt._tree` and `ShopRoom._draw_weather`.
+In a debug build, **F10** on the morning panel skips ahead to the next town event.
+
+![The shop window through the seasons](docs/screenshots/seasons.png)
+
+![The morning before the coin show, with the booth button](docs/screenshots/coin_show_morning.png)
+![The holiday gift rush on the shop floor](docs/screenshots/holiday_rush.png)
+
+## Story
+
+A short campaign runs alongside the sandbox, from the corner counter to the Town landmark.
+**Mags Holloway** ran the corner counter for forty years and sold it to you. On day 2 she walks
+in and leaves a list of goals; the **Story** button on the morning panel shows her note, the
+chapter's goals and how far along each one is. Meet them all and the chapter closes: the summary
+says so, and Mags drops by at the next chance with a reward. **Victor Sterling**, who owns
+Sterling Bullion Co. across the street, comes over as you grow: to sneer, to declare a price war
+when you reach Main Street, and in the end to shake your hand.
+
+| Chapter | Goals | Reward |
+| --- | --- | --- |
+| 1. The corner counter | Catch 3 fakes, close 15 deals, finish your first week | $1,000 |
+| 2. Making a name | Reach 3 stars, get bigger than Lucky's Pawn, move to Main Street | $4,000 |
+| 3. Main Street | Fill 3 special orders, hire your first staff, move to the Bullion house | $10,000 |
+| 4. Across the street | Get bigger than Sterling Bullion, reach 4.5 stars, reach $400,000 net worth | $20,000 |
+| 5. The landmark | Open the Town landmark | +0.2 stars, and Mags cuts the ribbon |
+
+Goals count everything done so far, so a goal already met ticks off as soon as its chapter
+starts. A save from before the story starts at the first chapter it hasn't finished. Finishing
+the story earns **Apprentice no more**. The chapters live in `Story.CHAPTERS` and the visits in
+`Story.BEATS` (autoload/story.gd).
+
+![Mags's note and the chapter's goals](docs/screenshots/story_goals.png)
+![Mags Holloway at the counter](docs/screenshots/story_visit.png)
 
 ## Market events
 
@@ -255,7 +336,8 @@ Design doc: https://claude.ai/artifact/VqviQgHanNwibT95FhXgLV
 headless: they test or skip the bench, misread some fakes, haggle with the -/+ buttons, grade
 jewellery, pack the vault, empty the till, hire staff, buy upgrades, restock from the
 morning wholesaler and take special orders (buying rare coins from the dealer network the day
-before they're due). The average and expert bots also tip off the police about Lucky's.
+before they're due). The average and expert bots also tip off the police about Lucky's and
+book a booth at the coin show.
 Everything else, the rival shops included, is the
 game's own code. It prints when each bot reaches each tier, net worth and stars over time, and
 where the money came from and went.
@@ -267,7 +349,8 @@ Options: `--bots=novice,average,expert`, `--runs=N` seeds per bot, `--days=N`, `
 The knobs it tunes live in `Shop.REPUTATION`, `Customer.FAKE_ODDS` / `FAKE_ODDS_MAX` and the
 customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Wholesaler.MARKUP` / `LOT_RANGE`, the `Orders` constants, `Progress.TIERS`, `RushHours` and the `Rivals` constants
 (`PRICE_WEIGHT`, `STAR_WEIGHT`, `FAIR_SHARE`, `MAX_DIVERT`, `MAX_BOOST`, `SHOPS`). It also prints
-how many customers went to a rival and your median place in town.
+how many customers went to a rival and your median place in town, and how many town event
+customers each bot served (`Calendar.EVENTS`, `TAX_RATE`, `BOOTH_COST` and the `SEASONS` traffic).
 
 The shop is open for `Shop.DAY_SECONDS` (120 s of clock, 09:00 to 17:00; the clock stops at
 the testing benches outside rush hours). Customers arrive per second, not per day, so the daily

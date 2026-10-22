@@ -68,6 +68,7 @@ var _beeped := false
 var _loupe: ColorRect
 var _loupe_rim: TextureRect
 var _cells := {}
+var _pad_tool := -1
 var _grade_button: Button
 var _stone_button: Button
 var _values: Array[Label] = []
@@ -88,6 +89,8 @@ func start(c: Customer) -> void:
 
 
 func _ready() -> void:
+	add_to_group("pad_hooks")
+	add_to_group("pad_targets")
 	theme = UiTheme.get_theme()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -111,7 +114,7 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	Pad.hide_cursor(false)
 
 
 func _process(delta: float) -> void:
@@ -164,12 +167,49 @@ func _gui_input(event: InputEvent) -> void:
 			return
 
 
+## LB and RB step through the tools, the same as the number keys.
+func pad_action(name: String) -> bool:
+	if name != "lb" and name != "rb":
+		return _pad_trigger(name)
+	var list := TOOLS
+	_pad_tool = posmod(_pad_tool + (1 if name == "rb" else -1), list.size())
+	if _loupe.visible:
+		use_tool("loupe")
+	if list[_pad_tool] != "loupe" or not _loupe.visible:
+		use_tool(list[_pad_tool])
+	return true
+
+
+func pad_help() -> Array:
+	return [["LT", "Diamond or not"], ["RT", "Next grade"], ["LB / RB", "Previous / next tool"]]
+
+
+## LT flips the stone call, RT steps the grade.
+func _pad_trigger(name: String) -> bool:
+	if name == "lt":
+		toggle_stone()
+	elif name == "rt":
+		cycle_grade(1)
+	else:
+		return false
+	return true
+
+
+## The acid bottles are drawn, not buttons, so the d-pad is told where they are.
+func pad_targets() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	var xf := get_global_transform_with_canvas()
+	for i in JewelleryPiece.ACIDS.size():
+		out.append(xf * Rect2(_bottle_rect(i)))
+	return out
+
+
 func use_tool(tool: String) -> void:
 	used[tool] = true
 	if tool == "loupe":
 		_loupe.visible = not _loupe.visible
 		_loupe_rim.visible = _loupe.visible
-		Input.mouse_mode = Input.MOUSE_MODE_HIDDEN if _loupe.visible else Input.MOUSE_MODE_VISIBLE
+		Pad.hide_cursor(_loupe.visible)
 		Sfx.play(self, Sfx.click(), -10.0)
 		return
 	if tool == "tester" and piece.stone == "":
@@ -513,7 +553,7 @@ func _move_piece(to: Vector2, scale: float, onto_scale: bool) -> void:
 func _update_loupe() -> void:
 	if not _loupe.visible:
 		return
-	var m := get_local_mouse_position()
+	var m := Pad.mouse_in(self)
 	m.x = clampf(m.x, LOUPE_SIZE / 2.0, BENCH_W - LOUPE_SIZE / 2.0)
 	m.y = clampf(m.y, LOUPE_SIZE / 2.0, size.y - LOUPE_SIZE / 2.0)
 	_loupe.position = (m - Vector2(LOUPE_SIZE, LOUPE_SIZE) / 2.0).round()
