@@ -55,7 +55,7 @@ const CORE_BAR_FAKES := ["lead_core", "tungsten_core"]
 ## and cash it keeps back for sellers on top of the rent reserve.
 const SHELF := {"XAU": 8, "XAG": 40, "XPT": 3}
 const RESTOCK_RESERVE := 5000.0
-const EXPERT_ORDER := ["alarm", "window_sign", "digital_gauges", "queue_ropes", "bench", "xrf_gun", "fraud_cover",
+const EXPERT_ORDER := ["alarm", "cctv", "window_sign", "digital_gauges", "queue_ropes", "bench", "xrf_gun", "fraud_cover",
 	"case_lights", "long_counter", "sigma_verifier", "big_safe", "testing_lab", "radio_ads", "bar_dealer", "time_lock",
 	"lounge", "marble_counter", "workshop", "billboard", "trading_desk"]
 
@@ -112,7 +112,8 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 	shop.rng.seed = seed
 	var out := {"tier_day": [1, -1, -1, -1], "worth": [], "rep": [], "break_ins": 0, "stolen": 0.0, "fakes_bought": 0,
 		"caught": 0, "served": 0, "bills": 0.0, "overdrawn_days": 0, "upgrades": {}, "profit": 0.0,
-		"premium_income": 0.0, "lowest_cash": Shop.cash, "losses": {}, "gains": {}, "short_cash": 0, "out_of_stock": 0, "walked_by": 0, "restocked": 0.0}
+		"premium_income": 0.0, "lowest_cash": Shop.cash, "losses": {}, "gains": {}, "short_cash": 0, "out_of_stock": 0, "walked_by": 0,
+		"holdups": 0, "robbers_stopped": 0, "restocked": 0.0}
 	for d in days:
 		_morning(out)
 		_play_day(out)
@@ -201,6 +202,8 @@ func _play_day(out: Dictionary) -> void:
 		if c != null:
 			_serve(c, out)
 	out.walked_by += int(Shop.stats.get("walked_by", 0.0))
+	out.holdups += int(Shop.stats.get("holdups", 0.0))
+	out.robbers_stopped += int(Shop.stats.get("robbers_stopped", 0.0))
 	# the bot plays the vault itself, so the shop's own vault scene goes
 	if shop._vault:
 		shop._vault.get_parent().remove_child(shop._vault)
@@ -216,6 +219,9 @@ func _serve(c: Customer, out: Dictionary) -> void:
 	if c.kind == "visit":
 		shop._on_action("decline")
 		return
+	if c.kind == "robber":
+		_face_robber()
+		return
 	if c.kind == "buyer":
 		_sell_to(c, out)
 		return
@@ -228,6 +234,16 @@ func _serve(c: Customer, out: Dictionary) -> void:
 			_test(c, out)
 			return
 	_buy_from(c, out)
+
+
+## A hold-up. The novice guesses; the others weigh the till against what a failed
+## panic button costs (the till plus the best coins in the case).
+func _face_robber() -> void:
+	var panic := rng.randf() < 0.5
+	if bot != BOTS.novice:
+		var p := Security.panic_odds()
+		panic = (1.0 - p) * (shop.till + Security.grab_value(Security.case_grab())) < shop.till
+	shop._on_action("sell" if panic else "decline")
 
 
 ## Runs the bench for the customer's coins, piece or bar, and calls it.
@@ -402,6 +418,10 @@ func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) ->
 			bills -= e.usd
 		elif e.label == "Snatched from the till":
 			_add(out.losses, "till snatches", -e.usd)
+		elif e.label in ["Handed over in a hold-up", "Taken in a hold-up"]:
+			_add(out.losses, "hold-ups", -e.usd)
+		elif e.label == "Police recovered stolen goods":
+			_add(out.gains, "police recovered", e.usd)
 	out.bills += bills
 	_add(out.losses, "bills", bills)
 	for e in report.get("ledger", []):
@@ -446,6 +466,8 @@ func _print_summary(name: String, results: Array, days: int) -> void:
 		print("  %s per run: %s" % [side, ", ".join(bits)])
 	print("  per run: %.1f sellers turned away for lack of cash, %.1f buyers we had no stock for, %.1f walked by in rushes" % [
 		_sum(results, "short_cash") / n, _sum(results, "out_of_stock") / n, _sum(results, "walked_by") / n])
+	print("  per run: %.1f hold-ups at the counter, %.1f robbers stopped (guard or panic button)" % [
+		_sum(results, "holdups") / n, _sum(results, "robbers_stopped") / n])
 	print("  per run: %s bought from the wholesaler" % Market.format_money(_sum(results, "restocked") / n))
 	var ups := {}
 	for r in results:

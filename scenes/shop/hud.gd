@@ -101,7 +101,7 @@ func show_customer(c: Customer, idle_text := "") -> void:
 	_avatar.texture = c.frames[0]
 	_who.text = c.name
 	var tag := Customers.tag(c)
-	_wants.text = {"seller": "wants to sell", "buyer": "wants to buy", "visit": "stopped by to talk"}.get(c.kind, "")
+	_wants.text = {"seller": "wants to sell", "buyer": "wants to buy", "visit": "stopped by to talk", "robber": "HOLD-UP"}.get(c.kind, "")
 	if tag != "":
 		_wants.text = "%s · %s" % [tag, _wants.text]
 	_quote.text = "\"%s\"" % c.say
@@ -187,6 +187,19 @@ func _refresh_deal() -> void:
 		_buttons.decline.visible = true
 		_buttons.decline.text = "Goodbye"
 		return
+	if c.kind == "robber":
+		_deal[0].text = "Wants the till and the case"
+		_deal[0].add_theme_color_override("font_color", Pal.BAD)
+		_deal[1].text = "He won't wait long."
+		_deal[1].add_theme_color_override("font_color", Pal.INK)
+		_deal[2].text = "Panic button works %d%%" % roundi(Security.panic_odds() * 100.0)
+		_deal[2].add_theme_color_override("font_color", Pal.WARN)
+		_buttons.decline.visible = true
+		_buttons.decline.text = "Hand over till"
+		_buttons.sell.visible = true
+		_buttons.sell.disabled = false
+		_buttons.sell.text = "Panic button"
+		return
 	_deal[0].add_theme_color_override("font_color", Pal.INK)
 	if c.kind == "seller":
 		if c.piece:
@@ -224,6 +237,7 @@ func _refresh_deal() -> void:
 		_deal[2].text = "Price  %s" % Market.format_money(c.sale_total())
 		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
 		_buttons.sell.visible = true
+		_buttons.sell.text = "Sell"
 		_buttons.sell.disabled = have < c.qty
 		_buttons.decline.visible = true
 		_buttons.decline.text = "Out of stock" if have < c.qty else "Decline"

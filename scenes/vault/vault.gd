@@ -286,7 +286,11 @@ func _build_panel() -> void:
 	if layout.risk_scale < 1.0:
 		_label("Alarm: -%d%% risk" % roundi((1.0 - layout.risk_scale) * 100.0), Vector2(x + 96, 78), Pal.GOOD, 60, HORIZONTAL_ALIGNMENT_RIGHT)
 	_label("WALL SAFE", Vector2(x, 98), Pal.INK_FAINT)
-	_label("Cracked in %d%% of break-ins" % roundi(layout.areas[VaultLayout.WALL].crack * 100.0), Vector2(x, 107), Pal.INK_DIM, 156)
+	var crack: float = layout.areas[VaultLayout.WALL].crack
+	var text := "Crews crack it %d%% of the time" % roundi(Security.crack_chance("crew", crack) * 100.0)
+	if Progress.tier >= 1:
+		text = "Crews crack it %d%%, pros %d%%" % [roundi(Security.crack_chance("crew", crack) * 100.0), roundi(Security.crack_chance("pros", crack) * 100.0)]
+	_label(text, Vector2(x, 107), Pal.INK_DIM, 156)
 	_ui.title = _label("", Vector2(x, 122), Pal.GOLD, 156)
 	_ui.lines = []
 	for n in 3:
@@ -342,10 +346,18 @@ func _show_result() -> void:
 	else:
 		title = "Break-in!"
 		Sfx.play(self, Sfx.alarm(), -6.0)
-		lines.append("Burglars forced the back door at 3 a.m.")
+		var crew: Dictionary = Security.CREWS[report.crew]
+		title = "Break-in: %s!" % crew.name.to_lower() if report.crew != "crew" else "Break-in!"
+		lines.append(crew.line)
 		if stolen_from.has(VaultLayout.TRAY):
-			lines.append("Took everything on the counter tray: %s." % Market.format_money(stolen_from.tray))
-		if report.cracked.get(VaultLayout.WALL, false):
+			var all_out := layout.value_in(VaultLayout.TRAY)
+			if stolen_from.tray < all_out - 0.5:
+				lines.append("Grabbed the best of the counter tray: %s. They left the rest." % Market.format_money(stolen_from.tray))
+			else:
+				lines.append("Took everything on the counter tray: %s." % Market.format_money(stolen_from.tray))
+		if float(crew.wall) <= 0.0:
+			lines.append("They never touched the safes.")
+		elif report.cracked.get(VaultLayout.WALL, false):
 			lines.append("Cracked the wall safe: %s." % Market.format_money(stolen_from.get(VaultLayout.WALL, 0.0)))
 		else:
 			lines.append("They couldn't crack the wall safe.")
@@ -353,6 +365,8 @@ func _show_result() -> void:
 		if report.stolen.any(func(p): return p.kind == "ledger"):
 			lines.append("The customer ledger is gone. Reputation -%.1f." % VaultLayout.LEDGER_REPUTATION)
 		lines.append("Total lost: %s." % Market.format_money(report.value))
+		if report.get("recovered", 0.0) >= 1.0:
+			lines.append("The cameras caught them. Police got back %s." % Market.format_money(report.recovered))
 		Shop.log_event("Break-in overnight! Lost %s." % Market.format_money(report.value), "bad")
 	_result = PanelContainer.new()
 	add_child(_result)

@@ -6,6 +6,8 @@ extends Node2D
 ## after hours (summary), following the Day autoload. The game saves every morning.
 ## In the rush hours (RushHours) the clock keeps running while you test, so you juggle
 ## the counter, the benches and runs to the vault with the till; staff (Staff) help out.
+## Now and then a robber walks in with the customers (Security): the guard may stop
+## them at the door, otherwise you hand over the till or hit the panic button.
 ## On day 1 of a new game the Coach walks the player through it.
 
 signal bench_opened(bench: Control, c: Customer)
@@ -49,6 +51,9 @@ var away := 0.0
 ## The buyer at the clerk's till, and seconds left on their sale.
 var at_clerk: Customer
 var clerk_left := 0.0
+## The robber in the shop, if any, and whether they have pulled their gun yet.
+var robber: Customer
+var robber_revealed := false
 
 var _testing: Customer
 var _next_spawn := 3.0
@@ -63,6 +68,7 @@ var coach: Coach
 func _ready() -> void:
 	rng.randomize()
 	BullionBar.hook_up()
+	Security.hook_up()
 	hud.action.connect(_on_action)
 	hud.open_requested.connect(_open_shop)
 	hud.next_day_requested.connect(_open_next_day)
@@ -162,11 +168,14 @@ func _tick(delta: float) -> void:
 	_clerk_tick(delta)
 	if not closing and rng.randf() < RushHours.grab_chance(till, not rush.is_empty()) * delta:
 		_till_grab()
+	if not closing and robber == null and Tutorial.first_day_done and rng.randf() < Security.holdup_chance(till) * delta:
+		_robber_walks_in()
+	_robber_tick(delta)
 	# with a testing lab the queue frets less while you are at the bench
 	var calm := 1.0 - (clampf(Progress.effect("calm_queue"), 0.0, 1.0) if _test != null else 0.0)
 	for c in queue.duplicate():
 		# whoever is on the testing bench is watching you work
-		if c.walking or c == _testing:
+		if c.walking or c == _testing or c == robber:
 			continue
 		c.patience -= (delta if c == _front() else delta * 0.5) * calm
 		if c.patience <= 0.0:
@@ -279,6 +288,12 @@ func _on_action(id: String) -> void:
 	if c == null:
 		return
 	if c.kind == "visit" and id != "decline":
+		return
+	if c == robber:
+		if id == "decline":
+			_hand_over()
+		elif id == "sell":
+			_panic_button()
 		return
 	match id:
 		"test":
@@ -490,6 +505,99 @@ func _till_grab() -> void:
 	Shop.log_event("A thief grabbed %s from the till and ran! Take cash to the vault." % Market.format_money(taken), "bad")
 
 
+## A robber joins the queue looking like anyone else, unless the guard spots them first.
+func _robber_walks_in() -> void:
+	if Staff.has("guard") and rng.randf() < Security.GUARD_STOP:
+		Shop.note("robbers_stopped")
+		Shop.log_event("%s stopped a man with a gun at the door. The police took him away." % Staff.ROLES.guard.name, "good")
+		Sfx.play(self, Sfx.door_bell(), -4.0)
+		return
+	robber = Security.robber(rng)
+	robber_revealed = false
+	queue.append(robber)
+	Sfx.play(self, Sfx.door_bell(), -8.0)
+	Shop.log_event("A man in a cap walked in and kept his head down.")
+
+
+## At the counter the robber pulls a gun, the queue scatters and the clock on them starts.
+## If you don't answer in time, they help themselves.
+func _robber_tick(delta: float) -> void:
+	if robber == null or robber.leaving:
+		return
+	if robber != _front():
+		return
+	if not robber_revealed:
+		robber_revealed = true
+		Shop.note("holdups")
+		Sfx.play(self, Sfx.alarm(), -12.0)
+		Shop.log_event("Hold-up! The man in the cap pulled a gun at the counter.", "bad")
+		var fled := 0
+		for c in queue.duplicate():
+			if c != robber and c != _testing and rng.randf() < Security.QUEUE_FLEES:
+				fled += 1
+				_dismiss(c)
+		if fled > 0:
+			Shop.log_event("%d customer%s ran for the door." % [fled, "" if fled == 1 else "s"], "bad")
+		hud.show_customer(robber)
+		return
+	robber.patience -= delta
+	if robber.patience <= 0.0:
+		_robbed("You froze. He emptied the till")
+
+
+## Hands the till over: you lose the cash, and nobody gets hurt.
+func _hand_over() -> void:
+	var taken := till
+	till = 0.0
+	if taken > 0.0:
+		Day.add_expense("Handed over in a hold-up", taken)
+	Shop.note("stolen", taken)
+	_police_recover(taken)
+	_robber_leaves("You handed over %s from the till. He ran." % Market.format_money(taken))
+
+
+## The panic button: the alarm may scare him off empty-handed, or he grabs everything in reach.
+func _panic_button() -> void:
+	Sfx.play(self, Sfx.alarm(), -6.0)
+	if rng.randf() < Security.panic_odds():
+		Shop.note("robbers_stopped")
+		_robber_leaves("The alarm wailed and he bolted empty-handed!", "good")
+		return
+	_robbed("The alarm didn't scare him. He emptied the till")
+
+
+## The robber takes the till and sweeps the best coins out of the display case.
+func _robbed(how: String) -> void:
+	var taken := till
+	till = 0.0
+	if taken > 0.0:
+		Day.add_expense("Taken in a hold-up", taken)
+	var grab := Security.case_grab()
+	var coins := Security.grab_value(grab)
+	for e in grab:
+		Shop.remove_from_lot(e[0], e[1])
+	Shop.note("stolen", taken + coins)
+	_police_recover(taken + coins)
+	var what := "%s: %s gone" % [how, Market.format_money(taken)]
+	if coins > 0.0:
+		what += ", plus %s in coins from the case" % Market.format_money(coins)
+	_robber_leaves(what + ".", "bad")
+
+
+func _police_recover(usd: float) -> void:
+	var back := usd * Security.recover_share()
+	if back >= 1.0:
+		Day.add_income("Police recovered stolen goods", back)
+		Shop.log_event("The cameras caught his face. Police got back %s." % Market.format_money(back), "good")
+
+
+func _robber_leaves(text: String, mood := "bad") -> void:
+	var c := robber
+	robber = null
+	robber_revealed = false
+	_dismiss(c, text, mood)
+
+
 ## A headline breaks: the first few customers it brings come straight in.
 func _on_market_event(event: Dictionary) -> void:
 	if closing:
@@ -585,6 +693,10 @@ func _on_vault_finished(night: Dictionary) -> void:
 	var report := Day.end_day()
 	if night.get("break_in", false):
 		report.lines.append("Break-in overnight: lost %s." % Market.format_money(night.value))
+	var holdups := int(Shop.stats.get("holdups", 0.0))
+	if holdups > 0:
+		report.lines.append("%s held up the counter today.%s" % ["A robber" if holdups == 1 else "%d robbers" % holdups,
+			"" if Staff.has("guard") else " A guard stops most of them at the door."])
 	var missed := int(Shop.stats.get("walked_by", 0.0))
 	if missed > 0:
 		report.lines.append("%d customer%s saw the queue in the rush and walked on.%s" % [missed, "" if missed == 1 else "s",
@@ -625,6 +737,7 @@ func _new_game() -> void:
 	queue.clear()
 	leaving.clear()
 	at_clerk = null
+	robber = null
 	pending_fakes.clear()
 	pending_bars.clear()
 	SaveGame.new_game()

@@ -143,21 +143,29 @@ func risk(elapsed_share: float) -> float:
 	return clampf((0.04 + 0.5 * out_share() + 0.15 * clampf(elapsed_share, 0.0, 1.0)) * risk_scale, 0.0, 0.9)
 
 
-## Rolls the night. Returns {"break_in": bool, "cracked": {area: bool}, "stolen": [pieces], "value": USD}.
+## Rolls the night. Returns {"break_in": bool, "crew": Security.CREWS id or "", "cracked": {area: bool},
+## "stolen": [pieces], "value": USD}. Smash-and-grab kids only carry off the best few
+## pieces from the tray; crews work on the wall safe too. Nobody gets into the floor safe.
 func resolve(chance: float, rng: RandomNumberGenerator) -> Dictionary:
-	var report := {"break_in": rng.randf() < chance, "cracked": {}, "stolen": [], "value": 0.0}
+	var report := {"break_in": rng.randf() < chance, "crew": "", "cracked": {}, "stolen": [], "value": 0.0}
 	if not report.break_in:
 		return report
+	report.crew = Security.pick_crew(rng)
 	for area in areas:
-		report.cracked[area] = rng.randf() < areas[area].crack
-	for p in pieces:
-		if report.cracked[p.area]:
-			report.stolen.append(p)
-			report.value += p.value
+		report.cracked[area] = rng.randf() < Security.crack_chance(report.crew, areas[area].crack)
+	var carry: int = Security.CREWS[report.crew].carry
+	var taken := pieces.filter(func(p): return report.cracked[p.area])
+	if carry > 0:
+		var tray := taken.filter(func(p): return p.area == TRAY)
+		tray.sort_custom(func(a, b): return a.value > b.value)
+		taken = taken.filter(func(p): return p.area != TRAY) + tray.slice(0, carry)
+	for p in taken:
+		report.stolen.append(p)
+		report.value += p.value
 	return report
 
 
-## Takes the stolen pieces out of the shop.
+## Takes the stolen pieces out of the shop. With cameras, the police bring some back.
 func apply(report: Dictionary) -> void:
 	for p in report.stolen:
 		if p.get("cash", 0.0) > 0.0:
@@ -168,6 +176,9 @@ func apply(report: Dictionary) -> void:
 			Shop.adjust_reputation(-LEDGER_REPUTATION)
 	if report.break_in:
 		Shop.note("stolen", report.value)
+		report.recovered = report.value * Security.recover_share()
+		if report.recovered >= 1.0:
+			Day.add_income("Police recovered stolen goods", report.recovered)
 
 
 func _pack_coins(metal: String, entries: Array) -> void:

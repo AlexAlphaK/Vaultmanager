@@ -19,7 +19,7 @@ platinum and palladium prices follow the real market.
 | `autoload/save_game.gd` | `SaveGame` singleton: three save slots (`user://save_1.json` to `save_3.json`), saved every morning and at the end of each day; an old `save.json` becomes slot 1 |
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
-| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 20 achievements; saved with the game |
+| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 21 achievements; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
@@ -27,7 +27,7 @@ platinum and palladium prices follow the real market.
 | `items/counterfeit.gd` | The four kinds of fake (plated steel, brass, copper-nickel clad, tungsten core) and what each does to the readings |
 | `data/coins/*.tres` | Real coin specs (weight, purity, diameter, thickness) used by the testing minigame |
 | `scenes/menu/` | The title screen (main scene: Continue, New game, Settings, Quit) and the pause menu |
-| `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene); `rush_hours.gd` holds the busy hours and the till rules |
+| `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene); `rush_hours.gd` holds the busy hours and the till rules, `security.gd` the hold-ups and burglar crews |
 | `scenes/tutorial/coach.gd` | The coach: the cards of the guided first day (with three scripted customers) and the bench intros |
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
@@ -111,8 +111,10 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   tray as coin tubes, coin boxes, monster boxes, cash straps and the customer ledger. Drag them
   into the wall safe and the floor safe before the lights go out (right-click or R turns a piece,
   Enter locks up early). Anything left on the tray raises the break-in risk, and so does
-  locking up late. Burglars take everything on the tray, crack the wall safe 40% of the time,
-  and never get into the floor safe. Losing the ledger costs reputation. Moving to a bigger
+  locking up late. Three kinds of burglars come: **smash-and-grab kids** carry off the three
+  most valuable pieces on the tray and never touch the safes; a **safecracking crew** takes the
+  whole tray and cracks the wall safe 40% of the time; **professionals** (from Main Street up)
+  crack it 80% of the time. Nobody gets into the floor safe, so the best stock belongs there. Losing the ledger costs reputation. Moving to a bigger
   shop widens the floor safe, the Second safe upgrade adds a shelf to the wall safe, and the
   alarm upgrades cut the break-in odds. To try it on its own,
   open `scenes/vault/vault.tscn` in Godot and press F6.
@@ -126,9 +128,17 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
 - **Staff.** Hire them on the Upgrades page in the morning. **Benny the clerk** works a second
   till at the end of the counter: he sells coins to buyers at your price (sellers, who need
   testing, stay with you), and sends anyone who wants a better price back to your queue.
-  **Rhonda the guard** stands by the door: break-ins drop by a third and till snatches almost
-  stop. Each costs a signing fee once and a daily wage at closing time, which rises as the shop
+  **Rhonda the guard** stands by the door: break-ins drop by a third, till snatches almost
+  stop, and she stops 70% of armed robbers before they reach the counter. Each costs a signing fee once and a daily wage at closing time, which rises as the shop
   grows. **Let go** takes them off the payroll.
+- **Hold-ups.** From day 2, now and then a man in a cap joins the queue. At the counter he pulls
+  a gun and half the queue runs for the door. **Hand over till** loses the till's cash and nothing
+  else. **Panic button** sets off the alarm: it scares him off 45% of the time (more with the
+  alarm, the time lock and the guard, up to 90%), but if it fails he takes the till and sweeps the
+  best coins out of the display case. Wait too long (8 seconds) and he does that anyway. A full
+  till draws more robbers, and so does a bigger shop. **Security cameras** (an upgrade) cut
+  hold-ups by 40% and the police get back a third of what robbers and burglars take.
+  The rules live in `scenes/shop/security.gd`.
 - **Morning wholesaler.** Press **Restock** on the morning panel to buy coins before you open,
   at spot plus 3% (less in bigger shops). Each morning brings a few gold and platinum coins and
   a stack of silver; **+1** buys one, the second button buys a bulk lot. Walk-in sellers are
@@ -138,7 +148,7 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   day to the next. The LED board on the back wall shows today's spot prices.
 - **The ledger.** The **Ledger** button on the morning panel shows your lifetime record: deals,
   money bought and sold, profit, fakes caught and missed, losses to thieves, your highest net
-  worth and stars, your profit streak and your three best days. **Achievements** lists 20 goals
+  worth and stars, your profit streak and your three best days. **Achievements** lists 21 goals
   (hover one to see how to earn it and how close you are). Earning one pops up in the log, and
   the day's summary lists what you earned and tells you when you've had your best day yet.
 
