@@ -63,6 +63,8 @@ var _test: Control
 var _vault: Control
 var _pause: PauseMenu
 var coach: Coach
+## Particles, reactions and their sounds over the room.
+var fx: ShopFx
 
 
 func _ready() -> void:
@@ -80,6 +82,8 @@ func _ready() -> void:
 	var banner := NewsBanner.new()
 	hud.add_child(banner)
 	add_child(RushStrip.new(self))
+	fx = ShopFx.new(self)
+	room.add_child(fx)
 	MarketEvents.started.connect(_on_market_event)
 	if SaveGame.load_game():
 		if SaveGame.day_over: # saved at the end of the day: carry on with the next morning
