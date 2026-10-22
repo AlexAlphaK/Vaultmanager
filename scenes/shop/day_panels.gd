@@ -36,6 +36,7 @@ func _ready() -> void:
 	Orders.changed.connect(_refresh_page)
 	Records.changed.connect(_refresh_page)
 	Rivals.changed.connect(_refresh_page)
+	Calendar.changed.connect(_refresh_page)
 
 
 func hide_panel() -> void:
@@ -121,13 +122,23 @@ func _clear() -> void:
 func _build_morning() -> void:
 	_clear()
 	_title("%s, day %d" % [Day.weekday(), Shop.day])
-	_text("%s · morning. Set your prices on the right, then open up." % Progress.tier_name(), Pal.INK_DIM)
-	_text(_market_hint(), Pal.INK)
+	_text("%s · %s. Set your prices, then open up." % [Progress.tier_name(), Calendar.label()], Pal.INK_DIM)
+	var town := _town_hint()
+	if town != "":
+		_text(town, Pal.GOLD)
+	else:
+		_text(_market_hint(), Pal.INK)
 	_text(RushHours.summary(Shop.day), Pal.WARN)
 	if not Orders.open.is_empty():
 		_text(_orders_hint(), Pal.GOLD)
 	if not Rivals.news.is_empty():
-		_text("Town: " + Rivals.news[0], Pal.WARN).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		var rivals := _text("Town: " + Rivals.news[0], Pal.WARN)
+		# a busy morning keeps it to one line; the town map has the whole story
+		if Orders.open.is_empty():
+			rivals.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		else:
+			rivals.clip_text = true
+			rivals.text_overrun_behavior = TextServer.OVERRUN_TRIM_WORD_ELLIPSIS
 	_gap()
 	_heading("BILLS")
 	var grid := _grid()
@@ -172,7 +183,26 @@ func _build_morning() -> void:
 		var desk := _button(row, "Trading desk", "Button", func(): desk_requested.emit())
 		desk.disabled = not DeskSession.available()
 		desk.tooltip_text = "Trade at the desk this morning." if not desk.disabled else "The desk has traded today. Back tomorrow morning."
+	var show := Calendar.booth_event()
+	if not show.is_empty():
+		var booked := Calendar.has_booth(show)
+		var booth := _button(row, "Booth booked" if booked else "Booth " + Market.format_money(Calendar.booth_cost()),
+			"Button" if booked else "PrimaryButton", func(): Calendar.book_booth())
+		booth.disabled = not Calendar.can_book_booth()
+		booth.tooltip_text = "Your table at the coin show %s." % Calendar.when(Calendar.first_day(show)) if booked \
+			else "Book a table at the coin show: more collectors come, and they pay more."
 	_button(row, "Sure? Click again" if _confirm_new else "New game", "DangerButton", _on_new_game)
+
+
+## Today's town event, or one coming in the next few days, for the morning briefing.
+func _town_hint() -> String:
+	var e := Calendar.today()
+	if not e.is_empty():
+		return Calendar.morning_line(e)
+	var next := Calendar.next_event()
+	if Tutorial.first_day_done and not next.is_empty() and int(next.day) - Shop.day <= 3:
+		return Calendar.morning_line(next.event, int(next.day))
+	return ""
 
 
 ## The order due soonest, for the morning briefing.

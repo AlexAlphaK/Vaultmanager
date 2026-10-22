@@ -171,7 +171,9 @@ func due_regulars() -> Array[String]:
 func pick_archetype(rng: RandomNumberGenerator, event := {}) -> String:
 	var day := Shop.day
 	if not event.is_empty():
-		return "crypto_bro" if String(event.measure).begins_with("crypto") and rng.randf() < 0.5 else "walk_in"
+		if event.has("archetype"):
+			return event.archetype
+		return "crypto_bro" if String(event.get("measure", "")).begins_with("crypto") and rng.randf() < 0.5 else "walk_in"
 	var btc := absf(MarketEvents.move_of("crypto:BTC"))
 	var weights := {
 		"walk_in": 1.0,
@@ -245,7 +247,7 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 			if not rare.is_empty() and rng.randf() < 0.7:
 				c.item = rare[rng.randi() % rare.size()]
 				c.qty = 1
-				c.max_premium = c.item.collector_premium * rng.randf_range(0.8, 1.0)
+				c.max_premium = c.item.collector_premium * rng.randf_range(0.8, 1.0) + float(event.get("premium", 0.0))
 				c.ceiling_premium = c.max_premium
 				c.haggle = 0.0
 				c.max_patience *= 1.4
@@ -260,7 +262,7 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 			c.item = held[rng.randi() % held.size()] if not held.is_empty() and rng.randf() < 0.6 \
 				else Shop.coin_list()[rng.randi() % Shop.coin_list().size()]
 			c.qty = rng.randi_range(2, 6) if c.item.metal == "XAG" else rng.randi_range(1, 2)
-			c.max_premium = rng.randf_range(0.12, 0.18) + Progress.effect("premium")
+			c.max_premium = rng.randf_range(0.12, 0.18) + Progress.effect("premium") + float(event.get("premium", 0.0))
 			c.ceiling_premium = c.max_premium
 			c.haggle = 0.0
 			c.max_patience *= 1.4
@@ -365,6 +367,7 @@ func tag(c: Customer) -> String:
 ## The shop calls this as each customer leaves. Moves regulars' stories along.
 func on_leave(c: Customer) -> void:
 	Orders.on_leave(c)
+	Calendar.on_leave(c)
 	if c.regular_id == "" or not state.has(c.regular_id):
 		return
 	var reg: Dictionary = _by_id[c.regular_id]

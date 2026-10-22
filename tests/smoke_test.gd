@@ -3,7 +3,7 @@ extends Node
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, counter, bench
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
 ## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
-## shops on the town map, and the trading desk. Run:
+## shops on the town map, the trading desk, and the seasons and town events. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -44,6 +44,7 @@ func _ready() -> void:
 	_check_burglar_crews()
 	await _check_holdups()
 	await _check_rivals()
+	await _check_calendar()
 	_check_settings()
 	_check_music()
 	await _check_menus()
@@ -1106,6 +1107,183 @@ func _check_rivals() -> void:
 	panels.queue_free()
 	SaveGame.new_game()
 	expect(Rivals.is_open("pawn") and Rivals.passed.is_empty() and Rivals.ad_days == 0, "a new game resets the rivals")
+
+
+func _check_calendar() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	# the year: spring, summer, autumn and winter of two weeks each, then spring again
+	expect(Calendar.season(1).id == "spring" and Calendar.day_of_season(1) == 1, "day 1 is the first day of spring")
+	expect(Calendar.season(15).id == "summer" and Calendar.season(29).id == "autumn" and Calendar.season(56).id == "winter", "the seasons follow each other")
+	expect(Calendar.season(57).id == "spring" and Calendar.year(57) == 2, "a new year starts after winter")
+	expect(Calendar.label(9) == "Spring, day 9 of 14", "the morning names the season")
+	expect(Calendar.event_on(1).is_empty() and Calendar.event_on(8).id == "tax_season" and Calendar.event_on(11).id == "tax_season", "tax season in spring")
+	expect(Calendar.event_on(15).id == "gold_fever" and Calendar.event_on(21).id == "gold_fever" and Calendar.event_on(22).is_empty(), "gold fever week opens summer")
+	expect(Calendar.event_on(41).id == "coin_show" and Day.weekday(41) == "Saturday" and Day.weekday(42) == "Sunday", "the coin show is on autumn's second weekend")
+	expect(Calendar.event_on(48).id == "gift_rush" and Calendar.event_on(54).id == "gift_rush" and Calendar.event_on(105).id == "gift_rush", "the holiday rush comes every winter")
+	var next := Calendar.next_event(1)
+	expect(next.event.id == "tax_season" and int(next.day) == 8, "the next event is tax season on day 8")
+	next = Calendar.next_event(9)
+	expect(next.event.id == "gold_fever" and int(next.day) == 15, "the next event skips the one under way")
+	expect(Calendar.first_day(Calendar.EVENTS[3], 50) == 48 and Calendar.last_day(Calendar.EVENTS[3], 50) == 54, "an event knows its first and last day")
+	# no events while the tutorial still runs
+	Shop.day = 48
+	Tutorial.first_day_done = false
+	expect(Calendar.today().is_empty(), "no town events during the tutorial")
+	Tutorial.first_day_done = true
+	# the holiday rush: gift buyers who want small coins and pay a premium
+	expect(Calendar.today().id == "gift_rush", "the holiday rush is on today")
+	expect(Calendar.spawn_factor() < 0.9, "the holiday rush brings customers faster")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 21
+	var gifts := 0
+	var silver_qty := 0
+	for n in 200:
+		var e := Calendar.customer_event(rng)
+		if e.is_empty():
+			continue
+		var c := Customers.next_customer(rng, e)
+		if c.event_id == "gift_rush":
+			gifts += 1
+			expect(c.kind == "buyer", "gift shoppers buy")
+			if c.item.metal == "XAG":
+				silver_qty = maxi(silver_qty, c.qty)
+	expect(gifts > 80 and gifts < 140, "about half the customers come for the holiday rush (%d of 200)" % gifts)
+	expect(silver_qty > 0 and silver_qty <= 14, "gift shoppers want small amounts (%d silver at most)" % silver_qty)
+	# a winter day without an event is quieter than a spring one
+	Shop.day = 45
+	expect(Calendar.today().is_empty() and Calendar.spawn_factor() > 1.0, "winter keeps people at home")
+	# gold fever: gold buyers, with some sellers cashing in
+	Shop.day = 16
+	var kinds := {}
+	for n in 200:
+		var e := Calendar.customer_event(rng)
+		if not e.is_empty():
+			var c := Customers.next_customer(rng, e)
+			expect(c.item.metal == "XAU", "gold fever is all about gold")
+			kinds[c.kind] = int(kinds.get(c.kind, 0)) + 1
+	expect(int(kinds.get("buyer", 0)) > int(kinds.get("seller", 0)) and int(kinds.get("seller", 0)) > 0, "gold fever brings buyers and some sellers (%s)" % kinds)
+	# town crowds shop around: with a bad board they may cross the street
+	Shop.reputation = 0.5
+	Shop.set_sell_premium(0.2)
+	var shopper := Customers.next_customer(rng, {"id": "gold_fever", "kind": "buyer", "metal": "XAU", "lines": ["Gold!"]})
+	expect(Rivals.divert_odds(shopper) > 0.0, "town event customers can go to the rivals")
+	Shop.reputation = 2.5
+	Shop.set_sell_premium(Shop.DEFAULT_SELL_PREMIUM)
+	# the coin show: collectors, and more of them with a booth
+	Shop.day = 40
+	Shop.cash = 20000.0
+	Day.begin_day()
+	var show := Calendar.booth_event()
+	expect(show.get("id", "") == "coin_show" and Calendar.today().is_empty(), "the booth can be booked the morning before the show")
+	var cost := Calendar.booth_cost()
+	var stars := Shop.reputation
+	expect(Calendar.book_booth() and is_equal_approx(Shop.cash, 20000.0 - cost) and Shop.reputation > stars, "book a booth at the coin show")
+	expect(not Calendar.can_book_booth() and Calendar.booths == 1 and Records.is_earned("booth"), "one booth per show, and it earns Show table")
+	Shop.day = 41
+	Day.begin_day()
+	expect(Calendar.has_booth(Calendar.today()), "the booth is yours on the show's first day")
+	var collectors := 0
+	for n in 100:
+		var e := Calendar.customer_event(rng)
+		if not e.is_empty():
+			var c := Customers.next_customer(rng, e)
+			if c.archetype == "collector" and c.event_id == "coin_show":
+				collectors += 1
+	expect(collectors > 45, "a booth at the show brings collectors (%d of 100)" % collectors)
+	expect(Calendar.opening_rush() == 3, "collectors wait at the door")
+	Shop.day = 42
+	expect(Calendar.has_booth(Calendar.today()), "the booth lasts the whole weekend")
+	Shop.day = 97
+	expect(not Calendar.has_booth(Calendar.today()), "next year's show needs a new booth")
+	# Tax Day takes its share of the profit since the last one
+	Shop.day = 11
+	Shop.cash = 20000.0
+	Calendar.taxable = 0.0
+	Day.begin_day()
+	Shop.note("profit", 12000.0)
+	Shop.note("profit", -2000.0)
+	expect(is_equal_approx(Calendar.tax_due(), 1000.0) and int(Calendar.next_tax().day) == 11, "tax is 10% of the profit since the last Tax Day")
+	Day.open_shop()
+	Day.close_shop()
+	var report := Day.end_day()
+	expect(Day.ledger.any(func(l): return l.label == "Tax Day" and is_equal_approx(l.usd, -1000.0)), "Tax Day is paid when the shop closes")
+	expect(report.lines.any(func(l): return str(l).begins_with("Tax Day: you paid")), "the summary explains the tax")
+	expect(report.lines.any(func(l): return "tax season is over" in str(l)), "the summary closes the event")
+	expect(Calendar.taxable == 0.0 and int(Calendar.next_tax(12).day) == 67, "the next Tax Day is next spring")
+	# served event customers are counted, and the best rush earns an achievement
+	Shop.day = 48
+	Day.begin_day()
+	for n in 40:
+		var c := Customer.new()
+		c.event_id = "gift_rush"
+		c.dealt = true
+		Calendar.on_leave(c)
+	Records.check()
+	expect(Calendar.best_of("gift_rush") == 40 and Records.is_earned("gift_rush"), "40 gift shoppers in one rush earns Season's greetings")
+	# the summary warns about tomorrow's event, and the season's end
+	report = {"lines": []}
+	Calendar._on_day_ended(47, report)
+	expect(report.lines.any(func(l): return str(l).begins_with("Tomorrow: holiday gift rush")), "the summary warns about tomorrow's event")
+	report = {"lines": []}
+	Calendar._on_day_ended(42, report)
+	expect(report.lines.any(func(l): return "Autumn is over" in str(l)), "the summary marks the end of a season")
+	# save and load
+	var saved := Calendar.to_dict()
+	Calendar.reset()
+	Calendar.from_dict(JSON.parse_string(JSON.stringify(saved)))
+	expect(Calendar.booths == 1 and Calendar.best_of("gift_rush") == 40 and Calendar.booth_day == 41, "the calendar saves and loads")
+	# the window dresses for each season
+	for id in ["spring", "summer", "autumn", "winter"]:
+		var room := ShopArt.paint_room(false, id)
+		expect(room.width == ShopArt.SIZE.x, "the shop paints in %s" % id)
+	# the morning panel and the shop floor on an event day
+	Shop.day = 40
+	Day.begin_day()
+	var panels := DayPanels.new()
+	add_child(panels)
+	panels.show_morning()
+	var texts := []
+	for child in panels._box.get_children():
+		if child is Label:
+			texts.append(child.text)
+		for b in child.get_children():
+			if b is Button:
+				texts.append(b.text)
+	expect(texts.any(func(t): return str(t).begins_with("Town coin show tomorrow")), "the morning warns about the coin show")
+	expect(texts.any(func(t): return str(t).begins_with("Booth booked")), "the morning shows the booked booth")
+	panels.queue_free()
+	# every morning line fits on one line of the panel, even with the biggest tax bill
+	Calendar.taxable = 9999999.0
+	for d in range(1, Calendar.YEAR_DAYS + 1):
+		Shop.day = d
+		var line := panels._town_hint()
+		expect(PixelFont.measure(line) <= DayPanels.AREA.size.x - 16, "the morning line fits: " + line)
+	Calendar.taxable = 0.0
+	Shop.day = 48
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	shop.coach.skip()
+	expect(shop.room._season == "winter", "the shop window shows winter")
+	shop._open_shop()
+	expect(shop._rush_left == 2, "holiday shoppers wait at the door")
+	await get_tree().process_frame
+	var banner: Node = null
+	for child in shop.hud.get_children():
+		if child.get_script() == shop.NewsBanner:
+			banner = child
+	expect(banner != null and banner.visible and banner._tag_label.text == "TOWN", "the news strip shows the town event")
+	MarketEvents.start(MarketEvents.EVENTS[0], -1.5)
+	await get_tree().process_frame
+	expect(banner._tag_label.text == "NEWS", "breaking market news takes over the strip")
+	MarketEvents.stop()
+	await get_tree().process_frame
+	expect(banner.visible and banner._tag_label.text == "TOWN", "the town event comes back after the news")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.new_game()
+	expect(Calendar.booths == 0 and Calendar.taxable == 0.0, "a new game resets the calendar")
 
 
 func _check_rush_hours() -> void:

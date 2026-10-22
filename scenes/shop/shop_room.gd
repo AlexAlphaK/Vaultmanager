@@ -33,6 +33,7 @@ var _guard: Texture2D
 var _light := {}
 var _fit := {}
 var _cat: Array[Texture2D] = []
+var _season := ""
 var _time := 0.0
 ## Per customer: where they were last frame, which way they face, when they started leaving.
 var _last_pos := {}
@@ -42,8 +43,10 @@ var _left_at := {}
 
 func _ready() -> void:
 	for dusk in [false, true]:
-		_room[dusk] = ShopArt.paint_room(dusk).texture()
 		_light[dusk] = ShopAmbience.paint_light(dusk).texture()
+	_refresh_season()
+	Day.day_started.connect(func(_d): _refresh_season())
+	SaveGame.new_game_started.connect(_refresh_season)
 	_glass = ShopArt.paint_case_glass().texture()
 	var look := PeopleArt.keeper_look()
 	_keeper.append(PeopleArt.paint(look, PeopleArt.STAND).texture())
@@ -76,6 +79,16 @@ func _refresh_fit() -> void:
 		_front[dusk] = ShopArt.paint_front(dusk, fit).texture()
 
 
+## Repaints the walls when the season outside the window changes.
+func _refresh_season() -> void:
+	var id: String = Calendar.season().id
+	if id == _season:
+		return
+	_season = id
+	for dusk in [false, true]:
+		_room[dusk] = ShopArt.paint_room(dusk, id).texture()
+
+
 func _refresh_stock() -> void:
 	_shelf_stock = ShopArt.paint_shelf_stock(Shop.ounces_by_metal()).texture()
 	_case_stock = ShopArt.paint_case_stock(Shop.coins_on_display()).texture()
@@ -87,6 +100,7 @@ func _draw() -> void:
 	draw_texture(_light[dusk > 0.5], Vector2.ZERO)
 	_draw_board()
 	_draw_clock()
+	_draw_weather(dusk > 0.5)
 	ShopAmbience.draw_neon(self, _iso, _time, day_fraction < 1.0)
 	ShopAmbience.draw_camera_led(self, _iso, _time)
 	draw_texture(_shelf_stock, Vector2.ZERO)
@@ -106,6 +120,34 @@ func _draw() -> void:
 	_draw_customers()
 	if dusk > 0.0:
 		draw_rect(Rect2(Vector2.ZERO, ShopArt.SIZE), Color(0.08, 0.06, 0.22, dusk * 0.28))
+
+
+## Snow, falling leaves or blossom drifting past the window, by season.
+func _draw_weather(dusk: bool) -> void:
+	var col: Color
+	var count := 0
+	var speed := 0.0
+	match _season:
+		"winter":
+			col = Color("#f4f8ff") if not dusk else Color("#a0a8c0")
+			count = 14
+			speed = 5.0
+		"autumn":
+			col = Color("#e08a2a") if not dusk else Color("#80502a")
+			count = 4
+			speed = 7.0
+		"spring":
+			col = Color("#f4b8cc") if not dusk else Color("#8a6070")
+			count = 3
+			speed = 4.0
+		_:
+			return
+	# inside the glass of ShopArt._window: j 1.0-3.6, z 22-54
+	for n in count:
+		var drift := sin(_time * 1.3 + n * 2.1) * 0.08
+		var j := 1.2 + fmod(n * 0.61803, 1.0) * 2.2 + drift
+		var z := 52.0 - fmod(_time * speed + n * 7.3, 28.0)
+		draw_rect(Rect2(screen_pos(0.0, j, z).round(), Vector2.ONE), col)
 
 
 func _draw_board() -> void:
