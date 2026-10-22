@@ -27,6 +27,7 @@ func _ready() -> void:
 	await _check_jewellery_deals()
 	await _check_bar_deals()
 	_check_staff()
+	_check_wholesaler()
 	_check_rush_hours()
 	await _check_rush_day()
 	_check_settings()
@@ -701,6 +702,33 @@ func _check_staff() -> void:
 	expect(Staff.let_go("guard") and not Staff.has("guard") and is_equal_approx(Progress.effect("robbery_risk"), risk), "letting the guard go")
 	SaveGame.new_game()
 	expect(Staff.hired.is_empty(), "a new game starts with no staff")
+
+
+## The morning wholesaler sells genuine coins a little over melt, only before opening.
+func _check_wholesaler() -> void:
+	SaveGame.new_game()
+	Day.begin_day()
+	var eagle: BullionItem = Shop.coins["silver_eagle"]
+	var left := Wholesaler.left(eagle)
+	var lots := Wholesaler.lots.duplicate()
+	expect(left >= Wholesaler.LOT_RANGE.XAG.x, "the wholesaler has silver eagles this morning")
+	var each := Wholesaler.price(eagle)
+	expect(each > eagle.melt_value() and each < eagle.melt_value() * 1.1, "wholesale is a little over melt")
+	var cash := Shop.cash
+	var have := Shop.count_of_item(eagle)
+	expect(Wholesaler.buy(eagle, 10) == 10, "buy ten silver eagles")
+	expect(Shop.count_of_item(eagle) == have + 10 and Wholesaler.left(eagle) == left - 10, "the coins go into stock")
+	expect(is_equal_approx(Shop.cash, cash - each * 10), "the wholesaler is paid")
+	expect(Wholesaler.buy(eagle, 1000) == left - 10, "the lot runs out")
+	var platinum: BullionItem = Shop.coins["platinum_eagle"]
+	Shop.cash = Wholesaler.price(platinum) * 0.5
+	expect(Wholesaler.buy(platinum, 1) == 0, "no coins without the cash")
+	Shop.cash = 25000.0
+	Day.open_shop()
+	expect(Wholesaler.affordable(platinum, 1) == 0, "the wholesaler only delivers in the morning")
+	Day.begin_day()
+	expect(Wholesaler.lots == lots, "replaying a morning offers the same lots")
+	SaveGame.new_game()
 
 
 func _check_rush_hours() -> void:

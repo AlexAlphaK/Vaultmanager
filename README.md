@@ -14,6 +14,7 @@ platinum and palladium prices follow the real market.
 | `autoload/shop.gd` | `Shop` singleton: cash, reputation, stock and the day's results; stock is valued at live prices |
 | `autoload/day.gd` | `Day` singleton: day phases (morning, open, closing, after hours), the week, bills and the day's ledger |
 | `autoload/progress.gd` | `Progress` singleton: the four shop tiers, upgrades and their effects |
+| `autoload/wholesaler.gd` | `Wholesaler` singleton: the morning wholesaler's lots and prices (spot plus a markup that shrinks as the shop grows) |
 | `autoload/staff.gd` | `Staff` singleton: the clerk and the guard you can hire, their signing fees, daily wages and effects |
 | `autoload/save_game.gd` | `SaveGame` singleton: saves to `user://save.json` every morning, loads on launch |
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
@@ -123,6 +124,11 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   **Rhonda the guard** stands by the door: break-ins drop by a third and till snatches almost
   stop. Each costs a signing fee once and a daily wage at closing time, which rises as the shop
   grows. **Let go** takes them off the payroll.
+- **Morning wholesaler.** Press **Restock** on the morning panel to buy coins before you open,
+  at spot plus 3% (less in bigger shops). Each morning brings a few gold and platinum coins and
+  a stack of silver; **+1** buys one, the second button buys a bulk lot. Walk-in sellers are
+  still the cheaper way to stock up, so restock what buyers keep asking for, and leave cash in
+  hand for the sellers.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
 
@@ -185,7 +191,8 @@ Design doc: https://claude.ai/artifact/VqviQgHanNwibT95FhXgLV
 
 `tests/balance_sim.tscn` has three bots (novice, average, expert) play the real shop scene
 headless: they test or skip the bench, misread some fakes, haggle with the -/+ buttons, grade
-jewellery, pack the vault, empty the till, hire staff and buy upgrades. Everything else is the
+jewellery, pack the vault, empty the till, hire staff, buy upgrades and restock from the
+morning wholesaler. Everything else is the
 game's own code. It prints when each bot reaches each tier, net worth and stars over time, and
 where the money came from and went.
 
@@ -194,7 +201,7 @@ where the money came from and went.
 Options: `--bots=novice,average,expert`, `--runs=N` seeds per bot, `--days=N`, `--seed=N`, and
 `--csv=PATH` for one row per bot per day. A 100-day run takes a few minutes per bot.
 The knobs it tunes live in `Shop.REPUTATION`, `Customer.FAKE_ODDS` / `FAKE_ODDS_MAX` and the
-customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Progress.TIERS` and `RushHours`.
+customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Wholesaler.MARKUP` / `LOT_RANGE`, `Progress.TIERS` and `RushHours`.
 
 ## Data sources
 
