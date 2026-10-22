@@ -2,7 +2,7 @@ class_name DayPanels
 extends PanelContainer
 ## The panels over the shop floor between shop hours: the morning briefing, the
 ## upgrades, staff and expansion page, the floor plan where rooms are built, the town
-## map with the rival shops, the ledger of records and achievements, and the
+## map with the rival shops, the collectors' special orders, the ledger of records and achievements, and the
 ## end-of-day summary. Rebuilt each time one opens.
 
 signal open_requested
@@ -13,7 +13,7 @@ signal desk_requested
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
-var page := "" # "morning", "upgrades", "plan", "wholesale", "town", "ledger", "achievements", "summary" or "" when hidden
+var page := "" # "morning", "upgrades", "plan", "wholesale", "town", "orders", "ledger", "achievements", "summary" or "" when hidden
 ## The morning's Open the shop button, for the tutorial to point at.
 var open_button: Button
 var _box: VBoxContainer
@@ -33,6 +33,7 @@ func _ready() -> void:
 	Shop.changed.connect(_refresh_page)
 	Staff.changed.connect(_refresh_page)
 	Wholesaler.changed.connect(_refresh_page)
+	Orders.changed.connect(_refresh_page)
 	Records.changed.connect(_refresh_page)
 	Rivals.changed.connect(_refresh_page)
 
@@ -68,6 +69,11 @@ func show_town() -> void:
 	_build_town()
 
 
+func show_orders() -> void:
+	page = "orders"
+	_build_orders()
+
+
 func show_ledger() -> void:
 	page = "ledger"
 	_build_ledger()
@@ -95,6 +101,8 @@ func _refresh_page() -> void:
 		_build_wholesale()
 	elif page == "town":
 		_build_town()
+	elif page == "orders":
+		_build_orders()
 	elif page == "ledger":
 		_build_ledger()
 	elif page == "achievements":
@@ -116,6 +124,8 @@ func _build_morning() -> void:
 	_text("%s · morning. Set your prices on the right, then open up." % Progress.tier_name(), Pal.INK_DIM)
 	_text(_market_hint(), Pal.INK)
 	_text(RushHours.summary(Shop.day), Pal.WARN)
+	if not Orders.open.is_empty():
+		_text(_orders_hint(), Pal.GOLD)
 	if not Rivals.news.is_empty():
 		_text("Town: " + Rivals.news[0], Pal.WARN).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_gap()
@@ -150,6 +160,8 @@ func _build_morning() -> void:
 	_button(pages, "Upgrades (%d)%s" % [count, " !" if expand_ready else ""], "Button", show_upgrades)
 	_button(pages, "Restock", "Button", show_wholesale).tooltip_text = "Buy coins from the wholesaler before you open."
 	_button(pages, "Town map%s" % (" !" if not Rivals.news.is_empty() else ""), "Button", show_town).tooltip_text = "The rival shops, their prices and what they are up to."
+	if not Orders.open.is_empty():
+		_button(pages, "Orders (%d)" % Orders.open.size(), "Button", show_orders).tooltip_text = "Collectors' special orders and the dealer network."
 	_button(pages, "Ledger", "Button", show_ledger)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
@@ -161,6 +173,17 @@ func _build_morning() -> void:
 		desk.disabled = not DeskSession.available()
 		desk.tooltip_text = "Trade at the desk this morning." if not desk.disabled else "The desk has traded today. Back tomorrow morning."
 	_button(row, "Sure? Click again" if _confirm_new else "New game", "DangerButton", _on_new_game)
+
+
+## The order due soonest, for the morning briefing.
+func _orders_hint() -> String:
+	var next: Dictionary = Orders.open[0]
+	for o in Orders.open:
+		if int(o.due) < int(next.due):
+			next = o
+	var have := Orders.have_for(next)
+	var when := "today" if Orders.days_left(next) <= 0 else Day.weekday(int(next.due))
+	return "%s wants %d × %s %s. You hold %d." % [next.name, next.qty, Orders.item_of(next).display_name, when, have]
 
 
 func _market_hint() -> String:
@@ -456,6 +479,55 @@ func _town_button(parent: Control, text: String, enabled: bool, on_press: Callab
 	b.mouse_entered.connect(func():
 		if _hint:
 			_hint.text = desc)
+
+
+# ---------------------------------------------------------------- special orders
+
+func _build_orders() -> void:
+	_clear()
+	_title("Special orders")
+	_text("Find the coins by the day agreed. Coins for an order are set aside.", Pal.INK_DIM)
+	_gap()
+	var grid := _grid(4)
+	for caption in ["Collector", "Wants", "Have", "Due"]:
+		_cell(grid, caption, Pal.INK_FAINT)
+	for o in Orders.open:
+		var have := Orders.have_for(o)
+		var left := Orders.days_left(o)
+		_cell(grid, o.name, Pal.INK).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_cell(grid, "%d × %s" % [o.qty, Orders.item_of(o).display_name], Pal.INK)
+		_cell(grid, "%d/%d" % [have, o.qty], Pal.GOOD if have >= int(o.qty) else Pal.INK).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		_cell(grid, "today" if left <= 0 else Day.weekday(int(o.due)).left(3), Pal.BAD if left <= 0 else (Pal.WARN if left == 1 else Pal.INK_DIM))
+	var pays := 0.0
+	for o in Orders.open:
+		pays += Orders.price_of(o)
+	_text("Pays %s in all on delivery." % Market.format_money(pays), Pal.GOLD)
+	_gap()
+	var wanted := Orders.wanted_rare()
+	if not wanted.is_empty():
+		_heading("DEALER NETWORK")
+		var dealers := _grid(3)
+		for item in wanted:
+			var left := Orders.dealer_left(item)
+			_cell(dealers, item.display_name, Pal.INK).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			if left <= 0:
+				_cell(dealers, "none today", Pal.INK_FAINT)
+				_cell(dealers, "", Pal.INK)
+				continue
+			_cell(dealers, Market.format_money(Orders.dealer_price(item)), Pal.INK).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			var b := Button.new()
+			b.text = "Buy"
+			b.custom_minimum_size = Vector2(22, 11)
+			b.focus_mode = Control.FOCUS_NONE
+			b.disabled = Shop.cash < Orders.dealer_price(item)
+			b.theme_type_variation = "Button" if b.disabled else "PrimaryButton"
+			b.pressed.connect(func(): Orders.dealer_buy(item))
+			dealers.add_child(b)
+		_text("Dealers charge most of the collector's premium. Sellers bring old coins too.", Pal.INK_FAINT)
+	_spacer()
+	var row := HBoxContainer.new()
+	_box.add_child(row)
+	_button(row, "Back", "Button", show_morning)
 
 
 # ---------------------------------------------------------------- ledger

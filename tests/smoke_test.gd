@@ -36,6 +36,7 @@ func _ready() -> void:
 	await _check_bar_deals()
 	_check_staff()
 	_check_wholesaler()
+	await _check_orders()
 	_check_rush_hours()
 	await _check_rush_day()
 	await _check_shop_upgrades()
@@ -861,6 +862,137 @@ func _check_wholesaler() -> void:
 	SaveGame.new_game()
 
 
+## Collectors place special orders, the coins are set aside, and the collector comes back
+## to pay the agreed price (or the order falls through). Rare coins come from walk-in
+## sellers and the dealer network.
+func _check_orders() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	if not shop.has_method("_open_shop") or get_node_or_null("/root/Orders") == null:
+		expect(false, "the Orders autoload loads")
+		return
+	var double: BullionItem = Shop.coins.get("double_eagle_1924")
+	expect(double != null and double.rare and not Shop.coin_list().has(double), "rare coins load but stay off the everyday list")
+	expect(Shop.rare_list().size() >= 5 and Shop.rare_list().all(func(it): return it.collector_premium > 0.0), "every rare coin has a collector premium")
+	Shop.day = 5
+	Shop.reputation = 3.0
+	shop._open_shop()
+	shop.queue.clear()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	expect(Orders.can_take(), "orders can walk in from day %d" % Orders.MIN_DAY)
+	Orders.order_today = true
+	var offers := 0
+	for n in 200:
+		var walk := Orders.next_customer(rng)
+		if walk:
+			offers += 1
+	expect(offers == 1 and not Orders.order_today, "at most one new order a day")
+	# a collector asks for a coin; taking the order puts it on the books
+	var asks := Orders.offer_customer(rng)
+	asks.item = double
+	asks.qty = 1
+	asks.order.item = double.id
+	asks.order.qty = 1
+	asks.order.premium = 0.5
+	asks.order.due = Shop.day + 3
+	asks.pos = ShopArt.SLOTS[0]
+	shop.queue.append(asks)
+	await get_tree().process_frame
+	expect(asks.kind == "order" and shop._front() == asks, "a collector comes in with a special order")
+	shop.hud.show_customer(asks)
+	expect(shop.hud._buttons.sell.visible and shop.hud._buttons.sell.text == "Take order", "the counter card offers to take the order")
+	shop._on_action("sell")
+	expect(Orders.open.size() == 1 and not shop.queue.has(asks), "taking the order books it")
+	expect(Orders.next_customer(rng) == null or Orders.open.size() == 1, "the collector does not come back the same day")
+	# a seller may bring the wanted coin; it is set aside, not sold to walk-ins
+	var found := false
+	for n in 400:
+		var c := Customer.create(Shop.day, 3.0, Shop.coin_list(), rng)
+		c.kind = "seller"
+		c.piece = null
+		c.bar = null
+		Orders.maybe_rare_seller(c, rng)
+		if c.item == double:
+			found = true
+			expect(Customers.tag(c) == "old coin" or c.archetype == "shady", "the card tags an old coin")
+			break
+	expect(found, "walk-in sellers sometimes bring the coin a collector wants")
+	Shop.add_stock(double, 1, double.melt_value())
+	expect(Shop.count_of_item(double) == 1 and Shop.spare_of(double) == 0, "the rare coin is set aside for the order")
+	var gold_before := Shop.count_of("XAU")
+	var walk_in := Customer.create(Shop.day, 3.0, Shop.coin_list(), rng)
+	walk_in.kind = "buyer"
+	walk_in.item = Shop.coins["gold_eagle"]
+	walk_in.wanted_exact = false
+	walk_in.qty = 50
+	expect(walk_in.stock_have() == gold_before, "a walk-in buyer never sees rare coins")
+	# a bulk order sets everyday coins aside too
+	var maple: BullionItem = Shop.coins["silver_maple"]
+	Shop.add_stock(maple, 12, 25.0)
+	var silver := Shop.count_of("XAG")
+	Orders.open.append({"id": 99, "name": "Mr. Bulk", "look": 1, "item": maple.id, "qty": 10, "premium": 0.12,
+		"placed": Shop.day, "due": Shop.day, "visited": 0})
+	expect(Shop.count_of("XAG") == silver - 10 and Shop.spare_of(maple) == 2, "bulk order coins are held back")
+	Shop.take_stock("XAG", 1000)
+	expect(Shop.count_of_item(maple) == 10 and Shop.count_of_item(double) == 1, "selling to walk-ins leaves the set-aside coins")
+	# the bulk collector is due today and picks up first, at the agreed price
+	var pickup := Orders.next_customer(rng)
+	expect(pickup != null and pickup.order.item == maple.id and pickup.kind == "buyer", "the collector comes back on the due day")
+	Shop.sell_premium = 0.02
+	expect(pickup.hear_price(Shop.sell_premium) and is_equal_approx(pickup.sale_total(), maple.melt_value() * 10 * 1.12), "they pay the agreed premium")
+	var rep := Shop.reputation
+	pickup.pos = ShopArt.SLOTS[0]
+	shop.queue.append(pickup)
+	await get_tree().process_frame
+	shop._on_action("sell")
+	expect(pickup.dealt and Shop.count_of_item(maple) == 0 and Orders.open.size() == 1, "the order is filled")
+	expect(Shop.reputation > rep and Shop.stats.get("orders_filled", 0.0) == 1.0, "a filled order earns reputation")
+	# the rare coin is already here, so its collector comes early, the next day
+	expect(Orders.next_customer(rng) == null, "one visit a day")
+	Shop.day += 1
+	var early := Orders.next_customer(rng)
+	expect(early != null and early.item == double, "the collector comes early once you hold the coin")
+	early.pos = ShopArt.SLOTS[0]
+	shop.queue.append(early)
+	await get_tree().process_frame
+	shop._on_action("decline")
+	expect(Orders.open.size() == 1, "turning them away early keeps the order open")
+	# save and load keep the order
+	SaveGame.save_game()
+	Orders.reset()
+	SaveGame.load_game()
+	expect(Orders.open.size() == 1 and Orders.open[0].item == double.id, "open orders are saved")
+	# on the due day without the coin, the order falls through
+	Shop.take_stock("XAU", 1, double)
+	Shop.day = int(Orders.open[0].due)
+	var due := Orders.next_customer(rng)
+	expect(due != null and due.stock_have() == 0, "the collector comes on the due day")
+	rep = Shop.reputation
+	due.pos = ShopArt.SLOTS[0]
+	shop.queue.append(due)
+	await get_tree().process_frame
+	shop._on_action("decline")
+	expect(Orders.open.is_empty() and Shop.reputation < rep, "a missed order costs reputation")
+	# the dealer network sells a wanted rare coin in the morning, at most of the premium
+	Orders.open.append({"id": 100, "name": "Dr. Ng", "look": 2, "item": double.id, "qty": 1, "premium": 0.5,
+		"placed": Shop.day, "due": Shop.day + 4, "visited": Shop.day})
+	Day.phase = Day.MORNING
+	Orders.dealer[double.id] = 1
+	Shop.cash = 50000.0
+	expect(Orders.dealer_price(double) > double.melt_value() * 1.3, "the dealer charges a finder's fee")
+	expect(Orders.dealer_buy(double) and Shop.count_of_item(double) == 1 and not Orders.dealer_buy(double), "buy the one coin the dealer found")
+	# a collector off the street pays a collector's price for a spare rare coin
+	Orders.open.clear()
+	var col := Customer.create(Shop.day, 3.0, Shop.coin_list(), rng)
+	Customers.apply_archetype(col, "collector", rng)
+	if col.item == double:
+		expect(col.fixed_price() and col.sale_total() > double.melt_value() * 1.3, "collectors pay well for a rare coin")
+	shop.queue_free()
+	SaveGame.new_game()
 ## The rival shops: who wins the town's customers, Sterling's repricing, the rivals'
 ## moves and your answers, their books and the town map.
 func _check_rivals() -> void:

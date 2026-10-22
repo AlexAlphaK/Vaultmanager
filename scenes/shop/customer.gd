@@ -59,6 +59,9 @@ var regular_id := ""
 var beat := -1
 ## Collectors want this exact coin, not just the metal.
 var wanted_exact := false
+## The special order (see Orders) this collector is placing (kind "order") or picking up.
+## A pickup pays the agreed premium, whatever the shop's prices.
+var order := {}
 ## How the visit ended, read by Customers when they leave.
 var dealt := false
 var caught := false
@@ -195,7 +198,7 @@ func hear_offer(offer: float) -> bool:
 
 ## The buyer hears your price (premium over melt). True means sold.
 func hear_price(premium: float) -> bool:
-	if premium <= max_premium + 0.0001:
+	if premium <= max_premium + 0.0001 or fixed_price():
 		return true
 	tries += 1
 	patience -= 15.0
@@ -218,7 +221,8 @@ func hear_price(premium: float) -> bool:
 ## Coins the shop holds that this customer would buy.
 func stock_have() -> int:
 	if wanted_exact:
-		return Shop.count_of_item(item)
+		# a collector picking up their order gets the coins set aside for it
+		return Shop.count_of_item(item) if not order.is_empty() else Shop.spare_of(item)
 	return Shop.count_of(item.metal)
 
 
@@ -246,4 +250,9 @@ func offer_total() -> float:
 
 
 func sale_total() -> float:
-	return melt_total() * (1.0 + Shop.sell_premium)
+	return melt_total() * (1.0 + (max_premium if fixed_price() else Shop.sell_premium))
+
+
+## Collectors pay their own price for a rare coin or a special order, not the shop's.
+func fixed_price() -> bool:
+	return kind == "buyer" and (not order.is_empty() or (item != null and item.rare))
