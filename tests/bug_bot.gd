@@ -20,7 +20,7 @@ const SAVE_PREFIX := "user://bug_bot_%d_slot_"
 ## Game seconds with no progress before a screen counts as stuck.
 const STUCK_SECONDS := 150.0
 ## ...and at least this many clicks and drags tried in that time.
-const STUCK_ACTIONS := 600
+const STUCK_ACTIONS := 1200
 ## Saved fields that legitimately change when a shop loads or a new one starts.
 const VOLATILE := ["saved_unix", "log", "lots_seed", "seed"]
 
@@ -50,6 +50,8 @@ var _settings_backup := ""
 var _seen := {}
 var _reload_day := -1
 var _new_shop := false
+## The last few things the bot did, for the stuck report.
+var _recent: Array[String] = []
 
 
 func _ready() -> void:
@@ -271,6 +273,9 @@ func _key(code: Key) -> void:
 
 
 func _note_action(what: String) -> void:
+	_recent.append("%s %s: %s" % [Day.phase, _page(), what])
+	if _recent.size() > 25:
+		_recent.pop_front()
 	if actions % 50 == 0 or OS.has_environment("BUG_BOT_VERBOSE"):
 		print("  [%s day %d %s $%d] %s" % [_where(), Shop.day, Day.phase, Shop.cash, what])
 
@@ -328,7 +333,8 @@ func _watch_progress(delta: float) -> void:
 	# at high speed a frame can cover several game seconds, so count the bot's tries too
 	if _still > STUCK_SECONDS and actions - _still_actions > STUCK_ACTIONS and not _stuck_reported:
 		_stuck_reported = true
-		_report("stuck", "no progress for %.0f game seconds and %d actions. %s" % [_still, actions - _still_actions, _describe()])
+		_report("stuck", "no progress for %.0f game seconds and %d actions. %s. Last actions: %s" % [_still,
+			actions - _still_actions, _describe(), " | ".join(_recent)])
 		# get going again, the way a player would: back to the title
 		get_tree().paused = false
 		get_tree().change_scene_to_file(TitleScene)
@@ -355,6 +361,11 @@ func _describe() -> String:
 					off.append("%s at %s" % [_label(b), b.get_global_rect().position])
 			bits.append("panel '%s' at %s, off-screen buttons [%s]" % [panels.page, panels.get_global_rect(), ", ".join(off)])
 	return "; ".join(bits)
+
+
+func _page() -> String:
+	var shop := _shop()
+	return shop.hud._panels.page if shop and shop.is_node_ready() else ""
 
 
 func _where() -> String:
