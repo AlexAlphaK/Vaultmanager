@@ -77,8 +77,8 @@ func _ready() -> void:
 	var days := int(args.get("days", 120))
 	var first_seed := int(args.get("seed", 1))
 	var names: PackedStringArray = String(args.get("bots", "novice,average,expert")).split(",")
-	# each process gets its own save, so several sims can run side by side
-	SaveGame.path = "user://balance_sim_%s.json" % String(args.get("bots", "all")).replace(",", "_")
+	# each process gets its own save, so several sims (other bots or seeds) can run side by side
+	SaveGame.path = "user://balance_sim_%s_%d.json" % [String(args.get("bots", "all")).replace(",", "_"), first_seed]
 	SaveGame.delete_save()
 	_quiet_market()
 	if args.has("csv"):
