@@ -3,7 +3,8 @@ extends Node
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, counter, bench
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
 ## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
-## shops on the town map, and the trading desk. Run:
+## shops on the town map, the story campaign, the trading desk, gamepad controls with screen
+## scaling, and the seasons and town events. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -44,9 +45,12 @@ func _ready() -> void:
 	_check_burglar_crews()
 	await _check_holdups()
 	await _check_rivals()
+	await _check_calendar()
+	await _check_story()
 	_check_settings()
 	_check_music()
 	await _check_menus()
+	await _check_pad()
 	await _check_tutorial()
 	_clear_slots()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveGame.meta_path))
@@ -1013,6 +1017,12 @@ func _check_rivals() -> void:
 	Shop.reputation = 4.5
 	expect(Rivals.overall_share() > share, "stars win customers too")
 	expect(Rivals.share("seller", "shady") < Rivals.share("seller"), "shady sellers drift to the pawn shop")
+	var quiet := true
+	for d in range(3, 40):
+		Rivals._on_day_started(d)
+		quiet = quiet and Rivals.move_of("sterling") == ""
+	expect(Progress.tier == 0 and quiet, "Sterling leaves a corner counter alone")
+	Rivals.reset()
 	# terrible prices and a bad name send people across the street
 	Shop.reputation = 0.5
 	Shop.set_buy_percent(0.7)
@@ -1020,7 +1030,8 @@ func _check_rivals() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 11
 	var c := Customer.create(5, 0.5, Shop.coin_list(), rng)
-	expect(Rivals.divert_odds(c) > 0.3, "a bad deal sends customers to the rivals")
+	# the corner counter's customers are mostly locals, so at most MAX_DIVERT[0] cross the street
+	expect(Rivals.divert_odds(c) > 0.15, "a bad deal sends customers to the rivals")
 	c.regular_id = "lev"
 	expect(Rivals.divert_odds(c) == 0.0, "regulars always come in")
 	c.regular_id = ""
@@ -1036,7 +1047,7 @@ func _check_rivals() -> void:
 		shop._spawn()
 		shop.queue.clear()
 	var lost := int(Shop.stats.get("lost_to_rival", 0.0))
-	expect(lost >= 8, "the shop loses customers to the rivals (%d of 40)" % lost)
+	expect(lost >= 4, "the shop loses customers to the rivals (%d of 40)" % lost)
 	expect(int(Rivals.lost_today.get("sterling", 0)) + int(Rivals.lost_today.get("pawn", 0)) == lost, "each lost customer is booked to a rival")
 	# the rivals' books: they grow, and the summary says where the customers went
 	var worth := Rivals.worth_of("sterling")
@@ -1108,6 +1119,289 @@ func _check_rivals() -> void:
 	expect(Rivals.is_open("pawn") and Rivals.passed.is_empty() and Rivals.ad_days == 0, "a new game resets the rivals")
 
 
+func _check_calendar() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	# the year: spring, summer, autumn and winter of two weeks each, then spring again
+	expect(Calendar.season(1).id == "spring" and Calendar.day_of_season(1) == 1, "day 1 is the first day of spring")
+	expect(Calendar.season(15).id == "summer" and Calendar.season(29).id == "autumn" and Calendar.season(56).id == "winter", "the seasons follow each other")
+	expect(Calendar.season(57).id == "spring" and Calendar.year(57) == 2, "a new year starts after winter")
+	expect(Calendar.label(9) == "Spring, day 9 of 14", "the morning names the season")
+	expect(Calendar.event_on(1).is_empty() and Calendar.event_on(8).id == "tax_season" and Calendar.event_on(11).id == "tax_season", "tax season in spring")
+	expect(Calendar.event_on(15).id == "gold_fever" and Calendar.event_on(21).id == "gold_fever" and Calendar.event_on(22).is_empty(), "gold fever week opens summer")
+	expect(Calendar.event_on(41).id == "coin_show" and Day.weekday(41) == "Saturday" and Day.weekday(42) == "Sunday", "the coin show is on autumn's second weekend")
+	expect(Calendar.event_on(48).id == "gift_rush" and Calendar.event_on(54).id == "gift_rush" and Calendar.event_on(105).id == "gift_rush", "the holiday rush comes every winter")
+	var next := Calendar.next_event(1)
+	expect(next.event.id == "tax_season" and int(next.day) == 8, "the next event is tax season on day 8")
+	next = Calendar.next_event(9)
+	expect(next.event.id == "gold_fever" and int(next.day) == 15, "the next event skips the one under way")
+	expect(Calendar.first_day(Calendar.EVENTS[3], 50) == 48 and Calendar.last_day(Calendar.EVENTS[3], 50) == 54, "an event knows its first and last day")
+	# no events while the tutorial still runs
+	Shop.day = 48
+	Tutorial.first_day_done = false
+	expect(Calendar.today().is_empty(), "no town events during the tutorial")
+	Tutorial.first_day_done = true
+	# the holiday rush: gift buyers who want small coins and pay a premium
+	expect(Calendar.today().id == "gift_rush", "the holiday rush is on today")
+	expect(Calendar.spawn_factor() < 0.9, "the holiday rush brings customers faster")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 21
+	var gifts := 0
+	var silver_qty := 0
+	for n in 200:
+		var e := Calendar.customer_event(rng)
+		if e.is_empty():
+			continue
+		var c := Customers.next_customer(rng, e)
+		if c.event_id == "gift_rush":
+			gifts += 1
+			expect(c.kind == "buyer", "gift shoppers buy")
+			if c.item.metal == "XAG":
+				silver_qty = maxi(silver_qty, c.qty)
+	expect(gifts > 80 and gifts < 140, "about half the customers come for the holiday rush (%d of 200)" % gifts)
+	expect(silver_qty > 0 and silver_qty <= 14, "gift shoppers want small amounts (%d silver at most)" % silver_qty)
+	# a winter day without an event is quieter than a spring one
+	Shop.day = 45
+	expect(Calendar.today().is_empty() and Calendar.spawn_factor() > 1.0, "winter keeps people at home")
+	# gold fever: gold buyers, with some sellers cashing in
+	Shop.day = 16
+	var kinds := {}
+	for n in 200:
+		var e := Calendar.customer_event(rng)
+		if not e.is_empty():
+			var c := Customers.next_customer(rng, e)
+			expect(c.item.metal == "XAU", "gold fever is all about gold")
+			kinds[c.kind] = int(kinds.get(c.kind, 0)) + 1
+	expect(int(kinds.get("buyer", 0)) > int(kinds.get("seller", 0)) and int(kinds.get("seller", 0)) > 0, "gold fever brings buyers and some sellers (%s)" % kinds)
+	# town crowds shop around: with a bad board they may cross the street
+	Shop.reputation = 0.5
+	Shop.set_sell_premium(0.2)
+	var shopper := Customers.next_customer(rng, {"id": "gold_fever", "kind": "buyer", "metal": "XAU", "lines": ["Gold!"]})
+	expect(Rivals.divert_odds(shopper) > 0.0, "town event customers can go to the rivals")
+	Shop.reputation = 2.5
+	Shop.set_sell_premium(Shop.DEFAULT_SELL_PREMIUM)
+	# the coin show: collectors, and more of them with a booth
+	Shop.day = 40
+	Shop.cash = 20000.0
+	Day.begin_day()
+	var show := Calendar.booth_event()
+	expect(show.get("id", "") == "coin_show" and Calendar.today().is_empty(), "the booth can be booked the morning before the show")
+	var cost := Calendar.booth_cost()
+	var stars := Shop.reputation
+	expect(Calendar.book_booth() and is_equal_approx(Shop.cash, 20000.0 - cost) and Shop.reputation > stars, "book a booth at the coin show")
+	expect(not Calendar.can_book_booth() and Calendar.booths == 1 and Records.is_earned("booth"), "one booth per show, and it earns Show table")
+	Shop.day = 41
+	Day.begin_day()
+	expect(Calendar.has_booth(Calendar.today()), "the booth is yours on the show's first day")
+	var collectors := 0
+	for n in 100:
+		var e := Calendar.customer_event(rng)
+		if not e.is_empty():
+			var c := Customers.next_customer(rng, e)
+			if c.archetype == "collector" and c.event_id == "coin_show":
+				collectors += 1
+	expect(collectors > 45, "a booth at the show brings collectors (%d of 100)" % collectors)
+	expect(Calendar.opening_rush() == 3, "collectors wait at the door")
+	Shop.day = 42
+	expect(Calendar.has_booth(Calendar.today()), "the booth lasts the whole weekend")
+	Shop.day = 97
+	expect(not Calendar.has_booth(Calendar.today()), "next year's show needs a new booth")
+	# Tax Day takes its share of the profit since the last one
+	Shop.day = 11
+	Shop.cash = 20000.0
+	Calendar.taxable = 0.0
+	Day.begin_day()
+	# the days closed since the last Tax Day: deal profit, less every cost
+	Calendar._on_day_ended(10, {"lines": [], "stats": {"profit": 12000.0},
+		"ledger": [{"label": "Upkeep", "usd": -500.0}, {"label": "Bench", "usd": -1500.0}, {"label": "Refiner", "usd": 900.0}]})
+	expect(is_equal_approx(Calendar.taxable, 10000.0), "taxable profit is deal profit less bills and spending")
+	expect(is_equal_approx(Calendar.tax_due(), 1000.0) and int(Calendar.next_tax().day) == 11, "tax is 10% of the profit since the last Tax Day")
+	Day.open_shop()
+	Day.close_shop()
+	var report := Day.end_day()
+	expect(Day.ledger.any(func(l): return l.label == "Tax Day" and is_equal_approx(l.usd, -1000.0)), "Tax Day is paid when the shop closes")
+	expect(report.lines.any(func(l): return str(l).begins_with("Tax Day: you paid")), "the summary explains the tax")
+	expect(report.lines.any(func(l): return "tax season is over" in str(l)), "the summary closes the event")
+	expect(int(Calendar.next_tax(12).day) == 67, "the next Tax Day is next spring")
+	expect(Calendar.taxable < 0.0, "Tax Day's own bill is not a cost, the day's upkeep is (%.0f)" % Calendar.taxable)
+	# served event customers are counted, and the best rush earns an achievement
+	Shop.day = 48
+	Day.begin_day()
+	for n in 40:
+		var c := Customer.new()
+		c.event_id = "gift_rush"
+		c.dealt = true
+		Calendar.on_leave(c)
+	Records.check()
+	expect(Calendar.best_of("gift_rush") == 40 and Records.is_earned("gift_rush"), "40 gift shoppers in one rush earns Season's greetings")
+	# the summary warns about tomorrow's event, and the season's end
+	report = {"lines": []}
+	Calendar._on_day_ended(47, report)
+	expect(report.lines.any(func(l): return str(l).begins_with("Tomorrow: holiday gift rush")), "the summary warns about tomorrow's event")
+	report = {"lines": []}
+	Calendar._on_day_ended(42, report)
+	expect(report.lines.any(func(l): return "Autumn is over" in str(l)), "the summary marks the end of a season")
+	# save and load
+	var saved := Calendar.to_dict()
+	Calendar.reset()
+	Calendar.from_dict(JSON.parse_string(JSON.stringify(saved)))
+	expect(Calendar.booths == 1 and Calendar.best_of("gift_rush") == 40 and Calendar.booth_day == 41, "the calendar saves and loads")
+	# the window dresses for each season
+	for id in ["spring", "summer", "autumn", "winter"]:
+		var room := ShopArt.paint_room(false, id)
+		expect(room.width == ShopArt.SIZE.x, "the shop paints in %s" % id)
+	# the morning panel and the shop floor on an event day
+	Shop.day = 40
+	Day.begin_day()
+	var panels := DayPanels.new()
+	add_child(panels)
+	panels.show_morning()
+	var texts := []
+	for child in panels._box.get_children():
+		if child is Label:
+			texts.append(child.text)
+		for b in child.get_children():
+			if b is Button:
+				texts.append(b.text)
+	expect(texts.any(func(t): return str(t).begins_with("Town coin show tomorrow")), "the morning warns about the coin show")
+	expect(texts.any(func(t): return str(t).begins_with("Booth booked")), "the morning shows the booked booth")
+	panels.queue_free()
+	# every morning line fits on one line of the panel, even with the biggest tax bill
+	Calendar.taxable = 9999999.0
+	for d in range(1, Calendar.YEAR_DAYS + 1):
+		Shop.day = d
+		var line := panels._town_hint()
+		expect(PixelFont.measure(line) <= DayPanels.AREA.size.x - 16, "the morning line fits: " + line)
+	Calendar.taxable = 0.0
+	Shop.day = 48
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	shop.coach.skip()
+	expect(shop.room._season == "winter", "the shop window shows winter")
+	shop._open_shop()
+	expect(shop._rush_left == 2, "holiday shoppers wait at the door")
+	await get_tree().process_frame
+	var banner: Node = null
+	for child in shop.hud.get_children():
+		if child.get_script() == shop.NewsBanner:
+			banner = child
+	expect(banner != null and banner.visible and banner._tag_label.text == "TOWN", "the news strip shows the town event")
+	MarketEvents.start(MarketEvents.EVENTS[0], -1.5)
+	await get_tree().process_frame
+	expect(banner._tag_label.text == "NEWS", "breaking market news takes over the strip")
+	MarketEvents.stop()
+	await get_tree().process_frame
+	expect(banner.visible and banner._tag_label.text == "TOWN", "the town event comes back after the news")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.new_game()
+	expect(Calendar.booths == 0 and Calendar.taxable == 0.0, "a new game resets the calendar")
+
+
+func _check_story() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Day.begin_day()
+	expect(Story.synced and Story.chapter == 0 and Story.pending.size() == 1, "a new game queues Mags's first visit")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	Day.open_shop()
+	expect(Story.next_customer(rng) == null, "Mags waits until day 2")
+	Day.close_shop()
+	Day.end_day()
+	Shop.next_day()
+	Day.begin_day()
+	expect(Story.next_customer(rng) == null, "nobody visits before the shop opens")
+	Day.open_shop()
+	var c := Customers.next_customer(rng)
+	expect(c.story == "mags_hello" and c.kind == "visit" and c.name == "Mags Holloway", "Mags walks in on day 2")
+	expect(Customers.tag(c) == "mentor", "the card calls Mags your mentor")
+	expect(Rivals.divert_odds(c) == 0.0, "story visitors never cross the street")
+	expect(Customers.next_customer(rng).story == "", "one story visitor at a time")
+	Customers.on_leave(c)
+	expect(Story.pending.is_empty(), "the visit plays once")
+	expect(Story.has_new_letter(), "the story button flags Mags's new note")
+	# chapter 1's goals, met one by one
+	Records.totals.caught = 3
+	Story._check()
+	expect(Story.goal_met(0) and Story.chapter == 0, "a goal ticks off on its own")
+	expect(Story.goal_count(1) == "0 / 15", "the page counts a goal's progress")
+	Records.totals.buys = 15
+	Records.totals.days = 7
+	Story._check()
+	expect(Story.chapter == 1 and Story.met.is_empty(), "meeting every goal closes the chapter")
+	expect(Story.pending.size() == 2 and float(Story.pending[0].reward.get("cash", 0.0)) == 1000.0, "Mags brings the reward, then Sterling comes over")
+	var cash := Shop.cash
+	c = Customers.next_customer(rng)
+	expect(c.story == "mags_name" and "Reward" in c.note, "the card shows Mags's reward")
+	Customers.on_leave(c)
+	expect(is_equal_approx(Shop.cash, cash + 1000.0), "Mags's reward is paid when she leaves")
+	c = Customers.next_customer(rng)
+	expect(c.story == "sterling_sneer" and c.name == "Victor Sterling" and Customers.tag(c) == "rival", "Victor Sterling, the rival owner, walks in")
+	Customers.on_leave(c)
+	# chapter 2, and Sterling's price war at the start of chapter 3
+	Records.peaks.rep = 3.2
+	Rivals.passed.append("pawn")
+	Progress.tier = 1
+	Rivals.state.sterling.move = ""
+	Story._check()
+	expect(Story.chapter == 2, "moving to Main Street closes chapter 2")
+	Customers.on_leave(Customers.next_customer(rng))
+	c = Customers.next_customer(rng)
+	expect(c.story == "sterling_war", "Sterling comes to declare war")
+	Customers.on_leave(c)
+	expect(Rivals.move_of("sterling") == "price_war", "Sterling's visit starts a price war")
+	# save and load mid-chapter
+	var saved := Story.to_dict()
+	Story.reset()
+	Story.from_dict(JSON.parse_string(JSON.stringify(saved)))
+	expect(Story.synced and Story.chapter == 2 and Story.pending.is_empty(), "the story saves and loads")
+	# the rest of the way, in one go
+	Records.totals.orders_filled = 3
+	Staff.hired.append("clerk")
+	Progress.tier = 3
+	Rivals.passed.append("sterling")
+	Records.peaks.rep = 4.6
+	Records.peaks.worth = 500000.0
+	Story._check()
+	expect(Story.is_finished() and Story.chapters_done() == Story.CHAPTERS.size(), "a shop that has done it all finishes the story")
+	expect(Records.is_earned("story_done"), "finishing the story earns Apprentice no more")
+	expect(Story.pending.back().beat == "mags_ribbon", "Mags comes to cut the ribbon")
+	var report := {"lines": []}
+	Story._on_day_ended(Shop.day, report)
+	expect(report.lines.any(func(l): return "is done!" in l), "the summary says when a chapter is done")
+	Staff.hired.erase("clerk")
+	# the story page and the morning panel build at every stage
+	var panels := DayPanels.new()
+	add_child(panels)
+	panels.show_story()
+	expect(panels.visible and panels.page == "story", "the story page opens at the end")
+	Story.reset()
+	Story.synced = true
+	panels.show_story()
+	expect(not Story.has_new_letter(), "reading the page clears the new note flag")
+	panels.show_morning()
+	expect(panels.page == "morning", "the morning panel shows the chapter")
+	panels.queue_free()
+	# a save from before the story skips the chapters it has already done, unpaid
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Shop.day = 40
+	Records.totals.caught = 10
+	Records.totals.buys = 50
+	Records.totals.days = 39
+	Records.peaks.rep = 3.4
+	Rivals.passed.append("pawn")
+	Progress.tier = 1
+	Story.synced = false
+	Day.begin_day()
+	expect(Story.chapter == 2 and Story.pending.size() == 2, "an old save starts at the first unfinished chapter")
+	expect(Story.pending.all(func(p): return p.reward.is_empty()), "skipped chapters pay no rewards")
+	SaveGame.new_game()
+	expect(Story.chapter == 0 and not Story.synced and Story.pending.is_empty(), "a new game resets the story")
+
+
 func _check_rush_hours() -> void:
 	expect(RushHours.at(1, 12 * 60).name == "Lunch rush", "lunch is busy on a Monday")
 	expect(RushHours.at(1, 10 * 60).is_empty(), "mid-morning is calm on a Monday")
@@ -1116,6 +1410,9 @@ func _check_rush_hours() -> void:
 	expect(RushHours.summary(1).contains("lunch 11:45"), "the morning briefing lists the rushes")
 	expect(RushHours.grab_chance(RushHours.till_limit() * 0.5, true) == 0.0, "a light till is safe")
 	expect(RushHours.grab_chance(RushHours.till_limit() * 2.0, true) > RushHours.grab_chance(RushHours.till_limit() * 2.0, false), "a rush makes snatches likelier")
+	var limit := RushHours.till_limit()
+	expect(RushHours.grab_chance(limit * 1.1, false) < RushHours.grab_chance(limit * 2.0, false), "a till just over the limit is safer than an overflowing one")
+	expect(RushHours.grab_amount(limit * 6.0) <= limit * RushHours.GRAB_CAP + 0.01, "one snatch takes at most half a till")
 
 
 ## In a rush the clock runs on through a test, a full queue turns people away, the clerk
@@ -1247,6 +1544,9 @@ func _check_burglar_crews() -> void:
 		var values := v.pieces.map(func(p): return p.value)
 		values.sort()
 		expect(kids.stolen.all(func(p): return p.value >= values[-3]), "kids grab the most valuable pieces")
+		# the insurer pays back a quarter of what was left on the tray
+		v.apply(kids)
+		expect(absf(kids.insured - kids.value * VaultLayout.INSURED.tray * (1.0 - Security.recover_share())) < 1.0, "insurance pays back part of a tray burglary")
 	# with the wall safe full and the tray empty, kids get nothing and pros usually crack it
 	for p in v.pieces:
 		p.area = VaultLayout.WALL
@@ -1623,7 +1923,8 @@ func _check_vault_layout() -> void:
 	expect(report.break_in and report.stolen.size() == 2, "burglars take only what's on the tray")
 	v.apply(report)
 	expect(Shop.count_of("XAG") == 0 and Shop.count_of("XAU") == 1, "stolen coins leave the stock")
-	expect(is_equal_approx(Shop.cash, before - cash[0].cash), "stolen cash leaves the till")
+	expect(is_equal_approx(Shop.cash, before - cash[0].cash + report.insured), "stolen cash leaves the till (the insurer pays for coins, not cash)")
+	expect(is_equal_approx(report.insured, tube.value * VaultLayout.INSURED.tray * (1.0 - Security.recover_share())), "insurance pays back part of the tube")
 	expect(Shop.stats.get("stolen", 0.0) > 0.0, "the loss is counted")
 	# a big silver stack packs into monster boxes
 	Shop.reset()
@@ -1761,6 +2062,149 @@ func _check_menus() -> void:
 	await get_tree().process_frame
 	SaveGame.delete_save()
 	Shop.reset()
+
+
+## Gamepad controls: the pointer, d-pad jumps that skip what is hidden behind menus,
+## A clicks, B goes back, the bench and desk shortcuts, and the screen scaling choice.
+func _check_pad() -> void:
+	expect(InputMap.action_get_events("ui_up").all(func(e): return not (e is InputEventJoypadButton or e is InputEventJoypadMotion)),
+		"the pad does not also move the keyboard focus")
+	_clear_slots()
+	SaveGame.set_slot(1)
+	var title: Control = load("res://scenes/menu/title_screen.tscn").instantiate()
+	add_child(title)
+	await get_tree().process_frame
+	var new_game: Button = title._new
+	Pad.set_cursor(new_game.get_global_rect().get_center())
+	await _pad_press(JOY_BUTTON_DPAD_DOWN)
+	expect(Pad.using_pad, "pressing a pad button switches to the pad")
+	var on: Variant = _pad_target_under_cursor()
+	expect(on is Button and on.text == "Settings", "d-pad down jumps from New game to Settings")
+	var names: Array = Pad.targets().map(func(t): return t.node.text if t.node is Button else "")
+	expect(not names.has("Continue"), "the d-pad skips a disabled button")
+	await _pad_press(JOY_BUTTON_A)
+	expect(title._settings != null, "A clicks the button under the pointer")
+	var panel: SettingsPanel = title._settings
+	await get_tree().process_frame
+	var all_in_panel := Pad.targets().all(func(t): return panel.is_ancestor_of(t.node))
+	expect(all_in_panel, "with Settings open the d-pad only stops on its controls")
+	var sliders := Pad.targets().filter(func(t): return t.node is HSlider)
+	expect(sliders.size() == 3, "the d-pad reaches the three volume sliders")
+	var real_path := Settings.path
+	Settings.path = "user://smoke_test_settings.cfg"
+	var master: float = Settings.volume["Master"]
+	Pad.set_cursor(sliders[0].rect.get_center())
+	await _pad_press(JOY_BUTTON_DPAD_LEFT)
+	expect(Settings.volume["Master"] < master, "d-pad left on a slider turns it down")
+	Settings.set_volume("Master", master)
+	await _pad_press(JOY_BUTTON_B)
+	expect(title._settings == null and title._menu.visible, "B backs out of Settings")
+	title.queue_free()
+	await get_tree().process_frame
+
+	# screen scaling: the Steam Deck's 1280x800 fills, 16:9 screens keep whole pixels
+	expect(Settings.scaling == "auto", "scaling starts on auto")
+	expect(not Settings.whole_pixels(Vector2(1280, 800)) and not Settings.whole_pixels(Vector2(1366, 768)), "auto fills a Steam Deck or a laptop screen")
+	expect(Settings.whole_pixels(Vector2(1920, 1080)) and Settings.whole_pixels(Vector2(1440, 810)) and Settings.whole_pixels(Vector2(2560, 1440)), "auto keeps whole pixels where they nearly fill")
+	Settings.set_scaling("pixel")
+	expect(Settings.whole_pixels(Vector2(1280, 800)), "Pixel perfect always keeps whole pixels")
+	Settings.set_scaling("fill")
+	Settings.scaling = "auto"
+	Settings.load_settings()
+	expect(Settings.scaling == "fill" and not Settings.whole_pixels(Vector2(1920, 1080)), "the scaling choice is saved")
+	expect(get_tree().root.content_scale_stretch == Window.CONTENT_SCALE_STRETCH_FRACTIONAL, "Fill screen scales by fractions")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
+	Settings.path = real_path
+	Settings.load_settings()
+
+	# the pause menu hides the shop's buttons from the d-pad
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	shop._open_shop()
+	await get_tree().process_frame
+	expect(Pad.targets().size() > 0, "the shop has buttons for the d-pad")
+	await _pad_press(JOY_BUTTON_START)
+	expect(shop._pause.is_open(), "Start opens the pause menu")
+	var paused_targets := Pad.targets()
+	expect(paused_targets.size() >= 3 and paused_targets.all(func(t): return shop._pause.is_ancestor_of(t.node)),
+		"while paused the d-pad only stops on the pause menu")
+	await _pad_press(JOY_BUTTON_B)
+	expect(not shop._pause.is_open() and not get_tree().paused, "B closes the pause menu")
+
+	# bench shortcuts: LB / RB step through the tools; the pointer counts as the mouse
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 3
+	var c := Customer.create(3, 4.0, Shop.coin_list(), rng)
+	c.kind = "seller"
+	c.piece = null
+	c.bar = null
+	c.item = Shop.coins["gold_eagle"]
+	c.fake = ""
+	var bench: Control = load("res://scenes/coin_test/coin_test.tscn").instantiate()
+	shop.hud.add_child(bench)
+	bench.start(c)
+	await get_tree().process_frame
+	expect(Pad.action("rb") and bench.used.has("scale"), "RB picks the first tool on the coin bench")
+	Pad.action("rb")
+	expect(bench.used.has("calipers"), "RB again picks the next tool")
+	Pad.action("lb")
+	Pad.action("lb")
+	expect(bench._loupe.visible, "LB goes back round to the loupe")
+	Pad.action("lb")
+	expect(not bench._loupe.visible, "leaving the loupe puts it away")
+	Pad.set_cursor(Vector2(100, 80))
+	expect(Pad.mouse_in(bench).is_equal_approx(Vector2(100, 80)), "the benches read the pad's pointer as the mouse")
+	await _pad_press(JOY_BUTTON_START)
+	expect(not shop._pause.is_open() and is_instance_valid(bench) and bench.is_inside_tree(), "Start does nothing on a bench")
+	bench.queue_free()
+	await get_tree().process_frame
+
+	# the trading desk: rows on the bumpers, buy and sell on the triggers, rows on the d-pad
+	var desk: TradingDesk = load("res://scenes/trading_desk/trading_desk.tscn").instantiate()
+	shop.hud.add_child(desk)
+	desk.start(7)
+	await get_tree().process_frame
+	Pad.action("rb")
+	expect(desk.selected == 1, "RB selects the next row")
+	Pad.action("lb")
+	Pad.action("lb")
+	expect(desk.selected == desk.session.board.size() - 1, "LB wraps round to the last row")
+	Pad.action("rt")
+	expect(desk.session.position(desk.selected) > 0.0, "RT buys the selected row")
+	expect(Pad.targets().filter(func(t): return t.node == desk).size() == desk.session.board.size(), "the d-pad stops on each row of the board")
+	expect(desk.pad_help().size() == 3 and Pad.help_rows().size() > 9, "the controls list shows the desk's shortcuts")
+	desk.queue_free()
+	shop.queue_free()
+	await get_tree().process_frame
+
+	# a real mouse takes over again
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.position = Vector2(5, 5)
+	Input.parse_input_event(click)
+	await get_tree().process_frame
+	expect(not Pad.using_pad, "using the mouse switches back from the pad")
+	SaveGame.delete_save()
+	Shop.reset()
+
+
+func _pad_press(button: int) -> void:
+	for pressed in [true, false]:
+		var e := InputEventJoypadButton.new()
+		e.button_index = button
+		e.pressed = pressed
+		Input.parse_input_event(e)
+		await get_tree().process_frame
+
+
+func _pad_target_under_cursor() -> Variant:
+	for t in Pad.targets():
+		if t.rect.has_point(Pad.cursor):
+			return t.node
+	return null
 
 
 ## The guided first day from the welcome card to the summary, the bench intros, and Skip.

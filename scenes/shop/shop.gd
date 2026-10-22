@@ -12,6 +12,8 @@ extends Node2D
 ## than theirs, some cross the street before they reach your door.
 ## On day 1 of a new game the Coach walks the player through it.
 ## Once the trading desk room is built, the morning panel opens the TradingDesk minigame.
+## Seasons and town events (Calendar) change who comes in: tax season sellers, gold
+## fever buyers, coin show collectors and holiday gift shoppers.
 
 signal bench_opened(bench: Control, c: Customer)
 signal bench_closed(verdict: String, c: Customer)
@@ -168,7 +170,7 @@ func _tick(delta: float) -> void:
 			elif not rush.is_empty():
 				_next_spawn = RushHours.SPAWN_GAP / Progress.traffic() * rng.randf_range(0.75, 1.25)
 			else:
-				_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() / Rivals.traffic_factor() * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor()
+				_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() / Rivals.traffic_factor() * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor() * Calendar.spawn_factor()
 		elif not rush.is_empty():
 			# in a rush nobody waits outside: a full queue turns them away
 			Shop.note("walked_by")
@@ -233,7 +235,11 @@ func _update_rush() -> void:
 
 
 func _spawn() -> void:
-	var c := Customers.next_customer(rng, MarketEvents.customer_event(rng))
+	# breaking news first, then whatever is on in town today (Calendar)
+	var event := MarketEvents.customer_event(rng)
+	if event.is_empty():
+		event = Calendar.customer_event(rng)
+	var c := Customers.next_customer(rng, event)
 	var rival := Rivals.diverts(c, rng)
 	if rival != "":
 		Rivals.lose(c, rival)
@@ -528,7 +534,7 @@ func _finish_vault_run() -> void:
 
 ## Someone reaches over the counter for an overfull till.
 func _till_grab() -> void:
-	var taken := till * RushHours.GRAB_SHARE
+	var taken := RushHours.grab_amount(till)
 	till -= taken
 	Day.add_expense("Snatched from the till", taken)
 	Shop.note("stolen", taken)
@@ -770,6 +776,7 @@ func _start_morning() -> void:
 
 func _open_shop() -> void:
 	_next_spawn = 2.0
+	_rush_left = Calendar.opening_rush()
 	rush = {}
 	till = 0.0
 	away = 0.0
@@ -777,6 +784,9 @@ func _open_shop() -> void:
 	hud.hide_panels()
 	Day.open_shop()
 	Shop.log_event("%s, day %d. Shop open." % [Day.weekday(), Shop.day])
+	var town := Calendar.today()
+	if not town.is_empty():
+		Shop.log_event("TOWN: " + Calendar.banner(town), town.mood)
 
 
 func _new_game() -> void:

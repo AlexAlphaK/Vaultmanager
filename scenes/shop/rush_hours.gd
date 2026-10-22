@@ -12,9 +12,13 @@ const SPAWN_GAP := 4.0
 ## Keep this much cash in the till and it is worth a snatch; scaled by the tier's deal size
 ## and a bigger cash drawer (the long counter).
 const TILL_LIMIT := 5000.0
-## Share of the till a thief gets away with.
+## Share of the till a thief gets away with, and the most one hand can grab, as a share
+## of the till limit (so one big sale does not hand a thief a fortune).
 const GRAB_SHARE := 0.35
-## Chance per second of a snatch with the till at its limit (twice the limit doubles it).
+const GRAB_CAP := 0.5
+## Chance per second of a snatch with the till at one and a half times its limit. It
+## grows with the overflow, so a till just over the line is rarely hit and one at twice
+## the limit is hit twice as often.
 const GRAB_CHANCE := 0.005
 
 
@@ -55,6 +59,11 @@ static func summary(day: int) -> String:
 	return "Rush hours: %s." % ", ".join(parts)
 
 
+## What a snatch takes from a till holding `till`.
+static func grab_amount(till: float) -> float:
+	return minf(till * GRAB_SHARE, till_limit() * GRAB_CAP)
+
+
 static func till_limit() -> float:
 	return TILL_LIMIT * Progress.deal_size() * (1.0 + Progress.effect("till"))
 
@@ -64,4 +73,4 @@ static func grab_chance(till: float, in_rush: bool) -> float:
 	var limit := till_limit()
 	if till <= limit:
 		return 0.0
-	return GRAB_CHANCE * minf(till / limit, 3.0) * (2.0 if in_rush else 1.0) * maxf(0.0, 1.0 + Progress.effect("till_grab"))
+	return GRAB_CHANCE * minf((till / limit - 1.0) * 2.0, 4.0) * (2.0 if in_rush else 1.0) * maxf(0.0, 1.0 + Progress.effect("till_grab"))

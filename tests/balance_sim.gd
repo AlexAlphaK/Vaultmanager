@@ -20,7 +20,7 @@ const STEP := 0.25 # shop-clock seconds per tick
 ## many coins of each metal the bot keeps on the shelf with the morning wholesaler.
 ## Every bot takes collectors' special orders; `dealer_days` is how close to the due day
 ## the bot gives up waiting for a walk-in seller and buys a rare coin from the dealer
-## network (-1: never).
+## network (-1: never). The average and expert bots book a booth at the coin show.
 const BOTS := {
 	"novice": {
 		"test": 0.75, "fake_easy": 0.8, "fake_hard": 0.45, "false_alarm": 0.1,
@@ -77,8 +77,8 @@ func _ready() -> void:
 	var days := int(args.get("days", 120))
 	var first_seed := int(args.get("seed", 1))
 	var names: PackedStringArray = String(args.get("bots", "novice,average,expert")).split(",")
-	# each process gets its own save, so several sims can run side by side
-	SaveGame.path = "user://balance_sim_%s.json" % String(args.get("bots", "all")).replace(",", "_")
+	# each process gets its own save, so several sims (other bots or seeds) can run side by side
+	SaveGame.path = "user://balance_sim_%s_%d.json" % [String(args.get("bots", "all")).replace(",", "_"), first_seed]
 	SaveGame.delete_save()
 	_quiet_market()
 	if args.has("csv"):
@@ -93,7 +93,7 @@ func _ready() -> void:
 	for name in names:
 		all[name] = []
 		for r in runs:
-			all[name].append(run(name, first_seed + r, days))
+			all[name].append(await run(name, first_seed + r, days))
 	print("\nBalance check: %d runs x %d days per bot (%.1f s)\n" % [runs, days, (Time.get_ticks_msec() - t0) / 1000.0])
 	for name in names:
 		_print_summary(name, all[name], days)
@@ -117,7 +117,8 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 		"caught": 0, "served": 0, "bills": 0.0, "overdrawn_days": 0, "upgrades": {}, "profit": 0.0,
 		"premium_income": 0.0, "lowest_cash": Shop.cash, "losses": {}, "gains": {}, "short_cash": 0, "out_of_stock": 0, "walked_by": 0,
 		"holdups": 0, "robbers_stopped": 0, "restocked": 0.0, "lost_to_rivals": 0, "tip_offs": 0, "rank": [],
-		"orders_taken": 0, "orders_filled": 0, "orders_failed": 0, "dealer": 0.0}
+		"orders_taken": 0, "orders_filled": 0, "orders_failed": 0, "dealer": 0.0, "chapter_day": [-1, -1, -1, -1, -1],
+		"town_served": {}, "booths": 0}
 	for d in days:
 		_morning(out)
 		_play_day(out)
@@ -127,6 +128,8 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 			break
 		_walk_prices()
 		shop._open_next_day()
+		# let the engine flush its deferred calls, or the message queue overflows on long runs
+		await get_tree().process_frame
 	return out
 
 
@@ -164,6 +167,9 @@ func _morning(out: Dictionary) -> void:
 	# the average and expert bots read the town map and tip off the police
 	if bot != BOTS.novice and Rivals.tip_off():
 		out.tip_offs += 1
+	if bot != BOTS.novice and Calendar.can_book_booth() and Shop.cash - Calendar.booth_cost() >= Progress.weekly_rent() * bot.buffer + 5000.0:
+		Calendar.book_booth()
+		out.booths += 1
 	shop._open_shop()
 
 
@@ -444,6 +450,9 @@ func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) ->
 	out.worth.append(Shop.net_worth())
 	out.rep.append(Shop.reputation)
 	out.rank.append(Rivals.rank())
+	for ch in Story.chapters_done():
+		if out.chapter_day[ch] < 0:
+			out.chapter_day[ch] = Shop.day
 	out.lowest_cash = minf(out.lowest_cash, Shop.cash)
 	if Shop.cash < 0.0:
 		out.overdrawn_days += 1
@@ -457,6 +466,17 @@ func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) ->
 			_add(out.losses, "hold-ups", -e.usd)
 		elif e.label == "Police recovered stolen goods":
 			_add(out.gains, "police recovered", e.usd)
+		elif e.label == "Insurance payout":
+			_add(out.gains, "insurance", e.usd)
+		elif e.label == "Tax Day":
+			_add(out.losses, "tax", -e.usd)
+		elif e.label == "Coin show booth":
+			_add(out.losses, "coin show booths", -e.usd)
+		elif e.label == "Gift from Mags":
+			_add(out.gains, "story rewards", e.usd)
+	var town := Calendar.event_on(Shop.day)
+	if not town.is_empty() and Calendar.last_day(town) == Shop.day:
+		_add(out.town_served, town.id, Calendar.served.get(town.id, 0))
 	out.bills += bills
 	_add(out.losses, "bills", bills)
 	for e in report.get("ledger", []):
@@ -509,6 +529,15 @@ func _print_summary(name: String, results: Array, days: int) -> void:
 	print("  per run: %.1f special orders taken, %.1f filled, %.1f fell through, %s spent at the dealer network" % [
 		_sum(results, "orders_taken") / n, _sum(results, "orders_filled") / n, _sum(results, "orders_failed") / n,
 		Market.format_money(_sum(results, "dealer") / n)])
+	var town := {}
+	for r in results:
+		for id in r.town_served:
+			town[id] = town.get(id, 0.0) + r.town_served[id] / n
+	var town_bits: Array[String] = []
+	for id in town:
+		town_bits.append("%s %.0f" % [id, town[id]])
+	print("  per run: town event customers served: %s; %.1f coin show booths" % [", ".join(town_bits) if not town_bits.is_empty() else "none",
+		_sum(results, "booths") / n])
 	var passed := []
 	for t in [7, 14, 30, 60, days]:
 		var ranks := results.map(func(r): return r.rank[mini(t, r.rank.size()) - 1])
@@ -516,6 +545,12 @@ func _print_summary(name: String, results: Array, days: int) -> void:
 		passed.append("day %d #%d" % [t, ranks[ranks.size() / 2]])
 	print("  per run: %.1f customers went to a rival, %.1f tip-offs; median place in town: %s" % [
 		_sum(results, "lost_to_rivals") / n, _sum(results, "tip_offs") / n, ", ".join(passed)])
+	var chapters: Array[String] = []
+	for ch in Story.CHAPTERS.size():
+		var done := results.filter(func(r): return r.chapter_day[ch] > 0).map(func(r): return r.chapter_day[ch])
+		done.sort()
+		chapters.append("%d %s" % [ch + 1, "-" if done.is_empty() else "d%d (%d/%d)" % [done[done.size() / 2], done.size(), results.size()]])
+	print("  story chapters done (median day, runs): %s" % ", ".join(chapters))
 	var ups := {}
 	for r in results:
 		for id in r.upgrades:
