@@ -38,7 +38,7 @@ const BULK_PREMIUM := Vector2(0.1, 0.14)
 const RARE_PREMIUM := Vector2(0.9, 1.15)
 ## Odds that an everyday coin seller brings a rare coin instead: while a rare order is
 ## open (for that coin), and otherwise.
-const RARE_SELLER_ODDS := 0.14
+const RARE_SELLER_ODDS := 0.06
 const RARE_SELLER_STRAY := 0.015
 ## Odds the dealer network has a wanted rare coin on a given morning, and its fee as a
 ## share of the coin's collector premium.
