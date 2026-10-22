@@ -12,7 +12,7 @@ signal new_game_requested
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
-var page := "" # "morning", "upgrades", "plan", "ledger", "achievements", "summary" or "" when hidden
+var page := "" # "morning", "upgrades", "plan", "wholesale", "ledger", "achievements", "summary" or "" when hidden
 ## The morning's Open the shop button, for the tutorial to point at.
 var open_button: Button
 var _box: VBoxContainer
@@ -31,6 +31,7 @@ func _ready() -> void:
 	Progress.changed.connect(_refresh_page)
 	Shop.changed.connect(_refresh_page)
 	Staff.changed.connect(_refresh_page)
+	Wholesaler.changed.connect(_refresh_page)
 	Records.changed.connect(_refresh_page)
 
 
@@ -53,6 +54,11 @@ func show_upgrades() -> void:
 func show_plan() -> void:
 	page = "plan"
 	_build_plan()
+
+
+func show_wholesale() -> void:
+	page = "wholesale"
+	_build_wholesale()
 
 
 func show_ledger() -> void:
@@ -78,8 +84,8 @@ func _refresh_page() -> void:
 		_build_upgrades()
 	elif page == "plan":
 		_build_plan()
-
-
+	elif page == "wholesale":
+		_build_wholesale()
 	elif page == "ledger":
 		_build_ledger()
 	elif page == "achievements":
@@ -133,6 +139,7 @@ func _build_morning() -> void:
 	var count := Progress.available_upgrades().size() + Staff.ROLES.size() - Staff.hired.size()
 	var expand_ready := Progress.expand_blocker() == "" and not Progress.is_top_tier()
 	_button(row, "Upgrades (%d)%s" % [count, " !" if expand_ready else ""], "Button", show_upgrades)
+	_button(row, "Restock", "Button", show_wholesale).tooltip_text = "Buy coins from the wholesaler before you open."
 	_button(row, "Ledger", "Button", show_ledger)
 	_button(row, "Sure? Click again" if _confirm_new else "New game", "DangerButton", _on_new_game)
 
@@ -308,6 +315,46 @@ func _upgrade_row(grid: GridContainer, title: String, cost: float, enabled: bool
 	b.mouse_entered.connect(hover)
 	name_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	name_label.mouse_entered.connect(hover)
+
+
+# ---------------------------------------------------------------- wholesaler
+
+func _build_wholesale() -> void:
+	_clear()
+	_title("Morning wholesaler")
+	_text("Coins at spot plus %d%%, delivered before you open. Cash %s." % [roundi(Wholesaler.markup() * 100.0),
+		Market.format_money(Shop.cash)], Pal.INK_DIM)
+	_text("Walk-in sellers are cheaper. Restock what buyers ask for.", Pal.INK_FAINT)
+	_gap()
+	var grid := _grid(6)
+	for caption in ["Coin", "Each", "Have", "Left", "", ""]:
+		_cell(grid, caption, Pal.INK_FAINT)
+	for item in Wholesaler.coin_list():
+		var left := Wholesaler.left(item)
+		_cell(grid, item.display_name, Pal.INK).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_cell(grid, Market.format_money(Wholesaler.price(item)), Pal.INK).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		_cell(grid, str(Shop.count_of_item(item)), Pal.INK).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		_cell(grid, str(left), Pal.INK_DIM if left > 0 else Pal.INK_FAINT).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		var bulk := Wholesaler.bulk(item)
+		for qty in ([1, bulk] if bulk > 1 else [1, 0]):
+			if qty == 0:
+				_cell(grid, "", Pal.INK)
+				continue
+			var b := Button.new()
+			b.text = "+%d" % qty
+			b.custom_minimum_size = Vector2(22, 11)
+			b.focus_mode = Control.FOCUS_NONE
+			b.disabled = Wholesaler.affordable(item, qty) < qty
+			b.theme_type_variation = "Button" if b.disabled else "PrimaryButton"
+			b.tooltip_text = "Buy %d for %s." % [qty, Market.format_money(Wholesaler.price(item) * qty)]
+			b.pressed.connect(func(): Wholesaler.buy(item, qty))
+			grid.add_child(b)
+	if Wholesaler.bought_today > 0.0:
+		_text("Bought this morning: %s." % Market.format_money(Wholesaler.bought_today), Pal.GOOD)
+	_spacer()
+	var row := HBoxContainer.new()
+	_box.add_child(row)
+	_button(row, "Back", "Button", show_morning)
 
 
 # ---------------------------------------------------------------- ledger
