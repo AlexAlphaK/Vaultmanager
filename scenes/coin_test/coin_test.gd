@@ -62,6 +62,7 @@ var _loupe: ColorRect
 var _loupe_rim: TextureRect
 var _cells := {}
 var _tool_buttons := {}
+var _pad_tool := -1
 
 
 func start(c: Customer) -> void:
@@ -79,6 +80,7 @@ func start(c: Customer) -> void:
 
 
 func _ready() -> void:
+	add_to_group("pad_hooks")
 	theme = UiTheme.get_theme()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -103,7 +105,7 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	Pad.hide_cursor(false)
 
 
 func _process(delta: float) -> void:
@@ -155,6 +157,23 @@ func sigma_reading() -> String:
 	return SIGMA_READS.get(fake, "too low")
 
 
+## LB and RB step through the tools, the same as the number keys.
+func pad_action(name: String) -> bool:
+	if name != "lb" and name != "rb":
+		return false
+	var list := tools()
+	_pad_tool = posmod(_pad_tool + (1 if name == "rb" else -1), list.size())
+	if _loupe.visible:
+		use_tool("loupe")
+	if list[_pad_tool] != "loupe" or not _loupe.visible:
+		use_tool(list[_pad_tool])
+	return true
+
+
+func pad_help() -> Array:
+	return [["LB / RB", "Previous / next tool"]]
+
+
 func use_tool(tool: String) -> void:
 	if tool == "sigma" and not has_sigma():
 		return
@@ -162,7 +181,7 @@ func use_tool(tool: String) -> void:
 	if tool == "loupe":
 		_loupe.visible = not _loupe.visible
 		_loupe_rim.visible = _loupe.visible
-		Input.mouse_mode = Input.MOUSE_MODE_HIDDEN if _loupe.visible else Input.MOUSE_MODE_VISIBLE
+		Pad.hide_cursor(_loupe.visible)
 		Sfx.play(self, Sfx.click(), -10.0)
 		return
 	_active = tool
@@ -417,7 +436,7 @@ func _move_coin(to: Vector2, onto_scale: bool) -> void:
 func _update_loupe() -> void:
 	if not _loupe.visible:
 		return
-	var m := get_local_mouse_position()
+	var m := Pad.mouse_in(self)
 	m.x = clampf(m.x, LOUPE_SIZE / 2.0, BENCH_W - LOUPE_SIZE / 2.0)
 	m.y = clampf(m.y, LOUPE_SIZE / 2.0, size.y - LOUPE_SIZE / 2.0)
 	_loupe.position = (m - Vector2(LOUPE_SIZE, LOUPE_SIZE) / 2.0).round()
