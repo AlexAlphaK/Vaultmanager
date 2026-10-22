@@ -265,6 +265,11 @@ and Season's greetings (serve 40 gift shoppers in one holiday rush). The events,
 numbers live in `Calendar.EVENTS`, the window in `ShopArt._tree` and `ShopRoom._draw_weather`.
 In a debug build, **F10** on the morning panel skips ahead to the next town event.
 
+![The shop window through the seasons](docs/screenshots/seasons.png)
+
+![The morning before the coin show, with the booth button](docs/screenshots/coin_show_morning.png)
+![The holiday gift rush on the shop floor](docs/screenshots/holiday_rush.png)
+
 ## Market events
 
 Big real-world moves make the news, and the news brings customers. A red or green NEWS strip
