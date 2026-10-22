@@ -47,8 +47,9 @@ static func iso_on(canvas: PixelCanvas) -> Iso:
 	return Iso.new(canvas, ORIGIN)
 
 
-## Floor, walls and everything fixed to them. `dusk` swaps the window view and lamp glow.
-static func paint_room(dusk: bool) -> PixelCanvas:
+## Floor, walls and everything fixed to them. `dusk` swaps the window view and lamp glow,
+## `season` (a Calendar season id) dresses the street outside.
+static func paint_room(dusk: bool, season := "spring") -> PixelCanvas:
 	var c := PixelCanvas.new(SIZE.x, SIZE.y, Color("#0e0c0a"))
 	var iso := iso_on(c)
 	iso.top(0, 0, IW, JW, 0, _floor)
@@ -64,7 +65,7 @@ static func paint_room(dusk: bool) -> PixelCanvas:
 	c.line(iso.p(0, 0, WALL_H), iso.p(IW, 0, WALL_H), Pal.GOLD)
 	c.line(iso.p(0, 0, WALL_H), iso.p(0, JW, WALL_H), Pal.GOLD.darkened(0.15))
 	_vault_door(iso)
-	_window(iso, dusk)
+	_window(iso, dusk, season)
 	_sign(iso)
 	_board_frame(iso)
 	_clock_face(iso)
@@ -338,7 +339,7 @@ static func _vault_door(iso: Iso) -> void:
 		)
 
 
-static func _window(iso: Iso, dusk: bool) -> void:
+static func _window(iso: Iso, dusk: bool, season := "spring") -> void:
 	var j0 := 1.0
 	var j1 := 3.6
 	var z0 := 22.0
@@ -351,21 +352,31 @@ static func _window(iso: Iso, dusk: bool) -> void:
 			return Color("#b88a4c") if (u < 1.0 or h > (z1 - z0) - 1.0) else Color("#8a5a30")
 		if absf(u - width / 2.0) < 1.0 or absf(h - 17.0) < 0.8:
 			return Color("#8a5a30")
-		return _town(u, h, dusk)
+		return _town(u, h, dusk, season)
 	)
 	# sill
 	iso.box(0, j0 - 0.1, 0.22, j1 - j0 + 0.2, 2.0, WOOD, z0 - 2.0)
 
 
-## The street outside: sky, the bank across the road, rooftops and a lamp post.
-static func _town(u: float, h: float, dusk: bool) -> Color:
+## The street outside: sky, the bank across the road, rooftops, a lamp post and a tree
+## that follows the seasons. Winter puts snow on the roofs and the street.
+static func _town(u: float, h: float, dusk: bool, season := "spring") -> Color:
 	var skyline := [14, 14, 14, 18, 18, 18, 18, 11, 11, 11, 20, 20, 20, 20, 20, 20, 9, 9, 9, 15, 15, 15, 15, 12, 12, 12, 12, 16, 16, 16, 16, 16, 10, 10, 10, 13, 13, 13, 13, 13, 13, 13]
 	var col := clampi(int(u), 0, skyline.size() - 1)
 	var roof: int = skyline[col]
+	var winter := season == "winter"
+	var tree: Variant = _tree(u, h, season)
+	if tree != null:
+		var leaf: Color = tree
+		return leaf.darkened(0.45) if dusk else leaf
 	if h < 6.0:
+		if winter:
+			return Color("#d8dee8") if not dusk else Color("#5a6078") # snow on the street
 		return Color("#2a2a2e") if not dusk else Color("#1a1a22") # street
 	if h < 7.0:
 		return Color("#5a5a60")
+	if winter and h >= roof - 1.0 and h < roof:
+		return Color("#eef2f8") if not dusk else Color("#8088a0") # snow on the roofs
 	if h < roof:
 		var lit := dusk and posmod(int(u) * 7 + int(h) * 3, 11) == 0 and int(h) % 3 == 1
 		var wall := Color("#4a5468") if col % 2 else Color("#5a5068")
@@ -384,9 +395,36 @@ static func _town(u: float, h: float, dusk: bool) -> Color:
 	var t := h / 30.0
 	if dusk:
 		return Color("#2b2a52").lerp(Color("#e0805a"), clampf(1.0 - t * 1.4, 0.0, 1.0))
+	if winter:
+		return Color("#c4d0dc").lerp(Color("#93a6ba"), t)
 	if (int(u) / 3 + int(h)) % 9 == 0 and h > 20.0 and h < 24.0:
 		return Color("#e8f2f8") # wisp of cloud
 	return Color("#8cc0e0").lerp(Color("#5f97c4"), t)
+
+
+## The street tree in front of the bank, or null where it isn't: blossom in spring,
+## full green in summer, orange in autumn and bare branches in winter.
+static func _tree(u: float, h: float, season: String) -> Variant:
+	var dx := u - 36.5
+	var trunk := absf(dx) < 0.8 and h >= 4.0 and h < 13.0
+	if trunk:
+		return Color("#4a3020")
+	var dy := h - 17.0
+	var inside := dx * dx / 22.0 + dy * dy / 36.0 <= 1.0
+	if not inside:
+		return null
+	var speck := posmod(int(u) * 5 + int(h) * 3, 7)
+	match season:
+		"spring":
+			return Color("#f4b8cc") if speck == 0 or speck == 4 else (Color("#6aa84a") if speck % 2 else Color("#4f8a3a"))
+		"summer":
+			return Color("#3f7a30") if speck % 3 else Color("#2c5e22")
+		"autumn":
+			return Color("#e08a2a") if speck % 3 == 0 else (Color("#c0502a") if speck % 3 == 1 else Color("#e8b040"))
+	# winter: a few bare branches
+	if absf(dx - dy * 0.6) < 0.6 or absf(dx + dy * 0.7) < 0.6 or (absf(dx) < 0.6 and dy < 2.0):
+		return Color("#4a3020")
+	return null
 
 
 static func _sign(iso: Iso) -> void:

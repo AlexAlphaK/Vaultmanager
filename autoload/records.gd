@@ -41,6 +41,9 @@ const ACHIEVEMENTS := {
 	"pass_sterling": {"name": "Top of the street", "desc": "End a day worth more than Sterling Bullion Co.", "key": "passed_sterling", "goal": 1},
 	"story_done": {"name": "Apprentice no more", "desc": "Finish the story: Mags cuts the ribbon on your landmark.", "key": "chapters", "goal": 5},
 	"tip_off": {"name": "Good citizen", "desc": "Tip off the police about Lucky's stolen goods.", "key": "tipped_off", "goal": 1},
+	"year_1": {"name": "Four seasons", "desc": "Trade through a whole year, spring to winter.", "key": "days", "goal": 56},
+	"booth": {"name": "Show table", "desc": "Book a booth at the town coin show.", "key": "booths", "goal": 1},
+	"gift_rush": {"name": "Season's greetings", "desc": "Serve 40 gift shoppers in one holiday rush.", "key": "gift_best", "goal": 40},
 }
 
 ## Lifetime sums of the day reports. Deal counts come from Shop.noted.
@@ -128,6 +131,10 @@ func value_of(key: String) -> float:
 			return 1.0 if Rivals.passed.has("sterling") else 0.0
 		"tipped_off":
 			return totals.get("tipped_off", 0) + float(_today.get("tipped_off", 0))
+		"booths":
+			return Calendar.booths
+		"gift_best":
+			return Calendar.best_of("gift_rush")
 		"chapters":
 			return Story.chapters_done()
 	return total(key)

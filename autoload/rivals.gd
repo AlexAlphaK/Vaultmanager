@@ -195,8 +195,8 @@ func traffic_factor() -> float:
 ## Odds that a customer like `c` goes to a rival instead of coming in.
 func divert_odds(c: Customer) -> float:
 	# regulars, people a headline sent, collectors with special orders and the shop's own
-	# story beats always come in
-	if c.regular_id != "" or c.event_id != "" or c.story != "" or c.kind == "visit" or c.kind == "robber" or not c.order.is_empty():
+	# story beats always come in (town event crowds shop around like anyone else)
+	if c.regular_id != "" or (c.event_id != "" and not Calendar.is_town_event(c.event_id)) or c.story != "" or c.kind == "visit" or c.kind == "robber" or not c.order.is_empty():
 		return 0.0
 	return clampf(1.0 - share_for(c) / FAIR_SHARE, 0.0, MAX_DIVERT)
 
