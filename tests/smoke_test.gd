@@ -1,6 +1,7 @@
 extends Node
 ## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test, the vault lock-up,
-## the customers (archetypes, haggling, regulars' stories), staff and rush hours, the menus, settings
+## the customers (archetypes, haggling, regulars' stories), staff and rush hours, counter, bench
+## and room upgrades with the floor plan, the menus, settings
 ## and music, and the tutorial. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
@@ -29,6 +30,7 @@ func _ready() -> void:
 	_check_staff()
 	_check_rush_hours()
 	await _check_rush_day()
+	await _check_shop_upgrades()
 	_check_settings()
 	_check_music()
 	await _check_menus()
@@ -752,13 +754,13 @@ func _check_rush_day() -> void:
 	shop._test.finished.emit("genuine")
 	expect(not shop.paused and shop._test == null, "back at the counter")
 	# a full queue turns walk-ins away
-	while shop.queue.size() < ShopArt.SLOTS.size():
+	while shop.queue.size() < Progress.queue_slots():
 		var extra := Customer.create(1, 2.5, Shop.coin_list(), rng)
 		extra.kind = "seller"
 		shop.queue.append(extra)
 	shop._next_spawn = 0.0
 	shop._tick(0.01)
-	expect(Shop.stats.get("walked_by", 0.0) >= 1.0 and shop.queue.size() == ShopArt.SLOTS.size(), "a full queue in a rush turns people away")
+	expect(Shop.stats.get("walked_by", 0.0) >= 1.0 and shop.queue.size() == Progress.queue_slots(), "a full queue in a rush turns people away")
 	# the clerk serves a buyer at the second till
 	shop.queue.clear()
 	Day.phase = Day.MORNING
@@ -804,6 +806,94 @@ func _check_rush_day() -> void:
 	shop._till_grab()
 	expect(Shop.cash < cash and shop.till < RushHours.till_limit() * 3.0, "a snatch takes cash from the till")
 	shop.queue_free()
+	SaveGame.new_game()
+
+
+## Counter, bench and room upgrades: what each one changes, and the floor plan.
+func _check_shop_upgrades() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Shop.cash = 1000000.0
+	expect(Progress.queue_slots() == ShopArt.BASE_SLOTS, "the corner counter has room for 4 in the queue")
+	var till := RushHours.till_limit()
+	expect(Progress.buy("queue_ropes") and Progress.queue_slots() == ShopArt.BASE_SLOTS + 2, "queue ropes make room for 2 more")
+	expect(not Progress.can_buy("long_counter") and not Progress.can_buy("testing_lab"), "the long counter and the lab wait for Main Street")
+	var rooms := {}
+	for room in PlanArt.ROOMS:
+		rooms[room.id] = room
+	expect(PlanArt.state(rooms.shop_floor, 0, Progress.owned) == "built" and PlanArt.state(rooms.testing_lab, 0, Progress.owned) == "lot",
+		"the corner counter has a shop floor and a vault; the lab is a lot next door")
+	Progress.tier = 1
+	expect(PlanArt.state(rooms.testing_lab, 1, Progress.owned) == "shell", "Main Street opens the lab's plot")
+	expect(Progress.buy("long_counter"), "buy the long counter")
+	expect(is_equal_approx(RushHours.till_limit(), till * Progress.deal_size() / Progress.TIERS[0].deal_size * 1.5), "the long counter's till holds 50% more")
+	expect(Progress.queue_slots() == ShopArt.BASE_SLOTS + 3, "the long counter adds a spot in the queue")
+	expect(Progress.buy("testing_lab") and PlanArt.state(rooms.testing_lab, 1, Progress.owned) == "built", "build the testing lab")
+	Progress.tier = 2
+	expect(Progress.unlocked("marble_counter"), "the marble counter follows the long counter")
+	Progress.owned.erase("long_counter")
+	expect(not Progress.unlocked("marble_counter"), "the marble counter needs the long counter first")
+	Progress.owned.append("long_counter")
+	expect(Progress.buy("marble_counter") and Progress.queue_slots() == ShopArt.SLOTS.size(), "a marble counter fills the queue's second row")
+	Progress.tier = 3
+	var deal := Progress.deal_size()
+	expect(Progress.buy("trading_desk") and is_equal_approx(Progress.deal_size(), deal * 1.25), "the trading desk makes deals 25% bigger")
+	var plan := PlanArt.paint(Progress.tier, Progress.owned)
+	expect(plan.width == PlanArt.SIZE.x and plan.height == PlanArt.SIZE.y, "the floor plan paints")
+	var front := ShopArt.paint_front(false, ShopArt.fit_out())
+	expect(front.width == ShopArt.SIZE.x, "the marble counter paints")
+	# the benches: gauges colour the readings, the sigma verifier finds plated steel
+	expect(Progress.buy("digital_gauges") and Progress.buy("sigma_verifier"), "buy the bench tools")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	var c := Customer.create(3, 4.0, Shop.coin_list(), rng)
+	c.kind = "seller"
+	c.piece = null
+	c.bar = null
+	c.item = Shop.coins["gold_eagle"]
+	c.fake = "steel"
+	var bench: Control = load("res://scenes/coin_test/coin_test.tscn").instantiate()
+	add_child(bench)
+	bench.start(c)
+	expect(bench.tools().has("sigma") and bench._cells.has("sigma"), "the sigma verifier joins the coin bench")
+	expect(bench.sigma_reading() == "ferrous" and bench.in_spec("weight") == false and bench.in_spec("sigma") == false, "the gauges and sigma flag plated steel")
+	bench.use_tool("sigma")
+	bench._process(1.5)
+	expect(bench._cells.sigma.text == "ferrous", "the sigma reading shows on the panel")
+	bench.queue_free()
+	c.fake = ""
+	bench = load("res://scenes/coin_test/coin_test.tscn").instantiate()
+	add_child(bench)
+	bench.start(c)
+	expect(bench.sigma_reading() == "in band" and bench.in_spec("weight") == true and bench.in_spec("diameter") == true, "a genuine coin reads in spec")
+	bench.queue_free()
+	# the testing lab calms the queue while you are at the bench in a rush
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	shop._open_shop()
+	shop.queue.clear()
+	shop.time = (12.0 * 60.0 - 9.0 * 60.0) / (8.0 * 60.0) * shop.DAY_SECONDS
+	shop._tick(0.0)
+	var seller := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	seller.kind = "seller"
+	seller.piece = null
+	seller.bar = null
+	seller.fake = ""
+	seller.pos = ShopArt.SLOTS[0]
+	var waiting := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	waiting.kind = "seller"
+	waiting.pos = ShopArt.SLOTS[1]
+	shop.queue.append(seller)
+	shop.queue.append(waiting)
+	await get_tree().process_frame
+	shop._open_test(seller)
+	var before: float = waiting.patience
+	shop._tick(1.0)
+	expect(is_equal_approx(before - waiting.patience, 0.25), "with a lab the queue frets half as fast while you test")
+	shop._test.finished.emit("cancel")
+	shop.queue_free()
+	await get_tree().process_frame
 	SaveGame.new_game()
 
 

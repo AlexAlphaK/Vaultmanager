@@ -1,7 +1,8 @@
 class_name DayPanels
 extends PanelContainer
 ## The panels over the shop floor between shop hours: the morning briefing, the
-## upgrades, staff and expansion page, and the end-of-day summary. Rebuilt each time one opens.
+## upgrades, staff and expansion page, the floor plan where rooms are built, and the
+## end-of-day summary. Rebuilt each time one opens.
 
 signal open_requested
 signal next_day_requested
@@ -10,7 +11,7 @@ signal new_game_requested
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
-var page := "" # "morning", "upgrades", "summary" or "" when hidden
+var page := "" # "morning", "upgrades", "plan", "summary" or "" when hidden
 ## The morning's Open the shop button, for the tutorial to point at.
 var open_button: Button
 var _box: VBoxContainer
@@ -47,6 +48,11 @@ func show_upgrades() -> void:
 	_build_upgrades()
 
 
+func show_plan() -> void:
+	page = "plan"
+	_build_plan()
+
+
 func show_summary(report: Dictionary) -> void:
 	page = "summary"
 	_build_summary(report)
@@ -58,6 +64,8 @@ func _refresh_page() -> void:
 		_build_morning()
 	elif page == "upgrades":
 		_build_upgrades()
+	elif page == "plan":
+		_build_plan()
 
 
 func _clear() -> void:
@@ -147,19 +155,30 @@ func _build_upgrades() -> void:
 	_title("Upgrades and staff")
 	_text("Cash %s. Hover an upgrade to see what it does." % Market.format_money(Shop.cash), Pal.INK_DIM)
 	_gap()
+	# the list outgrows the panel as the shop grows, so it scrolls
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_box.add_child(scroll)
 	var grid := _grid(3)
+	_box.remove_child(grid)
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(grid)
 	if not Progress.is_top_tier():
 		var next := Progress.tier_info(Progress.tier + 1)
 		var blocker := Progress.expand_blocker()
 		_upgrade_row(grid, "Move to %s" % next.name, next.cost, blocker == "", "Move",
 			"Rent %s a week. More customers, bigger deals and more upgrades. %s" % [Market.format_money(next.rent), blocker],
 			func(): Progress.expand(), Pal.GOLD)
+	# rooms are built on the floor plan page
 	for id in Progress.owned:
 		var u: Dictionary = Progress.upgrades.get(id, {})
-		if not u.is_empty():
+		if not u.is_empty() and Progress.line_of(id) != "room":
 			_upgrade_row(grid, u.name, -1.0, false, "Owned", u.desc, Callable(), Pal.GOOD)
 	for id in Progress.available_upgrades():
 		var u: Dictionary = Progress.upgrades[id]
+		if Progress.line_of(id) == "room":
+			continue
 		_upgrade_row(grid, u.name, u.cost, Progress.can_buy(id), "Buy", u.desc, func(): Progress.buy(id))
 	for id in Staff.ROLES:
 		var role: Dictionary = Staff.ROLES[id]
@@ -171,15 +190,83 @@ func _build_upgrades() -> void:
 	var locked := Progress.locked_upgrade_count()
 	if locked > 0:
 		_text("%d more upgrade%s unlock as the shop grows." % [locked, "" if locked == 1 else "s"], Pal.INK_FAINT)
-	_spacer()
 	_hint = _text("", Pal.INK)
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint.custom_minimum_size = Vector2(0, 17)
 	if not Progress.is_top_tier() and Progress.expand_blocker() != "":
 		_hint.text = "To move up: %s." % Progress.expand_blocker().to_lower()
 	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
 	_box.add_child(row)
 	_button(row, "Back", "Button", show_morning)
+	var rooms := Progress.available_upgrades("room").size()
+	_button(row, "Floor plan%s" % (" (%d to build)" % rooms if rooms > 0 else ""), "Button", show_plan)
+
+
+# ---------------------------------------------------------------- floor plan
+
+func _build_plan() -> void:
+	_clear()
+	_title("Floor plan")
+	var map := TextureRect.new()
+	map.texture = PlanArt.paint(Progress.tier, Progress.owned).texture()
+	map.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	map.custom_minimum_size = Vector2(PlanArt.SIZE)
+	map.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_box.add_child(map)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	_box.add_child(row)
+	for room in PlanArt.ROOMS:
+		if room.upgrade == "":
+			continue
+		var cell := VBoxContainer.new()
+		cell.add_theme_constant_override("separation", 0)
+		cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(cell)
+		_room_entry(cell, room)
+	var back := _button(row, "Back", "Button", show_upgrades)
+	back.size_flags_vertical = Control.SIZE_SHRINK_END
+	_hint = _text("Each move up opens a plot next door. Build a room there to add it to your shop.", Pal.INK)
+	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+
+## A room's short name and its Build button, or where it stands when it can't be built.
+func _room_entry(list: VBoxContainer, room: Dictionary) -> void:
+	var id: String = room.upgrade
+	var u: Dictionary = Progress.upgrades[id]
+	var st := PlanArt.state(room, Progress.tier, Progress.owned)
+	var label := Label.new()
+	label.text = room.label
+	label.add_theme_color_override("font_color", Pal.GOOD if st == "built" else (Pal.INK if st == "shell" else Pal.INK_FAINT))
+	label.mouse_filter = Control.MOUSE_FILTER_PASS
+	list.add_child(label)
+	var b := Button.new()
+	b.custom_minimum_size = Vector2(0, 11)
+	b.focus_mode = Control.FOCUS_NONE
+	var desc: String
+	match st:
+		"built":
+			b.text = "Built"
+			b.disabled = true
+			desc = "%s. %s" % [u.name, u.desc]
+		"shell":
+			b.text = "Build"
+			b.theme_type_variation = "PrimaryButton" if Progress.can_buy(id) else "Button"
+			b.disabled = not Progress.can_buy(id)
+			b.pressed.connect(func(): Progress.buy(id))
+			desc = "%s, %s. %s" % [u.name, Market.format_money(u.cost), u.desc]
+		_:
+			b.text = "Locked"
+			b.disabled = true
+			desc = "%s: the plot next door opens when you move to the %s. %s" % [u.name, Progress.tier_name(int(u.tier)), u.desc]
+	b.tooltip_text = desc
+	list.add_child(b)
+	var hover := func():
+		if _hint:
+			_hint.text = desc
+	b.mouse_entered.connect(hover)
+	label.mouse_entered.connect(hover)
 
 
 func _upgrade_row(grid: GridContainer, title: String, cost: float, enabled: bool, verb: String, desc: String, on_buy: Callable, col := Pal.INK) -> void:

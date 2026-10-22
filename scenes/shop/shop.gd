@@ -140,7 +140,7 @@ func _tick(delta: float) -> void:
 	MarketEvents.advance(delta)
 	_next_spawn -= delta
 	if not closing and _next_spawn <= 0.0 and not coach.holds_clock():
-		if queue.size() < ShopArt.SLOTS.size():
+		if queue.size() < Progress.queue_slots():
 			_spawn()
 			if _rush_left > 0:
 				_rush_left -= 1
@@ -160,11 +160,13 @@ func _tick(delta: float) -> void:
 	_clerk_tick(delta)
 	if not closing and rng.randf() < RushHours.grab_chance(till, not rush.is_empty()) * delta:
 		_till_grab()
+	# with a testing lab the queue frets less while you are at the bench
+	var calm := 1.0 - (clampf(Progress.effect("calm_queue"), 0.0, 1.0) if _test != null else 0.0)
 	for c in queue.duplicate():
 		# whoever is on the testing bench is watching you work
 		if c.walking or c == _testing:
 			continue
-		c.patience -= delta if c == _front() else delta * 0.5
+		c.patience -= (delta if c == _front() else delta * 0.5) * calm
 		if c.patience <= 0.0:
 			Shop.reputation_for("walked_out")
 			_dismiss(c, "%s got tired of waiting and left." % c.name, "bad")
@@ -363,7 +365,7 @@ func _settle_bar(j: Dictionary) -> void:
 ## This is where a wrong appraisal shows up.
 func _settle_piece(j: Dictionary) -> void:
 	var p: JewelleryPiece = j.piece
-	var payout := p.refiner_payout()
+	var payout := p.refiner_payout() * (1.0 + Progress.effect("refine"))
 	var paid: float = j.paid
 	Day.add_income("Refiner and stone dealer", payout)
 	Shop.note("profit", payout - paid)
@@ -435,7 +437,7 @@ func _clerk_tick(delta: float) -> void:
 			continue
 		queue.erase(c)
 		at_clerk = c
-		clerk_left = CLERK_SECONDS
+		clerk_left = CLERK_SECONDS / (1.0 + Progress.effect("clerk_speed"))
 		if c == _shown:
 			_shown = null
 			_show_front()
@@ -455,7 +457,7 @@ func _clerk_finish() -> void:
 		return
 	# they want a better price than the clerk may give: back to the queue for you
 	c.clerk_tried = true
-	if queue.size() < ShopArt.SLOTS.size():
+	if queue.size() < Progress.queue_slots():
 		queue.append(c)
 		Shop.log_event("%s wants a better price. %s sent them to you." % [c.name, clerk])
 	else:
