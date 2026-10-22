@@ -22,7 +22,7 @@ signal changed
 ## who goes to them instead of you adds to it.
 const SHOPS := {
 	"sterling": {"name": "Sterling Bullion Co.", "short": "Sterling", "owner": "Mr. Sterling",
-		"buy": 0.88, "premium": 0.07, "stars": 3.0, "worth": 180000.0, "growth": 0.004, "deal": 250.0},
+		"buy": 0.88, "premium": 0.07, "stars": 3.0, "worth": 180000.0, "growth": 0.004, "deal": 120.0},
 	"pawn": {"name": "Lucky's Pawn & Loan", "short": "Lucky's", "owner": "Lucky Lou",
 		"buy": 0.75, "premium": 0.12, "stars": 1.8, "worth": 50000.0, "growth": 0.002, "deal": 120.0},
 }
@@ -398,7 +398,7 @@ func _on_day_ended(_day: int, report: Dictionary) -> void:
 	for id in state:
 		var st: Dictionary = state[id]
 		var n := int(lost_today.get(id, 0))
-		st.worth = float(st.worth) * (1.0 + float(SHOPS[id].growth)) + n * float(SHOPS[id].deal) * Progress.deal_size()
+		st.worth = float(st.worth) * (1.0 + float(SHOPS[id].growth)) + n * float(SHOPS[id].deal)
 		if n > 0:
 			bits.append("%d to %s" % [n, SHOPS[id].short])
 	if not bits.is_empty():
