@@ -52,11 +52,13 @@ var max_premium := 0.06
 var haggle := 0.0
 var floor_reserve := 0.9
 var ceiling_premium := 0.06
-## "walk_in", "haggler", "crypto_bro", "collector", "shady" or "regular".
+## "walk_in", "haggler", "crypto_bro", "collector", "shady", "regular" or "story".
 var archetype := "walk_in"
 ## Regulars: who they are in Customers.REGULARS and which visit of their story this is.
 var regular_id := ""
 var beat := -1
+## Story visitors (see Story): the beat they are here to play.
+var story := ""
 ## Collectors want this exact coin, not just the metal.
 var wanted_exact := false
 ## The special order (see Orders) this collector is placing (kind "order") or picking up.

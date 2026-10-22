@@ -3,7 +3,7 @@ extends Node
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, counter, bench
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
 ## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
-## shops on the town map, and the trading desk. Run:
+## shops on the town map, the story campaign, and the trading desk. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -44,6 +44,7 @@ func _ready() -> void:
 	_check_burglar_crews()
 	await _check_holdups()
 	await _check_rivals()
+	await _check_story()
 	_check_settings()
 	_check_music()
 	await _check_menus()
@@ -1106,6 +1107,109 @@ func _check_rivals() -> void:
 	panels.queue_free()
 	SaveGame.new_game()
 	expect(Rivals.is_open("pawn") and Rivals.passed.is_empty() and Rivals.ad_days == 0, "a new game resets the rivals")
+
+
+func _check_story() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Day.begin_day()
+	expect(Story.synced and Story.chapter == 0 and Story.pending.size() == 1, "a new game queues Mags's first visit")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	Day.open_shop()
+	expect(Story.next_customer(rng) == null, "Mags waits until day 2")
+	Day.close_shop()
+	Day.end_day()
+	Shop.next_day()
+	Day.begin_day()
+	expect(Story.next_customer(rng) == null, "nobody visits before the shop opens")
+	Day.open_shop()
+	var c := Customers.next_customer(rng)
+	expect(c.story == "mags_hello" and c.kind == "visit" and c.name == "Mags Holloway", "Mags walks in on day 2")
+	expect(Customers.tag(c) == "mentor", "the card calls Mags your mentor")
+	expect(Rivals.divert_odds(c) == 0.0, "story visitors never cross the street")
+	expect(Customers.next_customer(rng).story == "", "one story visitor at a time")
+	Customers.on_leave(c)
+	expect(Story.pending.is_empty(), "the visit plays once")
+	expect(Story.has_new_letter(), "the story button flags Mags's new note")
+	# chapter 1's goals, met one by one
+	Records.totals.caught = 3
+	Story._check()
+	expect(Story.goal_met(0) and Story.chapter == 0, "a goal ticks off on its own")
+	expect(Story.goal_count(1) == "0 / 15", "the page counts a goal's progress")
+	Records.totals.buys = 15
+	Records.totals.days = 7
+	Story._check()
+	expect(Story.chapter == 1 and Story.met.is_empty(), "meeting every goal closes the chapter")
+	expect(Story.pending.size() == 2 and float(Story.pending[0].reward.get("cash", 0.0)) == 1000.0, "Mags brings the reward, then Sterling comes over")
+	var cash := Shop.cash
+	c = Customers.next_customer(rng)
+	expect(c.story == "mags_name" and "Reward" in c.note, "the card shows Mags's reward")
+	Customers.on_leave(c)
+	expect(is_equal_approx(Shop.cash, cash + 1000.0), "Mags's reward is paid when she leaves")
+	c = Customers.next_customer(rng)
+	expect(c.story == "sterling_sneer" and c.name == "Victor Sterling" and Customers.tag(c) == "rival", "Victor Sterling, the rival owner, walks in")
+	Customers.on_leave(c)
+	# chapter 2, and Sterling's price war at the start of chapter 3
+	Records.peaks.rep = 3.2
+	Rivals.passed.append("pawn")
+	Progress.tier = 1
+	Rivals.state.sterling.move = ""
+	Story._check()
+	expect(Story.chapter == 2, "moving to Main Street closes chapter 2")
+	Customers.on_leave(Customers.next_customer(rng))
+	c = Customers.next_customer(rng)
+	expect(c.story == "sterling_war", "Sterling comes to declare war")
+	Customers.on_leave(c)
+	expect(Rivals.move_of("sterling") == "price_war", "Sterling's visit starts a price war")
+	# save and load mid-chapter
+	var saved := Story.to_dict()
+	Story.reset()
+	Story.from_dict(JSON.parse_string(JSON.stringify(saved)))
+	expect(Story.synced and Story.chapter == 2 and Story.pending.is_empty(), "the story saves and loads")
+	# the rest of the way, in one go
+	Records.totals.orders_filled = 3
+	Staff.hired.append("clerk")
+	Progress.tier = 3
+	Rivals.passed.append("sterling")
+	Records.peaks.rep = 4.6
+	Records.peaks.worth = 500000.0
+	Story._check()
+	expect(Story.is_finished() and Story.chapters_done() == Story.CHAPTERS.size(), "a shop that has done it all finishes the story")
+	expect(Records.is_earned("story_done"), "finishing the story earns Apprentice no more")
+	expect(Story.pending.back().beat == "mags_ribbon", "Mags comes to cut the ribbon")
+	var report := {"lines": []}
+	Story._on_day_ended(Shop.day, report)
+	expect(report.lines.any(func(l): return "is done!" in l), "the summary says when a chapter is done")
+	Staff.hired.erase("clerk")
+	# the story page and the morning panel build at every stage
+	var panels := DayPanels.new()
+	add_child(panels)
+	panels.show_story()
+	expect(panels.visible and panels.page == "story", "the story page opens at the end")
+	Story.reset()
+	Story.synced = true
+	panels.show_story()
+	expect(not Story.has_new_letter(), "reading the page clears the new note flag")
+	panels.show_morning()
+	expect(panels.page == "morning", "the morning panel shows the chapter")
+	panels.queue_free()
+	# a save from before the story skips the chapters it has already done, unpaid
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Shop.day = 40
+	Records.totals.caught = 10
+	Records.totals.buys = 50
+	Records.totals.days = 39
+	Records.peaks.rep = 3.4
+	Rivals.passed.append("pawn")
+	Progress.tier = 1
+	Story.synced = false
+	Day.begin_day()
+	expect(Story.chapter == 2 and Story.pending.size() == 2, "an old save starts at the first unfinished chapter")
+	expect(Story.pending.all(func(p): return p.reward.is_empty()), "skipped chapters pay no rewards")
+	SaveGame.new_game()
+	expect(Story.chapter == 0 and not Story.synced and Story.pending.is_empty(), "a new game resets the story")
 
 
 func _check_rush_hours() -> void:
