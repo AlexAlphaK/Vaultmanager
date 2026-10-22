@@ -19,7 +19,8 @@ platinum and palladium prices follow the real market.
 | `autoload/rivals.gd` | `Rivals` singleton: the rival shops in town (Sterling Bullion and Lucky's Pawn), how customers choose between them and you, the rivals' morning moves and your answers; saved with the game |
 | `autoload/staff.gd` | `Staff` singleton: the clerk and the guard you can hire, their signing fees, daily wages and effects |
 | `autoload/save_game.gd` | `SaveGame` singleton: three save slots (`user://save_1.json` to `save_3.json`), saved every morning and at the end of each day; an old `save.json` becomes slot 1 |
-| `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
+| `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses, fullscreen and screen scaling, saved in `user://settings.cfg` |
+| `autoload/pad.gd` | `Pad` singleton: gamepad controls (a pointer on the left stick, d-pad jumps between buttons, scene shortcuts on the bumpers and triggers, the controls list) |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
 | `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 25 achievements; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
@@ -61,6 +62,31 @@ Saves and settings live in `%APPDATA%\Godot\app_userdata\Vault Manager`, so a ne
 keeps your shop. The build is made by `.github/workflows/windows-build.yml` from the
 "Windows Desktop" preset in `export_presets.cfg`; to export by hand in the editor use
 **Project > Export > Windows Desktop**.
+
+## Controller and Steam Deck
+
+Any gamepad works (Xbox, PlayStation, Switch Pro, the Steam Deck's own controls). The game
+switches to the pad the moment you touch it and back to the mouse when you move the mouse.
+
+| Button | Does |
+| --- | --- |
+| Left stick | Move the pointer (push further to go faster) |
+| D-pad | Jump the pointer to the next button that way; on a volume slider, left and right change it; in the vault it stops on each piece, then cell by cell while you carry one |
+| A | Click; hold it to drag (vault pieces) |
+| B | Back (like Esc) |
+| X | Right click (turn a vault piece) |
+| Y | Confirm (like Enter: lock up the vault, finish an appraisal) |
+| LB / RB | Benches: previous / next tool. Trading desk: previous / next row |
+| LT / RT | Trading desk: sell / buy. Jewellery: diamond or not / next grade |
+| Right stick | Scroll lists |
+| Start | Pause menu |
+| View (Select) | Show the controls |
+
+**Scaling** (Settings): *Auto* keeps every pixel the same size unless that wastes a lot of the
+screen, *Pixel perfect* always does, *Fill screen* always fills it. On the Steam Deck (1280x800)
+Auto fills the screen at 2.67x with thin bars top and bottom, and the game starts fullscreen.
+To play on the Deck, add the Windows build to Steam as a non-Steam game and force Proton in its
+compatibility settings.
 
 ## How to play
 
