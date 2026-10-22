@@ -1,7 +1,7 @@
 extends Node
 ## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test, the vault lock-up,
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, the menus, settings
-## and music, and the tutorial. Run:
+## and music, the tutorial, and robberies (hold-ups and burglar crews). Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -29,6 +29,8 @@ func _ready() -> void:
 	_check_staff()
 	_check_rush_hours()
 	await _check_rush_day()
+	_check_burglar_crews()
+	await _check_holdups()
 	_check_settings()
 	_check_music()
 	await _check_menus()
@@ -803,6 +805,173 @@ func _check_rush_day() -> void:
 	var cash := Shop.cash
 	shop._till_grab()
 	expect(Shop.cash < cash and shop.till < RushHours.till_limit() * 3.0, "a snatch takes cash from the till")
+	shop.queue_free()
+	SaveGame.new_game()
+
+
+## Night crews: kids carry off a few pieces from the tray, crews and pros work the
+## wall safe, nobody opens the floor safe; the cameras get some of it back.
+func _check_burglar_crews() -> void:
+	SaveGame.new_game()
+	Security.hook_up()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	var seen := {}
+	for tier in 4:
+		for n in 200:
+			seen[Security.pick_crew(rng, tier)] = true
+	expect(seen.has("kids") and seen.has("crew") and seen.has("pros"), "all three crews turn up")
+	for n in 200:
+		expect(Security.pick_crew(rng, 0) != "pros", "no professionals at the corner counter")
+	expect(Security.crack_chance("kids", 0.4) == 0.0, "kids leave the safes alone")
+	expect(Security.crack_chance("pros", 0.4) > Security.crack_chance("crew", 0.4), "professionals crack safes more often")
+	expect(Security.crack_chance("pros", 0.0) == 0.0, "the floor safe always holds")
+	expect(Security.crack_chance("kids", 1.0) == 1.0, "the tray is always open")
+	# five silver tubes and two gold boxes on the tray: kids take the three most valuable
+	Shop.reset()
+	Shop.cash = 0.0
+	Shop.add_stock(Shop.coins["silver_maple"], 50, 30.0)
+	Shop.add_stock(Shop.coins["gold_maple"], 10, 2000.0)
+	var v := VaultLayout.from_shop(rng)
+	var kids := {}
+	for n in 400:
+		var r := v.resolve(1.0, rng)
+		if r.crew == "kids":
+			kids = r
+			break
+	expect(not kids.is_empty() and kids.stolen.size() == 3, "kids carry off three pieces")
+	if not kids.is_empty():
+		var values := v.pieces.map(func(p): return p.value)
+		values.sort()
+		expect(kids.stolen.all(func(p): return p.value >= values[-3]), "kids grab the most valuable pieces")
+	# with the wall safe full and the tray empty, kids get nothing and pros usually crack it
+	for p in v.pieces:
+		p.area = VaultLayout.WALL
+	var pros_hit := 0
+	var kids_hit := 0
+	for n in 400:
+		var r := v.resolve(1.0, rng)
+		if r.crew == "kids" and r.value > 0.0:
+			kids_hit += 1
+		if r.crew == "pros" and r.value > 0.0:
+			pros_hit += 1
+	expect(kids_hit == 0, "kids never get into the wall safe")
+	Progress.tier = 3
+	pros_hit = 0
+	var pros := 0
+	for n in 400:
+		var r := v.resolve(1.0, rng)
+		if r.crew == "pros":
+			pros += 1
+			pros_hit += 1 if r.value > 0.0 else 0
+	expect(pros > 0 and pros_hit > pros / 2, "professionals usually crack the wall safe")
+	Progress.tier = 0
+	# the cameras recover a third
+	Progress.owned.assign(["cctv"])
+	Day.begin_day()
+	var cash := Shop.cash
+	var report := {"break_in": true, "crew": "crew", "stolen": [], "value": 3000.0, "cracked": {}}
+	v.apply(report)
+	expect(is_equal_approx(Shop.cash, cash + 1000.0 * Security.recover_share() * 3.0) and report.recovered > 0.0, "police recover a third with cameras")
+	Progress.owned.clear()
+	SaveGame.new_game()
+
+
+## Daytime hold-ups: the guard stops most at the door; at the counter you hand over the
+## till, or hit the panic button and risk the display case; freezing costs both.
+func _check_holdups() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	if not shop.has_method("_robber_walks_in"):
+		expect(false, "the shop has hold-ups")
+		return
+	shop._open_shop()
+	shop.queue.clear()
+	expect(Progress.upgrades.has("cctv"), "the cameras are for sale")
+	expect(Security.holdup_chance(RushHours.till_limit() * 3.0) > Security.holdup_chance(0.0), "a full till draws robbers")
+	var base := Security.holdup_chance(0.0)
+	Progress.owned.assign(["cctv"])
+	expect(Security.holdup_chance(0.0) < base, "the cameras put robbers off")
+	Progress.owned.clear()
+	var odds := Security.panic_odds()
+	Progress.owned.assign(["alarm"])
+	expect(Security.panic_odds() > odds, "the alarm makes the panic button work more often")
+	Progress.owned.clear()
+	# the robber queues like anyone, and pulls a gun at the counter; half the queue flees
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 3
+	for n in 4:
+		var c := Customer.create(1, 2.5, Shop.coin_list(), rng)
+		c.kind = "seller"
+		c.pos = ShopArt.SLOTS[n]
+		shop.queue.append(c)
+	shop._robber_walks_in()
+	var robber: Customer = shop.robber
+	expect(robber != null and shop.queue.back() == robber, "the robber joins the end of the queue")
+	shop.queue.erase(robber)
+	shop.queue.push_front(robber)
+	robber.pos = ShopArt.SLOTS[0]
+	shop.rng.seed = 1
+	shop._tick(0.01)
+	expect(shop.robber_revealed and Shop.stats.get("holdups", 0.0) == 1.0, "the hold-up starts at the counter")
+	expect(shop.queue.size() < 5, "customers run for the door")
+	shop.hud.show_customer(robber)
+	expect(shop.hud._buttons.sell.visible and shop.hud._buttons.sell.text == "Panic button" and shop.hud._buttons.decline.visible, "the counter card offers the panic button and handing over")
+	# hand over the till: lose the till, keep the stock
+	Shop.add_stock(Shop.coins["gold_maple"], 3, 2000.0)
+	shop.till = 4000.0
+	var cash := Shop.cash
+	var gold := Shop.count_of("XAU")
+	shop._on_action("decline")
+	expect(shop.robber == null and robber.leaving, "the robber leaves")
+	expect(is_equal_approx(Shop.cash, cash - 4000.0) and shop.till == 0.0 and Shop.count_of("XAU") == gold, "handing over costs the till only")
+	# freeze: the robber takes the till and coins from the case
+	shop._robber_walks_in()
+	robber = shop.robber
+	shop.queue.clear()
+	shop.queue.append(robber)
+	robber.pos = ShopArt.SLOTS[0]
+	shop.till = 2000.0
+	cash = Shop.cash
+	var stock_value := Shop.vault_value()
+	shop._tick(0.01)
+	shop._tick(Security.ROBBER_PATIENCE + 0.1)
+	expect(shop.robber == null and is_equal_approx(Shop.cash, cash - 2000.0) and Shop.vault_value() < stock_value, "freezing loses the till and coins from the case")
+	# the panic button: a sure thing with the odds forced up
+	shop._robber_walks_in()
+	robber = shop.robber
+	shop.queue.clear()
+	shop.queue.append(robber)
+	robber.pos = ShopArt.SLOTS[0]
+	shop._tick(0.01)
+	shop.till = 3000.0
+	cash = Shop.cash
+	Progress.owned.assign(["alarm", "time_lock"])
+	Day.phase = Day.MORNING
+	Shop.cash += 5000.0
+	Staff.hire("guard")
+	Day.phase = Day.OPEN
+	cash = Shop.cash
+	expect(is_equal_approx(Security.panic_odds(), 0.9), "the panic button tops out at 90%")
+	var stopped: float = Shop.stats.get("robbers_stopped", 0.0)
+	shop.rng.seed = 2
+	shop._on_action("sell")
+	expect(shop.robber == null, "the panic button ends the hold-up")
+	expect(Shop.stats.get("robbers_stopped", 0.0) > stopped or Shop.cash < cash, "the alarm either scares him off or he robs you")
+	# the guard stops most robbers at the door
+	var at_door := 0
+	for n in 100:
+		shop._robber_walks_in()
+		if shop.robber == null:
+			at_door += 1
+		else:
+			shop.queue.erase(shop.robber)
+			shop.robber = null
+	expect(at_door > 50 and at_door < 90, "the guard stops most robbers at the door")
+	Progress.owned.clear()
 	shop.queue_free()
 	SaveGame.new_game()
 
