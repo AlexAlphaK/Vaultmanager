@@ -627,7 +627,7 @@ func _build_orders() -> void:
 	for o in Orders.open:
 		var have := Orders.have_for(o)
 		var left := Orders.days_left(o)
-		_cell(grid, o.name, Pal.INK).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_shrinkable(_cell(grid, o.name, Pal.INK))
 		_cell(grid, "%d × %s" % [o.qty, Orders.item_of(o).display_name], Pal.INK)
 		_cell(grid, "%d/%d" % [have, o.qty], Pal.GOOD if have >= int(o.qty) else Pal.INK).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		_cell(grid, "today" if left <= 0 else Day.weekday(int(o.due)).left(3), Pal.BAD if left <= 0 else (Pal.WARN if left == 1 else Pal.INK_DIM))
@@ -642,7 +642,7 @@ func _build_orders() -> void:
 		var dealers := _grid(3)
 		for item in wanted:
 			var left := Orders.dealer_left(item)
-			_cell(dealers, item.display_name, Pal.INK).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			_shrinkable(_cell(dealers, item.display_name, Pal.INK))
 			if left <= 0:
 				_cell(dealers, "none today", Pal.INK_FAINT)
 				_cell(dealers, "", Pal.INK)
@@ -844,6 +844,8 @@ func _text(text: String, col: Color) -> Label:
 	l.text = text
 	l.add_theme_color_override("font_color", col)
 	l.custom_minimum_size = Vector2(AREA.size.x - 16, 0)
+	# wrap rather than widen the panel: translations run longer than the English
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_box.add_child(l)
 	return l
 
@@ -867,6 +869,15 @@ func _grid(columns := 2) -> GridContainer:
 	g.add_theme_constant_override("v_separation", 1)
 	_box.add_child(g)
 	return g
+
+
+## A cell that takes the spare width and cuts its text short rather than push the
+## columns after it off the panel (long names, longer translations).
+func _shrinkable(l: Label) -> Label:
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	l.clip_text = true
+	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	return l
 
 
 func _cell(grid: GridContainer, text: String, col: Color) -> Label:

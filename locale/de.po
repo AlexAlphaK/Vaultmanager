@@ -3100,7 +3100,7 @@ msgstr "Ruf"
 
 #: scenes/shop/day_panels.gd
 msgid "Restock"
-msgstr "Nachkaufen"
+msgstr "Einkauf"
 
 #: scenes/shop/day_panels.gd
 msgid "Rings up a buyer in %.1f s."
