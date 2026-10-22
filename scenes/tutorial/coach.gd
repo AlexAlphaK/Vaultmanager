@@ -174,8 +174,11 @@ func _open() -> void:
 
 
 func _open_button_rect() -> Variant:
-	var b: Button = shop.hud._panels.open_button
-	return b.get_global_rect() if is_instance_valid(b) and b.is_visible_in_tree() else null
+	# the button is freed while another morning page (upgrades, restock...) is open
+	var b = shop.hud._panels.open_button
+	if not is_instance_valid(b) or not b.is_visible_in_tree():
+		return null
+	return (b as Button).get_global_rect()
 
 
 func _on_shop_opened() -> void:
