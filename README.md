@@ -28,14 +28,14 @@ platinum and palladium prices follow the real market.
 | `items/counterfeit.gd` | The four kinds of fake (plated steel, brass, copper-nickel clad, tungsten core) and what each does to the readings |
 | `data/coins/*.tres` | Real coin specs (weight, purity, diameter, thickness) used by the testing minigame |
 | `scenes/menu/` | The title screen (main scene: Continue, New game, Settings, Quit) and the pause menu |
-| `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene); `rush_hours.gd` holds the busy hours and the till rules, `security.gd` the hold-ups and burglar crews |
+| `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene); `rush_hours.gd` holds the busy hours and the till rules, `security.gd` the hold-ups and burglar crews, `shop_fx.gd` the particles and customer reactions |
 | `scenes/tutorial/coach.gd` | The coach: the cards of the guided first day (with three scripted customers) and the bench intros |
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
 | `scenes/bar_test/` | The bar test: scale, calipers, ultrasound flaw detector, XRF gun and loupe |
 | `scenes/vault/` | The vault lock-up minigame at closing time; `vault_layout.gd` holds the packing and break-in rules |
 | `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people (walk cycle, back view, moods), coin, jewellery, bar, vault and title screen painters. `shop_ambience.gd` adds the sunbeam, dust, neon sign and shop cat; `bench_art.gd` the testing benches' wood, housings and lamp light. No image files |
-| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds, `bar_sfx.gd` the gel, ultrasound and X-ray sounds) |
+| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds, `bar_sfx.gd` the gel, ultrasound and X-ray sounds, `shop_sfx.gd` the shop floor: door bell, register, coin clinks, service bell and customer voices) |
 | `audio/music_synth.gd` | The music, synthesised at runtime: a music-box title theme and a slow jazzy shop loop |
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons, sliders) |
 | `ui/settings_panel.gd` | The settings page shared by the title screen and the pause menu |
@@ -266,6 +266,17 @@ both feed **Master**, and `Settings` creates the buses at launch so there is no 
 `MusicSynth` renders each track as a seamless loop (a second or two of work), so `Music` does it on
 a thread the first time and keeps the result in `user://music_cache/`. If you change
 `music_synth.gd`, bump `Music.CACHE_VERSION` so players get the new render.
+
+On the shop floor `ShopFx` (`scenes/shop/shop_fx.gd`) adds the life between the rules: coins arc
+across the counter on every deal and the money pops up over the till, each customer rings the
+service bell and speaks in their own little made-up voice (`ShopSfx.voice`, pitched from their
+seed), the impatient sweat and steam, anyone who storms out leaves in a puff of steam, a caught fake
+sparkles, and a hold-up flashes the room red and shakes it. It only listens to `Shop.noted`,
+`Shop.logged` and the shop's `customer_left` signal, so the rules never depend on it.
+`ShopSfx.warm_up()` renders the common sounds when the shop opens so the first customer doesn't
+stutter.
+
+![Shop effects: a sale, a customer storming out, a hold-up](docs/screenshots/fx.png)
 
 ## Feed states
 
