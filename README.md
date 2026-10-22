@@ -18,6 +18,7 @@ platinum and palladium prices follow the real market.
 | `autoload/save_game.gd` | `SaveGame` singleton: saves to `user://save.json` every morning, loads on launch |
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
+| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 21 achievements; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
@@ -135,6 +136,11 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   The rules live in `scenes/shop/security.gd`.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
+- **The ledger.** The **Ledger** button on the morning panel shows your lifetime record: deals,
+  money bought and sold, profit, fakes caught and missed, losses to thieves, your highest net
+  worth and stars, your profit streak and your three best days. **Achievements** lists 21 goals
+  (hover one to see how to earn it and how close you are). Earning one pops up in the log, and
+  the day's summary lists what you earned and tells you when you've had your best day yet.
 
 ## Customers
 
