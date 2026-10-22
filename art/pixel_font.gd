@@ -114,6 +114,61 @@ const GLYPHS := {
 	"▲": [".....", ".....", "..#..", ".###.", "#####"],
 	"▼": [".....", "#####", ".###.", "..#..", "....."],
 	"♪": ["..##", "..#.", "..#.", "###.", "##.."],
+	"ß": [".##.", "#..#", "#.#.", "#..#", "#.#."],
+	"ç": ["...", ".##", "#..", "#..", ".##", ".#.", "##."],
+	"Ç": [".###", "#...", "#...", "#...", ".###", "..#.", ".##."],
+	"œ": [".....", ".#.#.", "#.###", "#.#..", ".#.##"],
+	"Œ": [".####", "#.#..", "#.###", "#.#..", ".####"],
+	"¿": [".#.", "...", ".#.", "#..", "#..", ".##"],
+	"¡": ["#", ".", "#", "#", "#", "#"],
+	"«": ["....", ".#.#", "#.#.", ".#.#"],
+	"»": ["....", "#.#.", ".#.#", "#.#."],
+}
+## Accented letters for German, Spanish and French. Their first row sits one pixel above
+## the cap line (the font's ascent leaves room for it); the rest lines up with GLYPHS.
+const ACCENTED := {
+	"à": [".#..", "....", ".###", "#..#", "#..#", ".###"],
+	"á": ["..#.", "....", ".###", "#..#", "#..#", ".###"],
+	"â": [".##.", "....", ".###", "#..#", "#..#", ".###"],
+	"ä": ["#..#", "....", ".###", "#..#", "#..#", ".###"],
+	"è": [".#..", "....", ".##.", "####", "#...", ".###"],
+	"é": ["..#.", "....", ".##.", "####", "#...", ".###"],
+	"ê": [".##.", "....", ".##.", "####", "#...", ".###"],
+	"ë": ["#..#", "....", ".##.", "####", "#...", ".###"],
+	"ì": ["#.", "..", "..", ".#", ".#", ".#"],
+	"í": [".#", "..", "..", "#.", "#.", "#."],
+	"î": [".#.", "#.#", "...", ".#.", ".#.", ".#."],
+	"ï": ["#.#", "...", "...", ".#.", ".#.", ".#."],
+	"ñ": ["####", "....", "###.", "#..#", "#..#", "#..#"],
+	"ò": [".#..", "....", ".##.", "#..#", "#..#", ".##."],
+	"ó": ["..#.", "....", ".##.", "#..#", "#..#", ".##."],
+	"ô": [".##.", "....", ".##.", "#..#", "#..#", ".##."],
+	"ö": ["#..#", "....", ".##.", "#..#", "#..#", ".##."],
+	"ù": [".#..", "....", "#..#", "#..#", "#..#", ".###"],
+	"ú": ["..#.", "....", "#..#", "#..#", "#..#", ".###"],
+	"û": [".##.", "....", "#..#", "#..#", "#..#", ".###"],
+	"ü": ["#..#", "....", "#..#", "#..#", "#..#", ".###"],
+	"À": [".#..", ".##.", "#..#", "####", "#..#", "#..#"],
+	"Á": ["..#.", ".##.", "#..#", "####", "#..#", "#..#"],
+	"Â": [".##.", ".##.", "#..#", "####", "#..#", "#..#"],
+	"Ä": ["#..#", ".##.", "#..#", "####", "#..#", "#..#"],
+	"È": [".#..", "####", "#...", "###.", "#...", "####"],
+	"É": ["..#.", "####", "#...", "###.", "#...", "####"],
+	"Ê": [".##.", "####", "#...", "###.", "#...", "####"],
+	"Ë": ["#..#", "####", "#...", "###.", "#...", "####"],
+	"Ì": ["#..", "###", ".#.", ".#.", ".#.", "###"],
+	"Í": ["..#", "###", ".#.", ".#.", ".#.", "###"],
+	"Î": [".#.", "###", ".#.", ".#.", ".#.", "###"],
+	"Ï": ["#.#", "###", ".#.", ".#.", ".#.", "###"],
+	"Ñ": ["####", "#..#", "##.#", "#.##", "#..#", "#..#"],
+	"Ò": [".#..", ".##.", "#..#", "#..#", "#..#", ".##."],
+	"Ó": ["..#.", ".##.", "#..#", "#..#", "#..#", ".##."],
+	"Ô": [".##.", ".##.", "#..#", "#..#", "#..#", ".##."],
+	"Ö": ["#..#", ".##.", "#..#", "#..#", "#..#", ".##."],
+	"Ù": [".#..", "#..#", "#..#", "#..#", "#..#", ".##."],
+	"Ú": ["..#.", "#..#", "#..#", "#..#", "#..#", ".##."],
+	"Û": [".##.", "#..#", "#..#", "#..#", "#..#", ".##."],
+	"Ü": ["#..#", "....", "#..#", "#..#", "#..#", ".##."],
 }
 const SPACE_ADVANCE := 3
 
@@ -136,7 +191,7 @@ static func measure(text: String) -> int:
 
 
 static func glyph_width(ch: String) -> int:
-	var rows: Array = GLYPHS.get(ch, GLYPHS["?"])
+	var rows: Array = ACCENTED.get(ch, GLYPHS.get(ch, GLYPHS["?"]))
 	return rows[0].length()
 
 
@@ -148,17 +203,18 @@ static func plot_text(text: String, plot: Callable) -> void:
 		if ch == " ":
 			x += SPACE_ADVANCE
 			continue
-		var rows: Array = GLYPHS.get(ch, GLYPHS["?"])
+		var rows: Array = ACCENTED.get(ch, GLYPHS.get(ch, GLYPHS["?"]))
+		var top := -1 if ACCENTED.has(ch) else 0
 		for y in rows.size():
 			var row: String = rows[y]
 			for px in row.length():
 				if row[px] == "#":
-					plot.call(x + px, y)
+					plot.call(x + px, y + top)
 		x += rows[0].length() + 1
 
 
 static func _build() -> FontFile:
-	var keys := GLYPHS.keys()
+	var keys := GLYPHS.keys() + ACCENTED.keys()
 	var cell_w := 6
 	var cols := 16
 	var atlas := Image.create(cols * cell_w, ceili(keys.size() / float(cols)) * 8, false, Image.FORMAT_RGBA8)
@@ -174,8 +230,10 @@ static func _build() -> FontFile:
 	font.set_cache_descent(0, SIZE, DESCENT)
 	for n in keys.size():
 		var ch: String = keys[n]
-		var rows: Array = GLYPHS[ch]
+		var tall := ACCENTED.has(ch)
+		var rows: Array = ACCENTED[ch] if tall else GLYPHS[ch]
 		var w: int = rows[0].length()
+		var h := 8 if tall else 7
 		var origin := Vector2i((n % cols) * cell_w, (n / cols) * 8)
 		for y in rows.size():
 			for x in w:
@@ -183,9 +241,9 @@ static func _build() -> FontFile:
 					atlas.set_pixel(origin.x + x, origin.y + y, Color.WHITE)
 		var glyph := ch.unicode_at(0)
 		font.set_glyph_advance(0, SIZE, glyph, Vector2(w + 1, 0))
-		font.set_glyph_offset(0, size, glyph, Vector2(0, -5))
-		font.set_glyph_size(0, size, glyph, Vector2(w, 7))
-		font.set_glyph_uv_rect(0, size, glyph, Rect2(origin.x, origin.y, w, 7))
+		font.set_glyph_offset(0, size, glyph, Vector2(0, -6 if tall else -5))
+		font.set_glyph_size(0, size, glyph, Vector2(w, h))
+		font.set_glyph_uv_rect(0, size, glyph, Rect2(origin.x, origin.y, w, h))
 		font.set_glyph_texture_idx(0, size, glyph, 0)
 	var space := " ".unicode_at(0)
 	font.set_glyph_advance(0, SIZE, space, Vector2(SPACE_ADVANCE, 0))

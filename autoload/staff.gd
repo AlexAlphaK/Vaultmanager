@@ -38,7 +38,7 @@ func has(id: String) -> bool:
 
 
 func label(id: String) -> String:
-	return "%s the %s" % [ROLES[id].name, ROLES[id].title.to_lower()]
+	return tr("%s the %s") % [ROLES[id].name, tr(ROLES[id].title.to_lower())]
 
 
 func wage(id: String) -> float:
@@ -68,9 +68,9 @@ func can_hire(id: String) -> bool:
 func hire(id: String) -> bool:
 	if not can_hire(id):
 		return false
-	Day.add_expense("Hired %s" % label(id), ROLES[id].fee)
+	Day.add_expense(tr("Hired %s") % label(id), ROLES[id].fee)
 	hired.append(id)
-	Shop.log_event("%s starts today." % label(id), "good")
+	Shop.log_event(tr("%s starts today.") % label(id), "good")
 	changed.emit()
 	Progress.changed.emit()
 	return true
@@ -81,7 +81,7 @@ func let_go(id: String) -> bool:
 	if not hired.has(id):
 		return false
 	hired.erase(id)
-	Shop.log_event("You let %s go." % label(id))
+	Shop.log_event(tr("You let %s go.") % label(id))
 	changed.emit()
 	Progress.changed.emit()
 	return true
@@ -89,7 +89,7 @@ func let_go(id: String) -> bool:
 
 func _pay_wages(_day: int) -> void:
 	for id in hired:
-		Day.add_expense("Wages: %s" % ROLES[id].name, wage(id))
+		Day.add_expense(tr("Wages: %s") % ROLES[id].name, wage(id))
 
 
 func to_dict() -> Dictionary:

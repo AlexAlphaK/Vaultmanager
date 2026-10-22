@@ -181,7 +181,7 @@ func pad_action(name: String) -> bool:
 
 
 func pad_help() -> Array:
-	return [["LT", "Diamond or not"], ["RT", "Next grade"], ["LB / RB", "Previous / next tool"]]
+	return [["LT", tr("Diamond or not")], ["RT", tr("Next grade")], [tr("LB / RB"), tr("Previous / next tool")]]
 
 
 ## LT flips the stone call, RT steps the grade.
@@ -579,7 +579,7 @@ func _update_cells() -> void:
 	_set_cell("weight", "%.2f g" % piece.weight_g if used.has("scale") and _on_scale and _time - _t.scale > 1.0 else "")
 	_set_cell("stamp", piece.stamp if used.has("stamp") else "")
 	_set_cell("acid", _acid_summary())
-	var magnet_text := {"strong": "snaps hard", "clasp": "clasp only", "none": "no pull"}
+	var magnet_text := {"strong": tr("snaps hard"), "clasp": tr("clasp only"), "none": tr("no pull")}
 	_set_cell("magnet", magnet_text[piece.magnet()] if used.has("magnet") and _time - _t.magnet > 1.4 else "")
 	var tt: float = _time - _t.tester
 	if piece.stone != "":
@@ -606,8 +606,8 @@ func _acid_summary() -> String:
 	if held != "" or failed != "":
 		return ("%s+" % held if held != "" else "") + (" " if held != "" and failed != "" else "") + ("<%s" % failed if failed != "" else "")
 	if settled.has("AG"):
-		return "AG %s" % settled.AG
-	return "PT %s" % settled.PT
+		return tr("AG %s") % tr(settled.AG)
+	return tr("PT %s") % tr(settled.PT)
 
 
 func _set_cell(key: String, text: String) -> void:
@@ -627,15 +627,15 @@ func _set_cell(key: String, text: String) -> void:
 func _refresh_assessment() -> void:
 	if _grade_button == null:
 		return
-	_grade_button.text = "Metal: %s" % ("plated" if grade == "plated" else grade)
+	_grade_button.text = tr("Metal: %s") % (tr("plated") if grade == "plated" else grade)
 	_grade_button.theme_type_variation = "DangerButton" if grade == "plated" else "ToolButton"
 	var w := assessed_weight()
 	var metal_value := piece.value_as(grade, false, w)
 	var stone_value := JewelleryPiece.diamond_value(piece.carat) if piece.stone != "" and diamond else 0.0
 	if _stone_button:
-		_stone_button.text = "Stone: %s" % ("diamond" if diamond else "fake")
+		_stone_button.text = tr("Stone: %s") % (tr("diamond") if diamond else tr("fake"))
 		_stone_button.theme_type_variation = "ToolButton" if diamond else "DangerButton"
-	_values[0].text = "Metal %s" % ("(claimed weight)" if not used.has("scale") else "(%.2f g)" % w)
+	_values[0].text = tr("Metal %s") % (tr("(claimed weight)") if not used.has("scale") else "(%.2f g)" % w)
 	_values[1].text = Market.format_money(metal_value)
 	_values[2].text = Market.format_money(stone_value) if piece.stone != "" else "-"
 	_values[3].text = Market.format_money((metal_value + stone_value) * Shop.buy_percent)
@@ -652,16 +652,16 @@ func _build_panel() -> void:
 	move_child(panel, 0)
 	_label("JEWELLERY APPRAISAL", Vector2(x, 4), Pal.INK_FAINT)
 	_label(piece.title(), Vector2(x, 13), Pal.GOLD, 156, HORIZONTAL_ALIGNMENT_LEFT, 17)
-	_label("from %s" % customer.name, Vector2(x, 31), Pal.INK_DIM, 156)
+	_label(tr("from %s") % customer.name, Vector2(x, 31), Pal.INK_DIM, 156)
 	_label("CLAIM", Vector2(x + 40, 41), Pal.INK_FAINT, 56, HORIZONTAL_ALIGNMENT_RIGHT)
 	_label("READING", Vector2(x + 100, 41), Pal.INK_FAINT, 56, HORIZONTAL_ALIGNMENT_RIGHT)
 	var stamp_claim: String = "%s/%s" % [piece.claimed_grade, {"18K": "750", "14K": "585", "10K": "417", "22K": "916", "925": "STER", "PT950": "950"}[piece.claimed_grade]]
-	var acid_claim: String = {"XAU": "%s+" % piece.claimed_grade, "XAG": "AG red", "XPT": "PT holds"}[piece.metal]
+	var acid_claim: String = {"XAU": "%s+" % piece.claimed_grade, "XAG": tr("AG red"), "XPT": tr("PT holds")}[piece.metal]
 	var rows := [
-		["weight", "Weight", "about %s g" % str(piece.claimed_g)],
+		["weight", "Weight", tr("about %s g") % str(piece.claimed_g)],
 		["stamp", "Stamp", stamp_claim],
 		["acid", "Acid", acid_claim],
-		["magnet", "Magnet", "clasp only" if piece.kind in ["chain", "bracelet"] else "no pull"],
+		["magnet", "Magnet", tr("clasp only") if piece.kind in ["chain", "bracelet"] else tr("no pull")],
 		["stone", "Stone", "diamond" if piece.stone != "" else "none"],
 	]
 	for n in rows.size():
@@ -671,7 +671,7 @@ func _build_panel() -> void:
 		_cells[rows[n][0]] = _label("-", Vector2(x + 100, y), Pal.INK_FAINT, 56, HORIZONTAL_ALIGNMENT_RIGHT)
 	for n in TOOLS.size():
 		var tool: String = TOOLS[n]
-		var b := _button("%d %s" % [n + 1, TOOL_NAMES[tool]], Rect2(x + (n % 2) * 80, 97 + (n / 2) * 14, 76, 12), "ToolButton", use_tool.bind(tool))
+		var b := _button("%d %s" % [n + 1, tr(TOOL_NAMES[tool])], Rect2(x + (n % 2) * 80, 97 + (n / 2) * 14, 76, 12), "ToolButton", use_tool.bind(tool))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		if tool == "tester" and piece.stone == "":
 			b.disabled = true
@@ -681,7 +681,7 @@ func _build_panel() -> void:
 	if piece.stone != "":
 		_stone_button = _button("", Rect2(x + 80, 140, 76, 12), "ToolButton", toggle_stone)
 		_stone_button.tooltip_text = "Click (or D) to pay for the stone or not"
-	var captions := ["", "Stone", "Your offer"]
+	var captions := ["", "Stone", tr("Your offer")]
 	for n in 3:
 		var y := 156 + n * 9
 		var caption := _label(captions[n], Vector2(x, y), Pal.INK_DIM, 100)
@@ -796,7 +796,7 @@ func _paint_bench() -> PixelCanvas:
 	# thermal diamond tester
 	var t := TESTER
 	BenchArt.housing(c, t, Color("#2b2f36"))
-	c.text("THERMAL TESTER", t.position.x + 5, t.position.y + 4, Color("#9aa3b0"))
+	c.text(tr("THERMAL TESTER"), t.position.x + 5, t.position.y + 4, Color("#9aa3b0"))
 	c.rect(LEDS_AT.x - 3, LEDS_AT.y - 3, 76, 10, Color("#14161a"))
 	c.text("SIM", LEDS_AT.x - 2, LEDS_AT.y + 9, Color("#3fae4a"))
 	c.text("DIA", LEDS_AT.x + 58, LEDS_AT.y + 9, Color("#e04a3a"))

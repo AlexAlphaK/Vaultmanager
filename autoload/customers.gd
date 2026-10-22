@@ -216,7 +216,7 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 				c.set_haggle(rng.randf_range(0.03, 0.05), rng.randf_range(0.01, 0.015))
 			c.max_patience *= 1.2
 			if event.is_empty():
-				c.say = HAGGLER_LINES[rng.randi() % HAGGLER_LINES.size()]
+				c.say = tr(HAGGLER_LINES[rng.randi() % HAGGLER_LINES.size()])
 		"crypto_bro":
 			c.piece = null
 			c.bar = null
@@ -229,12 +229,12 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 			if c.kind == "buyer":
 				c.max_premium = rng.randf_range(0.08, 0.13) + Progress.effect("premium")
 				c.ceiling_premium = c.max_premium
-				c.say = CRYPTO_BUY_LINES[rng.randi() % CRYPTO_BUY_LINES.size()]
+				c.say = tr(CRYPTO_BUY_LINES[rng.randi() % CRYPTO_BUY_LINES.size()])
 			else:
 				c.reserve = rng.randf_range(0.82, 0.88)
 				c.floor_reserve = c.reserve
 				c.set_haggle(0.04, 0.02)
-				c.say = CRYPTO_SELL_LINES[rng.randi() % CRYPTO_SELL_LINES.size()]
+				c.say = tr(CRYPTO_SELL_LINES[rng.randi() % CRYPTO_SELL_LINES.size()])
 			c.max_patience *= 0.6
 			look.top = 2
 			look.shades = true
@@ -255,7 +255,7 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 				c.ceiling_premium = c.max_premium
 				c.haggle = 0.0
 				c.max_patience *= 1.4
-				c.say = COLLECTOR_LINES[rng.randi() % COLLECTOR_LINES.size()] % c.item.display_name
+				c.say = tr(COLLECTOR_LINES[rng.randi() % COLLECTOR_LINES.size()]) % c.item.display_name
 				look.glasses = true
 				look.top = 1
 				c.patience = c.max_patience
@@ -270,7 +270,7 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 			c.ceiling_premium = c.max_premium
 			c.haggle = 0.0
 			c.max_patience *= 1.4
-			c.say = COLLECTOR_LINES[rng.randi() % COLLECTOR_LINES.size()] % c.item.display_name
+			c.say = tr(COLLECTOR_LINES[rng.randi() % COLLECTOR_LINES.size()]) % c.item.display_name
 			look.glasses = true
 			look.top = 1
 		"shady":
@@ -288,7 +288,7 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 			c.floor_reserve = c.reserve
 			c.haggle = 0.0
 			c.max_patience *= 0.6
-			c.say = SHADY_LINES[rng.randi() % SHADY_LINES.size()]
+			c.say = tr(SHADY_LINES[rng.randi() % SHADY_LINES.size()])
 			look.hat = true
 			look.shades = rng.randf() < 0.5
 			look.top = 1
@@ -317,7 +317,7 @@ func regular_customer(id: String, rng: RandomNumberGenerator) -> Customer:
 	c.haggle = 0.0
 	c.item = Shop.coins.get(b.get("item", ""), c.item)
 	c.qty = int(b.get("qty", 1))
-	c.say = b.say
+	c.say = tr(b.say)
 	# regulars who like you give you a little better deal
 	var trust := clampf(float(st.loyalty) * 0.01, -0.03, 0.04)
 	match c.kind:
@@ -355,8 +355,8 @@ func beat_of(id: String) -> Dictionary:
 ## The shop log line for someone walking in.
 func arrival(c: Customer) -> String:
 	if c.regular_id != "" and c.beat > 0 and c.name == _by_id[c.regular_id].name:
-		return "%s is back." % c.name
-	return "%s walked in." % c.name
+		return tr("%s is back.") % c.name
+	return tr("%s walked in.") % c.name
 
 
 ## A short word on the counter card about who this is, or "".
@@ -364,10 +364,10 @@ func tag(c: Customer) -> String:
 	if c.story != "":
 		return Story.tag(c)
 	if c.kind == "seller" and c.item and c.item.rare and not c.piece and not c.bar and c.archetype != "shady":
-		return "old coin"
+		return tr("old coin")
 	if c.regular_id != "":
-		return "regular" if c.name == _by_id[c.regular_id].name else ""
-	return TAGS.get(c.archetype, "")
+		return tr("regular") if c.name == _by_id[c.regular_id].name else ""
+	return tr(TAGS.get(c.archetype, ""))
 
 
 ## The shop calls this as each customer leaves. Moves regulars' stories along.
@@ -387,23 +387,23 @@ func on_leave(c: Customer) -> void:
 		_advance(reg, st)
 	elif c.caught:
 		st.caught += 1
-		_story("You caught %s's %s fakes. He'll try again." % [c.name, c.item.display_name] if st.beat < reg.beats.size() - 2 \
-			else "You caught %s's fakes again. Word is the police are interested." % c.name)
+		_story(tr("You caught %s's %s fakes. He'll try again.") % [c.name, c.item.display_name] if st.beat < reg.beats.size() - 2 \
+			else tr("You caught %s's fakes again. Word is the police are interested.") % c.name)
 		_advance(reg, st)
 	elif c.dealt:
 		if c.fake != "":
 			st.burned += 1
-			_story("%s sold you fakes and walked off laughing." % c.name)
+			_story(tr("%s sold you fakes and walked off laughing.") % c.name)
 		else:
 			st.loyalty += 1
 			if b.has("after"):
-				_story(b.after)
+				_story(tr(b.after))
 			if b.has("reward"):
 				_reward(b)
 		_advance(reg, st)
 	elif c.kind == "buyer" and c.stock_have() < c.qty:
 		# no harm done: they'll come back when you have it
-		Shop.log_event("%s will come back when you have %s in stock." % [c.name, c.item.display_name])
+		Shop.log_event(tr("%s will come back when you have %s in stock.") % [c.name, c.item.display_name])
 	elif reg.get("persistent", false):
 		_advance(reg, st)
 	else:
@@ -411,8 +411,8 @@ func on_leave(c: Customer) -> void:
 		if st.loyalty <= -2:
 			st.done = true
 			st.gone = true
-			Shop.log_event("%s has found another shop." % c.name, "bad")
-			_story("%s won't be coming back." % c.name)
+			Shop.log_event(tr("%s has found another shop.") % c.name, "bad")
+			_story(tr("%s won't be coming back.") % c.name)
 
 
 func to_dict() -> Dictionary:
@@ -445,10 +445,10 @@ func _reward(b: Dictionary) -> void:
 		return
 	Shop.adjust_reputation(float(r.get("reputation", 0.0)))
 	if float(r.get("cash", 0.0)) > 0.0:
-		Day.add_income("Reward", float(r.cash))
+		Day.add_income(tr("Reward"), float(r.cash))
 	var good := float(r.get("reputation", 0.0)) >= 0.0
-	Shop.log_event(r.get("log", ""), "good" if good else "bad")
-	_story(r.get("log", ""))
+	Shop.log_event(tr(r.get("log", "")), "good" if good else "bad")
+	_story(tr(r.get("log", "")))
 
 
 func _reward_text(r: Dictionary) -> String:
@@ -457,8 +457,8 @@ func _reward_text(r: Dictionary) -> String:
 		parts.append(Market.format_money(r.cash))
 	var rep := float(r.get("reputation", 0.0))
 	if rep != 0.0:
-		parts.append("%s%.1f stars" % ["+" if rep > 0.0 else "", rep])
-	return ("Reward: " if float(r.get("reputation", 0.0)) >= 0.0 else "") + ", ".join(parts)
+		parts.append(tr("%s%.1f stars") % ["+" if rep > 0.0 else "", rep])
+	return (tr("Reward: ") if float(r.get("reputation", 0.0)) >= 0.0 else "") + ", ".join(parts)
 
 
 ## Adds a line to tonight's summary.

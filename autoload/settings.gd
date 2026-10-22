@@ -1,5 +1,5 @@
 extends Node
-## Player settings: volume for the Master, Music and SFX buses, fullscreen and screen scaling.
+## Player settings: language, volume for the Master, Music and SFX buses, fullscreen and screen scaling.
 ## Saved next to the currency choice in user://settings.cfg (Market keeps the currency).
 ## F11 toggles fullscreen anywhere in the game. On a Steam Deck the game starts fullscreen.
 
@@ -22,6 +22,12 @@ const SCALING_NAMES := {"auto": "Auto", "pixel": "Pixel perfect", "fill": "Fill 
 ## In auto, whole-pixel scaling must use at least this much of what filling would.
 const AUTO_KEEP := 0.85
 
+## "auto" follows the device's language, falling back to English.
+var language := "auto"
+const LANGUAGES := ["auto", "en", "de", "es", "fr"]
+## Each language under its own name, so a player can find theirs whatever is showing.
+const LANGUAGE_NAMES := {"en": "English", "de": "Deutsch", "es": "Español", "fr": "Français"}
+
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -36,6 +42,10 @@ func load_settings() -> void:
 	for bus in BUSES:
 		volume[bus] = clampf(float(cfg.get_value("audio", bus.to_lower(), DEFAULTS[bus])), 0.0, 1.0)
 		_apply_volume(bus)
+	language = str(cfg.get_value("general", "language", "auto"))
+	if not language in LANGUAGES:
+		language = "auto"
+	_apply_language()
 	fullscreen = bool(cfg.get_value("video", "fullscreen", on_steam_deck()))
 	scaling = str(cfg.get_value("video", "scaling", "auto"))
 	if not scaling in SCALINGS:
@@ -52,6 +62,30 @@ func set_volume(bus: String, value: float) -> void:
 	_apply_volume(bus)
 	_save()
 	changed.emit()
+
+
+func set_language(code: String) -> void:
+	if not code in LANGUAGES:
+		return
+	language = code
+	_apply_language()
+	_save()
+	changed.emit()
+
+
+## The language the game shows: the setting, or the device's for "auto".
+func current_language() -> String:
+	return device_language() if language == "auto" else language
+
+
+## The device's language when the game has it, else English. "de_AT" -> "de".
+static func device_language() -> String:
+	var code := OS.get_locale_language()
+	return code if LANGUAGE_NAMES.has(code) else "en"
+
+
+func _apply_language() -> void:
+	TranslationServer.set_locale(current_language())
 
 
 func set_fullscreen(on: bool) -> void:
@@ -126,6 +160,7 @@ func _apply_fullscreen() -> void:
 func _save() -> void:
 	var cfg := ConfigFile.new()
 	cfg.load(path) # keep the currency and anything else already in the file
+	cfg.set_value("general", "language", language)
 	for bus in BUSES:
 		cfg.set_value("audio", bus.to_lower(), volume[bus])
 	cfg.set_value("video", "fullscreen", fullscreen)

@@ -37,6 +37,10 @@ window/size/window_height_override=810
 window/stretch/mode="viewport"
 window/stretch/scale_mode="integer"
 
+[internationalization]
+
+locale/translations=PackedStringArray("res://locale/de.po", "res://locale/es.po", "res://locale/fr.po")
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

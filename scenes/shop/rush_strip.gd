@@ -45,7 +45,7 @@ func _process(_delta: float) -> void:
 	if not _box.visible:
 		return
 	var hot: bool = shop.till > RushHours.till_limit()
-	_label.text = "%s · %d waiting%s" % [str(shop.rush.name).to_upper(), _waiting().size(), " · TILL!" if hot else ""]
+	_label.text = tr("%s · %d waiting%s") % [tr(shop.rush.name).to_upper(), _waiting().size(), tr(" · TILL!") if hot else ""]
 	_bars.queue_redraw()
 
 

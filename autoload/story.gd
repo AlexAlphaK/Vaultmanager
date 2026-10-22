@@ -164,8 +164,8 @@ func current() -> Dictionary:
 ## "Chapter 2: Making a name".
 func chapter_title(n := chapter) -> String:
 	if n >= CHAPTERS.size():
-		return "The end"
-	return "Chapter %d: %s" % [n + 1, CHAPTERS[n].title]
+		return tr("The end")
+	return tr("Chapter %d: %s") % [n + 1, tr(CHAPTERS[n].title)]
 
 
 ## The value a goal's key is measured by: the story's own keys, then the ledger's.
@@ -221,8 +221,8 @@ func reward_text(r: Dictionary) -> String:
 	if float(r.get("cash", 0.0)) > 0.0:
 		parts.append(Market.format_money(r.cash))
 	if float(r.get("reputation", 0.0)) > 0.0:
-		parts.append("+%.1f stars" % float(r.reputation))
-	return "" if parts.is_empty() else "Reward: " + ", ".join(parts)
+		parts.append(tr("+%.1f stars") % float(r.reputation))
+	return "" if parts.is_empty() else tr("Reward: ") + ", ".join(parts)
 
 
 ## The story visitor who walks in next, or null. The shop asks before every arrival.
@@ -245,7 +245,7 @@ func next_customer(rng: RandomNumberGenerator) -> Customer:
 	c.assessed = {}
 	c.fake = ""
 	c.qty = 1
-	c.say = b.say
+	c.say = tr(b.say)
 	c.note = reward_text(p.reward)
 	c.max_patience = 9999.0
 	c.patience = c.max_patience
@@ -255,7 +255,7 @@ func next_customer(rng: RandomNumberGenerator) -> Customer:
 
 ## A word for the counter card: "mentor" or "rival".
 func tag(c: Customer) -> String:
-	return PEOPLE[BEATS[c.story].who].tag if BEATS.has(c.story) else ""
+	return tr(PEOPLE[BEATS[c.story].who].tag) if BEATS.has(c.story) else ""
 
 
 ## The shop calls this as each customer leaves (through Customers.on_leave).
@@ -269,13 +269,13 @@ func on_leave(c: Customer) -> void:
 	var b: Dictionary = BEATS[p.beat]
 	var r: Dictionary = p.reward
 	if float(r.get("cash", 0.0)) > 0.0:
-		Day.add_income("Gift from Mags", float(r.cash))
+		Day.add_income(tr("Gift from Mags"), float(r.cash))
 	if float(r.get("reputation", 0.0)) > 0.0:
 		Shop.adjust_reputation(float(r.reputation))
 	if b.has("rival_move"):
 		Rivals.start_move(b.who, b.rival_move)
-	Shop.log_event(b.log, "good" if b.who == "mags" else "")
-	_today.append(b.log)
+	Shop.log_event(tr(b.log), "good" if b.who == "mags" else "")
+	_today.append(tr(b.log))
 	changed.emit()
 
 
@@ -298,7 +298,7 @@ func _check() -> void:
 			if not met.has(i) and value_of(goals[i].key) >= float(goals[i].goal):
 				met.append(i)
 				moved = true
-				Shop.log_event("Goal met: %s." % goals[i].text, "good")
+				Shop.log_event(tr("Goal met: %s.") % tr(goals[i].text), "good")
 		if met.size() < goals.size():
 			break
 		_finish_chapter(true)
@@ -314,7 +314,7 @@ func _finish_chapter(pay: bool) -> void:
 	met.clear()
 	var visits: Array = FINALE if is_finished() else CHAPTERS[chapter].visits
 	if pay:
-		var line := "%s is done! %s will drop by." % [chapter_title(done), PEOPLE[BEATS[visits[0]].who].name]
+		var line := tr("%s is done! %s will drop by.") % [chapter_title(done), PEOPLE[BEATS[visits[0]].who].name]
 		_today.append(line)
 		Shop.log_event(line, "good")
 	_queue_visits(visits, reward)

@@ -64,8 +64,8 @@ static func from_shop(rng: RandomNumberGenerator) -> VaultLayout:
 		var n := clampi(ceili(Shop.cash / CASH_PER_STRAP), 1, MAX_STRAPS)
 		for k in n:
 			var share := Shop.cash / n
-			v._add({"kind": "cash", "title": "Cash straps", "contents": ["%s in notes" % Market.format_money(share)], "value": share, "cash": share})
-	v._add({"kind": "ledger", "title": "Customer ledger", "contents": ["Names and addresses.", "Lose it: -%.1f reputation" % LEDGER_REPUTATION], "value": 0.0})
+			v._add({"kind": "cash", "title": Loc.t("Cash straps"), "contents": [Loc.t("%s in notes") % Market.format_money(share)], "value": share, "cash": share})
+	v._add({"kind": "ledger", "title": Loc.t("Customer ledger"), "contents": [Loc.t("Names and addresses."), Loc.t("Lose it: -%.1f reputation") % LEDGER_REPUTATION], "value": 0.0})
 	v._spill(rng)
 	return v
 
@@ -182,13 +182,13 @@ func apply(report: Dictionary) -> void:
 		Shop.note("stolen", report.value)
 		report.recovered = report.value * Security.recover_share()
 		if report.recovered >= 1.0:
-			Day.add_income("Police recovered stolen goods", report.recovered)
+			Day.add_income(tr("Police recovered stolen goods"), report.recovered)
 		report.insured = 0.0
 		for p in report.stolen:
 			if p.get("cash", 0.0) <= 0.0:
 				report.insured += p.value * float(INSURED.get(p.area, 0.0)) * (1.0 - Security.recover_share())
 		if report.insured >= 1.0:
-			Day.add_income("Insurance payout", report.insured)
+			Day.add_income(tr("Insurance payout"), report.insured)
 
 
 func _pack_coins(metal: String, entries: Array) -> void:
@@ -214,7 +214,7 @@ func _pack_coins(metal: String, entries: Array) -> void:
 			left -= n
 			if e[1] == 0:
 				entries.pop_front()
-		piece.title = {"tube": "Silver tube", "monster": "Monster box", "gold_box": "Gold coin box"}.get(kind, "Platinum box")
+		piece.title = {"tube": tr("Silver tube"), "monster": tr("Monster box"), "gold_box": tr("Gold coin box")}.get(kind, tr("Platinum box"))
 		_add(piece)
 
 

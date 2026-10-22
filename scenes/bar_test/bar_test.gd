@@ -174,7 +174,7 @@ func pad_action(name: String) -> bool:
 
 
 func pad_help() -> Array:
-	return [["LB / RB", "Previous / next tool"]]
+	return [[tr("LB / RB"), tr("Previous / next tool")]]
 
 
 func use_tool(tool: String) -> void:
@@ -289,7 +289,7 @@ func _draw_ultrasound() -> void:
 		draw_rect(Rect2(g0 - 1, gy, 1, 1), gate_col)
 		draw_rect(Rect2(g1 + 1, gy, 1, 1), gate_col)
 	draw_rect(Rect2(g0 - 1, p.position.y + 9, g1 - g0 + 3, 1), gate_col)
-	_text("%.2f US" % expected, Vector2(p.end.x - 34, p.position.y - 8), Pal.INK_FAINT)
+	_text(tr("%.2f US") % expected, Vector2(p.end.x - 34, p.position.y - 8), Pal.INK_FAINT)
 	_draw_map()
 	if not probe_on:
 		_text("PROBE OFF", Vector2(p.position.x + 2, p.position.y + 1), Color("#3d5a3d"))
@@ -313,7 +313,7 @@ func _draw_ultrasound() -> void:
 		var h := roundi(amp * (p.size.y - 6))
 		draw_rect(Rect2(p.position.x + 2 + px, base_y - h, 1, h + 1), Pal.LED)
 	var off := bar.echo_off(probe_uv)
-	var bw := "BW %.2f" % e.back
+	var bw := tr("BW %.2f") % e.back
 	_text(bw, Vector2(p.end.x - 3 - PixelFont.measure(bw), p.position.y + 1), Pal.BAD if off else Pal.LED)
 
 
@@ -582,7 +582,7 @@ func _update_loupe() -> void:
 func serial_note() -> String:
 	if not BullionBar.ledger.has(bar.serial):
 		return "new"
-	return "seen day %d" % BullionBar.ledger[bar.serial]
+	return tr("seen day %d") % BullionBar.ledger[bar.serial]
 
 
 func _update_cells() -> void:
@@ -591,15 +591,15 @@ func _update_cells() -> void:
 	_set_cell("weight", "%.2f g" % readings.g if used.has("scale") and _on_scale and _time - _t.scale > 1.1 else "", _gauge("weight"))
 	var cal: float = _time - _t.calipers
 	var measuring := _active == "calipers"
-	_set_cell("length", "%.1f mm" % readings.l if used.has("calipers") and (cal > 0.8 or not measuring) else "", _gauge("length"))
-	_set_cell("width", "%.1f mm" % readings.w if used.has("calipers") and (cal > 1.5 or not measuring) else "", _gauge("width"))
-	_set_cell("thick", "%.2f mm" % readings.t if used.has("calipers") and (cal > 2.1 or not measuring) else "", _gauge("thick"))
+	_set_cell("length", tr("%.1f mm") % readings.l if used.has("calipers") and (cal > 0.8 or not measuring) else "", _gauge("length"))
+	_set_cell("width", tr("%.1f mm") % readings.w if used.has("calipers") and (cal > 1.5 or not measuring) else "", _gauge("width"))
+	_set_cell("thick", tr("%.2f mm") % readings.t if used.has("calipers") and (cal > 2.1 or not measuring) else "", _gauge("thick"))
 	if probe_on:
 		var e := bar.echo_at(probe_uv)
-		_set_cell("echo", "%.2f us" % e.back, Pal.BAD if bar.echo_off(probe_uv) else Pal.INK)
+		_set_cell("echo", tr("%.2f us") % e.back, Pal.BAD if bar.echo_off(probe_uv) else Pal.INK)
 	var off := scan_off_count()
 	if not scan.is_empty():
-		_set_cell("scan", "%d off gate" % off if off > 0 else "%d spots ok" % scan.size(), Pal.BAD if off > 0 else Pal.INK)
+		_set_cell("scan", tr("%d off gate") % off if off > 0 else tr("%d spots ok") % scan.size(), Pal.BAD if off > 0 else Pal.INK)
 	if used.has("xrf") and _xrf_done:
 		var top: Array = _surface_sorted()[0]
 		_set_cell("xrf", "%s %s%s" % [top[0], _pct(top[1]), "+" if readings.surface.size() > 1 else ""],
@@ -651,16 +651,16 @@ func _build_panel() -> void:
 	var s := bar.spec()
 	_label("BAR TEST", Vector2(x, 4), Pal.INK_FAINT)
 	_label(bar.display_name(), Vector2(x, 13), Pal.GOLD, 156)
-	_label("%s, from %s" % [s.maker.capitalize(), customer.name], Vector2(x, 23), Pal.INK_DIM, 156)
+	_label(tr("%s, from %s") % [s.maker.capitalize(), customer.name], Vector2(x, 23), Pal.INK_DIM, 156)
 	_label("SPEC", Vector2(x + 50, 36), Pal.INK_FAINT, 52, HORIZONTAL_ALIGNMENT_RIGHT)
 	_label("READING", Vector2(x + 104, 36), Pal.INK_FAINT, 52, HORIZONTAL_ALIGNMENT_RIGHT)
 	var rows := [
 		["weight", "Weight", "%.2f g" % s.g],
-		["length", "Length", "%.1f mm" % s.l],
-		["width", "Width", "%.1f mm" % s.w],
-		["thick", "Thick", "%.2f mm" % bar.thickness_mm()],
-		["echo", "Echo", "%.2f us" % bar.expected_echo_us()],
-		["scan", "Scan", "all in gate"],
+		["length", "Length", tr("%.1f mm") % s.l],
+		["width", "Width", tr("%.1f mm") % s.w],
+		["thick", "Thick", tr("%.2f mm") % bar.thickness_mm()],
+		["echo", "Echo", tr("%.2f us") % bar.expected_echo_us()],
+		["scan", "Scan", tr("all in gate")],
 		["xrf", "XRF", "%s %s" % [BullionBar.METAL_ELEMENT[s.metal], _pct(s.purity * 100.0)]],
 		["serial", "Serial", "new"],
 	]
@@ -677,7 +677,7 @@ func _build_panel() -> void:
 		var tool: String = TOOLS[n]
 		var b := Button.new()
 		add_child(b)
-		b.text = "%d %s" % [n + 1, TOOL_NAMES[tool]]
+		b.text = "%d %s" % [n + 1, tr(TOOL_NAMES[tool])]
 		b.theme_type_variation = "ToolButton"
 		b.position = Vector2(x + (n % 2) * 80, 144 + (n / 2) * 14)
 		b.size = Vector2(76, 12)
@@ -809,8 +809,8 @@ func _paint_bench() -> PixelCanvas:
 	var lcd := SCALE_LCD
 	c.rect(lcd.position.x - 2, lcd.position.y - 2, lcd.size.x + 4, lcd.size.y + 4, Color("#22262c"))
 	c.rect(lcd.position.x, lcd.position.y, lcd.size.x, lcd.size.y, Pal.LED_BG)
-	c.text("AURUM 2000", s.position.x + 6, pan.end.y + 6, Color("#848d9a"))
-	c.text("MAX 2KG", s.end.x - 40, pan.end.y + 6, Color("#5b616b"))
+	c.text(tr("AURUM 2000"), s.position.x + 6, pan.end.y + 6, Color("#848d9a"))
+	c.text(tr("MAX 2KG"), s.end.x - 40, pan.end.y + 6, Color("#5b616b"))
 	for bx in [s.position.x + 8, s.end.x - 26]:
 		c.rect(bx, lcd.end.y + 6, 18, 5, Color("#22262c"))
 		c.rect(bx + 1, lcd.end.y + 6, 16, 1, Color("#6b7380"))

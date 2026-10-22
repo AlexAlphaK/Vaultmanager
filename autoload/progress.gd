@@ -97,7 +97,7 @@ func tier_info(t := tier) -> Dictionary:
 
 
 func tier_name(t := tier) -> String:
-	return tier_info(t).name
+	return tr(tier_info(t).name)
 
 
 func is_top_tier() -> bool:
@@ -164,9 +164,9 @@ func can_buy(id: String) -> bool:
 func buy(id: String) -> bool:
 	if not can_buy(id):
 		return false
-	Day.add_expense(upgrades[id].name, upgrades[id].cost)
+	Day.add_expense(tr(upgrades[id].name), upgrades[id].cost)
 	owned.append(id)
-	Shop.log_event("Bought %s." % upgrades[id].name, "good")
+	Shop.log_event(tr("Bought %s.") % tr(upgrades[id].name), "good")
 	upgrade_bought.emit(id)
 	changed.emit()
 	return true
@@ -175,14 +175,14 @@ func buy(id: String) -> bool:
 ## Why the shop cannot move up a tier yet, or "" when it can.
 func expand_blocker() -> String:
 	if is_top_tier():
-		return "You run the biggest store in town."
+		return tr("You run the biggest store in town.")
 	var next := tier_info(tier + 1)
 	if Shop.net_worth() < next.need_worth:
-		return "Needs net worth %s" % Market.format_money(next.need_worth)
+		return tr("Needs net worth %s") % Market.format_money(next.need_worth)
 	if Shop.reputation < next.need_rep:
-		return "Needs %.1f stars" % next.need_rep
+		return tr("Needs %.1f stars") % next.need_rep
 	if Shop.cash < next.cost:
-		return "Needs %s cash" % Market.format_money(next.cost)
+		return tr("Needs %s cash") % Market.format_money(next.cost)
 	return ""
 
 
@@ -190,9 +190,9 @@ func expand() -> bool:
 	if expand_blocker() != "":
 		return false
 	var next := tier_info(tier + 1)
-	Day.add_expense("Moving to %s" % next.name, next.cost)
+	Day.add_expense(tr("Moving to %s") % tr(next.name), next.cost)
 	tier += 1
-	Shop.log_event("Welcome to your %s!" % next.name, "good")
+	Shop.log_event(tr("Welcome to your %s!") % tr(next.name), "good")
 	tier_changed.emit(tier)
 	changed.emit()
 	return true

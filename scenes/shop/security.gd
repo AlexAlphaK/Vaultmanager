@@ -75,8 +75,8 @@ static func robber(rng: RandomNumberGenerator) -> Customer:
 	c.seed = rng.randi()
 	c.kind = "robber"
 	c.archetype = "robber"
-	c.name = "Man in a cap"
-	c.say = ROBBER_LINES[rng.randi() % ROBBER_LINES.size()]
+	c.name = Loc.t("Man in a cap")
+	c.say = Loc.t(ROBBER_LINES[rng.randi() % ROBBER_LINES.size()])
 	c.max_patience = ROBBER_PATIENCE
 	c.patience = ROBBER_PATIENCE
 	var look := ROBBER_LOOK.duplicate()

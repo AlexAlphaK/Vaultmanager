@@ -65,8 +65,8 @@ func is_open() -> bool:
 func open() -> void:
 	if visible:
 		return
-	_day.text = "%s, day %d" % [Day.weekday(), Shop.day]
-	_note.text = "Slot %d · saved morning and night" % SaveGame.slot
+	_day.text = tr("%s, day %d") % [Day.weekday(), Shop.day]
+	_note.text = tr("Slot %d · saved morning and night") % SaveGame.slot
 	visible = true
 	_panel.visible = true
 	get_tree().paused = true

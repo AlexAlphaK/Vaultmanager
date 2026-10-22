@@ -1,14 +1,15 @@
 class_name SettingsPanel
 extends PanelContainer
-## The settings page, shared by the title screen and the pause menu: display currency,
+## The settings page, shared by the title screen and the pause menu: language, display currency,
 ## volume for everything, music and effects, fullscreen and scaling. Changes apply and save at once.
 
 signal closed
 
-const SIZE := Vector2(232, 134)
+const SIZE := Vector2(232, 150)
 const SLIDERS := [["Master", "Volume"], ["Music", "Music"], ["SFX", "Effects"]]
 
 var _percent := {}
+var _language: OptionButton
 var _fullscreen: Button
 var _scaling: Button
 var _last_blip := 0
@@ -35,6 +36,15 @@ func _ready() -> void:
 	grid.add_theme_constant_override("h_separation", 6)
 	grid.add_theme_constant_override("v_separation", 5)
 	box.add_child(grid)
+
+	_caption(grid, "Language")
+	_language = OptionButton.new()
+	_language.custom_minimum_size = Vector2(96, 11)
+	_language.fit_to_longest_item = false
+	_language.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED # names are in their own language
+	_language.item_selected.connect(func(n): Settings.set_language(Settings.LANGUAGES[n]))
+	grid.add_child(_language)
+	grid.add_child(Control.new())
 
 	_caption(grid, "Currency")
 	var currency := OptionButton.new()
@@ -113,6 +123,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 
 func _refresh() -> void:
+	_language.clear()
+	for code in Settings.LANGUAGES:
+		var device: String = Settings.LANGUAGE_NAMES[Settings.device_language()]
+		_language.add_item(tr("Auto (%s)") % device if code == "auto" else Settings.LANGUAGE_NAMES[code])
+	_language.select(Settings.LANGUAGES.find(Settings.language))
 	for bus in _percent:
 		_percent[bus].text = "%d%%" % roundi(Settings.volume[bus] * 100.0)
 	_fullscreen.set_pressed_no_signal(Settings.fullscreen)
