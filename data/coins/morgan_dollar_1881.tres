@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BullionItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://items/bullion_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "morgan_dollar_1881"
+display_name = "1881 Morgan Dollar"
+metal = "XAG"
+weight_g = 26.73
+purity = 0.900
+diameter_mm = 38.1
+thickness_mm = 2.4
+sell_premium = 0.0
+palette = "silver"
+motif = "eagle"
+legend = "E PLURIBUS UNUM"
+fineness_text = "ONE DOLLAR"
+year = "1881"
+radial_lines = false
+rare = true
+collector_premium = 1.4

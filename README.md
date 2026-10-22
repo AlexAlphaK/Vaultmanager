@@ -15,12 +15,13 @@ platinum and palladium prices follow the real market.
 | `autoload/day.gd` | `Day` singleton: day phases (morning, open, closing, after hours), the week, bills and the day's ledger |
 | `autoload/progress.gd` | `Progress` singleton: the four shop tiers, upgrades and their effects |
 | `autoload/wholesaler.gd` | `Wholesaler` singleton: the morning wholesaler's lots and prices (spot plus a markup that shrinks as the shop grows) |
+| `autoload/orders.gd` | `Orders` singleton: collectors' special orders, the rare coins they want, coins set aside for them and the dealer network |
 | `autoload/rivals.gd` | `Rivals` singleton: the rival shops in town (Sterling Bullion and Lucky's Pawn), how customers choose between them and you, the rivals' morning moves and your answers; saved with the game |
 | `autoload/staff.gd` | `Staff` singleton: the clerk and the guard you can hire, their signing fees, daily wages and effects |
 | `autoload/save_game.gd` | `SaveGame` singleton: three save slots (`user://save_1.json` to `save_3.json`), saved every morning and at the end of each day; an old `save.json` becomes slot 1 |
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
-| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 24 achievements; saved with the game |
+| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 25 achievements; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
@@ -146,6 +147,19 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   a stack of silver; **+1** buys one, the second button buys a bulk lot. Walk-in sellers are
   still the cheaper way to stock up, so restock what buyers keep asking for, and leave cash in
   hand for the sellers.
+- **Special orders.** From day 3, collectors sometimes walk in and ask you to find coins by a
+  set day: a rare coin (a 1924 Double Eagle, a 1911 Sovereign, a 1967 Krugerrand, an 1881
+  Morgan Dollar or a 1997 Britannia Proof) for 45-150% over melt, or a big lot of an everyday
+  coin for 10-14% over. Press **Take order** or **Not now**. You can run one order at a time at
+  the corner counter, up to three in bigger shops. Then hunt for the coins: while a collector
+  waits, walk-in sellers now and then bring an old coin (the card says "old coin") and sell it
+  for about melt, because they don't know what it is. Test it, because forgers fake famous
+  dates too. The **Orders** page on the morning panel lists your orders and the **dealer
+  network**, which some mornings has a rare coin for most of the collector's premium. Bulk
+  orders come from the wholesaler. Coins for an order are set aside, so walk-in buyers can't
+  take them. The collector comes back on the agreed day (or sooner, once you hold the coins) and
+  pays the agreed price: +0.06 stars. Not having them costs 0.15 stars. A rare coin you hold
+  without an order sells to the next collector who walks in.
 - **Trading desk.** Build the trading desk room (Bullion house, $75,000) and a **Desk** button
   joins the morning panel. One session a morning: a minute-long trading day (09:00 to 17:00) for
   gold, silver, platinum and two each of the live crypto and stocks. Each tape replays a day that
@@ -176,7 +190,7 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   day to the next. The LED board on the back wall shows today's spot prices.
 - **The ledger.** The **Ledger** button on the morning panel shows your lifetime record: deals,
   money bought and sold, profit, fakes caught and missed, losses to thieves, your highest net
-  worth and stars, your profit streak and your three best days. **Achievements** lists 24 goals
+  worth and stars, your profit streak and your three best days. **Achievements** lists 25 goals
   (hover one to see how to earn it and how close you are). Earning one pops up in the log, and
   the day's summary lists what you earned and tells you when you've had your best day yet.
 
@@ -189,7 +203,7 @@ Not everyone who walks in is the same. The counter card tags the ones worth watc
 | Everyday walk-ins | About half will come down (or up) a point if you hold firm |
 | **Hagglers** | Open well above (or below) their real number, then come round a step each time you hold firm. They name their counter, so you can meet them with the -/+ buttons or keep pushing. Every push costs patience |
 | **Crypto bros** | Big gold orders and short patience. They buy after crypto rallies, sell cheap after crashes, and turn up in Bitcoin rushes |
-| **Collectors** | Want one exact coin and pay 12-18% over spot for it |
+| **Collectors** | Want one exact coin and pay 12-18% over spot for it, or a collector's price for a rare coin you hold. Some place special orders |
 | **Nervous sellers** | Suspiciously cheap and in a hurry. Most carry fakes |
 
 **Regulars** come back every couple of days, and each has a short story told over their visits:
@@ -239,8 +253,9 @@ Design doc: https://claude.ai/artifact/VqviQgHanNwibT95FhXgLV
 
 `tests/balance_sim.tscn` has three bots (novice, average, expert) play the real shop scene
 headless: they test or skip the bench, misread some fakes, haggle with the -/+ buttons, grade
-jewellery, pack the vault, empty the till, hire staff, buy upgrades and restock from the
-morning wholesaler (the average and expert bots also tip off the police about Lucky's).
+jewellery, pack the vault, empty the till, hire staff, buy upgrades, restock from the
+morning wholesaler and take special orders (buying rare coins from the dealer network the day
+before they're due). The average and expert bots also tip off the police about Lucky's.
 Everything else, the rival shops included, is the
 game's own code. It prints when each bot reaches each tier, net worth and stars over time, and
 where the money came from and went.
@@ -250,7 +265,7 @@ where the money came from and went.
 Options: `--bots=novice,average,expert`, `--runs=N` seeds per bot, `--days=N`, `--seed=N`, and
 `--csv=PATH` for one row per bot per day. A 100-day run takes a few minutes per bot.
 The knobs it tunes live in `Shop.REPUTATION`, `Customer.FAKE_ODDS` / `FAKE_ODDS_MAX` and the
-customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Wholesaler.MARKUP` / `LOT_RANGE`, `Progress.TIERS`, `RushHours` and the `Rivals` constants
+customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Wholesaler.MARKUP` / `LOT_RANGE`, the `Orders` constants, `Progress.TIERS`, `RushHours` and the `Rivals` constants
 (`PRICE_WEIGHT`, `STAR_WEIGHT`, `FAIR_SHARE`, `MAX_DIVERT`, `MAX_BOOST`, `SHOPS`). It also prints
 how many customers went to a rival and your median place in town.
 

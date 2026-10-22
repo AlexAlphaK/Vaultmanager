@@ -21,6 +21,8 @@ const REPUTATION := {
 	"wrong_call": -0.1, # calling genuine coins fake
 	"scammed": -0.15, # the assay lab, refiner or dealer found a fake you bought
 	"sold_fake": -0.4, # a customer found fakes in what you sold them
+	"order_filled": 0.06, # a collector picked up the special order you found for them
+	"order_failed": -0.15, # a collector came for their special order and you didn't have it
 }
 
 var day := 1
@@ -60,10 +62,21 @@ func reset() -> void:
 	changed.emit()
 
 
+## Everyday bullion coins: the ones walk-ins trade and the wholesaler stocks.
 func coin_list() -> Array[BullionItem]:
 	var out: Array[BullionItem] = []
 	for id in coins:
-		out.append(coins[id])
+		if not coins[id].rare:
+			out.append(coins[id])
+	return out
+
+
+## Rare coins that only collectors buy (see Orders).
+func rare_list() -> Array[BullionItem]:
+	var out: Array[BullionItem] = []
+	for id in coins:
+		if coins[id].rare:
+			out.append(coins[id])
 	return out
 
 
@@ -78,13 +91,19 @@ func net_worth() -> float:
 	return cash + vault_value()
 
 
-## Coins held of one metal.
+## Everyday coins of one metal that a buyer off the street can have: rare coins and
+## coins set aside for special orders are not for sale.
 func count_of(metal: String) -> int:
 	var n := 0
-	for lot in stock:
-		if lot.item.metal == metal:
-			n += lot.qty
+	for item in coin_list():
+		if item.metal == metal:
+			n += spare_of(item)
 	return n
+
+
+## Coins of one kind held that are not set aside for a special order.
+func spare_of(item: BullionItem) -> int:
+	return maxi(0, count_of_item(item) - Orders.set_aside(item))
 
 
 ## Coins held of one exact kind, for collectors.
@@ -125,15 +144,22 @@ func add_stock(item: BullionItem, qty: int, cost_each: float, fake := "") -> voi
 
 
 ## Takes `qty` coins of `metal` (only `item` coins when given), genuine lots first.
+## Without an `item` it takes only everyday coins and leaves special orders' coins alone.
 ## Returns {"cost": USD, "fakes": count, "melt": USD}.
 func take_stock(metal: String, qty: int, item: BullionItem = null) -> Dictionary:
 	var result := {"cost": 0.0, "fakes": 0, "melt": 0.0}
-	var lots := stock.filter(func(l): return l.item.metal == metal and (item == null or l.item == item))
+	var lots := stock.filter(func(l): return l.item.metal == metal and (l.item == item if item else not l.item.rare))
 	lots.sort_custom(func(a, b): return a.fake == "" and b.fake != "")
+	var spare := {}
 	for lot in lots:
 		if qty <= 0:
 			break
 		var n := mini(qty, lot.qty)
+		if item == null:
+			if not spare.has(lot.item):
+				spare[lot.item] = spare_of(lot.item)
+			n = mini(n, spare[lot.item])
+			spare[lot.item] -= n
 		lot.qty -= n
 		qty -= n
 		result.cost += lot.cost * n

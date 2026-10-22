@@ -118,7 +118,8 @@ func show_customer(c: Customer, idle_text := "") -> void:
 	_avatar.texture = c.frames[0]
 	_who.text = c.name
 	var tag := Customers.tag(c)
-	_wants.text = {"seller": "wants to sell", "buyer": "wants to buy", "visit": "stopped by to talk", "robber": "HOLD-UP"}.get(c.kind, "")
+	_wants.text = {"seller": "wants to sell", "buyer": "wants to buy", "visit": "stopped by to talk", "robber": "HOLD-UP",
+		"order": "special order"}.get(c.kind, "")
 	if tag != "":
 		_wants.text = "%s · %s" % [tag, _wants.text]
 	_quote.text = "\"%s\"" % c.say
@@ -220,6 +221,19 @@ func _refresh_deal() -> void:
 		_buttons.sell.text = "Panic button"
 		return
 	_deal[0].add_theme_color_override("font_color", Pal.INK)
+	if c.kind == "order":
+		var days: int = int(c.order.due) - Shop.day
+		_deal[0].text = "%d × %s" % [c.qty, c.item.display_name]
+		_deal[1].text = "By %s (%d days)  You hold %d" % [Day.weekday(int(c.order.due)), days, Shop.count_of_item(c.item)]
+		_deal[1].add_theme_color_override("font_color", Pal.INK)
+		_deal[2].text = "Pays %s  (+%d%%)" % [Market.format_money(c.sale_total()), roundi(float(c.order.premium) * 100.0)]
+		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
+		_buttons.sell.visible = true
+		_buttons.sell.disabled = false
+		_buttons.sell.text = "Take order"
+		_buttons.decline.visible = true
+		_buttons.decline.text = "Not now"
+		return
 	if c.kind == "seller":
 		if c.piece:
 			_deal[0].text = c.piece.short_title() + (" with stone" if c.piece.stone != "" else "")
@@ -253,7 +267,8 @@ func _refresh_deal() -> void:
 		else:
 			_deal[0].text = "%d × %s coins" % [c.qty, {"XAU": "gold", "XAG": "silver", "XPT": "platinum"}.get(c.item.metal, "")]
 		_deal[1].text = "You hold %d" % have
-		_deal[2].text = "Price  %s" % Market.format_money(c.sale_total())
+		_deal[2].text = "%s  %s" % ["Agreed" if not c.order.is_empty() else ("Pays" if c.fixed_price() else "Price"),
+			Market.format_money(c.sale_total())]
 		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
 		_buttons.sell.visible = true
 		_buttons.sell.text = "Sell"

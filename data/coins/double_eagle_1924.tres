@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BullionItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://items/bullion_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "double_eagle_1924"
+display_name = "1924 Double Eagle"
+metal = "XAU"
+weight_g = 33.436
+purity = 0.900
+diameter_mm = 34.0
+thickness_mm = 2.4
+sell_premium = 0.0
+palette = "gold"
+motif = "eagle"
+legend = "LIBERTY"
+fineness_text = "TWENTY D."
+year = "1924"
+radial_lines = false
+rare = true
+collector_premium = 0.5

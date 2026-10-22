@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BullionItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://items/bullion_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "sovereign_1911"
+display_name = "1911 Sovereign"
+metal = "XAU"
+weight_g = 7.988
+purity = 0.9167
+diameter_mm = 22.05
+thickness_mm = 1.52
+sell_premium = 0.0
+palette = "gold22"
+motif = "britannia"
+legend = "GEORGIVS V"
+fineness_text = "ONE POUND"
+year = "1911"
+radial_lines = false
+rare = true
+collector_premium = 0.65

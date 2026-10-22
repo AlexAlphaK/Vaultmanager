@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BullionItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://items/bullion_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "britannia_proof_1997"
+display_name = "1997 Britannia Proof"
+metal = "XAG"
+weight_g = 32.45
+purity = 0.958
+diameter_mm = 40.0
+thickness_mm = 3.0
+sell_premium = 0.0
+palette = "silver"
+motif = "britannia"
+legend = "BRITANNIA"
+fineness_text = "1 OZ FINE SILVER"
+year = "1997"
+radial_lines = false
+rare = true
+collector_premium = 1.1

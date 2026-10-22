@@ -22,6 +22,7 @@ Rivals="*res://autoload/rivals.gd"
 Settings="*res://autoload/settings.gd"
 Music="*res://autoload/music.gd"
 Tutorial="*res://autoload/tutorial.gd"
+Orders="*res://autoload/orders.gd"
 Records="*res://autoload/records.gd"
 
 [display]
