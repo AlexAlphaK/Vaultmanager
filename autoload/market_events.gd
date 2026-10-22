@@ -124,7 +124,7 @@ func start(event: Dictionary, move: float) -> void:
 	active.left = EVENT_SECONDS
 	_day = Shop.day
 	started.emit(active)
-	Shop.log_event("NEWS: " + headline(active), active.get("mood", ""))
+	Shop.log_event(tr("NEWS: ") + headline(active), active.get("mood", ""))
 
 
 func stop() -> void:
@@ -139,7 +139,7 @@ func stop() -> void:
 ## The headline with its real move filled in, e.g. "GOLD SLIDES -1.4%. ...".
 static func headline(event: Dictionary) -> String:
 	var move := float(event.get("move", event.at))
-	return String(event.headline).format({"move": "%s%.1f%%" % ["+" if move >= 0.0 else "", move]})
+	return Loc.t(event.headline).format({"move": "%s%.1f%%" % ["+" if move >= 0.0 else "", move]})
 
 
 ## Shop clock. The shop calls this while it is open, so events pause with the shop.

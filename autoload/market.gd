@@ -36,6 +36,8 @@ const COUNTRY_CURRENCY := {
 	"EE": "EUR", "LV": "EUR", "LT": "EUR", "LU": "EUR", "MT": "EUR", "CY": "EUR", "HR": "EUR",
 }
 ## Last-resort seed when there is no network and no cache (first launch offline).
+## Thousands and decimal marks per language.
+const DIGIT_MARKS := {"en": [",", "."], "de": [".", ","], "es": [".", ","], "fr": [" ", ","]}
 const SEED_PRICES := {"XAU": 4131.55, "XAG": 57.59, "XPT": 1631.85, "XPD": 1092.36}
 
 @export var service_url := "https://vault-manager-prices.price-service.workers.dev/prices"
@@ -130,16 +132,19 @@ static func currency_for_locale(locale: String) -> String:
 	return "USD"
 
 
+## Digits grouped the way the game's language writes them: 1,234.50 in English,
+## 1.234,50 in German and Spanish, 1 234,50 in French.
 static func _group_digits(value: float, decimals: int) -> String:
 	var text := ("%." + str(decimals) + "f") % value if decimals > 0 else str(roundi(value))
 	var whole := text.get_slice(".", 0)
 	var frac := text.substr(whole.length())
+	var marks: Array = DIGIT_MARKS.get(TranslationServer.get_locale().get_slice("_", 0), DIGIT_MARKS.en)
 	var out := ""
 	for i in whole.length():
 		if i > 0 and (whole.length() - i) % 3 == 0:
-			out += ","
+			out += marks[0]
 		out += whole[i]
-	return out + frac
+	return out + frac.replace(".", marks[1])
 
 
 func _on_response(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:

@@ -163,7 +163,7 @@ func check() -> void:
 		if value_of(a.key) >= float(a.goal):
 			earned[id] = Shop.day
 			_unlocked_today.append(id)
-			Shop.log_event("Achievement: %s!" % a.name, "good")
+			Shop.log_event(tr("Achievement: %s!") % tr(a.name), "good")
 			unlocked.emit(id)
 			changed.emit()
 
@@ -220,9 +220,9 @@ func _on_day_ended(day: int, report: Dictionary) -> void:
 	_check_peaks()
 	check()
 	if _rank_of(day) == 0 and history.size() > 1 and profit > 0.0:
-		report.lines.append("Your best day yet: %s profit." % Market.format_money(profit))
+		report.lines.append(tr("Your best day yet: %s profit.") % Market.format_money(profit))
 	for id in _unlocked_today:
-		report.lines.append("Achievement earned: %s. %s" % [ACHIEVEMENTS[id].name, ACHIEVEMENTS[id].desc])
+		report.lines.append(tr("Achievement earned: %s. %s") % [tr(ACHIEVEMENTS[id].name), tr(ACHIEVEMENTS[id].desc)])
 	_unlocked_today.clear()
 	changed.emit()
 

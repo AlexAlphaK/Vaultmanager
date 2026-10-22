@@ -233,16 +233,16 @@ func diverts(c: Customer, rng: RandomNumberGenerator) -> String:
 func lose(c: Customer, id: String) -> void:
 	lost_today[id] = int(lost_today.get(id, 0)) + 1
 	Shop.note("lost_to_rival")
-	var why := "better prices" if c.kind == "buyer" and premium_of(id) < Shop.sell_premium \
-		or c.kind == "seller" and buy_of(id) > Shop.buy_percent else "a better name"
+	var why := tr("better prices") if c.kind == "buyer" and premium_of(id) < Shop.sell_premium \
+		or c.kind == "seller" and buy_of(id) > Shop.buy_percent else tr("a better name")
 	if id == "pawn" and c.kind == "seller" and _segment(c) != "":
-		why = "no questions asked"
-	Shop.log_event("%s went to %s instead (%s)." % [c.name, SHOPS[id].short, why])
+		why = tr("no questions asked")
+	Shop.log_event(tr("%s went to %s instead (%s).") % [c.name, SHOPS[id].short, why])
 
 
 ## Shops in town by net worth, biggest first: [{"id", "name", "worth"}], "you" for the player.
 func ranking() -> Array[Dictionary]:
-	var out: Array[Dictionary] = [{"id": "you", "name": "Your shop", "worth": Shop.net_worth()}]
+	var out: Array[Dictionary] = [{"id": "you", "name": tr("Your shop"), "worth": Shop.net_worth()}]
 	for id in state:
 		out.append({"id": id, "name": SHOPS[id].name, "worth": worth_of(id)})
 	out.sort_custom(func(a, b): return a.worth > b.worth)
@@ -270,9 +270,9 @@ func can_run_ad() -> bool:
 func run_ad() -> bool:
 	if not can_run_ad():
 		return false
-	Day.add_expense("Newspaper ad", ad_cost())
+	Day.add_expense(tr("Newspaper ad"), ad_cost())
 	ad_days = AD_DAYS
-	Shop.log_event("Your ad runs in the paper for %d days." % AD_DAYS, "good")
+	Shop.log_event(tr("Your ad runs in the paper for %d days.") % AD_DAYS, "good")
 	changed.emit()
 	return true
 
@@ -281,7 +281,7 @@ func run_ad() -> bool:
 func beat_sterling() -> void:
 	Shop.set_buy_percent(buy_of("sterling") + 0.01)
 	Shop.set_sell_premium(premium_of("sterling") - 0.01)
-	Shop.log_event("Your board now pays %d%% and sells at +%d%%." % [roundi(Shop.buy_percent * 100.0), roundi(Shop.sell_premium * 100.0)])
+	Shop.log_event(tr("Your board now pays %d%% and sells at +%d%%.") % [roundi(Shop.buy_percent * 100.0), roundi(Shop.sell_premium * 100.0)])
 	changed.emit()
 
 
@@ -301,7 +301,7 @@ func tip_off() -> bool:
 	st.worth = float(st.worth) * 0.85
 	Shop.adjust_reputation(TIP_REPUTATION)
 	Shop.note("tipped_off")
-	var line := "Police raided Lucky's Pawn on your tip. It's shut for %d days." % RAID_DAYS
+	var line := tr("Police raided Lucky's Pawn on your tip. It's shut for %d days.") % RAID_DAYS
 	news = [line]
 	Shop.log_event(line, "good")
 	changed.emit()
@@ -325,7 +325,7 @@ func _on_day_started(day: int) -> void:
 		if int(st.closed) > 0:
 			st.closed = int(st.closed) - 1
 			if int(st.closed) == 0:
-				news.append("Lucky's Pawn has reopened after the raid.")
+				news.append(tr("Lucky's Pawn has reopened after the raid."))
 		if int(st.move_days) > 0:
 			st.move_days = int(st.move_days) - 1
 			if int(st.move_days) == 0:
@@ -343,7 +343,7 @@ func _on_day_started(day: int) -> void:
 			_start_move(id, options[rng.randi() % options.size()])
 	for id in state:
 		if move_of(id) != "" and MOVES[move_of(id)].days > 0 and not _headline_shown(id):
-			news.append("%s (%d day%s left)" % [MOVES[move_of(id)].news, int(state[id].move_days), "" if int(state[id].move_days) == 1 else "s"])
+			news.append(tr_n("%s (%d day left)", "%s (%d days left)", int(state[id].move_days)) % [tr(MOVES[move_of(id)].news), int(state[id].move_days)])
 	changed.emit()
 
 
@@ -357,7 +357,7 @@ func start_move(id: String, move: String) -> void:
 
 
 func _headline_shown(id: String) -> bool:
-	var text: String = MOVES[move_of(id)].news
+	var text: String = tr(MOVES[move_of(id)].news)
 	return news.any(func(n): return n.begins_with(text))
 
 
@@ -367,14 +367,14 @@ func _start_move(id: String, move: String) -> void:
 	if int(m.days) > 0:
 		st.move = move
 		st.move_days = int(m.days)
-		news.append("%s (%d days)" % [m.news, int(m.days)])
+		news.append(tr("%s (%d days)") % [tr(m.news), int(m.days)])
 		return
 	# a smear happens at once
 	if Shop.reputation >= float(m.get("shrug_stars", 99.0)):
-		news.append(m.shrugged)
+		news.append(tr(m.shrugged))
 		return
 	Shop.adjust_reputation(float(m.get("reputation", 0.0)))
-	news.append(m.news)
+	news.append(tr(m.news))
 
 
 func _end_move(id: String) -> void:
@@ -382,7 +382,7 @@ func _end_move(id: String) -> void:
 	var m: Dictionary = MOVES.get(st.move, {})
 	st.worth = float(st.worth) + float(m.get("worth", 0.0))
 	if st.move == "price_war":
-		news.append("Sterling's price war is over.")
+		news.append(tr("Sterling's price war is over."))
 	st.move = ""
 
 
@@ -416,17 +416,17 @@ func _on_day_ended(_day: int, report: Dictionary) -> void:
 		var n := int(lost_today.get(id, 0))
 		st.worth = float(st.worth) * (1.0 + float(SHOPS[id].growth)) + n * float(SHOPS[id].deal)
 		if n > 0:
-			bits.append("%d to %s" % [n, SHOPS[id].short])
+			bits.append(tr("%d to %s") % [n, SHOPS[id].short])
 	if not bits.is_empty():
 		var total := 0
 		for id in lost_today:
 			total += int(lost_today[id])
-		report.lines.append("%d customer%s went to the competition (%s). See the town map." % [total, "" if total == 1 else "s", ", ".join(bits)])
+		report.lines.append(tr_n("%d customer went to the competition (%s). See the town map.", "%d customers went to the competition (%s). See the town map.", total) % [total, ", ".join(bits)])
 	for id in state:
 		if not passed.has(id) and Shop.net_worth() > worth_of(id):
 			passed.append(id)
-			report.lines.append("Your shop is now bigger than %s!" % SHOPS[id].name)
-			Shop.log_event("You passed %s in net worth." % SHOPS[id].name, "good")
+			report.lines.append(tr("Your shop is now bigger than %s!") % SHOPS[id].name)
+			Shop.log_event(tr("You passed %s in net worth.") % SHOPS[id].name, "good")
 	changed.emit()
 
 

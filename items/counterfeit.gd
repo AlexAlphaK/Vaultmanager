@@ -42,7 +42,7 @@ static func kinds_for(metal: String, day: int) -> Array[String]:
 
 
 static func label(kind: String) -> String:
-	return KINDS[kind].label if KINDS.has(kind) else "genuine"
+	return Loc.t(KINDS[kind].label if KINDS.has(kind) else "genuine")
 
 
 ## What the testing tools read for one coin, genuine when `kind` is "".

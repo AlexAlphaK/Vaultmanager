@@ -125,23 +125,23 @@ static func create(day: int, reputation: float, coins: Array[BullionItem], rng: 
 			c.fake = kinds[rng.randi() % kinds.size()]
 		# panicking sellers take less, sellers cashing in at the top hold out for more
 		c.reserve = clampf(0.86 + rng.randf_range(-0.03, 0.04) + maxf(0.0, mood) * 0.012 + float(event.get("reserve", 0.0)), 0.74, 0.99)
-		c.say = (FAKE_LINES if c.fake != "" else SELLER_LINES)[rng.randi() % 4]
+		c.say = Loc.t((FAKE_LINES if c.fake != "" else SELLER_LINES)[rng.randi() % 4])
 		if event.is_empty() and rng.randf() < JEWELLERY_SHARE:
 			c.piece = JewelleryPiece.create(day, rng)
 			c.fake = ""
 			c.qty = 1
-			c.say = (JEWELLERY_SCAM_LINES if c.piece.scam else JEWELLERY_LINES)[rng.randi() % 4]
+			c.say = Loc.t((JEWELLERY_SCAM_LINES if c.piece.scam else JEWELLERY_LINES)[rng.randi() % 4])
 		elif event.is_empty() and rng.randf() < BAR_SHARE:
 			c.bar = BullionBar.create(day, Progress.tier, rng, fake_odds * BAR_FAKE_SHARE)
 			c.fake = ""
 			c.qty = 1
-			c.say = (BAR_SCAM_LINES if c.bar.fake != "" else BAR_LINES)[rng.randi() % 4]
+			c.say = Loc.t((BAR_SCAM_LINES if c.bar.fake != "" else BAR_LINES)[rng.randi() % 4])
 	else:
 		c.max_premium = clampf(rng.randf_range(0.03, 0.09) + reputation * 0.006 + float(event.get("premium", 0.0)), 0.02, 0.20) + Progress.effect("premium")
 		var lines := BUYER_LINES_DOWN if mood < 0.0 else BUYER_LINES_UP
-		c.say = lines[rng.randi() % lines.size()]
+		c.say = Loc.t(lines[rng.randi() % lines.size()])
 	if not event.is_empty() and c.fake == "":
-		c.say = event.lines[rng.randi() % event.lines.size()]
+		c.say = Loc.t(event.lines[rng.randi() % event.lines.size()])
 	c.floor_reserve = c.reserve
 	c.ceiling_premium = c.max_premium
 	c.set_look(PeopleArt.random_look(rng))
@@ -179,25 +179,25 @@ func hear_offer(offer: float) -> bool:
 	var moved := reserve > floor_reserve
 	reserve = maxf(floor_reserve, reserve - haggle)
 	if moved and offer >= reserve * expected_total() - 0.01:
-		say = "Ugh. Fine. You drive a hard bargain."
+		say = tr("Ugh. Fine. You drive a hard bargain.")
 		return true
 	var ask := ceili(reserve * 100.0 - 0.01)
 	if piece:
-		say = "No. I know what this is worth." if tries > 1 else "That's a lowball for a piece like this. Look again."
+		say = tr("No. I know what this is worth.") if tries > 1 else tr("That's a lowball for a piece like this. Look again.")
 		if moved:
-			say = "Look, I'd take %d%% of what it's worth. That's fair." % ask
+			say = tr("Look, I'd take %d%% of what it's worth. That's fair.") % ask
 	elif moved:
 		var final := reserve <= floor_reserve
 		match archetype:
 			"haggler":
-				say = ("%d%%. That's my floor, take it or I walk." if final else "Come on. %d%% and we shake on it.") % ask
+				say = (tr("%d%%. That's my floor, take it or I walk.") if final else tr("Come on. %d%% and we shake on it.")) % ask
 			"crypto_bro":
-				say = "Bro. %d%%. I'm literally losing money here." % ask
+				say = tr("Bro. %d%%. I'm literally losing money here.") % ask
 			_:
-				say = ("Okay, %d%%, but that's as low as I go." if final else "How about %d%%? Meet me halfway.") % ask
+				say = (tr("Okay, %d%%, but that's as low as I go.") if final else tr("How about %d%%? Meet me halfway.")) % ask
 	else:
-		say = "Still too low. I know what spot is today." if tries > 1 else \
-			"That's a lowball. I was hoping for closer to %d%%." % ask
+		say = tr("Still too low. I know what spot is today.") if tries > 1 else \
+			tr("That's a lowball. I was hoping for closer to %d%%.") % ask
 	return false
 
 
@@ -210,16 +210,16 @@ func hear_price(premium: float) -> bool:
 	var moved := max_premium < ceiling_premium
 	max_premium = minf(ceiling_premium, max_premium + haggle)
 	if moved and premium <= max_premium + 0.0001:
-		say = "Fine, fine. Ring it up."
+		say = tr("Fine, fine. Ring it up.")
 		return true
 	var over := maxi(1, floori(max_premium * 100.0 + 0.01))
 	if moved:
-		say = ("Spot plus %d%%, final offer." if max_premium >= ceiling_premium else "I could stretch to %d%% over. Deal?") % over
+		say = (tr("Spot plus %d%%, final offer.") if max_premium >= ceiling_premium else tr("I could stretch to %d%% over. Deal?")) % over
 	elif archetype == "collector":
-		say = "I pay well for quality, but not that well. %d%% over." % over
+		say = tr("I pay well for quality, but not that well. %d%% over.") % over
 	else:
-		say = "Sterling across the street is cheaper." if tries > 1 else \
-			"Spot plus %d%%? I'd pay maybe %d%% over." % [roundi(premium * 100.0), over]
+		say = tr("Sterling across the street is cheaper.") if tries > 1 else \
+			tr("Spot plus %d%%? I'd pay maybe %d%% over.") % [roundi(premium * 100.0), over]
 	return false
 
 

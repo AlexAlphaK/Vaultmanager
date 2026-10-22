@@ -133,7 +133,7 @@ func pad_action(name: String) -> bool:
 
 
 func pad_help() -> Array:
-	return [["LB / RB", "Previous / next row"], ["RT", "Buy"], ["LT", "Sell"]]
+	return [[tr("LB / RB"), tr("Previous / next row")], ["RT", "Buy"], ["LT", "Sell"]]
 
 
 ## The board's rows are drawn, not buttons, so the d-pad is told where they are.
@@ -368,7 +368,7 @@ func _build_panel() -> void:
 		var b := _button("", Rect2(x + n * 53, 116, 50, 12), "Button", func():
 			size_pick = n
 			Sfx.play(self, Sfx.click(), -14.0))
-		b.tooltip_text = "Trade %d%% of the desk's limit per click." % roundi(DeskSession.SIZES[n] * 100.0)
+		b.tooltip_text = tr("Trade %d%% of the desk's limit per click.") % roundi(DeskSession.SIZES[n] * 100.0)
 		_ui.sizes.append(b)
 	_ui.buy = _button("Buy (B)", Rect2(x, 131, 76, 13), "PrimaryButton", buy)
 	_ui.sell = _button("Sell (S)", Rect2(x + 80, 131, 76, 13), "DangerButton", sell)
@@ -402,7 +402,7 @@ func _refresh() -> void:
 		var real: float = s.board[i].change
 		cells[4].text = ("▲ " if real > 0.05 else ("▼ " if real < -0.05 else "")) + _pct(real)
 		cells[4].add_theme_color_override("font_color", LED_DIM if real >= 0.0 else Pal.BAD.darkened(0.3))
-		cells[5].text = "" if absf(pos) < 1.0 else ("long " if pos > 0.0 else "short ") + _money_k(absf(pos))
+		cells[5].text = "" if absf(pos) < 1.0 else (tr("long ") if pos > 0.0 else tr("short ")) + _money_k(absf(pos))
 		cells[5].add_theme_color_override("font_color", Pal.LED if pos > 0.0 else Pal.WARN)
 		cells[6].text = "" if absf(pnl) < 0.5 and absf(pos) < 1.0 else _signed(pnl)
 		cells[6].add_theme_color_override("font_color", Pal.LED if pnl >= 0.0 else Pal.BAD)
@@ -438,7 +438,7 @@ func _refresh() -> void:
 	elif s.started:
 		_ui.help.text = "Buy if you think it rises, Sell to go short if you think it falls. At 17:00 everything closes and the result goes on today's ledger."
 		_ui.main.text = "Close out now (Enter)"
-		_ui.hint.text = "1-%d pick a row. Esc closes out." % s.board.size()
+		_ui.hint.text = tr("1-%d pick a row. Esc closes out.") % s.board.size()
 	else:
 		_ui.help.text = "Each tape replays a day that ends near today's live price, so the real 24h move is your edge. Hedge vault protects your stock if metals fall."
 		_ui.main.text = "Ring the opening bell"
@@ -452,16 +452,16 @@ func _show_result() -> void:
 	var pnl := s.pnl()
 	var lines: Array[String] = []
 	if not s.traded():
-		lines.append("You watched the tape all day without a trade.")
+		lines.append(tr("You watched the tape all day without a trade."))
 	else:
-		lines.append("Desk %s %s today, after %s in fees." % ["made" if pnl >= 0.0 else "lost", Market.format_money(absf(pnl)), Market.format_money(s.fees())])
+		lines.append((tr("Desk made %s today, after %s in fees.") if pnl >= 0.0 else tr("Desk lost %s today, after %s in fees.")) % [Market.format_money(absf(pnl)), Market.format_money(s.fees())])
 	var swing := s.vault_swing()
 	if absf(swing) >= 1.0:
-		lines.append("On today's tape your vault %s %s on paper." % ["gained" if swing > 0.0 else "lost", Market.format_money(absf(swing))])
+		lines.append((tr("On today's tape your vault gained %s on paper.") if swing > 0.0 else tr("On today's tape your vault lost %s on paper.")) % Market.format_money(absf(swing)))
 		var cover := s.hedge_cover()
 		if cover > 0.0:
-			lines.append("Your hedge offset %d%% of the vault's move." % roundi(cover * 100.0))
-	lines.append("Lifetime at the desk: %s." % _signed(DeskSession.lifetime))
+			lines.append(tr("Your hedge offset %d%% of the vault's move.") % roundi(cover * 100.0))
+	lines.append(tr("Lifetime at the desk: %s.") % _signed(DeskSession.lifetime))
 	_result = PanelContainer.new()
 	add_child(_result)
 	_result.position = Vector2(38, 60)
@@ -471,7 +471,7 @@ func _show_result() -> void:
 	box.add_theme_constant_override("separation", 3)
 	_result.add_child(box)
 	var head := Label.new()
-	head.text = "Closing bell: %s" % _signed(pnl)
+	head.text = tr("Closing bell: %s") % _signed(pnl)
 	head.add_theme_font_size_override("font_size", 16)
 	head.add_theme_color_override("font_color", Pal.GOOD if pnl >= 0.0 else Pal.BAD)
 	box.add_child(head)
