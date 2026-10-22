@@ -33,6 +33,7 @@ var _result: PanelContainer
 
 
 func _ready() -> void:
+	add_to_group("pad_targets")
 	theme = UiTheme.get_theme()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -76,7 +77,7 @@ func _process(delta: float) -> void:
 func _gui_input(event: InputEvent) -> void:
 	if layout == null or locked or paused:
 		return
-	var m := get_local_mouse_position()
+	var m := Pad.mouse_in(self)
 	if event is InputEventMouseMotion:
 		_hover = _piece_under(m)
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -96,12 +97,33 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 	match event.keycode:
 		KEY_R:
-			turn(get_local_mouse_position())
+			turn(Pad.mouse_in(self))
 		KEY_ENTER, KEY_KP_ENTER:
 			lock_up()
 		_:
 			return
 	get_viewport().set_input_as_handled()
+
+
+## Where the d-pad stops: on each piece, or cell by cell while carrying one.
+func pad_targets() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	if layout == null or locked or paused:
+		return out
+	var xf := get_global_transform_with_canvas()
+	if _held.is_empty():
+		for p in layout.pieces:
+			if p.cell.x >= 0:
+				var c: Vector2i = VaultLayout.cells_of(p.kind, p.rot)[0]
+				out.append(xf * Rect2(_piece_pos(p) + Vector2(c * CELL), Vector2(CELL, CELL)))
+	else:
+		for area in layout.areas:
+			var o := _origin(area)
+			var cells: Vector2i = layout.areas[area].size
+			for y in cells.y:
+				for x in cells.x:
+					out.append(xf * Rect2(o + Vector2(x, y) * CELL, Vector2(CELL, CELL)))
+	return out
 
 
 func pick_up(at: Vector2) -> void:
@@ -179,7 +201,7 @@ func _draw() -> void:
 			var o := _origin(area)
 			draw_texture(_doors[area], o - Vector2(2, 2))
 	if not _held.is_empty():
-		var m := get_local_mouse_position()
+		var m := Pad.mouse_in(self)
 		var target := _drop_target(m)
 		if target.area != "":
 			var tint := Color(Pal.GOOD, 0.35) if target.ok else Color(Pal.BAD, 0.35)

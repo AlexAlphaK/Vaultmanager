@@ -3,7 +3,8 @@ extends Node
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, counter, bench
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
 ## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
-## shops on the town map, the trading desk, and the seasons and town events. Run:
+## shops on the town map, the trading desk, gamepad controls with screen scaling, and the
+## seasons and town events. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -48,6 +49,7 @@ func _ready() -> void:
 	_check_settings()
 	_check_music()
 	await _check_menus()
+	await _check_pad()
 	await _check_tutorial()
 	_clear_slots()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveGame.meta_path))
@@ -1939,6 +1941,149 @@ func _check_menus() -> void:
 	await get_tree().process_frame
 	SaveGame.delete_save()
 	Shop.reset()
+
+
+## Gamepad controls: the pointer, d-pad jumps that skip what is hidden behind menus,
+## A clicks, B goes back, the bench and desk shortcuts, and the screen scaling choice.
+func _check_pad() -> void:
+	expect(InputMap.action_get_events("ui_up").all(func(e): return not (e is InputEventJoypadButton or e is InputEventJoypadMotion)),
+		"the pad does not also move the keyboard focus")
+	_clear_slots()
+	SaveGame.set_slot(1)
+	var title: Control = load("res://scenes/menu/title_screen.tscn").instantiate()
+	add_child(title)
+	await get_tree().process_frame
+	var new_game: Button = title._new
+	Pad.set_cursor(new_game.get_global_rect().get_center())
+	await _pad_press(JOY_BUTTON_DPAD_DOWN)
+	expect(Pad.using_pad, "pressing a pad button switches to the pad")
+	var on: Variant = _pad_target_under_cursor()
+	expect(on is Button and on.text == "Settings", "d-pad down jumps from New game to Settings")
+	var names: Array = Pad.targets().map(func(t): return t.node.text if t.node is Button else "")
+	expect(not names.has("Continue"), "the d-pad skips a disabled button")
+	await _pad_press(JOY_BUTTON_A)
+	expect(title._settings != null, "A clicks the button under the pointer")
+	var panel: SettingsPanel = title._settings
+	await get_tree().process_frame
+	var all_in_panel := Pad.targets().all(func(t): return panel.is_ancestor_of(t.node))
+	expect(all_in_panel, "with Settings open the d-pad only stops on its controls")
+	var sliders := Pad.targets().filter(func(t): return t.node is HSlider)
+	expect(sliders.size() == 3, "the d-pad reaches the three volume sliders")
+	var real_path := Settings.path
+	Settings.path = "user://smoke_test_settings.cfg"
+	var master: float = Settings.volume["Master"]
+	Pad.set_cursor(sliders[0].rect.get_center())
+	await _pad_press(JOY_BUTTON_DPAD_LEFT)
+	expect(Settings.volume["Master"] < master, "d-pad left on a slider turns it down")
+	Settings.set_volume("Master", master)
+	await _pad_press(JOY_BUTTON_B)
+	expect(title._settings == null and title._menu.visible, "B backs out of Settings")
+	title.queue_free()
+	await get_tree().process_frame
+
+	# screen scaling: the Steam Deck's 1280x800 fills, 16:9 screens keep whole pixels
+	expect(Settings.scaling == "auto", "scaling starts on auto")
+	expect(not Settings.whole_pixels(Vector2(1280, 800)) and not Settings.whole_pixels(Vector2(1366, 768)), "auto fills a Steam Deck or a laptop screen")
+	expect(Settings.whole_pixels(Vector2(1920, 1080)) and Settings.whole_pixels(Vector2(1440, 810)) and Settings.whole_pixels(Vector2(2560, 1440)), "auto keeps whole pixels where they nearly fill")
+	Settings.set_scaling("pixel")
+	expect(Settings.whole_pixels(Vector2(1280, 800)), "Pixel perfect always keeps whole pixels")
+	Settings.set_scaling("fill")
+	Settings.scaling = "auto"
+	Settings.load_settings()
+	expect(Settings.scaling == "fill" and not Settings.whole_pixels(Vector2(1920, 1080)), "the scaling choice is saved")
+	expect(get_tree().root.content_scale_stretch == Window.CONTENT_SCALE_STRETCH_FRACTIONAL, "Fill screen scales by fractions")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
+	Settings.path = real_path
+	Settings.load_settings()
+
+	# the pause menu hides the shop's buttons from the d-pad
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	shop._open_shop()
+	await get_tree().process_frame
+	expect(Pad.targets().size() > 0, "the shop has buttons for the d-pad")
+	await _pad_press(JOY_BUTTON_START)
+	expect(shop._pause.is_open(), "Start opens the pause menu")
+	var paused_targets := Pad.targets()
+	expect(paused_targets.size() >= 3 and paused_targets.all(func(t): return shop._pause.is_ancestor_of(t.node)),
+		"while paused the d-pad only stops on the pause menu")
+	await _pad_press(JOY_BUTTON_B)
+	expect(not shop._pause.is_open() and not get_tree().paused, "B closes the pause menu")
+
+	# bench shortcuts: LB / RB step through the tools; the pointer counts as the mouse
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 3
+	var c := Customer.create(3, 4.0, Shop.coin_list(), rng)
+	c.kind = "seller"
+	c.piece = null
+	c.bar = null
+	c.item = Shop.coins["gold_eagle"]
+	c.fake = ""
+	var bench: Control = load("res://scenes/coin_test/coin_test.tscn").instantiate()
+	shop.hud.add_child(bench)
+	bench.start(c)
+	await get_tree().process_frame
+	expect(Pad.action("rb") and bench.used.has("scale"), "RB picks the first tool on the coin bench")
+	Pad.action("rb")
+	expect(bench.used.has("calipers"), "RB again picks the next tool")
+	Pad.action("lb")
+	Pad.action("lb")
+	expect(bench._loupe.visible, "LB goes back round to the loupe")
+	Pad.action("lb")
+	expect(not bench._loupe.visible, "leaving the loupe puts it away")
+	Pad.set_cursor(Vector2(100, 80))
+	expect(Pad.mouse_in(bench).is_equal_approx(Vector2(100, 80)), "the benches read the pad's pointer as the mouse")
+	await _pad_press(JOY_BUTTON_START)
+	expect(not shop._pause.is_open() and is_instance_valid(bench) and bench.is_inside_tree(), "Start does nothing on a bench")
+	bench.queue_free()
+	await get_tree().process_frame
+
+	# the trading desk: rows on the bumpers, buy and sell on the triggers, rows on the d-pad
+	var desk: TradingDesk = load("res://scenes/trading_desk/trading_desk.tscn").instantiate()
+	shop.hud.add_child(desk)
+	desk.start(7)
+	await get_tree().process_frame
+	Pad.action("rb")
+	expect(desk.selected == 1, "RB selects the next row")
+	Pad.action("lb")
+	Pad.action("lb")
+	expect(desk.selected == desk.session.board.size() - 1, "LB wraps round to the last row")
+	Pad.action("rt")
+	expect(desk.session.position(desk.selected) > 0.0, "RT buys the selected row")
+	expect(Pad.targets().filter(func(t): return t.node == desk).size() == desk.session.board.size(), "the d-pad stops on each row of the board")
+	expect(desk.pad_help().size() == 3 and Pad.help_rows().size() > 9, "the controls list shows the desk's shortcuts")
+	desk.queue_free()
+	shop.queue_free()
+	await get_tree().process_frame
+
+	# a real mouse takes over again
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.position = Vector2(5, 5)
+	Input.parse_input_event(click)
+	await get_tree().process_frame
+	expect(not Pad.using_pad, "using the mouse switches back from the pad")
+	SaveGame.delete_save()
+	Shop.reset()
+
+
+func _pad_press(button: int) -> void:
+	for pressed in [true, false]:
+		var e := InputEventJoypadButton.new()
+		e.button_index = button
+		e.pressed = pressed
+		Input.parse_input_event(e)
+		await get_tree().process_frame
+
+
+func _pad_target_under_cursor() -> Variant:
+	for t in Pad.targets():
+		if t.rect.has_point(Pad.cursor):
+			return t.node
+	return null
 
 
 ## The guided first day from the welcome card to the summary, the bench intros, and Skip.
