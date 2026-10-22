@@ -8,13 +8,17 @@ extends Node2D
 ## the counter, the benches and runs to the vault with the till; staff (Staff) help out.
 ## Now and then a robber walks in with the customers (Security): the guard may stop
 ## them at the door, otherwise you hand over the till or hit the panic button.
+## Rival shops (Rivals) compete for every customer: when your prices or stars look worse
+## than theirs, some cross the street before they reach your door.
 ## On day 1 of a new game the Coach walks the player through it.
+## Once the trading desk room is built, the morning panel opens the TradingDesk minigame.
 
 signal bench_opened(bench: Control, c: Customer)
 signal bench_closed(verdict: String, c: Customer)
 signal customer_left(c: Customer)
 signal vault_opened(vault: Control)
 signal summary_shown
+signal desk_opened(desk: Control)
 
 const DAY_SECONDS := 120.0 # 09:00 to 17:00; daily bills are sized for this length (see README, Balance)
 const WALK_SPEED := 1.8 # tiles per second
@@ -24,6 +28,7 @@ const NewsBanner := preload("res://scenes/shop/news_banner.gd")
 const RUSH_GAP := 1.5 # seconds between customers in a news rush
 const JewelleryTestScene := preload("res://scenes/jewellery_test/jewellery_test.tscn")
 const BarTestScene := preload("res://scenes/bar_test/bar_test.tscn")
+const TradingDeskScene := preload("res://scenes/trading_desk/trading_desk.tscn")
 const STONE_NAMES := {"cz": "cubic zirconia", "glass": "glass", "moissanite": "moissanite"}
 const CLERK_SECONDS := 5.0 # how long the clerk takes to ring up a sale
 const VAULT_RUN_SECONDS := 3.0 # away from the counter while you take the till to the vault
@@ -61,25 +66,32 @@ var _rush_left := 0
 var _shown: Customer
 var _test: Control
 var _vault: Control
+var _desk: Control
 var _pause: PauseMenu
 var coach: Coach
+## Particles, reactions and their sounds over the room.
+var fx: ShopFx
 
 
 func _ready() -> void:
 	rng.randomize()
 	BullionBar.hook_up()
 	Security.hook_up()
+	DeskSession.hook_up()
 	hud.action.connect(_on_action)
 	hud.open_requested.connect(_open_shop)
 	hud.next_day_requested.connect(_open_next_day)
 	hud.new_game_requested.connect(_new_game)
 	hud.menu_requested.connect(open_pause_menu)
+	hud.desk_requested.connect(open_desk)
 	_pause = PauseMenu.new()
 	add_child(_pause)
 	Music.play("shop")
 	var banner := NewsBanner.new()
 	hud.add_child(banner)
 	add_child(RushStrip.new(self))
+	fx = ShopFx.new(self)
+	room.add_child(fx)
 	MarketEvents.started.connect(_on_market_event)
 	if SaveGame.load_game():
 		if SaveGame.day_over: # saved at the end of the day: carry on with the next morning
@@ -127,7 +139,7 @@ func _everyone() -> Array[Customer]:
 
 ## Esc opens the pause menu, except in the coin and jewellery benches, where it means "back".
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE and _test == null:
+	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE and _test == null and _desk == null:
 		open_pause_menu()
 		get_viewport().set_input_as_handled()
 
@@ -156,7 +168,7 @@ func _tick(delta: float) -> void:
 			elif not rush.is_empty():
 				_next_spawn = RushHours.SPAWN_GAP / Progress.traffic() * rng.randf_range(0.75, 1.25)
 			else:
-				_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor()
+				_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() / Rivals.traffic_factor() * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor()
 		elif not rush.is_empty():
 			# in a rush nobody waits outside: a full queue turns them away
 			Shop.note("walked_by")
@@ -221,7 +233,12 @@ func _update_rush() -> void:
 
 
 func _spawn() -> void:
-	admit(Customers.next_customer(rng, MarketEvents.customer_event(rng)))
+	var c := Customers.next_customer(rng, MarketEvents.customer_event(rng))
+	var rival := Rivals.diverts(c, rng)
+	if rival != "":
+		Rivals.lose(c, rival)
+		return
+	admit(c)
 
 
 ## Sends customer `c` through the door and into the queue.
@@ -677,6 +694,24 @@ func _appraised(c: Customer) -> void:
 		Shop.log_event("Spotted that %s's stone is %s." % [c.name, STONE_NAMES[p.stone]], "good")
 	else:
 		c.say = "So, what's it worth to you?"
+
+
+## The morning session at the trading desk, over the morning panel.
+func open_desk() -> void:
+	if _desk != null or not DeskSession.available():
+		return
+	hud.hide_panels()
+	_desk = TradingDeskScene.instantiate()
+	hud.add_child(_desk)
+	_desk.start()
+	_desk.finished.connect(_on_desk_finished)
+	desk_opened.emit(_desk)
+
+
+func _on_desk_finished(_pnl: float) -> void:
+	_desk.queue_free()
+	_desk = null
+	hud.show_morning()
 
 
 func _open_vault() -> void:

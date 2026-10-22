@@ -15,11 +15,12 @@ platinum and palladium prices follow the real market.
 | `autoload/day.gd` | `Day` singleton: day phases (morning, open, closing, after hours), the week, bills and the day's ledger |
 | `autoload/progress.gd` | `Progress` singleton: the four shop tiers, upgrades and their effects |
 | `autoload/wholesaler.gd` | `Wholesaler` singleton: the morning wholesaler's lots and prices (spot plus a markup that shrinks as the shop grows) |
+| `autoload/rivals.gd` | `Rivals` singleton: the rival shops in town (Sterling Bullion and Lucky's Pawn), how customers choose between them and you, the rivals' morning moves and your answers; saved with the game |
 | `autoload/staff.gd` | `Staff` singleton: the clerk and the guard you can hire, their signing fees, daily wages and effects |
 | `autoload/save_game.gd` | `SaveGame` singleton: three save slots (`user://save_1.json` to `save_3.json`), saved every morning and at the end of each day; an old `save.json` becomes slot 1 |
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
-| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 21 achievements; saved with the game |
+| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 24 achievements; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
@@ -27,14 +28,15 @@ platinum and palladium prices follow the real market.
 | `items/counterfeit.gd` | The four kinds of fake (plated steel, brass, copper-nickel clad, tungsten core) and what each does to the readings |
 | `data/coins/*.tres` | Real coin specs (weight, purity, diameter, thickness) used by the testing minigame |
 | `scenes/menu/` | The title screen (main scene: Continue, New game, Settings, Quit) and the pause menu |
-| `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene); `rush_hours.gd` holds the busy hours and the till rules, `security.gd` the hold-ups and burglar crews |
+| `scenes/shop/` | The isometric shop: room renderer, customers, HUD, morning/upgrades/summary panels and the day loop (main scene); `rush_hours.gd` holds the busy hours and the till rules, `security.gd` the hold-ups and burglar crews, `shop_fx.gd` the particles and customer reactions |
 | `scenes/tutorial/coach.gd` | The coach: the cards of the guided first day (with three scripted customers) and the bench intros |
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
 | `scenes/bar_test/` | The bar test: scale, calipers, ultrasound flaw detector, XRF gun and loupe |
+| `scenes/trading_desk/` | The trading desk minigame on the morning panel; `desk_session.gd` holds the tapes, trades, limit and hedging |
 | `scenes/vault/` | The vault lock-up minigame at closing time; `vault_layout.gd` holds the packing and break-in rules |
-| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people (walk cycle, back view, moods), coin, jewellery, bar, vault and title screen painters. `shop_ambience.gd` adds the sunbeam, dust, neon sign and shop cat; `bench_art.gd` the testing benches' wood, housings and lamp light. No image files |
-| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds, `bar_sfx.gd` the gel, ultrasound and X-ray sounds) |
+| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people (walk cycle, back view, moods), coin, jewellery, bar, vault, trading desk and title screen painters. `shop_ambience.gd` adds the sunbeam, dust, neon sign and shop cat; `bench_art.gd` the testing benches' wood, housings and lamp light. No image files |
+| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds, `bar_sfx.gd` the gel, ultrasound and X-ray sounds, `shop_sfx.gd` the shop floor: door bell, register, coin clinks, service bell and customer voices) |
 | `audio/music_synth.gd` | The music, synthesised at runtime: a music-box title theme and a slow jazzy shop loop |
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons, sliders) |
 | `ui/settings_panel.gd` | The settings page shared by the title screen and the pause menu |
@@ -144,11 +146,37 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   a stack of silver; **+1** buys one, the second button buys a bulk lot. Walk-in sellers are
   still the cheaper way to stock up, so restock what buyers keep asking for, and leave cash in
   hand for the sellers.
+- **Trading desk.** Build the trading desk room (Bullion house, $75,000) and a **Desk** button
+  joins the morning panel. One session a morning: a minute-long trading day (09:00 to 17:00) for
+  gold, silver, platinum and two each of the live crypto and stocks. Each tape replays a day that
+  ends near today's live price, so the board's real 24-hour move is your edge, but never a sure
+  thing. Pick a row (1-7 or click), **Buy** (B) to go long, **Sell** (S) to go short, **Close**
+  (C) to get out, all within the desk's limit ($20,000 times your deal size). **Hedge vault** (H)
+  shorts the metal in your vault ounce for ounce with up to half the limit, so a falling price
+  costs the vault on paper but pays at the desk. At the closing bell everything closes and the
+  profit or loss goes on today's ledger. The rules live in `scenes/trading_desk/desk_session.gd`.
+- **Rival shops.** You are not the only dealer in town. **Sterling Bullion Co.** across the street
+  is the big established dealer, and **Lucky's Pawn & Loan** across the side street pays far
+  less for metal but asks no questions. Every customer weighs the shops by what they pay or
+  charge (your **Pay sellers** and **Charge buyers** board) and by their stars. When your shop
+  looks worse than a fair share, some customers cross the street before they reach your door
+  (the log says where they went and why); when it looks better, word spreads and customers come
+  up to 15% faster. Lucky's draws shady sellers and some jewellery away from you. Each morning
+  Sterling reprices against you, cutting a point when you are winning and taking it back when
+  it is, and the rivals make moves: a **price war** (Sterling pays 92% and sells at +3% for
+  three days), a radio **ad blitz**, a one-star **smear** review (it can't touch a 4-star shop),
+  a **fencing** racket at Lucky's, or a **clearance** sale next door. Press **Town map** on the
+  morning panel to see the crossroads, each shop's stars, prices and net worth, your place in
+  town, and today's news. Your answers: a **newspaper ad** (more customers pick you for three
+  days), **Beat Sterling** (sets your board a point better than theirs) and, while Lucky's is
+  fencing, **Tip off police** (a raid shuts it for five days and earns you stars). The rivals'
+  net worth grows every day, and passing them is how you become the biggest store in town. The
+  numbers live in `autoload/rivals.gd`, the map in `art/town_art.gd`.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
 - **The ledger.** The **Ledger** button on the morning panel shows your lifetime record: deals,
   money bought and sold, profit, fakes caught and missed, losses to thieves, your highest net
-  worth and stars, your profit streak and your three best days. **Achievements** lists 21 goals
+  worth and stars, your profit streak and your three best days. **Achievements** lists 24 goals
   (hover one to see how to earn it and how close you are). Earning one pops up in the log, and
   the day's summary lists what you earned and tells you when you've had your best day yet.
 
@@ -212,7 +240,8 @@ Design doc: https://claude.ai/artifact/VqviQgHanNwibT95FhXgLV
 `tests/balance_sim.tscn` has three bots (novice, average, expert) play the real shop scene
 headless: they test or skip the bench, misread some fakes, haggle with the -/+ buttons, grade
 jewellery, pack the vault, empty the till, hire staff, buy upgrades and restock from the
-morning wholesaler. Everything else is the
+morning wholesaler (the average and expert bots also tip off the police about Lucky's).
+Everything else, the rival shops included, is the
 game's own code. It prints when each bot reaches each tier, net worth and stars over time, and
 where the money came from and went.
 
@@ -221,7 +250,9 @@ where the money came from and went.
 Options: `--bots=novice,average,expert`, `--runs=N` seeds per bot, `--days=N`, `--seed=N`, and
 `--csv=PATH` for one row per bot per day. A 100-day run takes a few minutes per bot.
 The knobs it tunes live in `Shop.REPUTATION`, `Customer.FAKE_ODDS` / `FAKE_ODDS_MAX` and the
-customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Wholesaler.MARKUP` / `LOT_RANGE`, `Progress.TIERS` and `RushHours`.
+customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Wholesaler.MARKUP` / `LOT_RANGE`, `Progress.TIERS`, `RushHours` and the `Rivals` constants
+(`PRICE_WEIGHT`, `STAR_WEIGHT`, `FAIR_SHARE`, `MAX_DIVERT`, `MAX_BOOST`, `SHOPS`). It also prints
+how many customers went to a rival and your median place in town.
 
 The shop is open for `Shop.DAY_SECONDS` (120 s of clock, 09:00 to 17:00; the clock stops at
 the testing benches outside rush hours). Customers arrive per second, not per day, so the daily
@@ -250,6 +281,17 @@ both feed **Master**, and `Settings` creates the buses at launch so there is no 
 `MusicSynth` renders each track as a seamless loop (a second or two of work), so `Music` does it on
 a thread the first time and keeps the result in `user://music_cache/`. If you change
 `music_synth.gd`, bump `Music.CACHE_VERSION` so players get the new render.
+
+On the shop floor `ShopFx` (`scenes/shop/shop_fx.gd`) adds the life between the rules: coins arc
+across the counter on every deal and the money pops up over the till, each customer rings the
+service bell and speaks in their own little made-up voice (`ShopSfx.voice`, pitched from their
+seed), the impatient sweat and steam, anyone who storms out leaves in a puff of steam, a caught fake
+sparkles, and a hold-up flashes the room red and shakes it. It only listens to `Shop.noted`,
+`Shop.logged` and the shop's `customer_left` signal, so the rules never depend on it.
+`ShopSfx.warm_up()` renders the common sounds when the shop opens so the first customer doesn't
+stutter.
+
+![Shop effects: a sale, a customer storming out, a hold-up](docs/screenshots/fx.png)
 
 ## Feed states
 
