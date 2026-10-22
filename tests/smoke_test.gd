@@ -1,7 +1,7 @@
 extends Node
 ## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test, the vault lock-up,
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, the menus, settings
-## and music, and the tutorial. Run:
+## and music, the tutorial, and the ledger of records and achievements. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -17,6 +17,7 @@ func _ready() -> void:
 	_check_stock()
 	_check_bills_and_upgrades()
 	_check_save_load()
+	_check_records()
 	_check_jewellery()
 	_check_bars()
 	_check_vault_layout()
@@ -406,6 +407,55 @@ func _check_shop_day() -> void:
 
 ## Every jewellery fraud must show up on at least one bench test, values must follow
 ## the claim and the truth, and every kind of piece must paint at every scale.
+func _check_records() -> void:
+	if get_node_or_null("/root/Records") == null:
+		expect(false, "the Records autoload loads")
+		return
+	SaveGame.new_game()
+	expect(Records.earned.is_empty() and Records.totals.days == 0, "a new game starts an empty ledger")
+	Day.begin_day()
+	Day.open_shop()
+	Shop.note("bought", 1200.0)
+	Shop.note("sold", 2000.0)
+	Shop.note("profit", 6000.0)
+	Shop.note("served")
+	Shop.note("caught")
+	expect(Records.is_earned("first_sale") and Records.is_earned("first_catch"), "first sale and first catch are earned on the spot")
+	expect(Records.is_earned("day_5k"), "a big day is earned as soon as the profit is in")
+	expect(not Records.is_earned("catch_25") and is_equal_approx(Records.progress_of("catch_25"), 1.0 / 25.0), "progress counts toward the next goal")
+	expect(is_equal_approx(Records.total("bought"), 1200.0) and Records.total("buys") == 1, "today's deals count before closing")
+	Day.close_shop()
+	var report := Day.end_day()
+	expect(Records.totals.days == 1 and is_equal_approx(Records.total("profit"), 6000.0), "a closed day joins the totals once")
+	expect(Records.total("caught") == 1 and Records.total("sales") == 1, "counts are not doubled after closing")
+	expect(Records.best_days.size() == 1 and Records.streak == 1, "a profitable day is ranked and starts a streak")
+	expect(report.lines.any(func(l): return str(l).begins_with("Achievement earned: Sharp eye")), "the summary lists today's achievements")
+	# a day with a missed fake breaks the clean streak, a losing day breaks the profit streak
+	Shop.next_day()
+	Day.begin_day()
+	Day.open_shop()
+	Shop.note("scammed")
+	Shop.note("profit", -500.0)
+	Day.close_shop()
+	Day.end_day()
+	expect(Records.streak == 0 and Records.clean_streak == 0 and Records.peaks.streak == 1, "streaks reset and the best is kept")
+	expect(Records.best_days.size() == 1 and is_equal_approx(Records.catch_rate(), 0.5), "losing days are not best days; catch rate is 50%")
+	expect(SaveGame.save_game(), "the ledger saves")
+	Records.reset()
+	expect(SaveGame.load_game() and Records.totals.days == 2 and Records.is_earned("first_catch") and Records.best_days.size() == 1, "the ledger comes back from the save")
+	# the ledger and achievements pages build
+	var panels := DayPanels.new()
+	add_child(panels)
+	panels.show_morning()
+	panels.show_ledger()
+	expect(panels.page == "ledger" and panels.visible, "the ledger page opens")
+	panels.show_achievements()
+	expect(panels.page == "achievements" and panels._box.get_child_count() > 3, "the achievements page opens")
+	panels.queue_free()
+	SaveGame.new_game()
+	expect(Records.earned.is_empty() and Records.best_days.is_empty(), "a new game clears the ledger")
+
+
 func _check_jewellery() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 11
