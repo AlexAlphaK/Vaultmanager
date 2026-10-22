@@ -466,6 +466,8 @@ func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) ->
 			_add(out.losses, "hold-ups", -e.usd)
 		elif e.label == "Police recovered stolen goods":
 			_add(out.gains, "police recovered", e.usd)
+		elif e.label == "Insurance payout":
+			_add(out.gains, "insurance", e.usd)
 		elif e.label == "Tax Day":
 			_add(out.losses, "tax", -e.usd)
 		elif e.label == "Coin show booth":

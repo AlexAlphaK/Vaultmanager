@@ -1544,6 +1544,9 @@ func _check_burglar_crews() -> void:
 		var values := v.pieces.map(func(p): return p.value)
 		values.sort()
 		expect(kids.stolen.all(func(p): return p.value >= values[-3]), "kids grab the most valuable pieces")
+		# the insurer pays back a quarter of what was left on the tray
+		v.apply(kids)
+		expect(absf(kids.insured - kids.value * VaultLayout.INSURED.tray * (1.0 - Security.recover_share())) < 1.0, "insurance pays back part of a tray burglary")
 	# with the wall safe full and the tray empty, kids get nothing and pros usually crack it
 	for p in v.pieces:
 		p.area = VaultLayout.WALL
@@ -1920,7 +1923,8 @@ func _check_vault_layout() -> void:
 	expect(report.break_in and report.stolen.size() == 2, "burglars take only what's on the tray")
 	v.apply(report)
 	expect(Shop.count_of("XAG") == 0 and Shop.count_of("XAU") == 1, "stolen coins leave the stock")
-	expect(is_equal_approx(Shop.cash, before - cash[0].cash), "stolen cash leaves the till")
+	expect(is_equal_approx(Shop.cash, before - cash[0].cash + report.insured), "stolen cash leaves the till (the insurer pays for coins, not cash)")
+	expect(is_equal_approx(report.insured, tube.value * VaultLayout.INSURED.tray * (1.0 - Security.recover_share())), "insurance pays back part of the tube")
 	expect(Shop.stats.get("stolen", 0.0) > 0.0, "the loss is counted")
 	# a big silver stack packs into monster boxes
 	Shop.reset()
