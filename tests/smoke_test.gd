@@ -29,6 +29,7 @@ func _ready() -> void:
 	_check_vault_layout()
 	_check_market_events()
 	_check_customers()
+	_check_shop_sounds()
 	await _check_vault_scene()
 	await _check_shop_day()
 	await _check_jewellery_deals()
@@ -367,6 +368,24 @@ func _check_customers() -> void:
 	Shop.reset()
 
 
+func _check_shop_sounds() -> void:
+	var streams := [Sfx.door_bell(), Sfx.register_chime(), ShopSfx.service_bell(), ShopSfx.sparkle(), ShopSfx.wrong(), ShopSfx.whoosh()]
+	for take in 3:
+		streams.append(ShopSfx.coin_clink(take))
+	for mood in ShopSfx.MOODS:
+		streams.append(ShopSfx.voice(mood, 0.75))
+		streams.append(ShopSfx.voice(mood, 1.35))
+	var quiet := 0
+	for w in streams:
+		var loud := 0
+		for n in range(0, w.data.size() - 1, 64):
+			loud = maxi(loud, absi(w.data.decode_s16(n)))
+		if w.data.size() < 2000 or loud < 2000:
+			quiet += 1
+	expect(quiet == 0, "every shop sound renders and is audible (%d silent)" % quiet)
+	expect(ShopSfx.voice("happy", ShopSfx.pitch_for(12)) == ShopSfx.voice("happy", ShopSfx.pitch_for(12)), "a customer's voice is cached")
+
+
 func _check_shop_day() -> void:
 	Tutorial.skip_all() # the guided first day has its own check
 	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
@@ -399,9 +418,11 @@ func _check_shop_day() -> void:
 	shop._on_action("offer")
 	expect(Shop.cash < cash, "buying pays the seller")
 	expect(shop.pending_fakes.size() == 1, "fake purchase is pending assay")
+	expect(shop.fx.coins.size() > 0, "a deal sends coins flying across the counter")
 	shop.time += 9.0
 	shop._tick(0.0)
 	expect(shop.pending_fakes.is_empty() and Shop.stats.scammed == 1.0, "assay lab catches the fake")
+	expect(shop.fx.parts.any(func(p): return p.get("text", "") == "FAKE!"), "the assay lab's verdict pops up over the till")
 	# a tested genuine seller via the minigame verdict
 	var g := Customer.create(1, 2.5, Shop.coin_list(), rng)
 	g.kind = "seller"
