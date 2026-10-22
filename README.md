@@ -253,7 +253,7 @@ while the event is on, and the shop opens with its first customers already at th
 
 | Season | Event | When | Who walks in |
 | --- | --- | --- | --- |
-| Spring | **Tax season** | days 8-11 | Sellers raising cash for their tax bills, taking a little less. On the last day, **Tax Day** takes 10% of your deal profit since the last Tax Day (the morning panel shows the bill) |
+| Spring | **Tax season** | days 8-11 | Sellers raising cash for their tax bills, taking a little less. On the last day, **Tax Day** takes 10% of your profit since the last Tax Day after bills, wages, theft and upgrades, so buying upgrades before it cuts the bill (the morning panel shows it) |
 | Summer | **Gold fever week** | days 1-7 | The town's Prospector Days festival: gold buyers paying 4 points more, and some sellers cashing in |
 | Autumn | **Town coin show** | the second weekend | Collectors. Book a **booth** on the morning panel (the day before or on the day, $1,500 times your deal size) and more of them come, paying 4 points more, and your name grows |
 | Winter | **Holiday gift rush** | days 6-12 | Gift shoppers who want small coins and pay a good premium |

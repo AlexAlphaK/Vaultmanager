@@ -1203,8 +1203,10 @@ func _check_calendar() -> void:
 	Shop.cash = 20000.0
 	Calendar.taxable = 0.0
 	Day.begin_day()
-	Shop.note("profit", 12000.0)
-	Shop.note("profit", -2000.0)
+	# the days closed since the last Tax Day: deal profit, less every cost
+	Calendar._on_day_ended(10, {"lines": [], "stats": {"profit": 12000.0},
+		"ledger": [{"label": "Upkeep", "usd": -500.0}, {"label": "Bench", "usd": -1500.0}, {"label": "Refiner", "usd": 900.0}]})
+	expect(is_equal_approx(Calendar.taxable, 10000.0), "taxable profit is deal profit less bills and spending")
 	expect(is_equal_approx(Calendar.tax_due(), 1000.0) and int(Calendar.next_tax().day) == 11, "tax is 10% of the profit since the last Tax Day")
 	Day.open_shop()
 	Day.close_shop()
@@ -1212,7 +1214,8 @@ func _check_calendar() -> void:
 	expect(Day.ledger.any(func(l): return l.label == "Tax Day" and is_equal_approx(l.usd, -1000.0)), "Tax Day is paid when the shop closes")
 	expect(report.lines.any(func(l): return str(l).begins_with("Tax Day: you paid")), "the summary explains the tax")
 	expect(report.lines.any(func(l): return "tax season is over" in str(l)), "the summary closes the event")
-	expect(Calendar.taxable == 0.0 and int(Calendar.next_tax(12).day) == 67, "the next Tax Day is next spring")
+	expect(int(Calendar.next_tax(12).day) == 67, "the next Tax Day is next spring")
+	expect(Calendar.taxable < 0.0, "Tax Day's own bill is not a cost, the day's upkeep is (%.0f)" % Calendar.taxable)
 	# served event customers are counted, and the best rush earns an achievement
 	Shop.day = 48
 	Day.begin_day()

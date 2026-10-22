@@ -1,7 +1,8 @@
 extends Node
 ## The town's year: four seasons of two weeks each, and the town event each one brings.
 ##   Spring  tax season: folks sell metal to pay the taxman, then Tax Day takes its cut
-##           of your own profit since the last one.
+##           of your own profit since the last one, after bills and spending (so upgrades
+##           bought before Tax Day cut the bill).
 ##   Summer  gold fever week: the town's Prospector Days festival, and everyone wants gold.
 ##   Autumn  the town coin show on the second weekend: collectors everywhere. Book a booth
 ##           in the morning and even more of them come, paying more.
@@ -61,13 +62,14 @@ const EVENTS: Array[Dictionary] = [
 		"lines": ["A silver coin for my nephew's stocking, please.", "Something gold for my wife. Not too big, I'm not made of money.",
 			"Gift-wrapped, if you can. It's for my mum.", "Last-minute present. You're a lifesaver."]},
 ]
-## Share of your profit since the last Tax Day that Tax Day takes.
+## Share of your taxable profit (deal profit less every expense) that Tax Day takes.
 const TAX_RATE := 0.1
 ## A booth at the coin show, times the deal size.
 const BOOTH_COST := 1500.0
 const BOOTH_REPUTATION := 0.05
 
-## Profit (deal profit, as Shop.note("profit")) since the last Tax Day.
+## Deal profit less expenses (bills, wages, upgrades, losses) of the days closed since
+## the last Tax Day. A loss carries over.
 var taxable := 0.0
 ## Start day of the coin show you have a booth at, or 0.
 var booth_day := 0
@@ -86,7 +88,6 @@ func _ready() -> void:
 	reset()
 	SaveGame.register("calendar", to_dict, from_dict)
 	SaveGame.new_game_started.connect(reset)
-	Shop.noted.connect(_on_noted)
 	Day.day_started.connect(_on_day_started)
 	Day.shop_closed.connect(_on_shop_closed)
 	Day.day_ended.connect(_on_day_ended)
@@ -306,11 +307,6 @@ func tax_due() -> float:
 	return maxf(0.0, taxable) * TAX_RATE
 
 
-func _on_noted(key: String, amount: float) -> void:
-	if key == "profit":
-		taxable += amount
-
-
 func _on_shop_closed(day: int) -> void:
 	var e := event_on(day)
 	if not e.get("tax", false) or last_day(e, day) != day or not Tutorial.first_day_done:
@@ -318,7 +314,7 @@ func _on_shop_closed(day: int) -> void:
 	var due := tax_due()
 	if due >= 1.0:
 		Day.add_expense("Tax Day", due)
-		_report_lines.append("Tax Day: you paid %s, %d%% of your %s profit since the last one." % [
+		_report_lines.append("Tax Day: you paid %s, %d%% of your %s profit (after costs) since the last one." % [
 			Market.format_money(due), roundi(TAX_RATE * 100.0), Market.format_money(taxable)])
 	else:
 		_report_lines.append("Tax Day: no profit since the last one, so no tax to pay.")
@@ -336,6 +332,10 @@ func _on_day_started(day: int) -> void:
 
 ## The summary: tonight's tax, how the event went, and what tomorrow brings.
 func _on_day_ended(day: int, report: Dictionary) -> void:
+	taxable += float(report.get("stats", {}).get("profit", 0.0))
+	for entry in report.get("ledger", []):
+		if float(entry.usd) < 0.0 and entry.label != "Tax Day":
+			taxable += float(entry.usd)
 	report.lines.append_array(_report_lines)
 	_report_lines.clear()
 	if not Tutorial.first_day_done:
