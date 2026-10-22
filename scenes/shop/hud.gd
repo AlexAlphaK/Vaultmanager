@@ -7,6 +7,7 @@ signal open_requested
 signal next_day_requested
 signal new_game_requested
 signal menu_requested
+signal desk_requested
 
 const SIDE_X := 318
 const SIDE_W := 160
@@ -39,6 +40,9 @@ var _stock_values: Array[Label] = []
 var _log_lines: Array[Label] = []
 var _panels: DayPanels
 var _customer: Customer
+## The cash figure rolls towards Shop.cash and flashes green or red as it moves.
+var _cash_shown := NAN
+var _cash_flash := 0.0
 
 
 func _ready() -> void:
@@ -53,6 +57,7 @@ func _ready() -> void:
 	_panels.open_requested.connect(func(): open_requested.emit())
 	_panels.next_day_requested.connect(func(): next_day_requested.emit())
 	_panels.new_game_requested.connect(func(): new_game_requested.emit())
+	_panels.desk_requested.connect(func(): desk_requested.emit())
 	Market.prices_changed.connect(func(_p): _refresh())
 	Market.source_changed.connect(func(_s): _refresh())
 	Market.currency_changed.connect(func(_c): _refresh())
@@ -61,6 +66,18 @@ func _ready() -> void:
 	Shop.logged.connect(add_log)
 	_refresh()
 	show_customer(null, "Quiet for now. Customers arrive every few seconds.")
+
+
+func _process(delta: float) -> void:
+	if is_nan(_cash_shown) or is_equal_approx(_cash_shown, Shop.cash):
+		return
+	var gap := Shop.cash - _cash_shown
+	_cash_flash = signf(gap)
+	# most of the way in a third of a second, then snap
+	_cash_shown = Shop.cash if absf(gap) < 1.0 else _cash_shown + gap * minf(1.0, delta * 9.0)
+	_cash.text = Market.format_money(_cash_shown)
+	var settled := _cash_shown == Shop.cash
+	_cash.add_theme_color_override("font_color", Pal.INK if settled else (Pal.GOOD if _cash_flash > 0.0 else Pal.BAD))
 
 
 func set_clock(day: int, minutes: int, closing: bool, rush := false) -> void:
@@ -147,7 +164,9 @@ func _refresh() -> void:
 	var full := int(Shop.reputation)
 	var half := Shop.reputation - full >= 0.5
 	_stars.text = "★".repeat(full) + ("☆" if half else "") + "  %.1f" % Shop.reputation
-	_cash.text = Market.format_money(Shop.cash)
+	if is_nan(_cash_shown):
+		_cash_shown = Shop.cash
+	_cash.text = Market.format_money(_cash_shown)
 	_stock_value.text = Market.format_money(Shop.vault_value())
 	var net := Shop.net_worth()
 	_net.text = Market.format_money(net)
@@ -366,7 +385,9 @@ func _button(text: String, r: Rect2, variation: String, id: String) -> Button:
 	b.position = r.position
 	b.size = r.size
 	b.focus_mode = Control.FOCUS_NONE
-	b.pressed.connect(func(): action.emit(id))
+	b.pressed.connect(func():
+		Sfx.play(self, Sfx.click(), -14.0)
+		action.emit(id))
 	return b
 
 

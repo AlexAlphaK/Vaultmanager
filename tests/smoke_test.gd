@@ -2,7 +2,8 @@ extends Node
 ## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test, the vault lock-up,
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, counter, bench
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
-## ledger of records and achievements, and robberies (hold-ups and burglar crews). Run:
+## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
+## shops on the town map, and the trading desk. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -28,6 +29,7 @@ func _ready() -> void:
 	_check_vault_layout()
 	_check_market_events()
 	_check_customers()
+	_check_shop_sounds()
 	await _check_vault_scene()
 	await _check_shop_day()
 	await _check_jewellery_deals()
@@ -38,8 +40,10 @@ func _ready() -> void:
 	_check_rush_hours()
 	await _check_rush_day()
 	await _check_shop_upgrades()
+	await _check_trading_desk()
 	_check_burglar_crews()
 	await _check_holdups()
+	await _check_rivals()
 	_check_settings()
 	_check_music()
 	await _check_menus()
@@ -366,6 +370,24 @@ func _check_customers() -> void:
 	Shop.reset()
 
 
+func _check_shop_sounds() -> void:
+	var streams := [Sfx.door_bell(), Sfx.register_chime(), ShopSfx.service_bell(), ShopSfx.sparkle(), ShopSfx.wrong(), ShopSfx.whoosh()]
+	for take in 3:
+		streams.append(ShopSfx.coin_clink(take))
+	for mood in ShopSfx.MOODS:
+		streams.append(ShopSfx.voice(mood, 0.75))
+		streams.append(ShopSfx.voice(mood, 1.35))
+	var quiet := 0
+	for w in streams:
+		var loud := 0
+		for n in range(0, w.data.size() - 1, 64):
+			loud = maxi(loud, absi(w.data.decode_s16(n)))
+		if w.data.size() < 2000 or loud < 2000:
+			quiet += 1
+	expect(quiet == 0, "every shop sound renders and is audible (%d silent)" % quiet)
+	expect(ShopSfx.voice("happy", ShopSfx.pitch_for(12)) == ShopSfx.voice("happy", ShopSfx.pitch_for(12)), "a customer's voice is cached")
+
+
 func _check_shop_day() -> void:
 	Tutorial.skip_all() # the guided first day has its own check
 	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
@@ -398,9 +420,11 @@ func _check_shop_day() -> void:
 	shop._on_action("offer")
 	expect(Shop.cash < cash, "buying pays the seller")
 	expect(shop.pending_fakes.size() == 1, "fake purchase is pending assay")
+	expect(shop.fx.coins.size() > 0, "a deal sends coins flying across the counter")
 	shop.time += 9.0
 	shop._tick(0.0)
 	expect(shop.pending_fakes.is_empty() and Shop.stats.scammed == 1.0, "assay lab catches the fake")
+	expect(shop.fx.parts.any(func(p): return p.get("text", "") == "FAKE!"), "the assay lab's verdict pops up over the till")
 	# a tested genuine seller via the minigame verdict
 	var g := Customer.create(1, 2.5, Shop.coin_list(), rng)
 	g.kind = "seller"
@@ -969,6 +993,119 @@ func _check_orders() -> void:
 		expect(col.fixed_price() and col.sale_total() > double.melt_value() * 1.3, "collectors pay well for a rare coin")
 	shop.queue_free()
 	SaveGame.new_game()
+## The rival shops: who wins the town's customers, Sterling's repricing, the rivals'
+## moves and your answers, their books and the town map.
+func _check_rivals() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Day.begin_day()
+	var share := Rivals.overall_share()
+	expect(share > 0.4 and share < 0.65, "a new shop gets about a fair share of the town (%.2f)" % share)
+	expect(Rivals.traffic_factor() >= 1.0 and Rivals.traffic_factor() <= Rivals.MAX_BOOST, "the traffic factor stays in range")
+	var sellers := Rivals.share("seller")
+	Shop.set_buy_percent(0.95)
+	expect(Rivals.share("seller") > sellers, "paying sellers more wins more of them")
+	Shop.set_buy_percent(0.9)
+	var buyers := Rivals.share("buyer")
+	Shop.set_sell_premium(0.03)
+	expect(Rivals.share("buyer") > buyers, "a smaller premium wins more buyers")
+	Shop.set_sell_premium(0.06)
+	Shop.reputation = 4.5
+	expect(Rivals.overall_share() > share, "stars win customers too")
+	expect(Rivals.share("seller", "shady") < Rivals.share("seller"), "shady sellers drift to the pawn shop")
+	# terrible prices and a bad name send people across the street
+	Shop.reputation = 0.5
+	Shop.set_buy_percent(0.7)
+	Shop.set_sell_premium(0.2)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	var c := Customer.create(5, 0.5, Shop.coin_list(), rng)
+	expect(Rivals.divert_odds(c) > 0.3, "a bad deal sends customers to the rivals")
+	c.regular_id = "lev"
+	expect(Rivals.divert_odds(c) == 0.0, "regulars always come in")
+	c.regular_id = ""
+	c.event_id = "news"
+	expect(Rivals.divert_odds(c) == 0.0, "customers a headline sent always come in")
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	shop.coach.skip()
+	shop._open_shop()
+	shop.rng.seed = 3
+	for n in 40:
+		shop._spawn()
+		shop.queue.clear()
+	var lost := int(Shop.stats.get("lost_to_rival", 0.0))
+	expect(lost >= 8, "the shop loses customers to the rivals (%d of 40)" % lost)
+	expect(int(Rivals.lost_today.get("sterling", 0)) + int(Rivals.lost_today.get("pawn", 0)) == lost, "each lost customer is booked to a rival")
+	# the rivals' books: they grow, and the summary says where the customers went
+	var worth := Rivals.worth_of("sterling")
+	var report := {"lines": []}
+	Rivals._on_day_ended(Shop.day, report)
+	expect(Rivals.worth_of("sterling") > worth, "Sterling grows overnight")
+	expect(report.lines.any(func(l): return "went to the competition" in l), "the summary counts customers lost to rivals")
+	shop.queue_free()
+	await get_tree().process_frame
+	# Sterling reprices against a winning shop, once per morning
+	Shop.reputation = 4.0
+	Shop.set_buy_percent(0.9)
+	Shop.set_sell_premium(0.06)
+	Rivals.last_share = 0.8
+	var margin := Rivals.buy_of("sterling") - Rivals.premium_of("sterling")
+	Shop.day += 1
+	Day.begin_day()
+	var after := Rivals.buy_of("sterling") - Rivals.premium_of("sterling")
+	expect(is_equal_approx(after, margin + 0.01) or Rivals.move_of("sterling") == "price_war", "Sterling cuts a point when you are winning")
+	var ad_cost := Rivals.ad_cost()
+	Day.begin_day()
+	expect(is_equal_approx(Rivals.buy_of("sterling") - Rivals.premium_of("sterling"), after), "replaying a morning does not reprice twice")
+	# moves: a price war beats your board, and Beat Sterling answers it
+	Rivals.state.sterling.move = "price_war"
+	Rivals.state.sterling.move_days = 3
+	expect(Rivals.buy_of("sterling") == 0.92 and Rivals.premium_of("sterling") == 0.03, "a price war pays 92% and sells at +3%")
+	var warred := Rivals.overall_share()
+	Rivals.beat_sterling()
+	expect(Shop.buy_percent == 0.93 and Shop.sell_premium == 0.02, "Beat Sterling sets your board a point better")
+	expect(Rivals.overall_share() > warred, "beating Sterling's prices wins customers back")
+	# a newspaper ad
+	Shop.cash = 50000.0
+	expect(Rivals.run_ad() and is_equal_approx(Shop.cash, 50000.0 - ad_cost) and Rivals.ad_days == Rivals.AD_DAYS, "run a newspaper ad")
+	expect(not Rivals.can_run_ad(), "one ad at a time")
+	# the pawn shop's fencing racket and the tip-off
+	Rivals.state.pawn.move = ""
+	expect(not Rivals.can_tip_off(), "nothing to tip off about yet")
+	Rivals.state.pawn.move = "fencing"
+	Rivals.state.pawn.move_days = 4
+	var stars := Shop.reputation
+	expect(Rivals.tip_off(), "tip off the police")
+	expect(not Rivals.is_open("pawn") and Shop.reputation > stars, "the raid shuts Lucky's and your name grows")
+	expect(Records.is_earned("tip_off"), "the tip earns Good citizen")
+	var no_pawn := Rivals.share("seller", "shady")
+	expect(no_pawn > 0.3, "with Lucky's shut, shady sellers come to you")
+	# save and load
+	var saved := Rivals.to_dict()
+	Rivals.reset()
+	Rivals.from_dict(JSON.parse_string(JSON.stringify(saved)))
+	expect(not Rivals.is_open("pawn") and Rivals.ad_days == Rivals.AD_DAYS and Rivals.move_of("sterling") == "price_war", "the rivals save and load")
+	# passing the rivals in net worth
+	Shop.cash = 1000000.0
+	report = {"lines": []}
+	Rivals._on_day_ended(Shop.day, report)
+	Records.check()
+	expect(Rivals.passed.has("sterling") and Rivals.passed.has("pawn") and Rivals.rank() == 1, "a millionaire shop passes both rivals")
+	expect(Records.is_earned("pass_sterling") and Records.is_earned("pass_pawn"), "passing the rivals earns achievements")
+	expect(report.lines.any(func(l): return "bigger than Sterling" in l), "the summary celebrates passing Sterling")
+	# the town map paints in every state, and the page builds
+	for view in [{}, {"tier": 3, "pawn_closed": true, "sterling_move": "price_war"}, {"pawn_move": "fencing"}, {"pawn_move": "clearance"}]:
+		var town := TownArt.paint(view)
+		expect(town.width == TownArt.SIZE.x and town.height == TownArt.SIZE.y, "the town map paints")
+	var panels := DayPanels.new()
+	add_child(panels)
+	panels.show_town()
+	expect(panels.visible and panels.page == "town", "the town map page opens")
+	panels.queue_free()
+	SaveGame.new_game()
+	expect(Rivals.is_open("pawn") and Rivals.passed.is_empty() and Rivals.ad_days == 0, "a new game resets the rivals")
 
 
 func _check_rush_hours() -> void:
@@ -1329,6 +1466,97 @@ func _check_shop_upgrades() -> void:
 	shop.queue_free()
 	await get_tree().process_frame
 	SaveGame.new_game()
+
+
+func _check_trading_desk() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	# a tape runs from 24h ago to its close
+	var tape := DeskSession.tape(100.0, 103.0, 0.02, rng)
+	expect(tape.size() == DeskSession.STEPS + 1 and is_equal_approx(tape[0], 100.0) and absf(tape[DeskSession.STEPS] - 103.0) < 0.001,
+		"a desk tape starts at the open and ends at the close")
+	var crypto := Market.crypto.duplicate(true)
+	var stocks := Market.stocks.duplicate(true)
+	Market.crypto = {"BTC": {"price": 100000.0, "change_pct": 4.0}, "ETH": {"price": 4000.0, "change_pct": -2.0}, "DOGE": {"price": 0.2, "change_pct": 1.0}}
+	Market.stocks = {"SPY": {"price": 650.0, "change_pct": 0.5}}
+	var s := DeskSession.from_market(rng)
+	var syms := s.board.map(func(r): return r.sym)
+	expect(syms == ["XAU", "XAG", "XPT", "BTC", "ETH", "SPY"], "the board lists the metals, two cryptos and the live stocks")
+	var btc := syms.find("BTC")
+	expect(absf(s.price(btc) - 100000.0 / 1.04) < 0.01, "bitcoin's tape opens where it stood 24 hours ago")
+	Market.crypto = crypto
+	Market.stocks = stocks
+	expect(is_equal_approx(s.limit, DeskSession.BASE_LIMIT * Progress.deal_size()), "the desk's limit follows the deal size")
+	# trading within the limit
+	expect(is_equal_approx(s.trade(btc, s.limit * 0.6), s.limit * 0.6), "buy bitcoin with 60% of the limit")
+	expect(s.trade(0, -s.limit) < -0.0 and absf(s.exposure() - s.limit) < 0.01, "a short is cut down to what the limit leaves")
+	expect(absf(s.trade(1, 1000.0)) < 0.01, "nothing more fits at the limit")
+	s.flatten(0)
+	expect(absf(s.position(0)) < 0.01 and s.pnl_of(0) < 0.0, "closing a position at the same price costs its fees")
+	s.started = true
+	s.advance(DeskSession.SECONDS / 2.0)
+	expect(s.step() == DeskSession.STEPS / 2 and not s.is_over(), "the clock runs once the bell rings")
+	var expected := s.pnl() - absf(s.position(btc)) * DeskSession.FEE.crypto
+	s.flatten_all()
+	expect(absf(s.exposure()) < 0.01 and absf(s.pnl() - expected) < 0.01, "closing out books the open profit, less the fee")
+	expect(absf(s.pnl() - (s.board[btc].flow + s.board[0].flow)) < 0.01, "once flat, the profit is the cash in and out")
+	expect(s.advance(DeskSession.SECONDS) and s.is_over(), "the closing bell ends the session")
+	# hedging the vault: a full hedge cancels the vault's paper move, fees aside
+	var h := DeskSession.new()
+	h.limit = 10000000.0
+	h.vault_oz = {"XAU": 10.0}
+	h.add("XAU", "metal", 4000.0, -8.0, 0.012, rng)
+	h.add("BTC", "crypto", 100000.0, 2.0, 0.04, rng)
+	h.hedge_vault()
+	expect(absf(h.position(0) + 10.0 * h.price(0)) < 0.01 and absf(h.position(1)) < 0.01, "hedge vault shorts the vault's gold ounce for ounce")
+	h.started = true
+	h.advance(DeskSession.SECONDS)
+	expect(absf(h.vault_swing() + h.metal_pnl()) < 10.0 * h.open_price(0) * DeskSession.FEE.metal * 1.01 and h.hedge_cover() > 0.95,
+		"the hedge makes back what the vault loses on paper")
+	h.limit = 10000.0
+	h.flatten_all()
+	h.elapsed = 0.0
+	h.hedge_vault()
+	expect(absf(h.exposure() - h.limit * DeskSession.HEDGE_SHARE) < 0.01, "a hedge uses at most half the desk's limit")
+	# the room, one session a morning, and the ledger
+	DeskSession.hook_up()
+	expect(not DeskSession.available(), "no desk before the room is built")
+	Shop.cash = 1000000.0
+	Progress.tier = 1
+	expect(not Progress.can_buy("trading_desk"), "the trading desk waits for the bullion house")
+	Progress.tier = 2
+	expect(Progress.buy("trading_desk"), "build the trading desk")
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	expect(DeskSession.available(), "the desk opens in the morning")
+	var opened := []
+	shop.desk_opened.connect(func(d): opened.append(d))
+	shop.open_desk()
+	expect(opened.size() == 1 and shop._desk != null, "the morning panel opens the trading desk")
+	var desk: TradingDesk = shop._desk
+	desk._process(0.1)
+	expect(desk.session.board.size() >= 3 and desk.session.vault_oz == Shop.ounces_by_metal(), "the desk reads the board and the vault")
+	desk.select(0)
+	desk.buy()
+	expect(desk.session.position(0) > 0.0, "Buy goes long the selected row")
+	desk.ring_bell()
+	desk._process(DeskSession.SECONDS + 1.0)
+	expect(desk.closed and absf(desk.session.exposure()) < 0.01, "at the bell every position closes")
+	var booked := Day.ledger.filter(func(e): return e.label == "Trading desk")
+	expect(booked.size() == 1 and absf(absf(booked[0].usd) - absf(desk.session.pnl())) < 0.01, "the result goes on today's ledger")
+	expect(DeskSession.last_day == Shop.day and not DeskSession.available(), "one session a morning")
+	desk.finished.emit(desk.session.pnl())
+	expect(shop._desk == null and shop.hud._panels.page == "morning", "the desk closes back to the morning")
+	expect(SaveGame.save_game(), "save after trading")
+	DeskSession.from_dict({})
+	expect(SaveGame.load_game() and DeskSession.last_day == Shop.day, "the desk's day is saved")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.new_game()
+	expect(DeskSession.last_day == 0 and DeskSession.lifetime == 0.0, "a new game resets the desk")
 
 
 func _bar_seller(rng: RandomNumberGenerator, spec_id: String, fake: String) -> Customer:

@@ -226,7 +226,7 @@ func accept(c: Customer) -> void:
 	_next_id += 1
 	open.append(o)
 	Shop.log_event("%s ordered %d × %s by %s. Pays %s." % [o.name, o.qty, item_of(o).display_name,
-		Day.weekday(int(o.due)), Market.format_money(price_of(o))], "good")
+		Day.weekday(int(o.due)), Market.format_money(price_of(o))])
 	changed.emit()
 
 

@@ -77,8 +77,9 @@ var upgrades := {
 		"effects": {"calm_queue": 0.5}},
 	"workshop": {"name": "Refining workshop", "cost": 50000.0, "tier": 2, "line": "room",
 		"desc": "Melt scrap in-house: the refiner pays 6% more for the jewellery you buy.", "effects": {"refine": 0.06}},
-	"trading_desk": {"name": "Bullion trading desk", "cost": 150000.0, "tier": 3, "line": "room",
-		"desc": "A dealing room for investors and estates: every customer brings 25% more.", "effects": {"deal_size": 0.25}},
+	"trading_desk": {"name": "Bullion trading desk", "cost": 75000.0, "tier": 2, "line": "room",
+		"desc": "A dealing room with live screens. Each morning, trade metals, stocks and crypto and hedge your vault. Investors bring 25% more.",
+		"effects": {"deal_size": 0.25}},
 }
 
 var tier := 0

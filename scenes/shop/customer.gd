@@ -213,7 +213,7 @@ func hear_price(premium: float) -> bool:
 	elif archetype == "collector":
 		say = "I pay well for quality, but not that well. %d%% over." % over
 	else:
-		say = "The chain store downtown is cheaper." if tries > 1 else \
+		say = "Sterling across the street is cheaper." if tries > 1 else \
 			"Spot plus %d%%? I'd pay maybe %d%% over." % [roundi(premium * 100.0), over]
 	return false
 
