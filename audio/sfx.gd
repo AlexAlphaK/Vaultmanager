@@ -33,12 +33,14 @@ static func scale_beep() -> AudioStreamWAV:
 	return _cached("beep", func(): return _tone([[2400.0, 0.0, 0.07]], 0.25))
 
 
+## The register: drawer, bell and coins (ShopSfx.ka_ching).
 static func register_chime() -> AudioStreamWAV:
-	return _cached("chime", func(): return _tone([[1568.0, 0.0, 0.5], [2093.0, 0.09, 0.6]], 0.22))
+	return ShopSfx.ka_ching()
 
 
+## The bell on its spring over the shop door (ShopSfx.door_bell).
 static func door_bell() -> AudioStreamWAV:
-	return _cached("bell", func(): return _tone([[2637.0, 0.0, 0.6], [1975.0, 0.12, 0.7]], 0.15))
+	return ShopSfx.door_bell()
 
 
 static func click() -> AudioStreamWAV:
