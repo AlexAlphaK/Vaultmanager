@@ -4,6 +4,7 @@ extends Node
 
 signal changed
 signal logged(text: String, mood: String) # mood: "", "good" or "bad"
+signal noted(key: String, amount: float) # every note() of a deal, for the Records ledger
 
 const COIN_DIR := "res://data/coins/"
 ## Stars won or lost at the counter. Tuned with tests/balance_sim.tscn so a careful
@@ -189,6 +190,7 @@ func set_sell_premium(value: float) -> void:
 
 func note(key: String, amount := 1.0) -> void:
 	stats[key] = stats.get(key, 0.0) + amount
+	noted.emit(key, amount)
 
 
 func log_event(text: String, mood := "") -> void:

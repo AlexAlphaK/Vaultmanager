@@ -1,6 +1,6 @@
 extends Control
 ## The title screen and the game's main scene: the shop at dusk under the night sky,
-## the logo, a live price ticker, and Continue / New game / Settings / Quit.
+## the logo, a live price ticker, and Continue / Save slots / New game / Settings / Quit.
 
 const ShopScene := "res://scenes/shop/shop.tscn"
 const SHOP_POS := Vector2(2, 22)
@@ -26,11 +26,12 @@ var _continue: Button
 var _new: Button
 var _save_info: Label
 var _settings: SettingsPanel
+var _slots: SaveSlotsPanel
 var _dim: ColorRect
 var _fade: ColorRect
-var _confirm_new := false
 var _leaving := false
 var _save := {}
+var _continue_slot := 0
 
 
 func _ready() -> void:
@@ -139,18 +140,24 @@ func _build_menu() -> void:
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub.position = Vector2(COLUMN_X - 10, 68)
 	sub.size = Vector2(COLUMN_W + 20, 8)
+	_build_buttons()
 
+
+## The button column. Rebuilt after the slots page closes, since a slot may be gone.
+func _build_buttons() -> void:
 	_menu = VBoxContainer.new()
 	_menu.add_theme_constant_override("separation", 4)
 	_menu.position = Vector2(COLUMN_X + 22, 92)
 	_menu.size = Vector2(COLUMN_W - 44, 0)
 	add_child(_menu)
-	_save = SaveGame.peek()
+	_continue_slot = SaveGame.continue_slot()
+	_save = SaveGame.peek(_continue_slot) if _continue_slot else {}
 	_continue = _menu_button("Continue", _on_continue)
 	_save_info = Label.new()
 	_save_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_save_info.add_theme_color_override("font_color", Pal.INK_DIM)
 	_menu.add_child(_save_info)
+	_menu_button("Save slots", _open_slots)
 	_new = _menu_button("New game", _on_new_game)
 	_menu_button("Settings", _open_settings)
 	if not OS.has_feature("web"):
@@ -161,7 +168,7 @@ func _build_menu() -> void:
 		_save_info.text = "No saved shop yet"
 		_new.grab_focus.call_deferred()
 	else:
-		_save_info.text = "Day %d · %s" % [_save.day, Progress.tier_name(clampi(_save.tier, 0, Progress.TIERS.size() - 1))]
+		_save_info.text = "Day %d · %s" % [_save.day + (1 if _save.day_over else 0), Progress.tier_name(clampi(_save.tier, 0, Progress.TIERS.size() - 1))]
 		_continue.grab_focus.call_deferred()
 
 
@@ -181,38 +188,61 @@ func _menu_button(text: String, on_press: Callable) -> Button:
 
 
 func _on_continue() -> void:
+	SaveGame.set_slot(_continue_slot)
 	_go_to_shop()
 
 
+## Starts in the first empty slot, so a new shop never erases an old one. With every
+## slot taken it opens the slots page to pick one to delete.
 func _on_new_game() -> void:
-	if not _save.is_empty() and not _confirm_new:
-		_confirm_new = true
-		_new.text = "Sure? Erases day %d" % _save.day
-		_new.theme_type_variation = "DangerButton"
+	var n := SaveGame.first_empty_slot()
+	if n == 0:
+		_open_slots("Every slot is full. Delete one to start a new shop.")
 		return
-	SaveGame.new_game()
+	_start_slot(n, true)
+
+
+func _start_slot(n: int, fresh: bool) -> void:
+	SaveGame.set_slot(n)
+	if fresh:
+		SaveGame.new_game()
 	_go_to_shop()
 
 
 func _open_settings() -> void:
+	_settings = SettingsPanel.new()
+	_open_overlay(_settings)
+	_settings.closed.connect(_close_overlay)
+
+
+func _open_slots(hint := "") -> void:
+	_slots = SaveSlotsPanel.new(hint)
+	_open_overlay(_slots)
+	_slots.closed.connect(_close_overlay)
+	_slots.chosen.connect(_start_slot)
+
+
+func _open_overlay(panel: Control) -> void:
 	_menu.visible = false
 	_dim = ColorRect.new()
 	_dim.color = Color(0.03, 0.02, 0.05, 0.6)
 	_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(_dim)
 	move_child(_dim, _fade.get_index())
-	_settings = SettingsPanel.new()
-	add_child(_settings)
-	move_child(_settings, _fade.get_index())
-	_settings.closed.connect(_close_settings)
+	add_child(panel)
+	move_child(panel, _fade.get_index())
 
 
-func _close_settings() -> void:
-	_settings.queue_free()
+func _close_overlay() -> void:
+	for panel in [_settings, _slots]:
+		if panel:
+			panel.queue_free()
 	_settings = null
+	_slots = null
 	_dim.queue_free()
-	_menu.visible = true
-	(_continue if not _continue.disabled else _new).grab_focus()
+	_menu.queue_free()
+	_build_buttons()
+	move_child(_menu, _fade.get_index())
 
 
 func _go_to_shop() -> void:

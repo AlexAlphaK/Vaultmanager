@@ -1,7 +1,8 @@
 class_name DayPanels
 extends PanelContainer
 ## The panels over the shop floor between shop hours: the morning briefing, the
-## upgrades, staff and expansion page, the floor plan where rooms are built, and the
+## upgrades, staff and expansion page, the floor plan where rooms are built, the ledger
+## of records and achievements, and the
 ## end-of-day summary. Rebuilt each time one opens.
 
 signal open_requested
@@ -11,7 +12,7 @@ signal new_game_requested
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
-var page := "" # "morning", "upgrades", "plan", "summary" or "" when hidden
+var page := "" # "morning", "upgrades", "plan", "ledger", "achievements", "summary" or "" when hidden
 ## The morning's Open the shop button, for the tutorial to point at.
 var open_button: Button
 var _box: VBoxContainer
@@ -30,6 +31,7 @@ func _ready() -> void:
 	Progress.changed.connect(_refresh_page)
 	Shop.changed.connect(_refresh_page)
 	Staff.changed.connect(_refresh_page)
+	Records.changed.connect(_refresh_page)
 
 
 func hide_panel() -> void:
@@ -53,6 +55,16 @@ func show_plan() -> void:
 	_build_plan()
 
 
+func show_ledger() -> void:
+	page = "ledger"
+	_build_ledger()
+
+
+func show_achievements() -> void:
+	page = "achievements"
+	_build_achievements()
+
+
 func show_summary(report: Dictionary) -> void:
 	page = "summary"
 	_build_summary(report)
@@ -66,6 +78,12 @@ func _refresh_page() -> void:
 		_build_upgrades()
 	elif page == "plan":
 		_build_plan()
+
+
+	elif page == "ledger":
+		_build_ledger()
+	elif page == "achievements":
+		_build_achievements()
 
 
 func _clear() -> void:
@@ -115,6 +133,7 @@ func _build_morning() -> void:
 	var count := Progress.available_upgrades().size() + Staff.ROLES.size() - Staff.hired.size()
 	var expand_ready := Progress.expand_blocker() == "" and not Progress.is_top_tier()
 	_button(row, "Upgrades (%d)%s" % [count, " !" if expand_ready else ""], "Button", show_upgrades)
+	_button(row, "Ledger", "Button", show_ledger)
 	_button(row, "Sure? Click again" if _confirm_new else "New game", "DangerButton", _on_new_game)
 
 
@@ -289,6 +308,73 @@ func _upgrade_row(grid: GridContainer, title: String, cost: float, enabled: bool
 	b.mouse_entered.connect(hover)
 	name_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	name_label.mouse_entered.connect(hover)
+
+
+# ---------------------------------------------------------------- ledger
+
+func _build_ledger() -> void:
+	_clear()
+	_title("The ledger")
+	_text("%d day%s of trading. %d of %d achievements earned." % [Records.totals.days, "" if Records.totals.days == 1 else "s",
+		Records.earned.size(), Records.ACHIEVEMENTS.size()], Pal.INK_DIM)
+	_gap()
+	var grid := _grid()
+	_pair(grid, "Deals closed (buys / sales)", "%d / %d" % [Records.total("buys"), Records.total("sales")])
+	_pair(grid, "Bought from customers", Market.format_money(Records.total("bought")))
+	_pair(grid, "Sold to customers", Market.format_money(Records.total("sold")))
+	var profit := Records.total("profit")
+	_pair(grid, "Lifetime profit", Market.format_money(profit), Pal.GOOD if profit >= 0.0 else Pal.BAD)
+	_pair(grid, "Fakes caught / missed", "%d / %d (%d%%)" % [Records.total("caught"), Records.total("scammed"), roundi(Records.catch_rate() * 100.0)])
+	_pair(grid, "Lost to thieves", Market.format_money(Records.total("stolen")), Pal.BAD if Records.total("stolen") > 0.0 else Pal.INK)
+	_pair(grid, "Highest net worth", Market.format_money(Records.peaks.worth), Pal.GOLD)
+	_pair(grid, "Best reputation", "%.1f stars" % Records.peaks.rep)
+	_pair(grid, "Profit streak", "%d day%s (best %d)" % [Records.streak, "" if Records.streak == 1 else "s", Records.peaks.streak])
+	_gap()
+	_heading("BEST DAYS")
+	if Records.best_days.is_empty():
+		_text("Close a day in profit to start the list.", Pal.INK_FAINT)
+	else:
+		var best := _grid()
+		for entry in Records.best_days.slice(0, 3):
+			var d := int(entry.day)
+			_pair(best, "Day %d, %s · %d fake%s caught" % [d, Day.weekday(d), int(entry.caught), "" if int(entry.caught) == 1 else "s"],
+				"+" + Market.format_money(entry.profit), Pal.GOOD)
+	_spacer()
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	_box.add_child(row)
+	_button(row, "Back", "Button", show_morning)
+	_button(row, "Achievements (%d/%d)" % [Records.earned.size(), Records.ACHIEVEMENTS.size()], "PrimaryButton", show_achievements)
+
+
+func _build_achievements() -> void:
+	_clear()
+	_title("Achievements")
+	_text("%d of %d earned. Hover one to see how to earn it." % [Records.earned.size(), Records.ACHIEVEMENTS.size()], Pal.INK_DIM)
+	_gap()
+	var grid := _grid()
+	for id in Records.ACHIEVEMENTS:
+		var a: Dictionary = Records.ACHIEVEMENTS[id]
+		var done := Records.is_earned(id)
+		var label := _cell(grid, ("★ " if done else "☆ ") + a.name, Pal.GOLD if done else Pal.INK_FAINT)
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.mouse_filter = Control.MOUSE_FILTER_PASS
+		var desc: String = a.desc
+		if done:
+			desc += " Earned on day %d." % Records.earned[id]
+		else:
+			desc += " %d%% there." % floori(Records.progress_of(id) * 100.0)
+		label.tooltip_text = desc
+		label.mouse_entered.connect(func():
+			if _hint:
+				_hint.text = desc)
+	_spacer()
+	_hint = _text("", Pal.INK)
+	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_hint.custom_minimum_size = Vector2(0, 17)
+	var row := HBoxContainer.new()
+	_box.add_child(row)
+	_button(row, "Back", "Button", show_ledger)
 
 
 # ---------------------------------------------------------------- summary
