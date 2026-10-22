@@ -1,8 +1,8 @@
 class_name DayPanels
 extends PanelContainer
 ## The panels over the shop floor between shop hours: the morning briefing, the
-## upgrades, staff and expansion page, the floor plan where rooms are built, the ledger
-## of records and achievements, and the
+## upgrades, staff and expansion page, the floor plan where rooms are built, the town
+## map with the rival shops, the ledger of records and achievements, and the
 ## end-of-day summary. Rebuilt each time one opens.
 
 signal open_requested
@@ -12,7 +12,7 @@ signal new_game_requested
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
-var page := "" # "morning", "upgrades", "plan", "wholesale", "ledger", "achievements", "summary" or "" when hidden
+var page := "" # "morning", "upgrades", "plan", "wholesale", "town", "ledger", "achievements", "summary" or "" when hidden
 ## The morning's Open the shop button, for the tutorial to point at.
 var open_button: Button
 var _box: VBoxContainer
@@ -33,6 +33,7 @@ func _ready() -> void:
 	Staff.changed.connect(_refresh_page)
 	Wholesaler.changed.connect(_refresh_page)
 	Records.changed.connect(_refresh_page)
+	Rivals.changed.connect(_refresh_page)
 
 
 func hide_panel() -> void:
@@ -61,6 +62,11 @@ func show_wholesale() -> void:
 	_build_wholesale()
 
 
+func show_town() -> void:
+	page = "town"
+	_build_town()
+
+
 func show_ledger() -> void:
 	page = "ledger"
 	_build_ledger()
@@ -86,6 +92,8 @@ func _refresh_page() -> void:
 		_build_plan()
 	elif page == "wholesale":
 		_build_wholesale()
+	elif page == "town":
+		_build_town()
 	elif page == "ledger":
 		_build_ledger()
 	elif page == "achievements":
@@ -107,6 +115,8 @@ func _build_morning() -> void:
 	_text("%s · morning. Set your prices on the right, then open up." % Progress.tier_name(), Pal.INK_DIM)
 	_text(_market_hint(), Pal.INK)
 	_text(RushHours.summary(Shop.day), Pal.WARN)
+	if not Rivals.news.is_empty():
+		_text("Town: " + Rivals.news[0], Pal.WARN).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_gap()
 	_heading("BILLS")
 	var grid := _grid()
@@ -131,16 +141,20 @@ func _build_morning() -> void:
 		_requirement(req, "Reputation", Shop.reputation, next.need_rep, false)
 		_requirement(req, "Cash to move", Shop.cash, next.cost, true)
 	_spacer()
+	var pages := HBoxContainer.new()
+	pages.add_theme_constant_override("separation", 4)
+	_box.add_child(pages)
+	var count := Progress.available_upgrades().size() + Staff.ROLES.size() - Staff.hired.size()
+	var expand_ready := Progress.expand_blocker() == "" and not Progress.is_top_tier()
+	_button(pages, "Upgrades (%d)%s" % [count, " !" if expand_ready else ""], "Button", show_upgrades)
+	_button(pages, "Restock", "Button", show_wholesale).tooltip_text = "Buy coins from the wholesaler before you open."
+	_button(pages, "Town map%s" % (" !" if not Rivals.news.is_empty() else ""), "Button", show_town).tooltip_text = "The rival shops, their prices and what they are up to."
+	_button(pages, "Ledger", "Button", show_ledger)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
 	_box.add_child(row)
 	open_button = _button(row, "Open the shop", "PrimaryButton", func(): open_requested.emit())
 	open_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var count := Progress.available_upgrades().size() + Staff.ROLES.size() - Staff.hired.size()
-	var expand_ready := Progress.expand_blocker() == "" and not Progress.is_top_tier()
-	_button(row, "Upgrades (%d)%s" % [count, " !" if expand_ready else ""], "Button", show_upgrades)
-	_button(row, "Restock", "Button", show_wholesale).tooltip_text = "Buy coins from the wholesaler before you open."
-	_button(row, "Ledger", "Button", show_ledger)
 	_button(row, "Sure? Click again" if _confirm_new else "New game", "DangerButton", _on_new_game)
 
 
@@ -355,6 +369,88 @@ func _build_wholesale() -> void:
 	var row := HBoxContainer.new()
 	_box.add_child(row)
 	_button(row, "Back", "Button", show_morning)
+
+
+# ---------------------------------------------------------------- town map
+
+func _build_town() -> void:
+	_clear()
+	_title("Town map")
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	_box.add_child(row)
+	var ranks := {}
+	var ranking := Rivals.ranking()
+	for n in ranking.size():
+		ranks[ranking[n].id] = n + 1
+	var map := TextureRect.new()
+	map.texture = TownArt.paint({"tier": Progress.tier, "ranks": ranks, "sterling_move": Rivals.move_of("sterling"),
+		"pawn_move": Rivals.move_of("pawn"), "pawn_closed": not Rivals.is_open("pawn")}).texture()
+	map.custom_minimum_size = Vector2(TownArt.SIZE)
+	map.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(map)
+	var cards := VBoxContainer.new()
+	cards.add_theme_constant_override("separation", 0)
+	cards.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(cards)
+	_shop_card(cards, "you", ranks.you)
+	for id in Rivals.SHOPS:
+		_shop_card(cards, id, ranks[id])
+	for line in Rivals.news.slice(0, 2):
+		_text(line, Pal.WARN).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if Rivals.news.is_empty():
+		_text("A quiet morning on Main Street. Your share of the town's customers: %d%%." % roundi(Rivals.overall_share() * 100.0),
+			Pal.INK_DIM).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_spacer()
+	_hint = _text("", Pal.INK)
+	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var buttons := HBoxContainer.new()
+	buttons.add_theme_constant_override("separation", 4)
+	_box.add_child(buttons)
+	_button(buttons, "Back", "Button", show_morning)
+	var ad := "Ad runs %d more day%s" % [Rivals.ad_days, "" if Rivals.ad_days == 1 else "s"] if Rivals.ad_days > 0 \
+		else "Newspaper ad %s" % Market.format_money(Rivals.ad_cost())
+	_town_button(buttons, ad, Rivals.can_run_ad(), func(): Rivals.run_ad(),
+		"An ad in the town paper: for %d days more customers pick your shop over the others." % Rivals.AD_DAYS)
+	_town_button(buttons, "Beat Sterling", true, func(): Rivals.beat_sterling(),
+		"Set your board a point better than Sterling's: pay %d%% of melt, sell at spot +%d%%." % [
+			roundi(minf(1.0, Rivals.buy_of("sterling") + 0.01) * 100.0), roundi(maxf(0.0, Rivals.premium_of("sterling") - 0.01) * 100.0)])
+	if Rivals.can_tip_off():
+		_town_button(buttons, "Tip off police", true, func(): Rivals.tip_off(),
+			"Tell Detective Ruiz about Lucky's stolen goods. A raid shuts the pawn shop for %d days." % Rivals.RAID_DAYS)
+
+
+## One shop's line on the town map: its name and place, then stars, prices and worth.
+func _shop_card(list: VBoxContainer, id: String, place: int) -> void:
+	var you := id == "you"
+	var name_label := Label.new()
+	name_label.text = "#%d %s" % [place, "Your shop" if you else Rivals.name_of(id)]
+	name_label.add_theme_color_override("font_color", Pal.GOLD if you else Pal.INK)
+	list.add_child(name_label)
+	var stars := Shop.reputation if you else Rivals.stars_of(id)
+	var pays := Shop.buy_percent if you else Rivals.buy_of(id)
+	var premium := Shop.sell_premium if you else Rivals.premium_of(id)
+	var info := Label.new()
+	if not you and not Rivals.is_open(id):
+		info.text = "Raided: shut %d day%s" % [int(Rivals.state[id].closed), "" if int(Rivals.state[id].closed) == 1 else "s"]
+		info.add_theme_color_override("font_color", Pal.BAD)
+	else:
+		info.text = "%.1f★  pays %d%%  +%d%%" % [stars, roundi(pays * 100.0), roundi(premium * 100.0)]
+		info.add_theme_color_override("font_color", Pal.INK_DIM)
+	list.add_child(info)
+	var worth := Label.new()
+	worth.text = "Worth %s" % Market.format_money(Shop.net_worth() if you else Rivals.worth_of(id))
+	worth.add_theme_color_override("font_color", Pal.INK_FAINT)
+	list.add_child(worth)
+
+
+func _town_button(parent: Control, text: String, enabled: bool, on_press: Callable, desc: String) -> void:
+	var b := _button(parent, text, "PrimaryButton" if enabled else "Button", on_press)
+	b.disabled = not enabled
+	b.tooltip_text = desc
+	b.mouse_entered.connect(func():
+		if _hint:
+			_hint.text = desc)
 
 
 # ---------------------------------------------------------------- ledger

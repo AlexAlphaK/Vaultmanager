@@ -113,7 +113,7 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 	var out := {"tier_day": [1, -1, -1, -1], "worth": [], "rep": [], "break_ins": 0, "stolen": 0.0, "fakes_bought": 0,
 		"caught": 0, "served": 0, "bills": 0.0, "overdrawn_days": 0, "upgrades": {}, "profit": 0.0,
 		"premium_income": 0.0, "lowest_cash": Shop.cash, "losses": {}, "gains": {}, "short_cash": 0, "out_of_stock": 0, "walked_by": 0,
-		"holdups": 0, "robbers_stopped": 0, "restocked": 0.0}
+		"holdups": 0, "robbers_stopped": 0, "restocked": 0.0, "lost_to_rivals": 0, "tip_offs": 0, "rank": []}
 	for d in days:
 		_morning(out)
 		_play_day(out)
@@ -156,6 +156,9 @@ func _morning(out: Dictionary) -> void:
 			Staff.hire(h[0])
 			out.upgrades[h[0]] = Shop.day
 	_restock(out)
+	# the average and expert bots read the town map and tip off the police
+	if bot != BOTS.novice and Rivals.tip_off():
+		out.tip_offs += 1
 	shop._open_shop()
 
 
@@ -204,6 +207,7 @@ func _play_day(out: Dictionary) -> void:
 	out.walked_by += int(Shop.stats.get("walked_by", 0.0))
 	out.holdups += int(Shop.stats.get("holdups", 0.0))
 	out.robbers_stopped += int(Shop.stats.get("robbers_stopped", 0.0))
+	out.lost_to_rivals += int(Shop.stats.get("lost_to_rival", 0.0))
 	# the bot plays the vault itself, so the shop's own vault scene goes
 	if shop._vault:
 		shop._vault.get_parent().remove_child(shop._vault)
@@ -409,6 +413,7 @@ func _stow(layout: VaultLayout, p: Dictionary) -> bool:
 func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) -> void:
 	out.worth.append(Shop.net_worth())
 	out.rep.append(Shop.reputation)
+	out.rank.append(Rivals.rank())
 	out.lowest_cash = minf(out.lowest_cash, Shop.cash)
 	if Shop.cash < 0.0:
 		out.overdrawn_days += 1
@@ -469,6 +474,13 @@ func _print_summary(name: String, results: Array, days: int) -> void:
 	print("  per run: %.1f hold-ups at the counter, %.1f robbers stopped (guard or panic button)" % [
 		_sum(results, "holdups") / n, _sum(results, "robbers_stopped") / n])
 	print("  per run: %s bought from the wholesaler" % Market.format_money(_sum(results, "restocked") / n))
+	var passed := []
+	for t in [7, 14, 30, 60, days]:
+		var ranks := results.map(func(r): return r.rank[mini(t, r.rank.size()) - 1])
+		ranks.sort()
+		passed.append("day %d #%d" % [t, ranks[ranks.size() / 2]])
+	print("  per run: %.1f customers went to a rival, %.1f tip-offs; median place in town: %s" % [
+		_sum(results, "lost_to_rivals") / n, _sum(results, "tip_offs") / n, ", ".join(passed)])
 	var ups := {}
 	for r in results:
 		for id in r.upgrades:
