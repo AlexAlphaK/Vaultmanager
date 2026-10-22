@@ -8,6 +8,7 @@ extends PanelContainer
 signal open_requested
 signal next_day_requested
 signal new_game_requested
+signal desk_requested
 
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
@@ -155,6 +156,10 @@ func _build_morning() -> void:
 	_box.add_child(row)
 	open_button = _button(row, "Open the shop", "PrimaryButton", func(): open_requested.emit())
 	open_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	if Progress.has_upgrade("trading_desk"):
+		var desk := _button(row, "Trading desk", "Button", func(): desk_requested.emit())
+		desk.disabled = not DeskSession.available()
+		desk.tooltip_text = "Trade at the desk this morning." if not desk.disabled else "The desk has traded today. Back tomorrow morning."
 	_button(row, "Sure? Click again" if _confirm_new else "New game", "DangerButton", _on_new_game)
 
 

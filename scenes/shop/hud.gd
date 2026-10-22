@@ -7,6 +7,7 @@ signal open_requested
 signal next_day_requested
 signal new_game_requested
 signal menu_requested
+signal desk_requested
 
 const SIDE_X := 318
 const SIDE_W := 160
@@ -56,6 +57,7 @@ func _ready() -> void:
 	_panels.open_requested.connect(func(): open_requested.emit())
 	_panels.next_day_requested.connect(func(): next_day_requested.emit())
 	_panels.new_game_requested.connect(func(): new_game_requested.emit())
+	_panels.desk_requested.connect(func(): desk_requested.emit())
 	Market.prices_changed.connect(func(_p): _refresh())
 	Market.source_changed.connect(func(_s): _refresh())
 	Market.currency_changed.connect(func(_c): _refresh())

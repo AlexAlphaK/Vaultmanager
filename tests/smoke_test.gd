@@ -2,8 +2,8 @@ extends Node
 ## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test, the vault lock-up,
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, counter, bench
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
-## ledger of records and achievements, robberies (hold-ups and burglar crews), and the
-## rival shops on the town map. Run:
+## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
+## shops on the town map, and the trading desk. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -39,6 +39,7 @@ func _ready() -> void:
 	_check_rush_hours()
 	await _check_rush_day()
 	await _check_shop_upgrades()
+	await _check_trading_desk()
 	_check_burglar_crews()
 	await _check_holdups()
 	await _check_rivals()
@@ -1333,6 +1334,97 @@ func _check_shop_upgrades() -> void:
 	shop.queue_free()
 	await get_tree().process_frame
 	SaveGame.new_game()
+
+
+func _check_trading_desk() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	# a tape runs from 24h ago to its close
+	var tape := DeskSession.tape(100.0, 103.0, 0.02, rng)
+	expect(tape.size() == DeskSession.STEPS + 1 and is_equal_approx(tape[0], 100.0) and absf(tape[DeskSession.STEPS] - 103.0) < 0.001,
+		"a desk tape starts at the open and ends at the close")
+	var crypto := Market.crypto.duplicate(true)
+	var stocks := Market.stocks.duplicate(true)
+	Market.crypto = {"BTC": {"price": 100000.0, "change_pct": 4.0}, "ETH": {"price": 4000.0, "change_pct": -2.0}, "DOGE": {"price": 0.2, "change_pct": 1.0}}
+	Market.stocks = {"SPY": {"price": 650.0, "change_pct": 0.5}}
+	var s := DeskSession.from_market(rng)
+	var syms := s.board.map(func(r): return r.sym)
+	expect(syms == ["XAU", "XAG", "XPT", "BTC", "ETH", "SPY"], "the board lists the metals, two cryptos and the live stocks")
+	var btc := syms.find("BTC")
+	expect(absf(s.price(btc) - 100000.0 / 1.04) < 0.01, "bitcoin's tape opens where it stood 24 hours ago")
+	Market.crypto = crypto
+	Market.stocks = stocks
+	expect(is_equal_approx(s.limit, DeskSession.BASE_LIMIT * Progress.deal_size()), "the desk's limit follows the deal size")
+	# trading within the limit
+	expect(is_equal_approx(s.trade(btc, s.limit * 0.6), s.limit * 0.6), "buy bitcoin with 60% of the limit")
+	expect(s.trade(0, -s.limit) < -0.0 and absf(s.exposure() - s.limit) < 0.01, "a short is cut down to what the limit leaves")
+	expect(absf(s.trade(1, 1000.0)) < 0.01, "nothing more fits at the limit")
+	s.flatten(0)
+	expect(absf(s.position(0)) < 0.01 and s.pnl_of(0) < 0.0, "closing a position at the same price costs its fees")
+	s.started = true
+	s.advance(DeskSession.SECONDS / 2.0)
+	expect(s.step() == DeskSession.STEPS / 2 and not s.is_over(), "the clock runs once the bell rings")
+	var expected := s.pnl() - absf(s.position(btc)) * DeskSession.FEE.crypto
+	s.flatten_all()
+	expect(absf(s.exposure()) < 0.01 and absf(s.pnl() - expected) < 0.01, "closing out books the open profit, less the fee")
+	expect(absf(s.pnl() - (s.board[btc].flow + s.board[0].flow)) < 0.01, "once flat, the profit is the cash in and out")
+	expect(s.advance(DeskSession.SECONDS) and s.is_over(), "the closing bell ends the session")
+	# hedging the vault: a full hedge cancels the vault's paper move, fees aside
+	var h := DeskSession.new()
+	h.limit = 10000000.0
+	h.vault_oz = {"XAU": 10.0}
+	h.add("XAU", "metal", 4000.0, -8.0, 0.012, rng)
+	h.add("BTC", "crypto", 100000.0, 2.0, 0.04, rng)
+	h.hedge_vault()
+	expect(absf(h.position(0) + 10.0 * h.price(0)) < 0.01 and absf(h.position(1)) < 0.01, "hedge vault shorts the vault's gold ounce for ounce")
+	h.started = true
+	h.advance(DeskSession.SECONDS)
+	expect(absf(h.vault_swing() + h.metal_pnl()) < 10.0 * h.open_price(0) * DeskSession.FEE.metal * 1.01 and h.hedge_cover() > 0.95,
+		"the hedge makes back what the vault loses on paper")
+	h.limit = 10000.0
+	h.flatten_all()
+	h.elapsed = 0.0
+	h.hedge_vault()
+	expect(absf(h.exposure() - h.limit * DeskSession.HEDGE_SHARE) < 0.01, "a hedge uses at most half the desk's limit")
+	# the room, one session a morning, and the ledger
+	DeskSession.hook_up()
+	expect(not DeskSession.available(), "no desk before the room is built")
+	Shop.cash = 1000000.0
+	Progress.tier = 1
+	expect(not Progress.can_buy("trading_desk"), "the trading desk waits for the bullion house")
+	Progress.tier = 2
+	expect(Progress.buy("trading_desk"), "build the trading desk")
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	expect(DeskSession.available(), "the desk opens in the morning")
+	var opened := []
+	shop.desk_opened.connect(func(d): opened.append(d))
+	shop.open_desk()
+	expect(opened.size() == 1 and shop._desk != null, "the morning panel opens the trading desk")
+	var desk: TradingDesk = shop._desk
+	desk._process(0.1)
+	expect(desk.session.board.size() >= 3 and desk.session.vault_oz == Shop.ounces_by_metal(), "the desk reads the board and the vault")
+	desk.select(0)
+	desk.buy()
+	expect(desk.session.position(0) > 0.0, "Buy goes long the selected row")
+	desk.ring_bell()
+	desk._process(DeskSession.SECONDS + 1.0)
+	expect(desk.closed and absf(desk.session.exposure()) < 0.01, "at the bell every position closes")
+	var booked := Day.ledger.filter(func(e): return e.label == "Trading desk")
+	expect(booked.size() == 1 and absf(absf(booked[0].usd) - absf(desk.session.pnl())) < 0.01, "the result goes on today's ledger")
+	expect(DeskSession.last_day == Shop.day and not DeskSession.available(), "one session a morning")
+	desk.finished.emit(desk.session.pnl())
+	expect(shop._desk == null and shop.hud._panels.page == "morning", "the desk closes back to the morning")
+	expect(SaveGame.save_game(), "save after trading")
+	DeskSession.from_dict({})
+	expect(SaveGame.load_game() and DeskSession.last_day == Shop.day, "the desk's day is saved")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.new_game()
+	expect(DeskSession.last_day == 0 and DeskSession.lifetime == 0.0, "a new game resets the desk")
 
 
 func _bar_seller(rng: RandomNumberGenerator, spec_id: String, fake: String) -> Customer:
