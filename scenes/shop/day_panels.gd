@@ -677,13 +677,24 @@ func _build_summary(report: Dictionary) -> void:
 	_clear()
 	var stats: Dictionary = report.get("stats", {})
 	_title("Day %d closed" % report.get("day", Shop.day))
+	# a busy day can fill more lines than the panel holds: they scroll, and the
+	# button stays in reach
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_box.add_child(scroll)
+	var outer := _box
+	_box = VBoxContainer.new()
+	_box.add_theme_constant_override("separation", 3)
+	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_box)
 	var grid := _grid()
 	_pair(grid, "Bought from customers", Market.format_money(stats.get("bought", 0.0)))
 	_pair(grid, "Sold to customers", Market.format_money(stats.get("sold", 0.0)))
 	var profit: float = stats.get("profit", 0.0)
 	_pair(grid, "Profit on sales", Market.format_money(profit), Pal.GOOD if profit >= 0.0 else Pal.BAD)
 	_pair(grid, "Fakes caught / missed", "%d / %d" % [int(stats.get("caught", 0)), int(stats.get("scammed", 0))])
-	for entry in report.get("ledger", []):
+	for entry in _grouped(report.get("ledger", [])):
 		var usd: float = entry.usd
 		_pair(grid, entry.label, ("+" if usd > 0.0 else "") + Market.format_money(usd), Pal.GOOD if usd > 0.0 else Pal.BAD)
 	var cash_change: float = report.get("cash_change", 0.0)
@@ -693,11 +704,33 @@ func _build_summary(report: Dictionary) -> void:
 		_text(str(line), Pal.WARN).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var bills_in: int = report.get("next_bills_in", 0)
 	_text("Next rent and insurance in %d day%s." % [bills_in, "" if bills_in == 1 else "s"], Pal.INK_FAINT)
-	_spacer()
+	for l in _box.get_children():
+		if l is Label:
+			l.custom_minimum_size.x = 0.0 # the scroll bar takes some of the width
+	_box = outer
 	var row := HBoxContainer.new()
 	_box.add_child(row)
 	var go := _button(row, "Lock up and go home", "PrimaryButton", func(): next_day_requested.emit())
 	go.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+
+## Today's ledger with repeated entries (one per refined piece, say) added up into one line.
+func _grouped(ledger: Array) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var at := {}
+	for entry in ledger:
+		var label := String(entry.label)
+		if at.has(label):
+			var e: Dictionary = out[at[label]]
+			e.usd += float(entry.usd)
+			e.count += 1
+		else:
+			at[label] = out.size()
+			out.append({"label": label, "usd": float(entry.usd), "count": 1})
+	for e in out:
+		if e.count > 1:
+			e.label = "%s (×%d)" % [e.label, e.count]
+	return out
 
 
 # ---------------------------------------------------------------- helpers
