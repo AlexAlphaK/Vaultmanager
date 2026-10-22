@@ -193,13 +193,18 @@ static func _pawn(iso: Iso, move: String, closed: bool) -> void:
 		var at := Vector2(hang.x + 2 + (k - 1) * 2.0, hang.y + 2 + (1 if k == 1 else 0))
 		iso.canvas.disc(at.x, at.y, 1.4, Pal.metal("gold", 4))
 	if closed:
-		var board := iso.p(p[0] + p[2] * 0.2, p[1] + p[3], 5.0).round()
-		iso.canvas.rect(int(board.x) - 6, int(board.y) - 4, 13, 7, Color("#efe3c8"))
-		iso.canvas.text("SHUT", int(board.x) - 4, int(board.y) - 3, Pal.BAD)
+		_board(iso.canvas, iso.p(p[0] + p[2] * 0.4, p[1] + p[3], 5.0).round(), "SHUT", Color("#efe3c8"), Pal.BAD)
 	elif move == "clearance":
-		var board := iso.p(p[0] + p[2] * 0.35, p[1] + p[3], 3.0).round()
-		iso.canvas.rect(int(board.x) - 6, int(board.y) - 4, 13, 7, Pal.WARN)
-		iso.canvas.text("SALE", int(board.x) - 4, int(board.y) - 3, OUTLINE)
+		_board(iso.canvas, iso.p(p[0] + p[2] * 0.4, p[1] + p[3], 3.0).round(), "SALE", Pal.WARN, OUTLINE)
+
+
+## A painted board with one word on it, centred on `at`.
+static func _board(c: PixelCanvas, at: Vector2, word: String, bg: Color, ink: Color) -> void:
+	var w := PixelFont.measure(word) + 4
+	var x := int(at.x) - w / 2
+	c.rect(x - 1, int(at.y) - 5, w + 2, 9, OUTLINE)
+	c.rect(x, int(at.y) - 4, w, 7, bg)
+	c.text(word, x + 2, int(at.y) - 3, ink)
 
 
 static func _laundromat(iso: Iso) -> void:

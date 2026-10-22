@@ -399,7 +399,8 @@ func _build_town() -> void:
 	for line in Rivals.news.slice(0, 2):
 		_text(line, Pal.WARN).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if Rivals.news.is_empty():
-		_text("A quiet morning on Main Street. Your share of the town's customers: %d%%." % roundi(Rivals.overall_share() * 100.0), Pal.INK_DIM)
+		_text("A quiet morning on Main Street. Your share of the town's customers: %d%%." % roundi(Rivals.overall_share() * 100.0),
+			Pal.INK_DIM).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_spacer()
 	_hint = _text("", Pal.INK)
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
