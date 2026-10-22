@@ -84,6 +84,9 @@ var piece: JewelleryPiece
 var assessed := {}
 ## A bullion bar instead of coins (sellers only).
 var bar: BullionBar
+## A collector's coin to be graded (kind "grade", see CoinGrade); `assessed` then holds
+## the call: {"grade": index into CoinGrade.GRADES, "cleaned": bool}.
+var grading: CoinGrade
 
 var pos := ShopArt.ENTRANCE
 var leaving := false

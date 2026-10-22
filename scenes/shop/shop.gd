@@ -11,7 +11,8 @@ extends Node2D
 ## Rival shops (Rivals) compete for every customer: when your prices or stars look worse
 ## than theirs, some cross the street before they reach your door.
 ## On day 1 of a new game the Coach walks the player through it.
-## Once the trading desk room is built, the morning panel opens the TradingDesk minigame.
+## Once the trading desk room is built, the morning panel opens the TradingDesk minigame,
+## and once the melting furnace is bought, the Smelter (scrap lots melted into bars).
 ## Seasons and town events (Calendar) change who comes in: tax season sellers, gold
 ## fever buyers, coin show collectors and holiday gift shoppers.
 
@@ -21,6 +22,7 @@ signal customer_left(c: Customer)
 signal vault_opened(vault: Control)
 signal summary_shown
 signal desk_opened(desk: Control)
+signal smelter_opened(smelter: Control)
 
 const DAY_SECONDS := 120.0 # 09:00 to 17:00; daily bills are sized for this length (see README, Balance)
 const WALK_SPEED := 1.8 # tiles per second
@@ -30,7 +32,9 @@ const NewsBanner := preload("res://scenes/shop/news_banner.gd")
 const RUSH_GAP := 1.5 # seconds between customers in a news rush
 const JewelleryTestScene := preload("res://scenes/jewellery_test/jewellery_test.tscn")
 const BarTestScene := preload("res://scenes/bar_test/bar_test.tscn")
+const GradingScene := preload("res://scenes/grading/grading_bench.tscn")
 const TradingDeskScene := preload("res://scenes/trading_desk/trading_desk.tscn")
+const SmelterScene := preload("res://scenes/smelter/smelter.tscn")
 const STONE_NAMES := {"cz": "cubic zirconia", "glass": "glass", "moissanite": "moissanite"}
 const CLERK_SECONDS := 5.0 # how long the clerk takes to ring up a sale
 const VAULT_RUN_SECONDS := 3.0 # away from the counter while you take the till to the vault
@@ -69,6 +73,7 @@ var _shown: Customer
 var _test: Control
 var _vault: Control
 var _desk: Control
+var _smelter: Control
 var _pause: PauseMenu
 var coach: Coach
 ## Particles, reactions and their sounds over the room.
@@ -80,12 +85,15 @@ func _ready() -> void:
 	BullionBar.hook_up()
 	Security.hook_up()
 	DeskSession.hook_up()
+	ScrapYard.hook_up()
+	CoinGrade.hook_up()
 	hud.action.connect(_on_action)
 	hud.open_requested.connect(_open_shop)
 	hud.next_day_requested.connect(_open_next_day)
 	hud.new_game_requested.connect(_new_game)
 	hud.menu_requested.connect(open_pause_menu)
 	hud.desk_requested.connect(open_desk)
+	hud.smelter_requested.connect(open_smelter)
 	_pause = PauseMenu.new()
 	add_child(_pause)
 	Music.play("shop")
@@ -141,7 +149,7 @@ func _everyone() -> Array[Customer]:
 
 ## Esc opens the pause menu, except in the coin and jewellery benches, where it means "back".
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE and _test == null and _desk == null:
+	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE and _test == null and _desk == null and _smelter == null:
 		open_pause_menu()
 		get_viewport().set_input_as_handled()
 
@@ -314,6 +322,12 @@ func _on_action(id: String) -> void:
 		return
 	if c.kind == "order":
 		_order_answer(c, id)
+		return
+	if c.kind == "grade":
+		if id == "test":
+			_open_test(c)
+		elif id == "decline":
+			_dismiss(c, "%s will find another grader." % c.name)
 		return
 	if c == robber:
 		if id == "decline":
@@ -647,7 +661,8 @@ func _open_test(c: Customer) -> void:
 	# in a rush the clock keeps going: the queue waits, the clerk works on
 	paused = rush.is_empty()
 	_testing = c
-	_test = (JewelleryTestScene if c.piece else (BarTestScene if c.bar else CoinTestScene)).instantiate()
+	var scene: PackedScene = GradingScene if c.kind == "grade" else (JewelleryTestScene if c.piece else (BarTestScene if c.bar else CoinTestScene))
+	_test = scene.instantiate()
 	hud.add_child(_test)
 	_test.start(c)
 	_test.finished.connect(_on_test_finished.bind(c))
@@ -661,6 +676,8 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 	paused = false
 	bench_closed.emit(verdict, c)
 	match verdict:
+		"graded":
+			_graded(c)
 		"genuine":
 			c.tested = true
 			c.say = "Told you it was real. So, what's your offer?" if c.bar else "Told you they were real. So, what's your offer?"
@@ -692,6 +709,22 @@ func _on_test_finished(verdict: String, c: Customer) -> void:
 			else:
 				Shop.reputation_for("wrong_call")
 				_dismiss(c, "You called %s's genuine coins fake. They stormed out." % c.name, "bad")
+
+
+## A collector hears your grade: a fee (and a tip when it's spot on), and their verdict.
+func _graded(c: Customer) -> void:
+	var call := c.grading.judge(int(c.assessed.grade), bool(c.assessed.cleaned), c.name)
+	c.dealt = true
+	c.say = call.say
+	if call.pay > 0.0:
+		Day.add_income("Grading fees", call.pay)
+		Shop.note("profit", call.pay)
+		Sfx.play(self, Sfx.register_chime(), -8.0)
+	Shop.adjust_reputation(call.rep)
+	Shop.note("graded")
+	if call.steps == 0 and call.cleaned_ok:
+		Shop.note("graded_exact")
+	_dismiss(c, call.log, call.mood)
 
 
 ## The customer's reaction to your grading, and credit for catching a bad claim.
@@ -730,6 +763,24 @@ func open_desk() -> void:
 func _on_desk_finished(_pnl: float) -> void:
 	_desk.queue_free()
 	_desk = null
+	hud.show_morning()
+
+
+## The Smelter, over the morning panel: the scrap dealer's lots and the furnace.
+func open_smelter() -> void:
+	if _smelter != null or not ScrapYard.available():
+		return
+	hud.hide_panels()
+	_smelter = SmelterScene.instantiate()
+	hud.add_child(_smelter)
+	_smelter.start()
+	_smelter.finished.connect(_on_smelter_finished)
+	smelter_opened.emit(_smelter)
+
+
+func _on_smelter_finished() -> void:
+	_smelter.queue_free()
+	_smelter = null
 	hud.show_morning()
 
 

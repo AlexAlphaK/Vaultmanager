@@ -8,6 +8,7 @@ signal next_day_requested
 signal new_game_requested
 signal menu_requested
 signal desk_requested
+signal smelter_requested
 
 const SIDE_X := 318
 const SIDE_W := 160
@@ -58,6 +59,7 @@ func _ready() -> void:
 	_panels.next_day_requested.connect(func(): next_day_requested.emit())
 	_panels.new_game_requested.connect(func(): new_game_requested.emit())
 	_panels.desk_requested.connect(func(): desk_requested.emit())
+	_panels.smelter_requested.connect(func(): smelter_requested.emit())
 	Market.prices_changed.connect(func(_p): _refresh())
 	Market.source_changed.connect(func(_s): _refresh())
 	Market.currency_changed.connect(func(_c): _refresh())
@@ -119,7 +121,7 @@ func show_customer(c: Customer, idle_text := "") -> void:
 	_who.text = c.name
 	var tag := Customers.tag(c)
 	_wants.text = {"seller": "wants to sell", "buyer": "wants to buy", "visit": "stopped by to talk", "robber": "HOLD-UP",
-		"order": "special order"}.get(c.kind, "")
+		"order": "special order", "grade": "wants a coin graded"}.get(c.kind, "")
 	if tag != "":
 		_wants.text = "%s · %s" % [tag, _wants.text]
 	_quote.text = "\"%s\"" % c.say
@@ -231,6 +233,17 @@ func _refresh_deal() -> void:
 		_buttons.sell.visible = true
 		_buttons.sell.disabled = false
 		_buttons.sell.text = "Take order"
+		_buttons.decline.visible = true
+		_buttons.decline.text = "Not now"
+		return
+	if c.kind == "grade":
+		_deal[0].text = c.item.display_name
+		_deal[1].text = "Hopes for %s" % CoinGrade.grade_id(c.grading.hoped)
+		_deal[1].add_theme_color_override("font_color", Pal.INK)
+		_deal[2].text = "Fee %s if you grade it right" % Market.format_money(CoinGrade.fee())
+		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
+		_buttons.test.visible = true
+		_buttons.test.text = "Grade it"
 		_buttons.decline.visible = true
 		_buttons.decline.text = "Not now"
 		return
