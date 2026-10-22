@@ -1163,6 +1163,10 @@ msgid "Hot streak"
 msgstr "Racha caliente"
 
 #: autoload/records.gd
+msgid "Keep someone on staff until they are a veteran (level 5)."
+msgstr "Mantén a alguien en plantilla hasta que sea veterano (nivel 5)."
+
+#: autoload/records.gd
 msgid "Make $1,000,000 profit in total."
 msgstr "Gana $1.000.000 en total."
 
@@ -1213,6 +1217,10 @@ msgstr "Abierto al público"
 #: autoload/records.gd
 msgid "Open the town landmark store."
 msgstr "Abre la tienda en el edificio emblemático."
+
+#: autoload/records.gd
+msgid "Part of the family"
+msgstr "Parte de la familia"
 
 #: autoload/records.gd
 msgid "Reach 4 stars of reputation."
@@ -1487,12 +1495,44 @@ msgid "Pixel perfect"
 msgstr "Píxel perfecto"
 
 #: autoload/staff.gd
+msgid "%s called in sick"
+msgstr "%s ha llamado diciendo que está enfermo"
+
+#: autoload/staff.gd
+msgid "%s didn't get the raise and isn't happy about it."
+msgstr "%s no ha conseguido el aumento y no está contento."
+
+#: autoload/staff.gd
+msgid "%s has had enough and quit. Pay staff what they're worth."
+msgstr "%s está harto y se ha ido. Paga a tu plantilla lo que vale."
+
+#: autoload/staff.gd
+msgid "%s is in a foul mood"
+msgstr "%s está de muy mal humor"
+
+#: autoload/staff.gd
+msgid "%s reached level %d: %s."
+msgstr "%s llega al nivel %d: %s."
+
+#: autoload/staff.gd
 msgid "%s starts today."
 msgstr "%s empieza hoy."
 
 #: autoload/staff.gd
 msgid "%s the %s"
 msgstr "%s, %s"
+
+#: autoload/staff.gd
+msgid "%s wants a raise"
+msgstr "%s quiere un aumento"
+
+#: autoload/staff.gd
+msgid "%s's wage is now %s a day."
+msgstr "%s cobra ahora %s al día."
+
+#: autoload/staff.gd
+msgid "About to quit"
+msgstr "A punto de irse"
 
 #: autoload/staff.gd
 msgid "Benny"
@@ -1503,24 +1543,56 @@ msgid "Clerk"
 msgstr "Dependiente"
 
 #: autoload/staff.gd
+msgid "Content"
+msgstr "Contento"
+
+#: autoload/staff.gd
+msgid "Expert"
+msgstr "Experto"
+
+#: autoload/staff.gd
+msgid "Fed up"
+msgstr "Harto"
+
+#: autoload/staff.gd
 msgid "Guard"
 msgstr "Guardia"
 
 #: autoload/staff.gd
+msgid "Happy"
+msgstr "Feliz"
+
+#: autoload/staff.gd
 msgid "Hired %s"
 msgstr "Contratado: %s"
+
+#: autoload/staff.gd ui/save_slots_panel.gd
+msgid "New"
+msgstr "Nueva"
 
 #: autoload/staff.gd
 msgid "Rhonda"
 msgstr "Rhonda"
 
 #: autoload/staff.gd
+msgid "Skilled"
+msgstr "Hábil"
+
+#: autoload/staff.gd
+msgid "Staff: %s."
+msgstr "Plantilla: %s."
+
+#: autoload/staff.gd
 msgid "Stands by the door. Break-ins drop by a third and nobody dares grab the till in a rush."
 msgstr "Vigila la puerta. Los robos nocturnos bajan un tercio y nadie se atreve a tocar la caja en hora punta."
 
 #: autoload/staff.gd
-msgid "Wages: %s"
-msgstr "Sueldo: %s"
+msgid "Steady"
+msgstr "Fiable"
+
+#: autoload/staff.gd
+msgid "Veteran"
+msgstr "Veterano"
 
 #: autoload/staff.gd
 msgid "Works the second till. Sells coins to buyers at your price while you test, so the queue keeps moving."
@@ -2579,8 +2651,16 @@ msgid " (%d to build)"
 msgstr " (%d por construir)"
 
 #: scenes/shop/day_panels.gd
+msgid " (fair: %s)"
+msgstr " (justo: %s)"
+
+#: scenes/shop/day_panels.gd
 msgid " Earned on day %d."
 msgstr " Conseguido el día %d."
+
+#: scenes/shop/day_panels.gd
+msgid " Talks %d%% of fussy buyers round."
+msgstr " Convence al %d%% de los compradores exigentes."
 
 #: scenes/shop/day_panels.gd
 msgid "%.1f stars"
@@ -2613,6 +2693,10 @@ msgid "%d of %d earned. Hover one to see how to earn it."
 msgstr "%d de %d conseguidos. Pasa el ratón por uno para ver cómo."
 
 #: scenes/shop/day_panels.gd
+msgid "%d xp to go"
+msgstr "faltan %d PX"
+
+#: scenes/shop/day_panels.gd
 msgid "%s (in %d day)"
 msgid_plural "%s (in %d days)"
 msgstr[0] "%s (en %d día)"
@@ -2621,6 +2705,14 @@ msgstr[1] "%s (en %d días)"
 #: scenes/shop/day_panels.gd
 msgid "%s Wage %s a day."
 msgstr "%s Sueldo %s al día."
+
+#: scenes/shop/day_panels.gd
+msgid "%s a day%s"
+msgstr "%s al día%s"
+
+#: scenes/shop/day_panels.gd
+msgid "%s asks for a raise of %s a day."
+msgstr "%s pide un aumento de %s al día."
 
 #: scenes/shop/day_panels.gd
 msgid "%s is down %.1f%%. Bargain hunters will be out."
@@ -2645,6 +2737,10 @@ msgstr "%s · %d/%d objetivos"
 #: scenes/shop/day_panels.gd
 msgid "%s · %s. Set your prices, then open up."
 msgstr "%s · %s. Fija tus precios y abre."
+
+#: scenes/shop/day_panels.gd
+msgid "%s, %s (level %d)"
+msgstr "%s, %s (nivel %d)"
 
 #: scenes/shop/day_panels.gd
 msgid "%s: the plot next door opens when you move to the %s. %s"
@@ -2679,6 +2775,10 @@ msgstr[1] "Anuncio: quedan %d días"
 #: scenes/shop/day_panels.gd
 msgid "An ad in the town paper: for %d days more customers pick your shop over the others."
 msgstr "Un anuncio en el periódico local: durante %d días más clientes eligen tu tienda."
+
+#: scenes/shop/day_panels.gd
+msgid "At work"
+msgstr "Trabajando"
 
 #: scenes/shop/day_panels.gd
 msgid "BEST DAYS"
@@ -2827,6 +2927,10 @@ msgid "GOALS"
 msgstr "OBJETIVOS"
 
 #: scenes/shop/day_panels.gd
+msgid "Give the raise"
+msgstr "Subir sueldo"
+
+#: scenes/shop/day_panels.gd
 msgid "Gold"
 msgstr "Oro"
 
@@ -2847,6 +2951,14 @@ msgid "Hire a %s"
 msgstr "Contratar: %s"
 
 #: scenes/shop/day_panels.gd
+msgid "How your staff are getting on: levels, mood and pay."
+msgstr "Cómo le va a tu plantilla: niveles, ánimo y sueldo."
+
+#: scenes/shop/day_panels.gd
+msgid "In a foul mood"
+msgstr "De mal humor"
+
+#: scenes/shop/day_panels.gd
 msgid "Keep growing your vault and reputation."
 msgstr "Sigue haciendo crecer tu cámara y tu reputación."
 
@@ -2865,6 +2977,10 @@ msgstr "Quedan"
 #: scenes/shop/day_panels.gd
 msgid "Let go"
 msgstr "Despedir"
+
+#: scenes/shop/day_panels.gd
+msgid "Level %d"
+msgstr "Nivel %d"
 
 #: scenes/shop/day_panels.gd
 msgid "Lifetime profit"
@@ -2889,6 +3005,10 @@ msgstr "Los objetivos de Mags para este capítulo de la historia."
 #: scenes/shop/day_panels.gd
 msgid "Metals are calm this morning. Expect a normal day."
 msgstr "Los metales están tranquilos esta mañana. Espera un día normal."
+
+#: scenes/shop/day_panels.gd
+msgid "Mood"
+msgstr "Ánimo"
 
 #: scenes/shop/day_panels.gd
 msgid "Morning wholesaler"
@@ -2923,6 +3043,10 @@ msgid "Next rent and insurance in %d day."
 msgid_plural "Next rent and insurance in %d days."
 msgstr[0] "Próximo alquiler y seguro en %d día."
 msgstr[1] "Próximo alquiler y seguro en %d días."
+
+#: scenes/shop/day_panels.gd
+msgid "Off sick (unpaid)"
+msgstr "De baja (sin sueldo)"
 
 #: scenes/shop/day_panels.gd
 msgid "Open the shop"
@@ -2979,6 +3103,14 @@ msgid "Restock"
 msgstr "Reponer"
 
 #: scenes/shop/day_panels.gd
+msgid "Rings up a buyer in %.1f s."
+msgstr "Atiende a un comprador en %.1f s."
+
+#: scenes/shop/day_panels.gd
+msgid "Say no"
+msgstr "Decir no"
+
+#: scenes/shop/day_panels.gd
 msgid "Set your board a point better than Sterling's: pay %d%% of melt, sell at spot +%d%%."
 msgstr "Pon tu pizarra un punto mejor que Sterling: paga el %d%% de la fundición y vende a spot +%d%%."
 
@@ -2995,8 +3127,20 @@ msgid "Special orders"
 msgstr "Pedidos especiales"
 
 #: scenes/shop/day_panels.gd
+msgid "Staff"
+msgstr "Plantilla"
+
+#: scenes/shop/day_panels.gd
 msgid "Staff wages tonight"
 msgstr "Sueldos esta noche"
+
+#: scenes/shop/day_panels.gd
+msgid "Staff%s"
+msgstr "Plantilla%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Stops %d%% of robbers at the door."
+msgstr "Detiene al %d%% de los atracadores en la puerta."
 
 #: scenes/shop/day_panels.gd
 msgid "Story"
@@ -3023,8 +3167,16 @@ msgid "The rival shops, their prices and what they are up to."
 msgstr "Las tiendas rivales, sus precios y lo que traman."
 
 #: scenes/shop/day_panels.gd
+msgid "They leave today. The signing fee is not refunded."
+msgstr "Se va hoy. La prima de fichaje no se devuelve."
+
+#: scenes/shop/day_panels.gd
 msgid "Tip off police"
 msgstr "Avisar a la policía"
+
+#: scenes/shop/day_panels.gd
+msgid "Today"
+msgstr "Hoy"
 
 #: scenes/shop/day_panels.gd
 msgid "Town map"
@@ -3047,6 +3199,10 @@ msgid "Trading desk"
 msgstr "Mesa de trading"
 
 #: scenes/shop/day_panels.gd
+msgid "Upgrades"
+msgstr "Mejoras"
+
+#: scenes/shop/day_panels.gd
 msgid "Upgrades (%d)%s"
 msgstr "Mejoras (%d)%s"
 
@@ -3057,6 +3213,14 @@ msgstr "Mejoras y personal"
 #: scenes/shop/day_panels.gd
 msgid "Upkeep tonight"
 msgstr "Mantenimiento esta noche"
+
+#: scenes/shop/day_panels.gd
+msgid "Wage"
+msgstr "Sueldo"
+
+#: scenes/shop/day_panels.gd
+msgid "Wages tonight %s. Pay staff what their level is worth."
+msgstr "Sueldos esta noche %s. Paga a tu plantilla según su nivel."
 
 #: scenes/shop/day_panels.gd
 msgid "Walk-in sellers are cheaper. Restock what buyers ask for."
@@ -3089,6 +3253,10 @@ msgstr "hecho"
 #: scenes/shop/day_panels.gd
 msgid "none today"
 msgstr "hoy nada"
+
+#: scenes/shop/day_panels.gd
+msgid "top level"
+msgstr "nivel máximo"
 
 #: scenes/shop/hud.gd
 msgid "  tested"
@@ -3475,6 +3643,10 @@ msgstr "%s se despidió."
 #: scenes/shop/shop.gd
 msgid "%s stopped a man with a gun at the door. The police took him away."
 msgstr "%s detuvo en la puerta a un hombre armado. La policía se lo llevó."
+
+#: scenes/shop/shop.gd
+msgid "%s talked them round. %s"
+msgstr "%s le ha convencido. %s"
 
 #: scenes/shop/shop.gd
 msgid "%s wants a better price. %s sent them to you."
@@ -4427,10 +4599,6 @@ msgstr "Borrar"
 #: ui/save_slots_panel.gd
 msgid "Each slot saves every morning and every night."
 msgstr "Cada ranura se guarda cada mañana y cada noche."
-
-#: ui/save_slots_panel.gd
-msgid "New"
-msgstr "Nueva"
 
 #: ui/save_slots_panel.gd
 msgid "Play"

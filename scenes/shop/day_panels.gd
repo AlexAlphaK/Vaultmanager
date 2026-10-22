@@ -2,7 +2,7 @@ class_name DayPanels
 extends PanelContainer
 ## The panels over the shop floor between shop hours: the morning briefing, the
 ## upgrades, staff and expansion page, the floor plan where rooms are built, the town
-## map with the rival shops, the collectors' special orders, the story's chapter and goals,
+## map with the rival shops, the staff and how they are getting on, the collectors' special orders, the story's chapter and goals,
 ## the ledger of records and achievements, and the end-of-day summary. Rebuilt each time one opens.
 
 signal open_requested
@@ -13,7 +13,7 @@ signal desk_requested
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
-var page := "" # "morning", "upgrades", "plan", "wholesale", "town", "orders", "story", "ledger", "achievements", "summary" or "" when hidden
+var page := "" # "morning", "upgrades", "staff", "plan", "wholesale", "town", "orders", "story", "ledger", "achievements", "summary" or "" when hidden
 ## The morning's Open the shop button, for the tutorial to point at.
 var open_button: Button
 var _box: VBoxContainer
@@ -54,6 +54,11 @@ func show_morning() -> void:
 func show_upgrades() -> void:
 	page = "upgrades"
 	_build_upgrades()
+
+
+func show_staff() -> void:
+	page = "staff"
+	_build_staff()
 
 
 func show_plan() -> void:
@@ -103,6 +108,8 @@ func _refresh_page() -> void:
 		_build_morning()
 	elif page == "upgrades":
 		_build_upgrades()
+	elif page == "staff":
+		_build_staff()
 	elif page == "plan":
 		_build_plan()
 	elif page == "wholesale":
@@ -138,6 +145,9 @@ func _build_morning() -> void:
 	else:
 		_text(_market_hint(), Pal.INK)
 	_text(RushHours.summary(Shop.day), Pal.WARN)
+	var staff := Staff.morning_line()
+	if staff != "":
+		_text(staff, Pal.WARN)
 	if not Orders.open.is_empty():
 		_text(_orders_hint(), Pal.GOLD)
 	if not Rivals.news.is_empty():
@@ -177,6 +187,8 @@ func _build_morning() -> void:
 	var count := Progress.available_upgrades().size() + Staff.ROLES.size() - Staff.hired.size()
 	var expand_ready := Progress.expand_blocker() == "" and not Progress.is_top_tier()
 	_button(pages, tr("Upgrades (%d)%s") % [count, " !" if expand_ready else ""], "Button", show_upgrades)
+	if not Staff.hired.is_empty():
+		_button(pages, tr("Staff%s") % (" !" if not Staff.raise_requests().is_empty() else ""), "Button", show_staff).tooltip_text = "How your staff are getting on: levels, mood and pay."
 	_button(pages, "Restock", "Button", show_wholesale).tooltip_text = "Buy coins from the wholesaler before you open."
 	_button(pages, tr("Town map%s") % (" !" if not Rivals.news.is_empty() else ""), "Button", show_town).tooltip_text = "The rival shops, their prices and what they are up to."
 	if not Orders.open.is_empty():
@@ -291,7 +303,7 @@ func _build_upgrades() -> void:
 		var role: Dictionary = Staff.ROLES[id]
 		var desc := tr("%s Wage %s a day.") % [tr(role.desc), Market.format_money(Staff.wage(id))]
 		if Staff.has(id):
-			_upgrade_row(grid, "%s, %s" % [role.name, tr(role.title.to_lower())], -1.0, true, "Let go", desc, func(): Staff.let_go(id), Pal.GOOD)
+			_upgrade_row(grid, tr("%s, %s (level %d)") % [role.name, tr(role.title.to_lower()), Staff.level(id)], -1.0, true, "Staff", desc, show_staff, Pal.GOOD)
 		elif int(role.tier) <= Progress.tier:
 			_upgrade_row(grid, tr("Hire a %s") % tr(role.title.to_lower()), role.fee, Staff.can_hire(id), "Hire", desc, func(): Staff.hire(id))
 	var locked := Progress.locked_upgrade_count()
@@ -306,8 +318,90 @@ func _build_upgrades() -> void:
 	row.add_theme_constant_override("separation", 4)
 	_box.add_child(row)
 	_button(row, "Back", "Button", show_morning)
+	if not Staff.hired.is_empty():
+		_button(row, "Staff", "Button", show_staff)
 	var rooms := Progress.available_upgrades("room").size()
 	_button(row, tr("Floor plan%s") % (tr(" (%d to build)") % rooms if rooms > 0 else ""), "Button", show_plan)
+
+
+# ---------------------------------------------------------------- staff
+
+func _build_staff() -> void:
+	_clear()
+	_title("Staff")
+	_text(tr("Wages tonight %s. Pay staff what their level is worth.") % Market.format_money(Staff.daily_wages()), Pal.INK_DIM)
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_box.add_child(scroll)
+	var list := VBoxContainer.new()
+	list.add_theme_constant_override("separation", 2)
+	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(list)
+	# the helpers add to _box, so point it at the list while the rows go in
+	var outer := _box
+	_box = list
+	for id in Staff.ROLES:
+		var role: Dictionary = Staff.ROLES[id]
+		if not Staff.has(id):
+			if int(role.tier) <= Progress.tier:
+				var hire := _grid(3)
+				_upgrade_row(hire, tr("Hire a %s") % tr(role.title.to_lower()), role.fee, Staff.can_hire(id), "Hire",
+					tr("%s Wage %s a day.") % [tr(role.desc), Market.format_money(Staff.wage(id))], func(): Staff.hire(id))
+			continue
+		_staff_card(id)
+	_box = outer
+	# leave room for the scroll bar
+	for child in list.get_children():
+		if child is Label:
+			child.custom_minimum_size.x = AREA.size.x - 26
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	_box.add_child(row)
+	_button(row, "Back", "Button", show_morning)
+	_button(row, "Upgrades", "Button", show_upgrades)
+
+
+func _staff_card(id: String) -> void:
+	var role: Dictionary = Staff.ROLES[id]
+	var p := Staff.info(id)
+	_heading("%s, %s · %s" % [role.name.to_upper(), tr(role.title).to_upper(), tr(Staff.level_name(id)).to_upper()])
+	var grid := _grid()
+	var next := Staff.xp_to_next(id)
+	_pair(grid, tr("Level %d") % Staff.level(id), tr("top level") if next == 0 else tr("%d xp to go") % next, Pal.GOLD)
+	var mood := float(p.mood)
+	_pair(grid, "Mood", "%s (%d)" % [Staff.mood_word(id), roundi(mood)], Pal.GOOD if mood >= 50.0 else (Pal.WARN if mood >= 25.0 else Pal.BAD))
+	var owed := Staff.raises_owed(id)
+	_pair(grid, "Wage", tr("%s a day%s") % [Market.format_money(Staff.wage(id)), "" if owed == 0 else tr(" (fair: %s)") % Market.format_money(Staff.fair_wage(id))],
+		Pal.INK if owed == 0 else Pal.WARN)
+	var today: String = {"sick": "Off sick (unpaid)", "grumpy": "In a foul mood"}.get(str(p.today), "At work")
+	_pair(grid, "Today", tr(today), Pal.INK if str(p.today) == "" else Pal.BAD)
+	_text(_skill_line(id), Pal.INK_DIM).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if bool(p.asking):
+		var raise := Staff.wage(id) * Staff.RAISE / (1.0 + Staff.RAISE * int(p.raises))
+		_text(tr("%s asks for a raise of %s a day.") % [role.name, Market.format_money(raise)], Pal.WARN)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	_box.add_child(row)
+	if bool(p.asking):
+		_button(row, "Give the raise", "PrimaryButton", func(): Staff.agree_raise(id))
+		_button(row, "Say no", "Button", func(): Staff.refuse_raise(id))
+	_button(row, "Let go", "DangerButton", func(): Staff.let_go(id)).tooltip_text = "They leave today. The signing fee is not refunded."
+	_gap()
+
+
+## What this level of skill does for the shop, in a sentence.
+func _skill_line(id: String) -> String:
+	var lvl := Staff.level(id)
+	if id == "clerk":
+		var line := tr("Rings up a buyer in %.1f s.") % Staff.clerk_seconds()
+		if lvl > 1:
+			line += tr(" Talks %d%% of fussy buyers round.") % roundi(float(Staff.SKILL.clerk.persuade) * (lvl - 1) * 100.0)
+		return line
+	if id == "guard":
+		var odds := Security.GUARD_STOP + float(Staff.SKILL.guard.guard_stop) * (lvl - 1)
+		return tr("Stops %d%% of robbers at the door.") % roundi(minf(odds, 0.95) * 100.0)
+	return ""
 
 
 # ---------------------------------------------------------------- floor plan

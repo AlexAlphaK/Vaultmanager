@@ -34,6 +34,7 @@ const ACHIEVEMENTS := {
 	"week_1": {"name": "First week", "desc": "Finish your first week of trading.", "key": "days", "goal": 7},
 	"day_100": {"name": "Old hand", "desc": "Trade for 100 days.", "key": "days", "goal": 100},
 	"orders_5": {"name": "Collector's friend", "desc": "Fill 5 special orders for collectors.", "key": "orders_filled", "goal": 5},
+	"staff_veteran": {"name": "Part of the family", "desc": "Keep someone on staff until they are a veteran (level 5).", "key": "staff_level", "goal": 5},
 	"robber_1": {"name": "Not today", "desc": "Stop a robber, with the guard or the panic button.", "key": "robbers_stopped", "goal": 1},
 	"tier_1": {"name": "Moving up", "desc": "Move the shop to Main Street.", "key": "tier", "goal": 1},
 	"tier_top": {"name": "Biggest in town", "desc": "Open the town landmark store.", "key": "tier", "goal": 3},
@@ -137,6 +138,8 @@ func value_of(key: String) -> float:
 			return Calendar.best_of("gift_rush")
 		"chapters":
 			return Story.chapters_done()
+		"staff_level":
+			return Staff.top_level()
 	return total(key)
 
 
