@@ -16,28 +16,29 @@ const STEP := 0.25 # shop-clock seconds per tick
 ## `pack` is seconds per piece in the vault, and `bench` is seconds per coin test (half
 ## again for jewellery and bars), which only costs shop time in a rush. `till_run` is how
 ## full the till gets, as a share of its limit, before the bot takes it to the vault, and
-## `hire` lists [role, from tier] for the staff the bot takes on.
+## `hire` lists [role, from tier] for the staff the bot takes on, and `restock` scales how
+## many coins of each metal the bot keeps on the shelf with the morning wholesaler.
 const BOTS := {
 	"novice": {
 		"test": 0.75, "fake_easy": 0.8, "fake_hard": 0.45, "false_alarm": 0.1,
 		"grade": 0.5, "plated": 0.7, "stone": 0.5, "bar_easy": 0.8, "bar_hard": 0.4, "bar_core": 0.2,
 		"buy": 0.9, "max_buy": 0.97, "premium": 0.06, "min_premium": 0.03, "holds": 0,
 		"slow": 6.0, "pack": 4.0, "pack_order": "random", "buffer": 1.0, "shady_refuse": 0.0,
-		"bench": 25.0, "till_run": 2.0, "hire": [],
+		"bench": 25.0, "till_run": 2.0, "hire": [], "restock": 0.5,
 	},
 	"average": {
 		"test": 0.85, "fake_easy": 0.95, "fake_hard": 0.75, "false_alarm": 0.04,
 		"grade": 0.75, "plated": 0.88, "stone": 0.75, "bar_easy": 0.95, "bar_hard": 0.7, "bar_core": 0.5,
 		"buy": 0.9, "max_buy": 0.95, "premium": 0.07, "min_premium": 0.04, "holds": 1,
 		"slow": 4.0, "pack": 2.5, "pack_order": "value", "buffer": 1.5, "shady_refuse": 0.3,
-		"bench": 15.0, "till_run": 0.9, "hire": [["clerk", 1]],
+		"bench": 15.0, "till_run": 0.9, "hire": [["clerk", 1]], "restock": 1.0,
 	},
 	"expert": {
 		"test": 1.0, "fake_easy": 0.99, "fake_hard": 0.95, "false_alarm": 0.01,
 		"grade": 0.95, "plated": 0.98, "stone": 0.95, "bar_easy": 0.99, "bar_hard": 0.92, "bar_core": 0.85,
 		"buy": 0.88, "max_buy": 0.93, "premium": 0.08, "min_premium": 0.05, "holds": 2,
 		"slow": 2.5, "pack": 1.5, "pack_order": "value", "buffer": 2.0, "shady_refuse": 0.0,
-		"bench": 9.0, "till_run": 0.7, "hire": [["clerk", 0], ["guard", 1]],
+		"bench": 9.0, "till_run": 0.7, "hire": [["clerk", 0], ["guard", 1]], "restock": 1.0,
 	},
 }
 ## The XRF analyzer reads the surface: plated and low-fineness bars stop fooling the bot.
@@ -46,6 +47,10 @@ const HARD_COIN_FAKES := ["clad", "tungsten"]
 const EASY_BAR_FAKES := ["brass", "copper"]
 const CORE_BAR_FAKES := ["lead_core", "tungsten_core"]
 ## Expert's upgrade order; the others buy the cheapest they can afford.
+## Coins of each metal a bot keeps on the shelf (times its `restock` and the deal size),
+## and cash it keeps back for sellers on top of the rent reserve.
+const SHELF := {"XAU": 8, "XAG": 40, "XPT": 3}
+const RESTOCK_RESERVE := 5000.0
 const EXPERT_ORDER := ["alarm", "cctv", "window_sign", "bench", "xrf_gun", "fraud_cover", "case_lights", "big_safe",
 	"radio_ads", "bar_dealer", "time_lock", "lounge", "billboard"]
 
@@ -103,7 +108,7 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 	var out := {"tier_day": [1, -1, -1, -1], "worth": [], "rep": [], "break_ins": 0, "stolen": 0.0, "fakes_bought": 0,
 		"caught": 0, "served": 0, "bills": 0.0, "overdrawn_days": 0, "upgrades": {}, "profit": 0.0,
 		"premium_income": 0.0, "lowest_cash": Shop.cash, "losses": {}, "gains": {}, "short_cash": 0, "out_of_stock": 0, "walked_by": 0,
-		"holdups": 0, "robbers_stopped": 0}
+		"holdups": 0, "robbers_stopped": 0, "restocked": 0.0}
 	for d in days:
 		_morning(out)
 		_play_day(out)
@@ -145,7 +150,26 @@ func _morning(out: Dictionary) -> void:
 		if Progress.tier >= h[1] and Staff.can_hire(h[0]) and Shop.cash - Staff.ROLES[h[0]].fee >= Progress.weekly_rent() * bot.buffer + 8000.0:
 			Staff.hire(h[0])
 			out.upgrades[h[0]] = Shop.day
+	_restock(out)
 	shop._open_shop()
+
+
+## Tops each metal up to the bot's shelf level from the wholesaler, most plentiful coin first.
+func _restock(out: Dictionary) -> void:
+	var reserve: float = Progress.weekly_rent() * bot.buffer + RESTOCK_RESERVE * Progress.deal_size()
+	for metal in SHELF:
+		var target := roundi(SHELF[metal] * bot.restock * Progress.deal_size())
+		var items := Wholesaler.coin_list().filter(func(it): return it.metal == metal)
+		while Shop.count_of(metal) < target and not items.is_empty():
+			items.sort_custom(func(a, b): return Wholesaler.left(a) > Wholesaler.left(b))
+			var item: BullionItem = items[0]
+			var qty := mini(Wholesaler.bulk(item), target - Shop.count_of(metal))
+			if Wholesaler.left(item) <= 0 or Shop.cash - Wholesaler.price(item) * qty < reserve:
+				break
+			var n := Wholesaler.buy(item, qty)
+			if n <= 0:
+				break
+			out.restocked += Wholesaler.price(item) * n
 
 
 func _play_day(out: Dictionary) -> void:
@@ -434,6 +458,7 @@ func _print_summary(name: String, results: Array, days: int) -> void:
 		_sum(results, "short_cash") / n, _sum(results, "out_of_stock") / n, _sum(results, "walked_by") / n])
 	print("  per run: %.1f hold-ups at the counter, %.1f robbers stopped (guard or panic button)" % [
 		_sum(results, "holdups") / n, _sum(results, "robbers_stopped") / n])
+	print("  per run: %s bought from the wholesaler" % Market.format_money(_sum(results, "restocked") / n))
 	var ups := {}
 	for r in results:
 		for id in r.upgrades:

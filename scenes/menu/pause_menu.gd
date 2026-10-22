@@ -11,6 +11,7 @@ const SIZE := Vector2(150, 132)
 var _root: Control
 var _panel: PanelContainer
 var _day: Label
+var _note: Label
 var _resume: Button
 var _settings: SettingsPanel
 
@@ -50,11 +51,10 @@ func _ready() -> void:
 	_button(box, "Quit to title", _quit_to_title)
 	if not OS.has_feature("web"):
 		_button(box, "Quit game", func(): get_tree().quit())
-	var note := Label.new()
-	note.text = "Saved each morning"
-	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	note.add_theme_color_override("font_color", Pal.INK_FAINT)
-	box.add_child(note)
+	_note = Label.new()
+	_note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_note.add_theme_color_override("font_color", Pal.INK_FAINT)
+	box.add_child(_note)
 	visible = false
 
 
@@ -66,6 +66,7 @@ func open() -> void:
 	if visible:
 		return
 	_day.text = "%s, day %d" % [Day.weekday(), Shop.day]
+	_note.text = "Slot %d · saved morning and night" % SaveGame.slot
 	visible = true
 	_panel.visible = true
 	get_tree().paused = true
