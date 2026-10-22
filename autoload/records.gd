@@ -11,7 +11,7 @@ signal unlocked(id: String)
 const HISTORY_DAYS := 60
 const BEST_DAYS := 5
 ## Stats in Shop.stats that total() adds while the shop is trading.
-const LIVE_STATS := ["bought", "sold", "profit", "caught", "scammed", "stolen", "robbers_stopped"]
+const LIVE_STATS := ["bought", "sold", "profit", "caught", "scammed", "stolen", "robbers_stopped", "orders_filled"]
 
 ## id -> {"name", "desc", "key" (a value from value_of()), "goal"}. Checked in this order.
 const ACHIEVEMENTS := {
@@ -33,6 +33,7 @@ const ACHIEVEMENTS := {
 	"clean_week": {"name": "Clean books", "desc": "Go 7 days in a row without buying a fake.", "key": "best_clean", "goal": 7},
 	"week_1": {"name": "First week", "desc": "Finish your first week of trading.", "key": "days", "goal": 7},
 	"day_100": {"name": "Old hand", "desc": "Trade for 100 days.", "key": "days", "goal": 100},
+	"orders_5": {"name": "Collector's friend", "desc": "Fill 5 special orders for collectors.", "key": "orders_filled", "goal": 5},
 	"robber_1": {"name": "Not today", "desc": "Stop a robber, with the guard or the panic button.", "key": "robbers_stopped", "goal": 1},
 	"tier_1": {"name": "Moving up", "desc": "Move the shop to Main Street.", "key": "tier", "goal": 1},
 	"tier_top": {"name": "Biggest in town", "desc": "Open the town landmark store.", "key": "tier", "goal": 3},
@@ -72,7 +73,8 @@ func _ready() -> void:
 
 func reset() -> void:
 	totals = {"days": 0, "bought": 0.0, "sold": 0.0, "profit": 0.0, "caught": 0, "scammed": 0,
-		"stolen": 0.0, "buys": 0, "sales": 0, "robbers_stopped": 0}
+		"stolen": 0.0, "buys": 0, "sales": 0, "robbers_stopped": 0,
+		"orders_filled": 0}
 	peaks = {"worth": 0.0, "rep": 0.0, "best_day": 0.0, "streak": 0, "clean": 0}
 	streak = 0
 	clean_streak = 0
@@ -172,6 +174,7 @@ func _on_day_ended(day: int, report: Dictionary) -> void:
 	totals.caught = int(totals.caught) + int(stats.get("caught", 0.0))
 	totals.scammed = int(totals.scammed) + scammed
 	totals.robbers_stopped = int(totals.get("robbers_stopped", 0)) + int(stats.get("robbers_stopped", 0.0))
+	totals.orders_filled = int(totals.get("orders_filled", 0)) + int(stats.get("orders_filled", 0.0))
 	totals.buys = int(totals.buys) + int(_today.get("buys", 0))
 	totals.sales = int(totals.sales) + int(_today.get("sales", 0))
 	_today.clear()

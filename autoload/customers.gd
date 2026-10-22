@@ -145,12 +145,16 @@ func reset() -> void:
 
 ## The next customer through the door. `event` is from MarketEvents.customer_event().
 func next_customer(rng: RandomNumberGenerator, event := {}) -> Customer:
+	var collector := Orders.next_customer(rng, event)
+	if collector:
+		return collector
 	if event.is_empty() and rng.randf() < REGULAR_ODDS:
 		var due := due_regulars()
 		if not due.is_empty():
 			return regular_customer(due[rng.randi() % due.size()], rng)
 	var c := Customer.create(Shop.day, Shop.reputation, Shop.coin_list(), rng, event)
 	apply_archetype(c, pick_archetype(rng, event), rng, event)
+	Orders.maybe_rare_seller(c, rng)
 	return c
 
 
@@ -236,6 +240,21 @@ func apply_archetype(c: Customer, id: String, rng: RandomNumberGenerator, event 
 			c.fake = ""
 			c.wanted_exact = true
 			c.name = COLLECTOR_NAMES[rng.randi() % COLLECTOR_NAMES.size()]
+			# a rare coin in the vault draws them first, at a collector's price
+			var rare := Shop.rare_list().filter(func(it): return Shop.spare_of(it) > 0)
+			if not rare.is_empty() and rng.randf() < 0.7:
+				c.item = rare[rng.randi() % rare.size()]
+				c.qty = 1
+				c.max_premium = c.item.collector_premium * rng.randf_range(0.8, 1.0)
+				c.ceiling_premium = c.max_premium
+				c.haggle = 0.0
+				c.max_patience *= 1.4
+				c.say = COLLECTOR_LINES[rng.randi() % COLLECTOR_LINES.size()] % c.item.display_name
+				look.glasses = true
+				look.top = 1
+				c.patience = c.max_patience
+				c.set_look(look)
+				return
 			# usually after something you have
 			var held := Shop.coin_list().filter(func(it): return Shop.count_of_item(it) > 0)
 			c.item = held[rng.randi() % held.size()] if not held.is_empty() and rng.randf() < 0.6 \
@@ -336,6 +355,8 @@ func arrival(c: Customer) -> String:
 
 ## A short word on the counter card about who this is, or "".
 func tag(c: Customer) -> String:
+	if c.kind == "seller" and c.item and c.item.rare and not c.piece and not c.bar and c.archetype != "shady":
+		return "old coin"
 	if c.regular_id != "":
 		return "regular" if c.name == _by_id[c.regular_id].name else ""
 	return TAGS.get(c.archetype, "")
@@ -343,6 +364,7 @@ func tag(c: Customer) -> String:
 
 ## The shop calls this as each customer leaves. Moves regulars' stories along.
 func on_leave(c: Customer) -> void:
+	Orders.on_leave(c)
 	if c.regular_id == "" or not state.has(c.regular_id):
 		return
 	var reg: Dictionary = _by_id[c.regular_id]
@@ -427,6 +449,11 @@ func _reward_text(r: Dictionary) -> String:
 	if rep != 0.0:
 		parts.append("%s%.1f stars" % ["+" if rep > 0.0 else "", rep])
 	return ("Reward: " if float(r.get("reputation", 0.0)) >= 0.0 else "") + ", ".join(parts)
+
+
+## Adds a line to tonight's summary.
+func add_story(line: String) -> void:
+	_story(line)
 
 
 func _story(line: String) -> void:

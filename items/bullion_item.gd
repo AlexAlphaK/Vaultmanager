@@ -12,6 +12,11 @@ extends Resource
 @export var thickness_mm := 0.0
 ## Typical premium over melt when the shop sells it (0.05 = 5%).
 @export var sell_premium := 0.05
+## A collectible coin (see Orders): only collectors buy it, for its rarity, not its metal.
+## Everyday buyers and the wholesaler never deal in rare coins.
+@export var rare := false
+## What collectors pay over melt for a rare coin (0.5 = 50%).
+@export var collector_premium := 0.0
 
 @export_group("Art")
 ## Colour ramp from Pal.METAL; empty picks one from the metal.

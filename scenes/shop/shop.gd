@@ -289,6 +289,9 @@ func _on_action(id: String) -> void:
 		return
 	if c.kind == "visit" and id != "decline":
 		return
+	if c.kind == "order":
+		_order_answer(c, id)
+		return
 	if c == robber:
 		if id == "decline":
 			_hand_over()
@@ -314,6 +317,16 @@ func _on_action(id: String) -> void:
 			_sell(c)
 		"decline":
 			_dismiss(c, "%s said goodbye." % c.name if c.kind == "visit" else "%s left without buying." % c.name)
+
+
+## A collector asked for a special order: "sell" takes it, "decline" turns it down.
+func _order_answer(c: Customer, id: String) -> void:
+	if id == "sell":
+		Orders.accept(c)
+		Sfx.play(self, Sfx.click(), -6.0)
+		_dismiss(c)
+	elif id == "decline":
+		_dismiss(c, "%s will ask another dealer." % c.name)
 
 
 func _offer(c: Customer) -> void:
