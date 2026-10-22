@@ -46,6 +46,7 @@ platinum and palladium prices follow the real market.
 | `ui/save_slots_panel.gd` | The save slots page on the title screen: play, start or delete each slot |
 | `tests/smoke_test.tscn` | Headless checks: run `godot --headless --path . res://tests/smoke_test.tscn` |
 | `tests/balance_sim.tscn` | Balance check: bot players run the real shop for many days (see Balance below) |
+| `tests/bug_bot.tscn` | Bug sweep: a bot clicks through the real game looking for stuck screens and save bugs (see Bug bots below) |
 | `price-service/` | Cloudflare Worker that polls the metals API and serves `GET /prices` |
 | `prototype/index.html` | Single-file browser prototype (simulated prices, coin testing minigame) |
 
@@ -369,6 +370,27 @@ main before the pass (6 seeds × 100 days, novice over 18 seeds): novice day-100
 → about $17-25k with 1-12 overdrawn days instead of 23, and some novices reach Main Street;
 average Main Street day 42 → 27 and Bullion house day 86 (4 of 6 runs) → 73 (all runs); expert
 unchanged at about day 16 / 34-40 / 71-76.
+
+## Bug bots
+
+`tests/bug_bot.tscn` plays the game from the title screen through the real GUI, like a
+restless player: it clicks whatever buttons are on screen, clicks and drags over the
+benches, the vault and the trading desk, presses Esc, quits to the title mid-day and on the
+summary, switches save slots and starts new shops. It reports:
+
+- stuck screens (no progress for a long time whatever it clicks), with its last actions
+- buttons pushed off the edge of the screen
+- saves that load differently from what was written, and new shops that inherit an old shop's state
+
+`tests/run_bug_bots.sh` runs several bots side by side (half of them topped up with cash and
+stars every morning so they reach the late game) and sums up their findings and every
+script error Godot printed:
+
+    GODOT=/path/to/godot tests/run_bug_bots.sh 4 15 --speed=40
+
+The arguments are the number of bots and real minutes each; logs go to `bug_bot_logs/`. The
+bots use their own save slots and settings file, so your saves are safe. Run them after
+adding a screen or anything that is saved.
 
 ## Data sources
 
