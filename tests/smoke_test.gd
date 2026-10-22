@@ -37,6 +37,7 @@ func _ready() -> void:
 	await _check_jewellery_deals()
 	await _check_bar_deals()
 	_check_staff()
+	_check_staff_progression()
 	_check_wholesaler()
 	await _check_orders()
 	_check_rush_hours()
@@ -52,6 +53,7 @@ func _ready() -> void:
 	await _check_story()
 	_check_settings()
 	_check_localization()
+	await _check_translated_panels()
 	_check_music()
 	await _check_menus()
 	await _check_pad()
@@ -843,6 +845,77 @@ func _check_staff() -> void:
 	expect(Staff.hired.is_empty(), "a new game starts with no staff")
 
 
+## Staff level up with work, ask for raises once their pay lags their level, sour and
+## quit if refused for long, have bad days, and keep it all in the save.
+func _check_staff_progression() -> void:
+	SaveGame.new_game()
+	Shop.day = 1
+	Day.begin_day()
+	Shop.cash = 50000.0
+	expect(Staff.hire("clerk") and Staff.hire("guard"), "hire both for the progression check")
+	expect(Staff.level("clerk") == 1 and Staff.raises_owed("clerk") == 0, "a new hire starts at level 1, fairly paid")
+	var slow := Staff.clerk_seconds()
+	var stop := Staff.guard_stop()
+	Staff.gain_xp("clerk", Staff.LEVEL_XP[2])
+	Staff.gain_xp("guard", Staff.LEVEL_XP[1])
+	expect(Staff.level("clerk") == 3 and Staff.level("guard") == 2, "experience brings levels")
+	expect(Staff.clerk_seconds() < slow and Staff.clerk_persuade() > 0.0, "a skilled clerk is quicker and talks buyers round")
+	expect(Staff.guard_stop() > stop, "a seasoned guard stops more robbers")
+	expect(Staff.raises_owed("clerk") == 2 and Staff.fair_wage("clerk") > Staff.wage("clerk"), "levels make the old wage unfair")
+	# a day's work, underpaid: their mood slips and they ask in the morning
+	var mood := float(Staff.info("clerk").mood)
+	Day.open_shop()
+	Day.close_shop()
+	var report := Day.end_day()
+	expect(float(Staff.info("clerk").mood) < mood, "underpaid staff sour")
+	expect(report.lines.any(func(l): return str(l).contains("level")), "level-ups make the day's summary")
+	Shop.next_day()
+	Day.begin_day()
+	expect(Staff.raise_requests().has("clerk") and Staff.morning_line().contains("raise"), "the clerk asks for a raise in the morning")
+	var wage := Staff.wage("clerk")
+	mood = float(Staff.info("clerk").mood)
+	expect(Staff.agree_raise("clerk") and Staff.wage("clerk") > wage and float(Staff.info("clerk").mood) > mood, "a raise lifts pay and mood")
+	expect(not Staff.agree_raise("clerk"), "one raise per request")
+	Staff.info("guard").asking = true
+	mood = float(Staff.info("guard").mood)
+	expect(Staff.refuse_raise("guard") and float(Staff.info("guard").mood) < mood, "saying no stings")
+	# the morning roll is fixed for the day, even when the day is replayed
+	var before := Staff.to_dict()
+	Staff.from_dict(before)
+	Staff._rolled_day = 0
+	Day.begin_day()
+	expect(Staff.info("clerk").today == before.crew.clerk.today and Staff.info("guard").today == before.crew.guard.today, "a replayed morning rolls the same bad days")
+	# bad days: sick staff stay home and are not paid
+	Staff.info("guard").today = "sick"
+	expect(not Staff.on_duty("guard") and Staff.guard_stop() == 0.0, "a guard off sick guards nothing")
+	Staff.info("clerk").today = "grumpy"
+	expect(Staff.clerk_persuade() == 0.0 and Staff.clerk_seconds() > Staff.CLERK_SECONDS / (1.0 + Progress.effect("clerk_speed")), "a grumpy clerk is slow and won't haggle")
+	Day.open_shop()
+	Day.close_shop()
+	report = Day.end_day()
+	expect(not report.ledger.any(func(e): return str(e.label) == "Wages: %s" % Staff.ROLES.guard.name), "no wages for a sick day")
+	# saved and loaded with levels and mood
+	expect(SaveGame.save_game(), "save with staff progress")
+	var level := Staff.level("clerk")
+	Staff.reset()
+	expect(SaveGame.load_game() and Staff.level("clerk") == level and int(Staff.info("clerk").raises) == 1, "levels and raises come back from the save")
+	# old saves without the crew section still load
+	Staff.from_dict({"hired": ["clerk"]})
+	expect(Staff.has("clerk") and Staff.level("clerk") == 1, "an old save's staff start at level 1")
+	# fed up for good: they quit in the morning
+	Staff.info("clerk").mood = 0.0
+	Staff.info("clerk").days = 3
+	Shop.next_day()
+	Day.begin_day()
+	expect(not Staff.has("clerk"), "staff with no patience left quit")
+	# a veteran earns the achievement
+	expect(Staff.hire("guard"), "hire a guard again")
+	Staff.gain_xp("guard", Staff.LEVEL_XP[4])
+	expect(Staff.level("guard") == 5 and Records.value_of("staff_level") == 5.0, "the ledger sees a veteran")
+	SaveGame.new_game()
+	expect(Staff.crew.is_empty(), "a new game clears staff progress")
+
+
 ## The morning wholesaler sells genuine coins a little over melt, only before opening.
 func _check_wholesaler() -> void:
 	SaveGame.new_game()
@@ -1493,7 +1566,7 @@ func _check_rush_day() -> void:
 	buyer.pos = ShopArt.CLERK_SLOT
 	buyer.walking = false
 	var sold: float = Shop.stats.sold
-	shop._tick(shop.CLERK_SECONDS + 0.1)
+	shop._tick(Staff.CLERK_SECONDS + 0.1)
 	expect(shop.at_clerk == null and Shop.stats.sold > sold and buyer.dealt, "the clerk rings up the sale")
 	expect(shop.till > 0.0, "the sale goes in the till")
 	# a vault run empties the till; the counter is shut while you are away
@@ -1850,7 +1923,9 @@ func _check_trading_desk() -> void:
 	desk._process(DeskSession.SECONDS + 1.0)
 	expect(desk.closed and absf(desk.session.exposure()) < 0.01, "at the bell every position closes")
 	var booked := Day.ledger.filter(func(e): return e.label == "Trading desk")
-	expect(booked.size() == 1 and absf(absf(booked[0].usd) - absf(desk.session.pnl())) < 0.01, "the result goes on today's ledger")
+	# a flat session (under half a dollar either way) books nothing
+	expect(absf(desk.session.pnl()) < 0.5 and booked.is_empty() \
+		or booked.size() == 1 and absf(absf(booked[0].usd) - absf(desk.session.pnl())) < 0.01, "the result goes on today's ledger")
 	expect(DeskSession.last_day == Shop.day and not DeskSession.available(), "one session a morning")
 	desk.finished.emit(desk.session.pnl())
 	expect(shop._desk == null and shop.hud._panels.page == "morning", "the desk closes back to the morning")
@@ -2053,6 +2128,32 @@ func _check_localization() -> void:
 	Settings.path = real_path
 	Settings.load_settings()
 	TranslationServer.set_locale("en")
+
+
+
+## Longer translations must not push the morning pages wider than their area, or buttons
+## run off screen (the bug bots caught the dealer's Buy buttons doing that in German).
+func _check_translated_panels() -> void:
+	Tutorial.skip_all()
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	var panels: Control = shop.hud._panels
+	for item in Shop.rare_list().slice(0, Orders.MAX_OPEN.max()):
+		Orders.open.append({"id": Orders.open.size(), "name": "Professor Okonkwo-Hargreaves", "qty": 3, "item": item.id,
+			"due": Shop.day + 2, "premium": 0.5})
+		Orders.dealer[item.id] = 2
+	for lang in ["en", "de", "es", "fr"]:
+		TranslationServer.set_locale(lang)
+		for page in ["show_morning", "show_upgrades", "show_plan", "show_wholesale", "show_town", "show_orders", "show_ledger"]:
+			panels.call(page)
+			await get_tree().process_frame
+			expect(panels.size.x <= panels.AREA.size.x, "%s %s fits the panel width (%d px)" % [lang, page, panels.size.x])
+	TranslationServer.set_locale("en")
+	Orders.reset()
+	shop.queue_free()
+	await get_tree().process_frame
+	Shop.reset()
 
 
 func _check_music() -> void:

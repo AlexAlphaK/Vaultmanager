@@ -24,7 +24,7 @@ ANY = re.compile(r'(?<![&^\w])' + LIT)
 SINK = re.compile(r'\.(text|tooltip_text)\s*[=+]|\b(_label|_button|_caption|_heading|_title|_pair|_cell|_row|_menu_button|'
 	r'_small_button|_show|_send_after|_upgrade_row|_requirement|_town_button|_row_button|_set_text|_set_cell|_flash)\(')
 DATA_KEY = re.compile(r'"(name|title|label|short|tag|text|desc|news|headline|hint|banner|letter|say|after|log|line|shrugged)":\s*' + LIT)
-NAME_LISTS = re.compile(r'^\s*const (WEEKDAYS|MONTHS|METAL_NAMES|TOOL_NAMES|GRADE_NAMES|KIND_NAMES|STONE_NAMES|SCALING_NAMES|SLIDERS|HEADS|TAGS|SIGMA_READS)\b')
+NAME_LISTS = re.compile(r'^\s*const (LEVEL_NAMES|WEEKDAYS|MONTHS|METAL_NAMES|TOOL_NAMES|GRADE_NAMES|KIND_NAMES|STONE_NAMES|SCALING_NAMES|SLIDERS|HEADS|TAGS|SIGMA_READS)\b')
 NOT_TEXT = {"Button", "PrimaryButton", "DangerButton", "ToolButton", "BigButton", "Label", "Panel", "PanelContainer",
 	"HSlider", "OptionButton", "PopupMenu", "ProgressBar", "Master", "SFX", "XAU", "XAG", "XPT", "XPD", "USD"}
 

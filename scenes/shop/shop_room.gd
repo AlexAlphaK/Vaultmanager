@@ -108,7 +108,7 @@ func _draw() -> void:
 	var kp := screen_pos(spot.x, spot.y).round()
 	var breathe := 1.0 if fmod(_time, 2.4) < 1.2 else 0.0
 	draw_texture(_keeper[1 if _blinking(_time, 0.0) else 0], kp + Vector2(-8, -28 + breathe))
-	if Staff.has("clerk"):
+	if Staff.on_duty("clerk"):
 		var cp := screen_pos(ShopArt.CLERK_SPOT.x, ShopArt.CLERK_SPOT.y).round()
 		var bob := (1.0 if fmod(_time, 0.5) < 0.25 else 0.0) if clerk_busy else breathe
 		draw_texture(_clerk, cp + Vector2(-8, -28 + bob))
@@ -192,7 +192,7 @@ func _draw_customers() -> void:
 	# untyped, so the guard's spot and the rope posts (by index) can be sorted in with the customers
 	var order: Array = []
 	order.append_array(customers)
-	if Staff.has("guard"):
+	if Staff.on_duty("guard"):
 		order.append(ShopArt.GUARD_SPOT)
 	if Progress.has_upgrade("queue_ropes"):
 		order.append_array(range(ShopArt.ROPE_POSTS.size()))
