@@ -1017,6 +1017,12 @@ func _check_rivals() -> void:
 	Shop.reputation = 4.5
 	expect(Rivals.overall_share() > share, "stars win customers too")
 	expect(Rivals.share("seller", "shady") < Rivals.share("seller"), "shady sellers drift to the pawn shop")
+	var quiet := true
+	for d in range(3, 40):
+		Rivals._on_day_started(d)
+		quiet = quiet and Rivals.move_of("sterling") == ""
+	expect(Progress.tier == 0 and quiet, "Sterling leaves a corner counter alone")
+	Rivals.reset()
 	# terrible prices and a bad name send people across the street
 	Shop.reputation = 0.5
 	Shop.set_buy_percent(0.7)
@@ -1024,7 +1030,8 @@ func _check_rivals() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 11
 	var c := Customer.create(5, 0.5, Shop.coin_list(), rng)
-	expect(Rivals.divert_odds(c) > 0.3, "a bad deal sends customers to the rivals")
+	# the corner counter's customers are mostly locals, so at most MAX_DIVERT[0] cross the street
+	expect(Rivals.divert_odds(c) > 0.15, "a bad deal sends customers to the rivals")
 	c.regular_id = "lev"
 	expect(Rivals.divert_odds(c) == 0.0, "regulars always come in")
 	c.regular_id = ""
@@ -1040,7 +1047,7 @@ func _check_rivals() -> void:
 		shop._spawn()
 		shop.queue.clear()
 	var lost := int(Shop.stats.get("lost_to_rival", 0.0))
-	expect(lost >= 8, "the shop loses customers to the rivals (%d of 40)" % lost)
+	expect(lost >= 4, "the shop loses customers to the rivals (%d of 40)" % lost)
 	expect(int(Rivals.lost_today.get("sterling", 0)) + int(Rivals.lost_today.get("pawn", 0)) == lost, "each lost customer is booked to a rival")
 	# the rivals' books: they grow, and the summary says where the customers went
 	var worth := Rivals.worth_of("sterling")
@@ -1403,6 +1410,9 @@ func _check_rush_hours() -> void:
 	expect(RushHours.summary(1).contains("lunch 11:45"), "the morning briefing lists the rushes")
 	expect(RushHours.grab_chance(RushHours.till_limit() * 0.5, true) == 0.0, "a light till is safe")
 	expect(RushHours.grab_chance(RushHours.till_limit() * 2.0, true) > RushHours.grab_chance(RushHours.till_limit() * 2.0, false), "a rush makes snatches likelier")
+	var limit := RushHours.till_limit()
+	expect(RushHours.grab_chance(limit * 1.1, false) < RushHours.grab_chance(limit * 2.0, false), "a till just over the limit is safer than an overflowing one")
+	expect(RushHours.grab_amount(limit * 6.0) <= limit * RushHours.GRAB_CAP + 0.01, "one snatch takes at most half a till")
 
 
 ## In a rush the clock runs on through a test, a full queue turns people away, the clerk
@@ -1534,6 +1544,9 @@ func _check_burglar_crews() -> void:
 		var values := v.pieces.map(func(p): return p.value)
 		values.sort()
 		expect(kids.stolen.all(func(p): return p.value >= values[-3]), "kids grab the most valuable pieces")
+		# the insurer pays back a quarter of what was left on the tray
+		v.apply(kids)
+		expect(absf(kids.insured - kids.value * VaultLayout.INSURED.tray * (1.0 - Security.recover_share())) < 1.0, "insurance pays back part of a tray burglary")
 	# with the wall safe full and the tray empty, kids get nothing and pros usually crack it
 	for p in v.pieces:
 		p.area = VaultLayout.WALL
@@ -1910,7 +1923,8 @@ func _check_vault_layout() -> void:
 	expect(report.break_in and report.stolen.size() == 2, "burglars take only what's on the tray")
 	v.apply(report)
 	expect(Shop.count_of("XAG") == 0 and Shop.count_of("XAU") == 1, "stolen coins leave the stock")
-	expect(is_equal_approx(Shop.cash, before - cash[0].cash), "stolen cash leaves the till")
+	expect(is_equal_approx(Shop.cash, before - cash[0].cash + report.insured), "stolen cash leaves the till (the insurer pays for coins, not cash)")
+	expect(is_equal_approx(report.insured, tube.value * VaultLayout.INSURED.tray * (1.0 - Security.recover_share())), "insurance pays back part of the tube")
 	expect(Shop.stats.get("stolen", 0.0) > 0.0, "the loss is counted")
 	# a big silver stack packs into monster boxes
 	Shop.reset()

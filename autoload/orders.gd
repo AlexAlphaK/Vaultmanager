@@ -29,8 +29,9 @@ const MIN_REP := 2.0
 const MAX_OPEN: Array[int] = [1, 2, 3, 3]
 ## Days the collector gives you to find the coins.
 const DAYS := Vector2i(3, 6)
-## Share of orders that are for a rare coin rather than a bulk lot of everyday coins.
-const RARE_SHARE := 0.65
+## Share of orders that are for a rare coin rather than a bulk lot of everyday coins, per
+## shop tier: corner counter collectors mostly want coins the wholesaler has.
+const RARE_SHARE: Array[float] = [0.3, 0.6, 0.65, 0.65]
 ## Bulk orders: coins per order (before Progress.deal_size()) and premium over melt.
 const BULK_QTY := {"XAU": Vector2i(2, 5), "XAG": Vector2i(25, 60), "XPT": Vector2i(2, 4)}
 const BULK_PREMIUM := Vector2(0.1, 0.14)
@@ -140,7 +141,7 @@ func offer_customer(rng: RandomNumberGenerator) -> Customer:
 		"placed": Shop.day, "due": Shop.day + rng.randi_range(DAYS.x, DAYS.y), "visited": Shop.day}
 	var rares := Shop.rare_list().filter(func(it): return set_aside(it) == 0)
 	var item: BullionItem
-	if not rares.is_empty() and rng.randf() < RARE_SHARE:
+	if not rares.is_empty() and rng.randf() < RARE_SHARE[clampi(Progress.tier, 0, RARE_SHARE.size() - 1)]:
 		item = rares[rng.randi() % rares.size()]
 		o.qty = 1 if item.metal != "XAG" else rng.randi_range(1, 3)
 		o.premium = snappedf(item.collector_premium * rng.randf_range(RARE_PREMIUM.x, RARE_PREMIUM.y), 0.01)

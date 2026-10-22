@@ -77,8 +77,8 @@ func _ready() -> void:
 	var days := int(args.get("days", 120))
 	var first_seed := int(args.get("seed", 1))
 	var names: PackedStringArray = String(args.get("bots", "novice,average,expert")).split(",")
-	# each process gets its own save, so several sims can run side by side
-	SaveGame.path = "user://balance_sim_%s.json" % String(args.get("bots", "all")).replace(",", "_")
+	# each process gets its own save, so several sims (other bots or seeds) can run side by side
+	SaveGame.path = "user://balance_sim_%s_%d.json" % [String(args.get("bots", "all")).replace(",", "_"), first_seed]
 	SaveGame.delete_save()
 	_quiet_market()
 	if args.has("csv"):
@@ -93,7 +93,7 @@ func _ready() -> void:
 	for name in names:
 		all[name] = []
 		for r in runs:
-			all[name].append(run(name, first_seed + r, days))
+			all[name].append(await run(name, first_seed + r, days))
 	print("\nBalance check: %d runs x %d days per bot (%.1f s)\n" % [runs, days, (Time.get_ticks_msec() - t0) / 1000.0])
 	for name in names:
 		_print_summary(name, all[name], days)
@@ -128,6 +128,8 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 			break
 		_walk_prices()
 		shop._open_next_day()
+		# let the engine flush its deferred calls, or the message queue overflows on long runs
+		await get_tree().process_frame
 	return out
 
 
@@ -464,6 +466,8 @@ func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) ->
 			_add(out.losses, "hold-ups", -e.usd)
 		elif e.label == "Police recovered stolen goods":
 			_add(out.gains, "police recovered", e.usd)
+		elif e.label == "Insurance payout":
+			_add(out.gains, "insurance", e.usd)
 		elif e.label == "Tax Day":
 			_add(out.losses, "tax", -e.usd)
 		elif e.label == "Coin show booth":

@@ -357,6 +357,19 @@ the testing benches outside rush hours). Customers arrive per second, not per da
 bills (`Progress.TIERS` rent and upkeep, `Progress.INSURANCE_RATE`, `Staff.ROLES` wages,
 `Day.OVERDRAFT_RATE`) are sized for that length: change the day length and scale them with it.
 
+The whole-game balance pass (after rivals, special orders, seasons and the story landed) eased
+the corner counter for new players without touching the late game: rivals divert at most
+`Rivals.MAX_DIVERT[0]` (20%) of a corner counter's customers and Sterling makes no moves until
+`STERLING_FROM_TIER` (Main Street); `Orders.RARE_SHARE` is per tier (30% rare orders at the
+corner counter); `Customer.FAKE_ODDS` starts at 6% and the corner counter tops out at 9%; a till
+snatch grows with the overflow and takes at most `RushHours.GRAB_CAP` (half) of the till limit;
+corner counter burglars are mostly kids; and insurance pays back part of a burglary
+(`VaultLayout.INSURED`: 75% of the wall safe, 25% of the tray, no cash). Sim results compared with
+main before the pass (6 seeds × 100 days, novice over 18 seeds): novice day-100 net worth -$0.8k
+→ about $17-25k with 1-12 overdrawn days instead of 23, and some novices reach Main Street;
+average Main Street day 42 → 27 and Bullion house day 86 (4 of 6 runs) → 73 (all runs); expert
+unchanged at about day 16 / 34-40 / 71-76.
+
 ## Data sources
 
 | Data | Provider | Free tier (check before launch) | Refresh |

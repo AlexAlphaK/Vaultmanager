@@ -534,7 +534,7 @@ func _finish_vault_run() -> void:
 
 ## Someone reaches over the counter for an overfull till.
 func _till_grab() -> void:
-	var taken := till * RushHours.GRAB_SHARE
+	var taken := RushHours.grab_amount(till)
 	till -= taken
 	Day.add_expense("Snatched from the till", taken)
 	Shop.note("stolen", taken)

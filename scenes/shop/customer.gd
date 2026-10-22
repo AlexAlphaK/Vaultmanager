@@ -29,8 +29,8 @@ const BUYER_LINES_UP := ["Crypto burned me. I want something real.", "Adding to 
 ## Bars are faked less often, since a fake bar costs far more.
 ## Tuned with tests/balance_sim.tscn: missing a fake costs the whole price, and a fair
 ## deal earns about a tenth of it, so a player who tests most coins should come out ahead.
-const FAKE_ODDS := Vector2(0.08, 0.005)
-const FAKE_ODDS_MAX: Array[float] = [0.12, 0.16, 0.2, 0.22]
+const FAKE_ODDS := Vector2(0.06, 0.004)
+const FAKE_ODDS_MAX: Array[float] = [0.09, 0.15, 0.2, 0.22]
 const BAR_FAKE_SHARE := 0.6
 ## Odds a customer sells rather than buys (on a flat market), and the odds a seller
 ## brings jewellery, or else a bar, instead of coins. Only coin sellers stock the

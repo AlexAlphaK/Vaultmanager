@@ -389,6 +389,8 @@ func _show_result() -> void:
 		lines.append("Total lost: %s." % Market.format_money(report.value))
 		if report.get("recovered", 0.0) >= 1.0:
 			lines.append("The cameras caught them. Police got back %s." % Market.format_money(report.recovered))
+		if report.get("insured", 0.0) >= 1.0:
+			lines.append("Insurance pays back %s." % Market.format_money(report.insured))
 		Shop.log_event("Break-in overnight! Lost %s." % Market.format_money(report.value), "bad")
 	_result = PanelContainer.new()
 	add_child(_result)

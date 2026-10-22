@@ -13,6 +13,10 @@ const COIN_BOX := 5
 const CASH_PER_STRAP := 10000.0
 const MAX_STRAPS := 4
 const LEDGER_REPUTATION := 0.5
+## Share of a burglary the insurer pays back (the weekly insurance bill): most of what
+## was locked in the wall safe, a little of what was left on the counter tray. Cash and
+## whatever the police bring back are not covered.
+const INSURED := {"tray": 0.25, "wall": 0.75}
 
 ## Cells per piece kind at rotation 0, x right and y down.
 const SHAPES := {
@@ -179,6 +183,12 @@ func apply(report: Dictionary) -> void:
 		report.recovered = report.value * Security.recover_share()
 		if report.recovered >= 1.0:
 			Day.add_income("Police recovered stolen goods", report.recovered)
+		report.insured = 0.0
+		for p in report.stolen:
+			if p.get("cash", 0.0) <= 0.0:
+				report.insured += p.value * float(INSURED.get(p.area, 0.0)) * (1.0 - Security.recover_share())
+		if report.insured >= 1.0:
+			Day.add_income("Insurance payout", report.insured)
 
 
 func _pack_coins(metal: String, entries: Array) -> void:

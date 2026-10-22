@@ -33,9 +33,10 @@ const STAR_WEIGHT := 0.6
 const PAWN_JEWELLERY := 2.0
 const PAWN_SHADY := 4.0
 ## Your fair share of the town's customers. Below it some cross the street, up to
-## MAX_DIVERT of them; above it they come faster, up to MAX_BOOST.
+## MAX_DIVERT of them (per shop tier: the corner counter's customers are mostly from
+## the block and rarely shop around); above it they come faster, up to MAX_BOOST.
 const FAIR_SHARE := 0.5
-const MAX_DIVERT := 0.45
+const MAX_DIVERT: Array[float] = [0.2, 0.35, 0.45, 0.45]
 const MAX_BOOST := 1.15
 ## Sterling's prices move a point a morning, within these limits.
 const STERLING_BUY := Vector2(0.85, 0.93)
@@ -45,6 +46,8 @@ const STERLING_STARS_MAX := 4.3
 ## Odds a rival without a move under way makes one in the morning, and the day they start.
 const MOVE_ODDS := {"sterling": 0.25, "pawn": 0.2}
 const MOVE_FROM_DAY := {"sterling": 3, "pawn": 4}
+## Sterling doesn't bother with a corner counter: its moves start once you reach this tier.
+const STERLING_FROM_TIER := 1
 ## A rival's moves: `days` it lasts (0 = at once), what it does while it lasts.
 const MOVES := {
 	"price_war": {"rival": "sterling", "days": 3,
@@ -198,7 +201,7 @@ func divert_odds(c: Customer) -> float:
 	# story beats always come in (town event crowds shop around like anyone else)
 	if c.regular_id != "" or (c.event_id != "" and not Calendar.is_town_event(c.event_id)) or c.story != "" or c.kind == "visit" or c.kind == "robber" or not c.order.is_empty():
 		return 0.0
-	return clampf(1.0 - share_for(c) / FAIR_SHARE, 0.0, MAX_DIVERT)
+	return clampf(1.0 - share_for(c) / FAIR_SHARE, 0.0, MAX_DIVERT[clampi(Progress.tier, 0, MAX_DIVERT.size() - 1)])
 
 
 ## The rival customer `c` walks to instead of your shop, or "" when they come in.
@@ -332,6 +335,8 @@ func _on_day_started(day: int) -> void:
 		return
 	for id in state:
 		var st: Dictionary = state[id]
+		if id == "sterling" and Progress.tier < STERLING_FROM_TIER:
+			continue
 		if st.move == "" and is_open(id) and day >= int(MOVE_FROM_DAY[id]) and rng.randf() < float(MOVE_ODDS[id]):
 			var options := MOVES.keys().filter(func(m): return MOVES[m].rival == id)
 			_start_move(id, options[rng.randi() % options.size()])
