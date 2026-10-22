@@ -13,6 +13,8 @@ const SIZE := Vector2i(316, 232)
 
 const COUNTER := Rect2(2.6, 3.2, 6.0, 1.0) # i, j, w, d
 const COUNTER_H := 18.0
+## Where the long counter starts: it reaches back to the display case.
+const LONG_COUNTER_I := 1.0
 const CASE := Rect2(0.3, 4.2, 1.3, 3.2)
 const CASE_H := 12.0
 const SHELF := Rect2(4.6, 0.15, 4.0, 0.6)
@@ -24,7 +26,14 @@ const CLERK_SPOT := Vector2(3.4, 2.5)
 const CLERK_SLOT := Vector2(3.4, 4.8)
 const GUARD_SPOT := Vector2(9.9, 4.3)
 const KEEPER_AWAY := Vector2(8.2, 1.4)
-const SLOTS := [Vector2(6.2, 4.8), Vector2(7.4, 5.5), Vector2(8.5, 6.2), Vector2(9.4, 6.9)]
+## Where the queue stands, front first. The corner counter uses the first BASE_SLOTS;
+## queue ropes and bigger counters open the second row (Progress.queue_slots()).
+const SLOTS := [Vector2(6.2, 4.8), Vector2(7.4, 5.5), Vector2(8.5, 6.2), Vector2(9.4, 6.9),
+	Vector2(8.4, 7.5), Vector2(7.3, 6.9), Vector2(6.2, 6.3), Vector2(5.1, 5.7)]
+const BASE_SLOTS := 4
+## Brass posts of the queue rope between the two rows.
+const ROPE_POSTS := [Vector2(5.4, 5.3), Vector2(6.5, 5.87), Vector2(7.6, 6.43), Vector2(8.7, 7.0)]
+const ROPE_H := 10.0
 const ENTRANCE := Vector2(10.7, 5.6)
 const EXIT := Vector2(10.7, 7.0)
 const BOARD := Rect2(4.6, 24.0, 4.1, 38.0) # i0, z0, width in tiles, height px
@@ -71,15 +80,50 @@ static func paint_room(dusk: bool) -> PixelCanvas:
 
 
 ## Counter, display case body and pendant lamps: drawn in front of the keeper.
-static func paint_front(dusk: bool) -> PixelCanvas:
+## `fit` is how the counter is fitted out (see fit_out()): {"counter": 0-2, "gauges", "sigma"}.
+static func paint_front(dusk: bool, fit := {}) -> PixelCanvas:
 	var c := PixelCanvas.new(SIZE.x, SIZE.y)
 	var iso := iso_on(c)
-	_counter(iso)
+	_counter(iso, int(fit.get("counter", 0)))
+	if fit.get("gauges", false):
+		_gauges(iso)
+	if fit.get("sigma", false):
+		_sigma(iso)
 	_case_body(iso)
 	_ledger(iso)
 	for lamp_i in [4.2, 7.0]:
 		_lamp(iso, lamp_i, 3.7, dusk)
 	return c
+
+
+## The counter and bench upgrades the player owns, for paint_front().
+static func fit_out() -> Dictionary:
+	var level := 2 if Progress.has_upgrade("marble_counter") else (1 if Progress.has_upgrade("long_counter") else 0)
+	return {"counter": level, "gauges": Progress.has_upgrade("digital_gauges"), "sigma": Progress.has_upgrade("sigma_verifier")}
+
+
+## One brass post of the queue rope, with the velvet rope sagging to the next post.
+## Drawn live, sorted in with the customers so people stand in front of or behind it.
+static func draw_rope_post(ci: CanvasItem, iso: Iso, n: int) -> void:
+	var at: Vector2 = ROPE_POSTS[n]
+	var foot := iso.p(at.x, at.y).round()
+	var top := foot + Vector2(0, -ROPE_H)
+	if n + 1 < ROPE_POSTS.size():
+		var next: Vector2 = ROPE_POSTS[n + 1]
+		var to := iso.p(next.x, next.y).round() + Vector2(0, -ROPE_H + 1)
+		var from := top + Vector2(0, 1)
+		var steps := int(absf(to.x - from.x))
+		for k in steps + 1:
+			var t := k / float(maxi(steps, 1))
+			var q := from.lerp(to, t) + Vector2(0, roundf(sin(t * PI) * 3.0))
+			ci.draw_rect(Rect2(q.round(), Vector2.ONE), Color("#8e1f2c"))
+			ci.draw_rect(Rect2(q.round() + Vector2(0, 1), Vector2.ONE), Color("#5a1220"))
+	ci.draw_rect(Rect2(foot + Vector2(-2, -1), Vector2(5, 2)), Color("#7d5a20")) # base
+	ci.draw_rect(Rect2(foot + Vector2(-1, -1), Vector2(3, 1)), Color("#c9a24a"))
+	ci.draw_rect(Rect2(top + Vector2(0, 1), Vector2(1, ROPE_H - 2)), Color("#c9a24a"))
+	ci.draw_rect(Rect2(top + Vector2(-1, 1), Vector2(1, ROPE_H - 2)), Color("#8a6a2a"))
+	ci.draw_rect(Rect2(top + Vector2(-1, -1), Vector2(3, 2)), Pal.GOLD)
+	ci.draw_rect(Rect2(top + Vector2(0, -1), Vector2(1, 1)), Color("#fff2be"))
 
 
 ## Glass of the display case, drawn over the coins inside it.
@@ -422,9 +466,19 @@ static func _plant(iso: Iso, i: float, j: float) -> void:
 		c.px(roundi(tip.x), roundi(tip.y) - 1, Color("#6fc277"))
 
 
-static func _counter(iso: Iso) -> void:
+## `level` 0 is the plain wooden counter, 1 the long counter that reaches back to the
+## display case with a second till, 2 the marble showroom counter in mahogany and brass.
+static func _counter(iso: Iso, level := 0) -> void:
 	var r := COUNTER
+	if level >= 1:
+		r = Rect2(LONG_COUNTER_I, COUNTER.position.y, COUNTER.end.x - LONG_COUNTER_I, COUNTER.size.y)
 	var h := COUNTER_H
+	var marble := level >= 2
+	# panel colours: frame, shadow, light edge, face, face grain
+	var wood: Array = [Color("#4a2e16"), Color("#3a2410"), Color("#71482a"), Color("#5e3b1d"), Color("#56361a")]
+	if marble:
+		wood = [Color("#2e1410"), Color("#22100c"), Color("#5a2a20"), Color("#43201a"), Color("#3c1c16")]
+	var lip := Color("#e8e2d6") if marble else Color("#b88a4c")
 	iso.face_j(r.end.y, r.position.x, r.end.x, 0, h, func(i, z):
 		var u: float = (i - r.position.x) * 16.0
 		if z < 2.0:
@@ -432,30 +486,36 @@ static func _counter(iso: Iso) -> void:
 		if z < 3.5:
 			return Color("#c9a24a") if z > 2.7 else Color("#8a6a2a") # brass kick rail
 		if z > h - 2.0:
-			return Color("#b88a4c")
+			return lip
 		var pu := fmod(u, 16.0)
 		if pu < 1.5 or z < 5.0 or z > h - 4.0:
-			return Color("#4a2e16")
+			return wood[0]
 		if pu < 2.5 or z > h - 5.0:
-			return Color("#3a2410")
+			return wood[1]
 		if pu > 14.5 or z < 6.0:
-			return Color("#71482a")
+			return wood[2]
+		if marble and (absf(pu - 8.5) < 0.6 and absf(z - 10.0) < 2.5 or absf(z - 10.0) < 0.5 and absf(pu - 8.5) < 2.5):
+			return Pal.GOLD # brass inlay star on each panel
 		var grain := _noise(int(u), int(z / 3.0))
-		return Color("#5e3b1d") if grain > 0.2 else Color("#56361a")
+		return wood[3] if grain > 0.2 else wood[4]
 	)
 	iso.face_i(r.end.x, r.position.y, r.end.y, 0, h, func(_j, z):
 		if z < 2.0:
 			return Color("#2a1a0c")
 		if z < 3.5:
 			return Color("#a8822a")
-		return Color("#71482a") if z < h - 2.0 else Color("#b88a4c")
+		return wood[2] if z < h - 2.0 else lip
 	)
 	iso.top(r.position.x, r.position.y, r.end.x, r.end.y, h, func(i, j):
+		if marble:
+			return _marble(i, j)
 		var g := _noise(int(i * 24.0), int(j * 6.0))
 		return Color("#9a6838") if g > 0.75 else Color("#8a5a30")
 	)
-	iso.line3(Vector3(r.position.x, r.end.y, h), Vector3(r.end.x, r.end.y, h), Color("#d0a060"))
-	iso.line3(Vector3(r.end.x, r.position.y, h), Vector3(r.end.x, r.end.y, h), Color("#b88a4c"))
+	iso.line3(Vector3(r.position.x, r.end.y, h), Vector3(r.end.x, r.end.y, h), Color("#fff8ec") if marble else Color("#d0a060"))
+	iso.line3(Vector3(r.end.x, r.position.y, h), Vector3(r.end.x, r.end.y, h), lip)
+	if level >= 1:
+		_second_till(iso, h)
 	# testing mat with a tiny scale and loupe
 	iso.top(3.5, 3.35, 5.0, 4.05, h, func(i, j):
 		var edge := minf(minf(i - 3.5, 5.0 - i), minf(j - 3.35, 4.05 - j))
@@ -483,6 +543,44 @@ static func _counter(iso: Iso) -> void:
 	iso.canvas.rect(roundi(bell.x) - 1, roundi(bell.y) - 3, 3, 2, Pal.GOLD)
 	iso.canvas.px(roundi(bell.x), roundi(bell.y) - 4, Color("#fff2be"))
 	iso.canvas.px(roundi(bell.x) - 1, roundi(bell.y) - 3, Color("#fff2be"))
+
+
+## White marble with soft grey veins.
+static func _marble(i: float, j: float) -> Color:
+	var v := sin(i * 3.1 + j * 7.3 + sin(j * 4.0) * 1.7)
+	if absf(v) < 0.06:
+		return Color("#a9a49c")
+	if absf(v) < 0.14:
+		return Color("#cfc9bf")
+	return Color("#ebe6dc") if _noise(int(i * 24.0), int(j * 8.0)) > 0.2 else Color("#e2ddd2")
+
+
+## The long counter's second till, where the clerk rings up sales.
+static func _second_till(iso: Iso, h: float) -> void:
+	iso.box(1.8, 3.35, 0.6, 0.5, 4.0, {"top": Color("#2f343c"), "left": Color("#1c2026"), "right": Color("#262b32"), "edge": Color("#59606b")}, h)
+	var screen := iso.p(2.1, 3.6, h + 5.0)
+	iso.canvas.rect(roundi(screen.x) - 2, roundi(screen.y) - 1, 4, 1, Pal.LED.darkened(0.3))
+
+
+## Digital gauges beside the scale on the testing mat: a little box with a green readout.
+static func _gauges(iso: Iso) -> void:
+	var h := COUNTER_H
+	iso.box(3.55, 3.4, 0.4, 0.3, 3.0, {"top": Color("#3a3f48"), "left": Color("#1c2026"), "right": Color("#2a2e35"), "edge": Color("#7d8591")}, h)
+	var lcd := iso.p(3.75, 3.7, h + 2.0).round()
+	iso.canvas.rect(int(lcd.x) - 2, int(lcd.y) - 1, 4, 1, Color("#6fe39a"))
+
+
+## The sigma verifier: a yellow handset on the mat with its flat sensor pad.
+static func _sigma(iso: Iso) -> void:
+	var h := COUNTER_H
+	iso.top(4.85, 3.45, 5.25, 3.85, h + 0.5, func(_i, _j): return Color("#1c2026"))
+	iso.box(4.9, 3.5, 0.3, 0.3, 1.0, {"top": Color("#7d8591"), "left": Color("#3f454f"), "right": Color("#59606b")}, h)
+	var body := iso.p(4.75, 3.55, h).round()
+	var c := iso.canvas
+	c.rect(int(body.x) - 2, int(body.y) - 6, 4, 6, Color("#e8b020"))
+	c.rect(int(body.x) - 2, int(body.y) - 6, 4, 1, Color("#ffd24a"))
+	c.rect(int(body.x) - 1, int(body.y) - 5, 2, 2, Color("#1a1410"))
+	c.px(int(body.x) - 1, int(body.y) - 5, Color("#6fe39a"))
 
 
 static func _case_body(iso: Iso) -> void:

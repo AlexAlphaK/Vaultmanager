@@ -43,6 +43,10 @@ const BOTS := {
 }
 ## The XRF analyzer reads the surface: plated and low-fineness bars stop fooling the bot.
 const XRF_BONUS := 0.5
+## Digital gauges flag out-of-spec readings (most use to the hard fakes); the sigma
+## verifier reads through plating and finds tungsten, so few coin fakes get past it.
+const GAUGE_BONUS := 0.3
+const SIGMA_BONUS := 0.7
 const HARD_COIN_FAKES := ["clad", "tungsten"]
 const EASY_BAR_FAKES := ["brass", "copper"]
 const CORE_BAR_FAKES := ["lead_core", "tungsten_core"]
@@ -51,8 +55,9 @@ const CORE_BAR_FAKES := ["lead_core", "tungsten_core"]
 ## and cash it keeps back for sellers on top of the rent reserve.
 const SHELF := {"XAU": 8, "XAG": 40, "XPT": 3}
 const RESTOCK_RESERVE := 5000.0
-const EXPERT_ORDER := ["alarm", "cctv", "window_sign", "bench", "xrf_gun", "fraud_cover", "case_lights", "big_safe",
-	"radio_ads", "bar_dealer", "time_lock", "lounge", "billboard"]
+const EXPERT_ORDER := ["alarm", "cctv", "window_sign", "digital_gauges", "queue_ropes", "bench", "xrf_gun", "fraud_cover",
+	"case_lights", "long_counter", "sigma_verifier", "big_safe", "testing_lab", "radio_ads", "bar_dealer", "time_lock",
+	"lounge", "marble_counter", "workshop", "billboard", "trading_desk"]
 
 var shop: Node
 var bot := {}
@@ -269,7 +274,12 @@ func _test(c: Customer, out: Dictionary) -> void:
 			fake = rng.randf() < bot.false_alarm
 	else:
 		if c.fake != "":
-			fake = rng.randf() < (bot.fake_hard if c.fake in HARD_COIN_FAKES else bot.fake_easy)
+			var odds: float = bot.fake_hard if c.fake in HARD_COIN_FAKES else bot.fake_easy
+			if Progress.has_upgrade("digital_gauges"):
+				odds += (1.0 - odds) * (GAUGE_BONUS if c.fake in HARD_COIN_FAKES else GAUGE_BONUS * 0.5)
+			if Progress.has_upgrade("sigma_verifier"):
+				odds += (1.0 - odds) * SIGMA_BONUS
+			fake = rng.randf() < odds
 		else:
 			fake = rng.randf() < bot.false_alarm
 	var verdict := "fake" if fake else "genuine"

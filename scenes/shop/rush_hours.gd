@@ -9,7 +9,8 @@ const AFTER_WORK := {"name": "After-work rush", "from": 15 * 60 + 45, "to": 16 *
 const SATURDAY := {"name": "Saturday crowd", "from": 9 * 60 + 45, "to": 11 * 60}
 ## Seconds between arrivals in a rush, before the shop's traffic bonus.
 const SPAWN_GAP := 4.0
-## Keep this much cash in the till and it is worth a snatch; scaled by the tier's deal size.
+## Keep this much cash in the till and it is worth a snatch; scaled by the tier's deal size
+## and a bigger cash drawer (the long counter).
 const TILL_LIMIT := 5000.0
 ## Share of the till a thief gets away with.
 const GRAB_SHARE := 0.35
@@ -55,7 +56,7 @@ static func summary(day: int) -> String:
 
 
 static func till_limit() -> float:
-	return TILL_LIMIT * Progress.deal_size()
+	return TILL_LIMIT * Progress.deal_size() * (1.0 + Progress.effect("till"))
 
 
 ## Chance per second that someone snatches cash from an overfull till.

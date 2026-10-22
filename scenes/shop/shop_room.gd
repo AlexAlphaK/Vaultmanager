@@ -31,6 +31,7 @@ var _keeper: Array[Texture2D] = []
 var _clerk: Texture2D
 var _guard: Texture2D
 var _light := {}
+var _fit := {}
 var _cat: Array[Texture2D] = []
 var _time := 0.0
 ## Per customer: where they were last frame, which way they face, when they started leaving.
@@ -42,7 +43,6 @@ var _left_at := {}
 func _ready() -> void:
 	for dusk in [false, true]:
 		_room[dusk] = ShopArt.paint_room(dusk).texture()
-		_front[dusk] = ShopArt.paint_front(dusk).texture()
 		_light[dusk] = ShopAmbience.paint_light(dusk).texture()
 	_glass = ShopArt.paint_case_glass().texture()
 	var look := PeopleArt.keeper_look()
@@ -52,7 +52,9 @@ func _ready() -> void:
 	_clerk = PeopleArt.paint(CLERK_LOOK, PeopleArt.STAND).texture()
 	_guard = PeopleArt.paint(GUARD_LOOK, PeopleArt.STAND).texture()
 	_refresh_stock()
+	_refresh_fit()
 	Shop.changed.connect(_refresh_stock)
+	Progress.changed.connect(_refresh_fit)
 
 
 func _process(delta: float) -> void:
@@ -62,6 +64,16 @@ func _process(delta: float) -> void:
 
 func screen_pos(i: float, j: float, z := 0.0) -> Vector2:
 	return _iso.p(i, j, z)
+
+
+## Repaints the counter when the player buys a counter or bench upgrade.
+func _refresh_fit() -> void:
+	var fit := ShopArt.fit_out()
+	if fit == _fit and not _front.is_empty():
+		return
+	_fit = fit
+	for dusk in [false, true]:
+		_front[dusk] = ShopArt.paint_front(dusk, fit).texture()
 
 
 func _refresh_stock() -> void:
@@ -135,11 +147,13 @@ func _wall_hand(angle: float, length: float, col: Color) -> void:
 
 
 func _draw_customers() -> void:
-	# untyped, so the guard's spot can be sorted in with the customers
+	# untyped, so the guard's spot and the rope posts (by index) can be sorted in with the customers
 	var order: Array = []
 	order.append_array(customers)
 	if Staff.has("guard"):
 		order.append(ShopArt.GUARD_SPOT)
+	if Progress.has_upgrade("queue_ropes"):
+		order.append_array(range(ShopArt.ROPE_POSTS.size()))
 	order.sort_custom(func(a, b): return _depth(a) < _depth(b))
 	for key in _last_pos.keys():
 		if not customers.has(key):
@@ -149,6 +163,9 @@ func _draw_customers() -> void:
 	for c in order:
 		if c is Vector2:
 			_draw_guard(c)
+			continue
+		if c is int:
+			ShopArt.draw_rope_post(self, _iso, c)
 			continue
 		var base := screen_pos(c.pos.x, c.pos.y).round()
 		var frame := _frame_for(c)
@@ -169,7 +186,7 @@ func _draw_customers() -> void:
 
 
 func _depth(who) -> float:
-	var p: Vector2 = who if who is Vector2 else who.pos
+	var p: Vector2 = who if who is Vector2 else (ShopArt.ROPE_POSTS[who] if who is int else who.pos)
 	return p.x + p.y
 
 
