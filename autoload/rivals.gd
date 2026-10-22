@@ -21,7 +21,7 @@ signal changed
 ## `growth` is how much their worth grows a day on its own, `deal` what each customer
 ## who goes to them instead of you adds to it.
 const SHOPS := {
-	"sterling": {"name": "Sterling Bullion Co.", "short": "Sterling", "owner": "Mr. Sterling",
+	"sterling": {"name": "Sterling Bullion Co.", "short": "Sterling", "owner": "Victor Sterling",
 		"buy": 0.88, "premium": 0.07, "stars": 3.0, "worth": 180000.0, "growth": 0.004, "deal": 120.0},
 	"pawn": {"name": "Lucky's Pawn & Loan", "short": "Lucky's", "owner": "Lucky Lou",
 		"buy": 0.75, "premium": 0.12, "stars": 1.8, "worth": 50000.0, "growth": 0.002, "deal": 120.0},
@@ -196,7 +196,7 @@ func traffic_factor() -> float:
 func divert_odds(c: Customer) -> float:
 	# regulars, people a headline sent, collectors with special orders and the shop's own
 	# story beats always come in (town event crowds shop around like anyone else)
-	if c.regular_id != "" or (c.event_id != "" and not Calendar.is_town_event(c.event_id)) or c.kind == "visit" or c.kind == "robber" or not c.order.is_empty():
+	if c.regular_id != "" or (c.event_id != "" and not Calendar.is_town_event(c.event_id)) or c.story != "" or c.kind == "visit" or c.kind == "robber" or not c.order.is_empty():
 		return 0.0
 	return clampf(1.0 - share_for(c) / FAIR_SHARE, 0.0, MAX_DIVERT)
 
@@ -338,6 +338,15 @@ func _on_day_started(day: int) -> void:
 	for id in state:
 		if move_of(id) != "" and MOVES[move_of(id)].days > 0 and not _headline_shown(id):
 			news.append("%s (%d day%s left)" % [MOVES[move_of(id)].news, int(state[id].move_days), "" if int(state[id].move_days) == 1 else "s"])
+	changed.emit()
+
+
+## Starts rival `id`'s `move` now, whatever the odds: the story uses it when Victor
+## Sterling declares a price war. Does nothing while the rival is busy or shut.
+func start_move(id: String, move: String) -> void:
+	if not state.has(id) or not MOVES.has(move) or MOVES[move].rival != id or move_of(id) != "" or not is_open(id):
+		return
+	_start_move(id, move)
 	changed.emit()
 
 

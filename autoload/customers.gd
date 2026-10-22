@@ -145,6 +145,10 @@ func reset() -> void:
 
 ## The next customer through the door. `event` is from MarketEvents.customer_event().
 func next_customer(rng: RandomNumberGenerator, event := {}) -> Customer:
+	if event.is_empty():
+		var visitor := Story.next_customer(rng)
+		if visitor:
+			return visitor
 	var collector := Orders.next_customer(rng, event)
 	if collector:
 		return collector
@@ -357,6 +361,8 @@ func arrival(c: Customer) -> String:
 
 ## A short word on the counter card about who this is, or "".
 func tag(c: Customer) -> String:
+	if c.story != "":
+		return Story.tag(c)
 	if c.kind == "seller" and c.item and c.item.rare and not c.piece and not c.bar and c.archetype != "shady":
 		return "old coin"
 	if c.regular_id != "":
@@ -368,6 +374,7 @@ func tag(c: Customer) -> String:
 func on_leave(c: Customer) -> void:
 	Orders.on_leave(c)
 	Calendar.on_leave(c)
+	Story.on_leave(c)
 	if c.regular_id == "" or not state.has(c.regular_id):
 		return
 	var reg: Dictionary = _by_id[c.regular_id]

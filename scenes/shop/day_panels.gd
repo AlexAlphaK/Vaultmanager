@@ -2,8 +2,8 @@ class_name DayPanels
 extends PanelContainer
 ## The panels over the shop floor between shop hours: the morning briefing, the
 ## upgrades, staff and expansion page, the floor plan where rooms are built, the town
-## map with the rival shops, the collectors' special orders, the ledger of records and achievements, and the
-## end-of-day summary. Rebuilt each time one opens.
+## map with the rival shops, the collectors' special orders, the story's chapter and goals,
+## the ledger of records and achievements, and the end-of-day summary. Rebuilt each time one opens.
 
 signal open_requested
 signal next_day_requested
@@ -13,7 +13,7 @@ signal desk_requested
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
-var page := "" # "morning", "upgrades", "plan", "wholesale", "town", "orders", "ledger", "achievements", "summary" or "" when hidden
+var page := "" # "morning", "upgrades", "plan", "wholesale", "town", "orders", "story", "ledger", "achievements", "summary" or "" when hidden
 ## The morning's Open the shop button, for the tutorial to point at.
 var open_button: Button
 var _box: VBoxContainer
@@ -37,6 +37,7 @@ func _ready() -> void:
 	Records.changed.connect(_refresh_page)
 	Rivals.changed.connect(_refresh_page)
 	Calendar.changed.connect(_refresh_page)
+	Story.changed.connect(_refresh_page)
 
 
 func hide_panel() -> void:
@@ -75,6 +76,12 @@ func show_orders() -> void:
 	_build_orders()
 
 
+func show_story() -> void:
+	Story.mark_read()
+	page = "story"
+	_build_story()
+
+
 func show_ledger() -> void:
 	page = "ledger"
 	_build_ledger()
@@ -104,6 +111,8 @@ func _refresh_page() -> void:
 		_build_town()
 	elif page == "orders":
 		_build_orders()
+	elif page == "story":
+		_build_story()
 	elif page == "ledger":
 		_build_ledger()
 	elif page == "achievements":
@@ -132,13 +141,12 @@ func _build_morning() -> void:
 	if not Orders.open.is_empty():
 		_text(_orders_hint(), Pal.GOLD)
 	if not Rivals.news.is_empty():
+		# one line, so a busy morning still fits; the town map has the whole story
 		var rivals := _text("Town: " + Rivals.news[0], Pal.WARN)
-		# a busy morning keeps it to one line; the town map has the whole story
-		if Orders.open.is_empty():
-			rivals.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		else:
-			rivals.clip_text = true
-			rivals.text_overrun_behavior = TextServer.OVERRUN_TRIM_WORD_ELLIPSIS
+		rivals.clip_text = true
+		rivals.text_overrun_behavior = TextServer.OVERRUN_TRIM_WORD_ELLIPSIS
+	if Story.synced and not Story.is_finished():
+		_text("%s · %d/%d goals" % [Story.chapter_title(), Story.goals_met_count(), Story.current().goals.size()], Pal.GOLD)
 	_gap()
 	_heading("BILLS")
 	var grid := _grid()
@@ -191,6 +199,7 @@ func _build_morning() -> void:
 		booth.disabled = not Calendar.can_book_booth()
 		booth.tooltip_text = "Your table at the coin show %s." % Calendar.when(Calendar.first_day(show)) if booked \
 			else "Book a table at the coin show: more collectors come, and they pay more."
+	_button(row, "Story%s" % (" !" if Story.has_new_letter() else ""), "Button", show_story).tooltip_text = "Mags's goals for this chapter of the story."
 	_button(row, "Sure? Click again" if _confirm_new else "New game", "DangerButton", _on_new_game)
 
 
@@ -555,6 +564,41 @@ func _build_orders() -> void:
 			dealers.add_child(b)
 		_text("Dealers charge most of the collector's premium. Sellers bring old coins too.", Pal.INK_FAINT)
 	_spacer()
+	var row := HBoxContainer.new()
+	_box.add_child(row)
+	_button(row, "Back", "Button", show_morning)
+
+
+# ---------------------------------------------------------------- story
+
+func _build_story() -> void:
+	_clear()
+	if Story.is_finished():
+		_title("The end")
+		_text("You run the biggest precious metal store in town. Mags tells everyone she taught you all you know, and Victor Sterling buys his scrap from you now.",
+			Pal.INK).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_gap()
+		_text("Keep trading: the town is yours.", Pal.INK_DIM)
+	else:
+		var ch := Story.current()
+		_title(Story.chapter_title())
+		_heading("A NOTE FROM MAGS HOLLOWAY")
+		_text(ch.letter, Pal.INK).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_gap()
+		_heading("GOALS")
+		var grid := _grid()
+		for i in ch.goals.size():
+			var done := Story.goal_met(i)
+			_pair(grid, ("● " if done else "○ ") + ch.goals[i].text, "done" if done else Story.goal_count(i), Pal.GOOD if done else Pal.INK)
+		var reward := Story.reward_text(ch.reward)
+		if reward != "":
+			_text(reward + ", when Mags drops by.", Pal.GOLD)
+	_spacer()
+	_heading("CHAPTERS")
+	var marks := ""
+	for n in Story.CHAPTERS.size():
+		marks += ("★" if n < Story.chapter else "☆") + " "
+	_text(marks.strip_edges(), Pal.GOLD)
 	var row := HBoxContainer.new()
 	_box.add_child(row)
 	_button(row, "Back", "Button", show_morning)

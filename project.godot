@@ -25,6 +25,7 @@ Music="*res://autoload/music.gd"
 Tutorial="*res://autoload/tutorial.gd"
 Orders="*res://autoload/orders.gd"
 Records="*res://autoload/records.gd"
+Story="*res://autoload/story.gd"
 Pad="*res://autoload/pad.gd"
 
 [display]
