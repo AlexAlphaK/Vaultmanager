@@ -23,7 +23,7 @@ const WEEKDAYS := ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Satu
 ## Weekly bills are paid when the shop closes on the last day of the week.
 const WEEK_DAYS := 7
 ## Daily interest on a negative cash balance.
-const OVERDRAFT_RATE := 0.005
+const OVERDRAFT_RATE := 0.0035
 
 var phase := MORNING
 ## Today's money that is not a counter deal: {"label": String, "usd": signed USD}.

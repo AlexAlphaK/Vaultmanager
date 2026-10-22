@@ -11,17 +11,17 @@ signal tier_changed(tier: int)
 ## `traffic` speeds up customer arrivals, `deal_size` scales how much each customer brings.
 ## `safe` is the vault capacity in coins, for the vault organizing minigame.
 const TIERS: Array[Dictionary] = [
-	{"name": "Corner counter", "rent": 800.0, "upkeep": 25.0, "traffic": 1.0, "deal_size": 1.0, "safe": 60,
+	{"name": "Corner counter", "rent": 550.0, "upkeep": 17.0, "traffic": 1.0, "deal_size": 1.0, "safe": 60,
 		"need_worth": 0.0, "need_rep": 0.0, "cost": 0.0},
-	{"name": "Main Street shop", "rent": 3000.0, "upkeep": 90.0, "traffic": 1.25, "deal_size": 1.5, "safe": 160,
+	{"name": "Main Street shop", "rent": 2000.0, "upkeep": 60.0, "traffic": 1.25, "deal_size": 1.5, "safe": 160,
 		"need_worth": 60000.0, "need_rep": 3.0, "cost": 15000.0},
-	{"name": "Bullion house", "rent": 8000.0, "upkeep": 200.0, "traffic": 1.5, "deal_size": 2.2, "safe": 450,
+	{"name": "Bullion house", "rent": 5400.0, "upkeep": 135.0, "traffic": 1.5, "deal_size": 2.2, "safe": 450,
 		"need_worth": 160000.0, "need_rep": 3.8, "cost": 45000.0},
-	{"name": "Town landmark", "rent": 18000.0, "upkeep": 400.0, "traffic": 1.8, "deal_size": 3.2, "safe": 1500,
+	{"name": "Town landmark", "rent": 12000.0, "upkeep": 270.0, "traffic": 1.8, "deal_size": 3.2, "safe": 1500,
 		"need_worth": 400000.0, "need_rep": 4.5, "cost": 120000.0},
 ]
 ## Weekly insurance as a share of vault value at spot.
-const INSURANCE_RATE := 0.002
+const INSURANCE_RATE := 0.0013
 
 ## Effects add up across owned upgrades. Keys in use:
 ##   traffic       +share of arrival speed       patience  +share of customer patience

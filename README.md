@@ -269,6 +269,11 @@ customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Wholesaler.MARKUP` / `LOT_
 (`PRICE_WEIGHT`, `STAR_WEIGHT`, `FAIR_SHARE`, `MAX_DIVERT`, `MAX_BOOST`, `SHOPS`). It also prints
 how many customers went to a rival and your median place in town.
 
+The shop is open for `Shop.DAY_SECONDS` (120 s of clock, 09:00 to 17:00; the clock stops at
+the testing benches outside rush hours). Customers arrive per second, not per day, so the daily
+bills (`Progress.TIERS` rent and upkeep, `Progress.INSURANCE_RATE`, `Staff.ROLES` wages,
+`Day.OVERDRAFT_RATE`) are sized for that length: change the day length and scale them with it.
+
 ## Data sources
 
 | Data | Provider | Free tier (check before launch) | Refresh |

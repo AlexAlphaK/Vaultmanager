@@ -20,7 +20,7 @@ signal vault_opened(vault: Control)
 signal summary_shown
 signal desk_opened(desk: Control)
 
-const DAY_SECONDS := 180.0
+const DAY_SECONDS := 120.0 # 09:00 to 17:00; daily bills are sized for this length (see README, Balance)
 const WALK_SPEED := 1.8 # tiles per second
 const CoinTestScene := preload("res://scenes/coin_test/coin_test.tscn")
 const VaultScene := preload("res://scenes/vault/vault.tscn")
