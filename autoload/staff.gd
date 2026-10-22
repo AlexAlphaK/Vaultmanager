@@ -9,10 +9,10 @@ signal changed
 ## `fee` is paid once when hired; `wage` is per day, and rises with the shop's tier.
 ## Effects keys as in Progress.upgrades, plus `till_grab` (share off daytime till snatches).
 const ROLES := {
-	"clerk": {"name": "Benny", "title": "Clerk", "fee": 1000.0, "wage": 80.0, "tier": 0,
+	"clerk": {"name": "Benny", "title": "Clerk", "fee": 1000.0, "wage": 55.0, "tier": 0,
 		"desc": "Works the second till. Sells coins to buyers at your price while you test, so the queue keeps moving.",
 		"effects": {}},
-	"guard": {"name": "Rhonda", "title": "Guard", "fee": 2000.0, "wage": 120.0, "tier": 0,
+	"guard": {"name": "Rhonda", "title": "Guard", "fee": 2000.0, "wage": 80.0, "tier": 0,
 		"desc": "Stands by the door. Break-ins drop by a third and nobody dares grab the till in a rush.",
 		"effects": {"robbery_risk": -0.35, "till_grab": -0.85}},
 }

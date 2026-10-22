@@ -223,6 +223,11 @@ Options: `--bots=novice,average,expert`, `--runs=N` seeds per bot, `--days=N`, `
 The knobs it tunes live in `Shop.REPUTATION`, `Customer.FAKE_ODDS` / `FAKE_ODDS_MAX` and the
 customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Wholesaler.MARKUP` / `LOT_RANGE`, `Progress.TIERS` and `RushHours`.
 
+The shop is open for `Shop.DAY_SECONDS` (120 s of clock, 09:00 to 17:00; the clock stops at
+the testing benches outside rush hours). Customers arrive per second, not per day, so the daily
+bills (`Progress.TIERS` rent and upkeep, `Progress.INSURANCE_RATE`, `Staff.ROLES` wages,
+`Day.OVERDRAFT_RATE`) are sized for that length: change the day length and scale them with it.
+
 ## Data sources
 
 | Data | Provider | Free tier (check before launch) | Refresh |
