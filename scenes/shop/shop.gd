@@ -76,6 +76,8 @@ func _ready() -> void:
 	add_child(RushStrip.new(self))
 	MarketEvents.started.connect(_on_market_event)
 	if SaveGame.load_game():
+		if SaveGame.day_over: # saved at the end of the day: carry on with the next morning
+			Shop.next_day()
 		Shop.log_event("Welcome back. Day %d at your %s." % [Shop.day, Progress.tier_name()])
 	else:
 		Shop.log_event("Welcome to your shop. Test coins before you buy them.")
@@ -585,6 +587,7 @@ func _on_vault_finished(night: Dictionary) -> void:
 	if missed > 0:
 		report.lines.append("%d customer%s saw the queue in the rush and walked on.%s" % [missed, "" if missed == 1 else "s",
 			"" if Staff.has("clerk") else " A clerk would keep the line moving."])
+	SaveGame.save_game() # autosave, so quitting on the summary does not replay the day
 	hud.show_day_summary(report)
 	summary_shown.emit()
 
