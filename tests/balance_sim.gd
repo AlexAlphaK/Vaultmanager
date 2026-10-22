@@ -117,7 +117,7 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 		"caught": 0, "served": 0, "bills": 0.0, "overdrawn_days": 0, "upgrades": {}, "profit": 0.0,
 		"premium_income": 0.0, "lowest_cash": Shop.cash, "losses": {}, "gains": {}, "short_cash": 0, "out_of_stock": 0, "walked_by": 0,
 		"holdups": 0, "robbers_stopped": 0, "restocked": 0.0, "lost_to_rivals": 0, "tip_offs": 0, "rank": [],
-		"orders_taken": 0, "orders_filled": 0, "orders_failed": 0, "dealer": 0.0}
+		"orders_taken": 0, "orders_filled": 0, "orders_failed": 0, "dealer": 0.0, "chapter_day": [-1, -1, -1, -1, -1]}
 	for d in days:
 		_morning(out)
 		_play_day(out)
@@ -444,6 +444,9 @@ func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) ->
 	out.worth.append(Shop.net_worth())
 	out.rep.append(Shop.reputation)
 	out.rank.append(Rivals.rank())
+	for ch in Story.chapters_done():
+		if out.chapter_day[ch] < 0:
+			out.chapter_day[ch] = Shop.day
 	out.lowest_cash = minf(out.lowest_cash, Shop.cash)
 	if Shop.cash < 0.0:
 		out.overdrawn_days += 1
@@ -457,6 +460,8 @@ func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) ->
 			_add(out.losses, "hold-ups", -e.usd)
 		elif e.label == "Police recovered stolen goods":
 			_add(out.gains, "police recovered", e.usd)
+		elif e.label == "Gift from Mags":
+			_add(out.gains, "story rewards", e.usd)
 	out.bills += bills
 	_add(out.losses, "bills", bills)
 	for e in report.get("ledger", []):
@@ -516,6 +521,12 @@ func _print_summary(name: String, results: Array, days: int) -> void:
 		passed.append("day %d #%d" % [t, ranks[ranks.size() / 2]])
 	print("  per run: %.1f customers went to a rival, %.1f tip-offs; median place in town: %s" % [
 		_sum(results, "lost_to_rivals") / n, _sum(results, "tip_offs") / n, ", ".join(passed)])
+	var chapters: Array[String] = []
+	for ch in Story.CHAPTERS.size():
+		var done := results.filter(func(r): return r.chapter_day[ch] > 0).map(func(r): return r.chapter_day[ch])
+		done.sort()
+		chapters.append("%d %s" % [ch + 1, "-" if done.is_empty() else "d%d (%d/%d)" % [done[done.size() / 2], done.size(), results.size()]])
+	print("  story chapters done (median day, runs): %s" % ", ".join(chapters))
 	var ups := {}
 	for r in results:
 		for id in r.upgrades:

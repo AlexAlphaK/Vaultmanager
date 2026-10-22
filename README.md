@@ -241,6 +241,32 @@ boost or a reward. Turn a regular away twice and they find another shop. If a re
 coin you don't have, they come back for it later. Story moments show up in the end-of-day
 summary, and everything is saved. The stories live in `Customers.REGULARS`.
 
+## Story
+
+A short campaign runs alongside the sandbox, from the corner counter to the Town landmark.
+**Mags Holloway** ran the corner counter for forty years and sold it to you. On day 2 she walks
+in and leaves a list of goals; the **Story** button on the morning panel shows her note, the
+chapter's goals and how far along each one is. Meet them all and the chapter closes: the summary
+says so, and Mags drops by at the next chance with a reward. **Victor Sterling**, who owns
+Sterling Bullion Co. across the street, comes over as you grow: to sneer, to declare a price war
+when you reach Main Street, and in the end to shake your hand.
+
+| Chapter | Goals | Reward |
+| --- | --- | --- |
+| 1. The corner counter | Catch 3 fakes, close 15 deals, finish your first week | $1,000 |
+| 2. Making a name | Reach 3 stars, get bigger than Lucky's Pawn, move to Main Street | $4,000 |
+| 3. Main Street | Fill 3 special orders, hire your first staff, move to the Bullion house | $10,000 |
+| 4. Across the street | Get bigger than Sterling Bullion, reach 4.5 stars, reach $400,000 net worth | $20,000 |
+| 5. The landmark | Open the Town landmark | +0.2 stars, and Mags cuts the ribbon |
+
+Goals count everything done so far, so a goal already met ticks off as soon as its chapter
+starts. A save from before the story starts at the first chapter it hasn't finished. Finishing
+the story earns **Apprentice no more**. The chapters live in `Story.CHAPTERS` and the visits in
+`Story.BEATS` (autoload/story.gd).
+
+![Mags's note and the chapter's goals](docs/screenshots/story_goals.png)
+![Mags Holloway at the counter](docs/screenshots/story_visit.png)
+
 ## Market events
 
 Big real-world moves make the news, and the news brings customers. A red or green NEWS strip
