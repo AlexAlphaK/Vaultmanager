@@ -2,8 +2,8 @@ extends Node
 ## Headless checks for the shop, the coin test, the jewellery appraisal, the bar test, the vault lock-up,
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, counter, bench
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
-## ledger of records and achievements, robberies (hold-ups and burglar crews) and the trading
-## desk. Run:
+## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
+## shops on the town map, and the trading desk. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -42,6 +42,7 @@ func _ready() -> void:
 	await _check_trading_desk()
 	_check_burglar_crews()
 	await _check_holdups()
+	await _check_rivals()
 	_check_settings()
 	_check_music()
 	await _check_menus()
@@ -858,6 +859,121 @@ func _check_wholesaler() -> void:
 	Day.begin_day()
 	expect(Wholesaler.lots == lots, "replaying a morning offers the same lots")
 	SaveGame.new_game()
+
+
+## The rival shops: who wins the town's customers, Sterling's repricing, the rivals'
+## moves and your answers, their books and the town map.
+func _check_rivals() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Day.begin_day()
+	var share := Rivals.overall_share()
+	expect(share > 0.4 and share < 0.65, "a new shop gets about a fair share of the town (%.2f)" % share)
+	expect(Rivals.traffic_factor() >= 1.0 and Rivals.traffic_factor() <= Rivals.MAX_BOOST, "the traffic factor stays in range")
+	var sellers := Rivals.share("seller")
+	Shop.set_buy_percent(0.95)
+	expect(Rivals.share("seller") > sellers, "paying sellers more wins more of them")
+	Shop.set_buy_percent(0.9)
+	var buyers := Rivals.share("buyer")
+	Shop.set_sell_premium(0.03)
+	expect(Rivals.share("buyer") > buyers, "a smaller premium wins more buyers")
+	Shop.set_sell_premium(0.06)
+	Shop.reputation = 4.5
+	expect(Rivals.overall_share() > share, "stars win customers too")
+	expect(Rivals.share("seller", "shady") < Rivals.share("seller"), "shady sellers drift to the pawn shop")
+	# terrible prices and a bad name send people across the street
+	Shop.reputation = 0.5
+	Shop.set_buy_percent(0.7)
+	Shop.set_sell_premium(0.2)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	var c := Customer.create(5, 0.5, Shop.coin_list(), rng)
+	expect(Rivals.divert_odds(c) > 0.3, "a bad deal sends customers to the rivals")
+	c.regular_id = "lev"
+	expect(Rivals.divert_odds(c) == 0.0, "regulars always come in")
+	c.regular_id = ""
+	c.event_id = "news"
+	expect(Rivals.divert_odds(c) == 0.0, "customers a headline sent always come in")
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	shop.coach.skip()
+	shop._open_shop()
+	shop.rng.seed = 3
+	for n in 40:
+		shop._spawn()
+		shop.queue.clear()
+	var lost := int(Shop.stats.get("lost_to_rival", 0.0))
+	expect(lost >= 8, "the shop loses customers to the rivals (%d of 40)" % lost)
+	expect(int(Rivals.lost_today.get("sterling", 0)) + int(Rivals.lost_today.get("pawn", 0)) == lost, "each lost customer is booked to a rival")
+	# the rivals' books: they grow, and the summary says where the customers went
+	var worth := Rivals.worth_of("sterling")
+	var report := {"lines": []}
+	Rivals._on_day_ended(Shop.day, report)
+	expect(Rivals.worth_of("sterling") > worth, "Sterling grows overnight")
+	expect(report.lines.any(func(l): return "went to the competition" in l), "the summary counts customers lost to rivals")
+	shop.queue_free()
+	await get_tree().process_frame
+	# Sterling reprices against a winning shop, once per morning
+	Shop.reputation = 4.0
+	Shop.set_buy_percent(0.9)
+	Shop.set_sell_premium(0.06)
+	Rivals.last_share = 0.8
+	var margin := Rivals.buy_of("sterling") - Rivals.premium_of("sterling")
+	Shop.day += 1
+	Day.begin_day()
+	var after := Rivals.buy_of("sterling") - Rivals.premium_of("sterling")
+	expect(is_equal_approx(after, margin + 0.01) or Rivals.move_of("sterling") == "price_war", "Sterling cuts a point when you are winning")
+	var ad_cost := Rivals.ad_cost()
+	Day.begin_day()
+	expect(is_equal_approx(Rivals.buy_of("sterling") - Rivals.premium_of("sterling"), after), "replaying a morning does not reprice twice")
+	# moves: a price war beats your board, and Beat Sterling answers it
+	Rivals.state.sterling.move = "price_war"
+	Rivals.state.sterling.move_days = 3
+	expect(Rivals.buy_of("sterling") == 0.92 and Rivals.premium_of("sterling") == 0.03, "a price war pays 92% and sells at +3%")
+	var warred := Rivals.overall_share()
+	Rivals.beat_sterling()
+	expect(Shop.buy_percent == 0.93 and Shop.sell_premium == 0.02, "Beat Sterling sets your board a point better")
+	expect(Rivals.overall_share() > warred, "beating Sterling's prices wins customers back")
+	# a newspaper ad
+	Shop.cash = 50000.0
+	expect(Rivals.run_ad() and is_equal_approx(Shop.cash, 50000.0 - ad_cost) and Rivals.ad_days == Rivals.AD_DAYS, "run a newspaper ad")
+	expect(not Rivals.can_run_ad(), "one ad at a time")
+	# the pawn shop's fencing racket and the tip-off
+	Rivals.state.pawn.move = ""
+	expect(not Rivals.can_tip_off(), "nothing to tip off about yet")
+	Rivals.state.pawn.move = "fencing"
+	Rivals.state.pawn.move_days = 4
+	var stars := Shop.reputation
+	expect(Rivals.tip_off(), "tip off the police")
+	expect(not Rivals.is_open("pawn") and Shop.reputation > stars, "the raid shuts Lucky's and your name grows")
+	expect(Records.is_earned("tip_off"), "the tip earns Good citizen")
+	var no_pawn := Rivals.share("seller", "shady")
+	expect(no_pawn > 0.3, "with Lucky's shut, shady sellers come to you")
+	# save and load
+	var saved := Rivals.to_dict()
+	Rivals.reset()
+	Rivals.from_dict(JSON.parse_string(JSON.stringify(saved)))
+	expect(not Rivals.is_open("pawn") and Rivals.ad_days == Rivals.AD_DAYS and Rivals.move_of("sterling") == "price_war", "the rivals save and load")
+	# passing the rivals in net worth
+	Shop.cash = 1000000.0
+	report = {"lines": []}
+	Rivals._on_day_ended(Shop.day, report)
+	Records.check()
+	expect(Rivals.passed.has("sterling") and Rivals.passed.has("pawn") and Rivals.rank() == 1, "a millionaire shop passes both rivals")
+	expect(Records.is_earned("pass_sterling") and Records.is_earned("pass_pawn"), "passing the rivals earns achievements")
+	expect(report.lines.any(func(l): return "bigger than Sterling" in l), "the summary celebrates passing Sterling")
+	# the town map paints in every state, and the page builds
+	for view in [{}, {"tier": 3, "pawn_closed": true, "sterling_move": "price_war"}, {"pawn_move": "fencing"}, {"pawn_move": "clearance"}]:
+		var town := TownArt.paint(view)
+		expect(town.width == TownArt.SIZE.x and town.height == TownArt.SIZE.y, "the town map paints")
+	var panels := DayPanels.new()
+	add_child(panels)
+	panels.show_town()
+	expect(panels.visible and panels.page == "town", "the town map page opens")
+	panels.queue_free()
+	SaveGame.new_game()
+	expect(Rivals.is_open("pawn") and Rivals.passed.is_empty() and Rivals.ad_days == 0, "a new game resets the rivals")
 
 
 func _check_rush_hours() -> void:

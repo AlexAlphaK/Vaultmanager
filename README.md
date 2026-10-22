@@ -15,11 +15,12 @@ platinum and palladium prices follow the real market.
 | `autoload/day.gd` | `Day` singleton: day phases (morning, open, closing, after hours), the week, bills and the day's ledger |
 | `autoload/progress.gd` | `Progress` singleton: the four shop tiers, upgrades and their effects |
 | `autoload/wholesaler.gd` | `Wholesaler` singleton: the morning wholesaler's lots and prices (spot plus a markup that shrinks as the shop grows) |
+| `autoload/rivals.gd` | `Rivals` singleton: the rival shops in town (Sterling Bullion and Lucky's Pawn), how customers choose between them and you, the rivals' morning moves and your answers; saved with the game |
 | `autoload/staff.gd` | `Staff` singleton: the clerk and the guard you can hire, their signing fees, daily wages and effects |
 | `autoload/save_game.gd` | `SaveGame` singleton: three save slots (`user://save_1.json` to `save_3.json`), saved every morning and at the end of each day; an old `save.json` becomes slot 1 |
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses and fullscreen, saved in `user://settings.cfg` |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
-| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 21 achievements; saved with the game |
+| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 24 achievements; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
@@ -154,11 +155,28 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   shorts the metal in your vault ounce for ounce with up to half the limit, so a falling price
   costs the vault on paper but pays at the desk. At the closing bell everything closes and the
   profit or loss goes on today's ledger. The rules live in `scenes/trading_desk/desk_session.gd`.
+- **Rival shops.** You are not the only dealer in town. **Sterling Bullion Co.** across the street
+  is the big established dealer, and **Lucky's Pawn & Loan** across the side street pays far
+  less for metal but asks no questions. Every customer weighs the shops by what they pay or
+  charge (your **Pay sellers** and **Charge buyers** board) and by their stars. When your shop
+  looks worse than a fair share, some customers cross the street before they reach your door
+  (the log says where they went and why); when it looks better, word spreads and customers come
+  up to 15% faster. Lucky's draws shady sellers and some jewellery away from you. Each morning
+  Sterling reprices against you, cutting a point when you are winning and taking it back when
+  it is, and the rivals make moves: a **price war** (Sterling pays 92% and sells at +3% for
+  three days), a radio **ad blitz**, a one-star **smear** review (it can't touch a 4-star shop),
+  a **fencing** racket at Lucky's, or a **clearance** sale next door. Press **Town map** on the
+  morning panel to see the crossroads, each shop's stars, prices and net worth, your place in
+  town, and today's news. Your answers: a **newspaper ad** (more customers pick you for three
+  days), **Beat Sterling** (sets your board a point better than theirs) and, while Lucky's is
+  fencing, **Tip off police** (a raid shuts it for five days and earns you stars). The rivals'
+  net worth grows every day, and passing them is how you become the biggest store in town. The
+  numbers live in `autoload/rivals.gd`, the map in `art/town_art.gd`.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
 - **The ledger.** The **Ledger** button on the morning panel shows your lifetime record: deals,
   money bought and sold, profit, fakes caught and missed, losses to thieves, your highest net
-  worth and stars, your profit streak and your three best days. **Achievements** lists 21 goals
+  worth and stars, your profit streak and your three best days. **Achievements** lists 24 goals
   (hover one to see how to earn it and how close you are). Earning one pops up in the log, and
   the day's summary lists what you earned and tells you when you've had your best day yet.
 
@@ -222,7 +240,8 @@ Design doc: https://claude.ai/artifact/VqviQgHanNwibT95FhXgLV
 `tests/balance_sim.tscn` has three bots (novice, average, expert) play the real shop scene
 headless: they test or skip the bench, misread some fakes, haggle with the -/+ buttons, grade
 jewellery, pack the vault, empty the till, hire staff, buy upgrades and restock from the
-morning wholesaler. Everything else is the
+morning wholesaler (the average and expert bots also tip off the police about Lucky's).
+Everything else, the rival shops included, is the
 game's own code. It prints when each bot reaches each tier, net worth and stars over time, and
 where the money came from and went.
 
@@ -231,7 +250,9 @@ where the money came from and went.
 Options: `--bots=novice,average,expert`, `--runs=N` seeds per bot, `--days=N`, `--seed=N`, and
 `--csv=PATH` for one row per bot per day. A 100-day run takes a few minutes per bot.
 The knobs it tunes live in `Shop.REPUTATION`, `Customer.FAKE_ODDS` / `FAKE_ODDS_MAX` and the
-customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Wholesaler.MARKUP` / `LOT_RANGE`, `Progress.TIERS` and `RushHours`.
+customer mix constants, `JewelleryPiece.FRAUD_ODDS`, `Wholesaler.MARKUP` / `LOT_RANGE`, `Progress.TIERS`, `RushHours` and the `Rivals` constants
+(`PRICE_WEIGHT`, `STAR_WEIGHT`, `FAIR_SHARE`, `MAX_DIVERT`, `MAX_BOOST`, `SHOPS`). It also prints
+how many customers went to a rival and your median place in town.
 
 ## Data sources
 

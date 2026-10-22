@@ -8,6 +8,8 @@ extends Node2D
 ## the counter, the benches and runs to the vault with the till; staff (Staff) help out.
 ## Now and then a robber walks in with the customers (Security): the guard may stop
 ## them at the door, otherwise you hand over the till or hit the panic button.
+## Rival shops (Rivals) compete for every customer: when your prices or stars look worse
+## than theirs, some cross the street before they reach your door.
 ## On day 1 of a new game the Coach walks the player through it.
 ## Once the trading desk room is built, the morning panel opens the TradingDesk minigame.
 
@@ -166,7 +168,7 @@ func _tick(delta: float) -> void:
 			elif not rush.is_empty():
 				_next_spawn = RushHours.SPAWN_GAP / Progress.traffic() * rng.randf_range(0.75, 1.25)
 			else:
-				_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor()
+				_next_spawn = maxf(5.0, 15.0 - Shop.reputation * 2.0) / Progress.traffic() / Rivals.traffic_factor() * rng.randf_range(0.7, 1.3) * MarketEvents.spawn_factor()
 		elif not rush.is_empty():
 			# in a rush nobody waits outside: a full queue turns them away
 			Shop.note("walked_by")
@@ -231,7 +233,12 @@ func _update_rush() -> void:
 
 
 func _spawn() -> void:
-	admit(Customers.next_customer(rng, MarketEvents.customer_event(rng)))
+	var c := Customers.next_customer(rng, MarketEvents.customer_event(rng))
+	var rival := Rivals.diverts(c, rng)
+	if rival != "":
+		Rivals.lose(c, rival)
+		return
+	admit(c)
 
 
 ## Sends customer `c` through the door and into the queue.
