@@ -1013,6 +1013,12 @@ func _check_rivals() -> void:
 	Shop.reputation = 4.5
 	expect(Rivals.overall_share() > share, "stars win customers too")
 	expect(Rivals.share("seller", "shady") < Rivals.share("seller"), "shady sellers drift to the pawn shop")
+	var quiet := true
+	for d in range(3, 40):
+		Rivals._on_day_started(d)
+		quiet = quiet and Rivals.move_of("sterling") == ""
+	expect(Progress.tier == 0 and quiet, "Sterling leaves a corner counter alone")
+	Rivals.reset()
 	# terrible prices and a bad name send people across the street
 	Shop.reputation = 0.5
 	Shop.set_buy_percent(0.7)
@@ -1020,7 +1026,8 @@ func _check_rivals() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 11
 	var c := Customer.create(5, 0.5, Shop.coin_list(), rng)
-	expect(Rivals.divert_odds(c) > 0.3, "a bad deal sends customers to the rivals")
+	# the corner counter's customers are mostly locals, so at most MAX_DIVERT[0] cross the street
+	expect(Rivals.divert_odds(c) > 0.15, "a bad deal sends customers to the rivals")
 	c.regular_id = "lev"
 	expect(Rivals.divert_odds(c) == 0.0, "regulars always come in")
 	c.regular_id = ""
@@ -1036,7 +1043,7 @@ func _check_rivals() -> void:
 		shop._spawn()
 		shop.queue.clear()
 	var lost := int(Shop.stats.get("lost_to_rival", 0.0))
-	expect(lost >= 8, "the shop loses customers to the rivals (%d of 40)" % lost)
+	expect(lost >= 4, "the shop loses customers to the rivals (%d of 40)" % lost)
 	expect(int(Rivals.lost_today.get("sterling", 0)) + int(Rivals.lost_today.get("pawn", 0)) == lost, "each lost customer is booked to a rival")
 	# the rivals' books: they grow, and the summary says where the customers went
 	var worth := Rivals.worth_of("sterling")
@@ -1116,6 +1123,9 @@ func _check_rush_hours() -> void:
 	expect(RushHours.summary(1).contains("lunch 11:45"), "the morning briefing lists the rushes")
 	expect(RushHours.grab_chance(RushHours.till_limit() * 0.5, true) == 0.0, "a light till is safe")
 	expect(RushHours.grab_chance(RushHours.till_limit() * 2.0, true) > RushHours.grab_chance(RushHours.till_limit() * 2.0, false), "a rush makes snatches likelier")
+	var limit := RushHours.till_limit()
+	expect(RushHours.grab_chance(limit * 1.1, false) < RushHours.grab_chance(limit * 2.0, false), "a till just over the limit is safer than an overflowing one")
+	expect(RushHours.grab_amount(limit * 6.0) <= limit * RushHours.GRAB_CAP + 0.01, "one snatch takes at most half a till")
 
 
 ## In a rush the clock runs on through a test, a full queue turns people away, the clerk

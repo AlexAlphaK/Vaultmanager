@@ -93,7 +93,7 @@ func _ready() -> void:
 	for name in names:
 		all[name] = []
 		for r in runs:
-			all[name].append(run(name, first_seed + r, days))
+			all[name].append(await run(name, first_seed + r, days))
 	print("\nBalance check: %d runs x %d days per bot (%.1f s)\n" % [runs, days, (Time.get_ticks_msec() - t0) / 1000.0])
 	for name in names:
 		_print_summary(name, all[name], days)
@@ -127,6 +127,8 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 			break
 		_walk_prices()
 		shop._open_next_day()
+		# let the engine flush its deferred calls, or the message queue overflows on long runs
+		await get_tree().process_frame
 	return out
 
 

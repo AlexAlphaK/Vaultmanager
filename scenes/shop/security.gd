@@ -32,9 +32,9 @@ const ROBBER_LOOK := {"skin": "#c98f62", "hair": "#1a1a1a", "hair_style": 0, "sh
 ## shop tier: the corner counter mostly draws kids, a landmark draws professionals.
 ## The floor safe always holds.
 const CREWS := {
-	"kids": {"name": "Smash-and-grab kids", "carry": 3, "wall": 0.0, "weights": [0.6, 0.4, 0.25, 0.2],
+	"kids": {"name": "Smash-and-grab kids", "carry": 3, "wall": 0.0, "weights": [0.75, 0.4, 0.25, 0.2],
 		"line": "Kids smashed the back window and ran with what they could carry."},
-	"crew": {"name": "A safecracking crew", "carry": 0, "wall": 1.0, "weights": [0.4, 0.45, 0.45, 0.45],
+	"crew": {"name": "A safecracking crew", "carry": 0, "wall": 1.0, "weights": [0.25, 0.45, 0.45, 0.45],
 		"line": "A crew forced the back door at 3 a.m. and went to work on the safes."},
 	"pros": {"name": "Professionals", "carry": 0, "wall": 2.0, "weights": [0.0, 0.15, 0.3, 0.35],
 		"line": "Professionals cut the phone line and drilled straight for the wall safe."},
