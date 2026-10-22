@@ -13,7 +13,7 @@ import os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LANGS = ["de", "es", "fr"]
-SKIP_DIRS = ("tests", ".godot", ".git", "price-service", "prototype", "art", "audio", "build", "docs", "locale")
+SKIP_DIRS = ("tests", "tools", "store", ".godot", ".git", "price-service", "prototype", "art", "audio", "build", "docs", "locale")
 PLURAL = {"de": "nplurals=2; plural=(n != 1);", "es": "nplurals=2; plural=(n != 1);", "fr": "nplurals=2; plural=(n > 1);"}
 
 LIT = r'"((?:[^"\\\n]|\\.)*)"'
