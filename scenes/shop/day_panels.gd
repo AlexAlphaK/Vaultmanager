@@ -8,6 +8,7 @@ extends PanelContainer
 signal open_requested
 signal next_day_requested
 signal new_game_requested
+signal desk_requested
 
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
@@ -140,6 +141,10 @@ func _build_morning() -> void:
 	var expand_ready := Progress.expand_blocker() == "" and not Progress.is_top_tier()
 	_button(row, "Upgrades (%d)%s" % [count, " !" if expand_ready else ""], "Button", show_upgrades)
 	_button(row, "Restock", "Button", show_wholesale).tooltip_text = "Buy coins from the wholesaler before you open."
+	if Progress.has_upgrade("trading_desk"):
+		var desk := _button(row, "Desk", "Button", func(): desk_requested.emit())
+		desk.disabled = not DeskSession.available()
+		desk.tooltip_text = "Trade at the desk this morning." if not desk.disabled else "The desk has traded today. Back tomorrow morning."
 	_button(row, "Ledger", "Button", show_ledger)
 	_button(row, "Sure? Click again" if _confirm_new else "New game", "DangerButton", _on_new_game)
 

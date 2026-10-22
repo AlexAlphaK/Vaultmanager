@@ -32,8 +32,9 @@ platinum and palladium prices follow the real market.
 | `scenes/coin_test/` | The coin testing minigame: scale, calipers, ping, magnet and loupe |
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
 | `scenes/bar_test/` | The bar test: scale, calipers, ultrasound flaw detector, XRF gun and loupe |
+| `scenes/trading_desk/` | The trading desk minigame on the morning panel; `desk_session.gd` holds the tapes, trades, limit and hedging |
 | `scenes/vault/` | The vault lock-up minigame at closing time; `vault_layout.gd` holds the packing and break-in rules |
-| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people (walk cycle, back view, moods), coin, jewellery, bar, vault and title screen painters. `shop_ambience.gd` adds the sunbeam, dust, neon sign and shop cat; `bench_art.gd` the testing benches' wood, housings and lamp light. No image files |
+| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people (walk cycle, back view, moods), coin, jewellery, bar, vault, trading desk and title screen painters. `shop_ambience.gd` adds the sunbeam, dust, neon sign and shop cat; `bench_art.gd` the testing benches' wood, housings and lamp light. No image files |
 | `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds, `bar_sfx.gd` the gel, ultrasound and X-ray sounds) |
 | `audio/music_synth.gd` | The music, synthesised at runtime: a music-box title theme and a slow jazzy shop loop |
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons, sliders) |
@@ -144,6 +145,15 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   a stack of silver; **+1** buys one, the second button buys a bulk lot. Walk-in sellers are
   still the cheaper way to stock up, so restock what buyers keep asking for, and leave cash in
   hand for the sellers.
+- **Trading desk.** Build the trading desk room (Bullion house, $75,000) and a **Desk** button
+  joins the morning panel. One session a morning: a minute-long trading day (09:00 to 17:00) for
+  gold, silver, platinum and two each of the live crypto and stocks. Each tape replays a day that
+  ends near today's live price, so the board's real 24-hour move is your edge, but never a sure
+  thing. Pick a row (1-7 or click), **Buy** (B) to go long, **Sell** (S) to go short, **Close**
+  (C) to get out, all within the desk's limit ($20,000 times your deal size). **Hedge vault** (H)
+  shorts the metal in your vault ounce for ounce with up to half the limit, so a falling price
+  costs the vault on paper but pays at the desk. At the closing bell everything closes and the
+  profit or loss goes on today's ledger. The rules live in `scenes/trading_desk/desk_session.gd`.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
 - **The ledger.** The **Ledger** button on the morning panel shows your lifetime record: deals,
