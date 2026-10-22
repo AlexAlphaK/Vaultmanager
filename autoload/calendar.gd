@@ -124,7 +124,7 @@ func year(day := Shop.day) -> int:
 
 ## "Spring, day 9 of 14".
 func label(day := Shop.day) -> String:
-	return "%s, day %d of %d" % [season(day).name, day_of_season(day), SEASON_DAYS]
+	return tr("%s, day %d of %d") % [tr(season(day).name), day_of_season(day), SEASON_DAYS]
 
 
 ## The town event on `day`, or {}.
@@ -182,10 +182,10 @@ func next_event(day := Shop.day) -> Dictionary:
 func when(day: int) -> String:
 	var n := day - Shop.day
 	if n <= 0:
-		return "today"
+		return tr("today")
 	if n == 1:
-		return "tomorrow"
-	return "%s (in %d days)" % [Day.weekday(day), n]
+		return tr("tomorrow")
+	return tr("%s (in %d days)") % [Day.weekday(day), n]
 
 
 ## The morning panel's line about event `e`, which runs today or starts on `day`:
@@ -193,20 +193,20 @@ func when(day: int) -> String:
 func morning_line(e: Dictionary, day := Shop.day) -> String:
 	var when := ""
 	if day > Shop.day:
-		when = "tomorrow" if day == Shop.day + 1 else "on " + Day.weekday(day)
+		when = tr("tomorrow") if day == Shop.day + 1 else tr("on %s") % Day.weekday(day)
 	else:
 		var left := last_day(e) - Shop.day
-		when = "last day" if left == 0 else "%d more day%s" % [left, "" if left == 1 else "s"]
+		when = tr("last day") if left == 0 else tr_n("%d more day", "%d more days", left) % left
 	var tax_day := last_day(e, day)
-	var tip := String(e.short).format({"tax": Market.format_money(tax_due()),
-		"tax_day": "tonight" if tax_day == Shop.day else Day.weekday(tax_day)})
-	return "%s %s: %s" % [e.name, when, tip] if day > Shop.day else "%s, %s: %s" % [e.name, when, tip]
+	var tip := tr(e.short).format({"tax": Market.format_money(tax_due()),
+		"tax_day": tr("tonight") if tax_day == Shop.day else Day.weekday(tax_day)})
+	return "%s %s: %s" % [tr(e.name), when, tip] if day > Shop.day else "%s, %s: %s" % [tr(e.name), when, tip]
 
 
 ## The event's banner line with its dates filled in.
 func banner(e: Dictionary) -> String:
 	var last := last_day(e)
-	return String(e.banner).format({"last": "today" if last == Shop.day else Day.weekday(last)})
+	return tr(e.banner).format({"last": tr("today") if last == Shop.day else Day.weekday(last)})
 
 
 # ---------------------------------------------------------------- customers
@@ -283,12 +283,12 @@ func book_booth() -> bool:
 	if not can_book_booth():
 		return false
 	var e := booth_event()
-	Day.add_expense("Coin show booth", booth_cost())
+	Day.add_expense(tr("Coin show booth"), booth_cost())
 	booth_day = first_day(e)
 	booths += 1
 	Shop.adjust_reputation(BOOTH_REPUTATION)
 	Shop.note("booths")
-	Shop.log_event("You booked a booth at the coin show. Collectors will find you.", "good")
+	Shop.log_event(tr("You booked a booth at the coin show. Collectors will find you."), "good")
 	changed.emit()
 	return true
 
@@ -313,11 +313,11 @@ func _on_shop_closed(day: int) -> void:
 		return
 	var due := tax_due()
 	if due >= 1.0:
-		Day.add_expense("Tax Day", due)
-		_report_lines.append("Tax Day: you paid %s, %d%% of your %s profit (after costs) since the last one." % [
+		Day.add_expense(tr("Tax Day"), due)
+		_report_lines.append(tr("Tax Day: you paid %s, %d%% of your %s profit (after costs) since the last one.") % [
 			Market.format_money(due), roundi(TAX_RATE * 100.0), Market.format_money(taxable)])
 	else:
-		_report_lines.append("Tax Day: no profit since the last one, so no tax to pay.")
+		_report_lines.append(tr("Tax Day: no profit since the last one, so no tax to pay."))
 	taxable = 0.0
 
 
@@ -334,7 +334,7 @@ func _on_day_started(day: int) -> void:
 func _on_day_ended(day: int, report: Dictionary) -> void:
 	taxable += float(report.get("stats", {}).get("profit", 0.0))
 	for entry in report.get("ledger", []):
-		if float(entry.usd) < 0.0 and entry.label != "Tax Day":
+		if float(entry.usd) < 0.0 and entry.label != tr("Tax Day"):
 			taxable += float(entry.usd)
 	report.lines.append_array(_report_lines)
 	_report_lines.clear()
@@ -343,12 +343,12 @@ func _on_day_ended(day: int, report: Dictionary) -> void:
 	var e := event_on(day)
 	if not e.is_empty() and last_day(e, day) == day:
 		var n := int(served.get(e.id, 0))
-		report.lines.append("The %s is over. You served %d of its customer%s." % [String(e.name).to_lower(), n, "" if n == 1 else "s"])
+		report.lines.append(tr("%s is over. You served %d of its customers.") % [tr(e.name), n])
 	var next := event_on(day + 1)
 	if not next.is_empty() and next.get("id", "") != e.get("id", ""):
-		report.lines.append("Tomorrow: %s. %s" % [String(next.name).to_lower(), next.hint])
+		report.lines.append(tr("Tomorrow: %s. %s") % [tr(next.name), tr(next.hint)])
 	if day_of_season(day) == SEASON_DAYS:
-		report.lines.append("%s is over. %s starts tomorrow." % [season(day).name, season(day + 1).name])
+		report.lines.append(tr("%s is over. %s starts tomorrow.") % [tr(season(day).name), tr(season(day + 1).name)])
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -360,7 +360,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		Shop.day = int(next.day)
 		Day.begin_day()
 		Shop.changed.emit()
-		Shop.log_event("Debug: skipped ahead to day %d, %s." % [Shop.day, String(next.event.name).to_lower()])
+		Shop.log_event(tr("Debug: skipped ahead to day %d, %s.") % [Shop.day, String(next.event.name).to_lower()])
 		get_viewport().set_input_as_handled()
 
 

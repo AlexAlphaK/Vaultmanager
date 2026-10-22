@@ -5,3 +5,4 @@ price-service/.wrangler/
 .dev.vars
 build/
 bug_bot_logs/
+locale/__pycache__/

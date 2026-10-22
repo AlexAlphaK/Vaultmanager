@@ -28,6 +28,7 @@ func _ready() -> void:
 	trailer = "--trailer" in OS.get_cmdline_user_args()
 	rng.seed = 2026
 	seed(2026)
+	TranslationServer.set_locale("en") # the store page is in English, whatever the machine speaks
 	SaveGame.slot_prefix = "user://store_capture_slot_"
 	SaveGame.meta_path = "user://store_capture_slots.cfg"
 	SaveGame.legacy_path = "user://store_capture_legacy.json"

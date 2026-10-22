@@ -12,7 +12,8 @@ extends Node
 ##   godot --headless --path . res://tests/bug_bot.tscn -- --seed=3 --minutes=10
 ## Options: --seed=N, --minutes=N (real minutes), --speed=N (game seconds per real
 ## second, default 8), --rich (tops the cash up to $2M and the stars to 4.6 every morning so the bot reaches the late game),
-## --skip-tutorial, --days=N (stop after N shop days in total).
+## --skip-tutorial, --days=N (stop after N shop days in total), --lang=de|es|fr|en (play in
+## that language, to catch text that breaks a translation).
 ## Prints "BUG BOT: ..." lines for each finding and exits 1 when it found any.
 
 const TitleScene := "res://scenes/menu/title_screen.tscn"
@@ -75,11 +76,13 @@ func _ready() -> void:
 	if FileAccess.file_exists(Market.SETTINGS_PATH):
 		_settings_backup = FileAccess.get_file_as_string(Market.SETTINGS_PATH)
 	Settings.path = "user://bug_bot_%d_settings.cfg" % seed_value
+	if args.has("lang"):
+		Settings.set_language(args.lang)
 	_quiet_market()
 	Engine.time_scale = speed
 	Day.phase_changed.connect(_on_phase)
 	SaveGame.new_game_started.connect(func(): _new_shop = true)
-	print("BUG BOT seed %d, speed %.0fx%s%s" % [seed_value, speed, ", rich" if rich else "", ", no tutorial" if skip_tutorial else ""])
+	print("BUG BOT seed %d, speed %.0fx%s%s, %s" % [seed_value, speed, ", rich" if rich else "", ", no tutorial" if skip_tutorial else "", TranslationServer.get_locale()])
 	# stay alive across scene changes: hand the current scene slot to the game
 	get_tree().current_scene = null
 	get_tree().change_scene_to_file.call_deferred(TitleScene)

@@ -306,12 +306,12 @@ func _build_panel() -> void:
 	_label("FLOOR SAFE", Vector2(x, 78), Pal.INK_FAINT)
 	_label("Burglars can't crack it", Vector2(x, 87), Pal.INK_DIM, 156)
 	if layout.risk_scale < 1.0:
-		_label("Alarm: -%d%% risk" % roundi((1.0 - layout.risk_scale) * 100.0), Vector2(x + 96, 78), Pal.GOOD, 60, HORIZONTAL_ALIGNMENT_RIGHT)
+		_label(tr("Alarm: -%d%% risk") % roundi((1.0 - layout.risk_scale) * 100.0), Vector2(x + 96, 78), Pal.GOOD, 60, HORIZONTAL_ALIGNMENT_RIGHT)
 	_label("WALL SAFE", Vector2(x, 98), Pal.INK_FAINT)
 	var crack: float = layout.areas[VaultLayout.WALL].crack
-	var text := "Crews crack it %d%% of the time" % roundi(Security.crack_chance("crew", crack) * 100.0)
+	var text := tr("Crews crack it %d%% of the time") % roundi(Security.crack_chance("crew", crack) * 100.0)
 	if Progress.tier >= 1:
-		text = "Crews crack it %d%%, pros %d%%" % [roundi(Security.crack_chance("crew", crack) * 100.0), roundi(Security.crack_chance("pros", crack) * 100.0)]
+		text = tr("Crews crack it %d%%, pros %d%%") % [roundi(Security.crack_chance("crew", crack) * 100.0), roundi(Security.crack_chance("pros", crack) * 100.0)]
 	_label(text, Vector2(x, 107), Pal.INK_DIM, 156)
 	_ui.title = _label("", Vector2(x, 122), Pal.GOLD, 156)
 	_ui.lines = []
@@ -349,8 +349,8 @@ func _refresh_panel() -> void:
 	_ui.title.text = p.get("title", "")
 	for n in 3:
 		var lines: Array = p.get("contents", [])
-		_ui.lines[n].text = lines[n] if n < lines.size() else ("and more" if n == 2 and lines.size() > 3 else "")
-	_ui.value.text = "Worth %s today" % Market.format_money(p.value) if p.get("value", 0.0) > 0.0 else ""
+		_ui.lines[n].text = lines[n] if n < lines.size() else (tr("and more") if n == 2 and lines.size() > 3 else "")
+	_ui.value.text = tr("Worth %s today") % Market.format_money(p.value) if p.get("value", 0.0) > 0.0 else ""
 
 
 func _show_result() -> void:
@@ -358,40 +358,40 @@ func _show_result() -> void:
 	for p in report.stolen:
 		stolen_from[p.area] = stolen_from.get(p.area, 0.0) + p.value
 	var lines: Array[String] = []
-	var title := "Quiet night"
+	var title := tr("Quiet night")
 	if not report.break_in:
 		if report.left_out > 0.0:
-			lines.append("Nobody came. Lucky: %s sat out on the counter all night." % Market.format_money(report.left_out))
+			lines.append(tr("Nobody came. Lucky: %s sat out on the counter all night.") % Market.format_money(report.left_out))
 		else:
-			lines.append("Nobody came, and everything was locked away.")
-		Shop.log_event("Quiet night. The vault was untouched.", "good")
+			lines.append(tr("Nobody came, and everything was locked away."))
+		Shop.log_event(tr("Quiet night. The vault was untouched."), "good")
 	else:
 		title = "Break-in!"
 		Sfx.play(self, Sfx.alarm(), -6.0)
 		var crew: Dictionary = Security.CREWS[report.crew]
-		title = "Break-in: %s!" % crew.name.to_lower() if report.crew != "crew" else "Break-in!"
+		title = tr("Break-in: %s!") % tr(crew.name.to_lower()) if report.crew != "crew" else "Break-in!"
 		lines.append(crew.line)
 		if stolen_from.has(VaultLayout.TRAY):
 			var all_out := layout.value_in(VaultLayout.TRAY)
 			if stolen_from.tray < all_out - 0.5:
-				lines.append("Grabbed the best of the counter tray: %s. They left the rest." % Market.format_money(stolen_from.tray))
+				lines.append(tr("Grabbed the best of the counter tray: %s. They left the rest.") % Market.format_money(stolen_from.tray))
 			else:
-				lines.append("Took everything on the counter tray: %s." % Market.format_money(stolen_from.tray))
+				lines.append(tr("Took everything on the counter tray: %s.") % Market.format_money(stolen_from.tray))
 		if float(crew.wall) <= 0.0:
-			lines.append("They never touched the safes.")
+			lines.append(tr("They never touched the safes."))
 		elif report.cracked.get(VaultLayout.WALL, false):
-			lines.append("Cracked the wall safe: %s." % Market.format_money(stolen_from.get(VaultLayout.WALL, 0.0)))
+			lines.append(tr("Cracked the wall safe: %s.") % Market.format_money(stolen_from.get(VaultLayout.WALL, 0.0)))
 		else:
-			lines.append("They couldn't crack the wall safe.")
-		lines.append("The floor safe held.")
+			lines.append(tr("They couldn't crack the wall safe."))
+		lines.append(tr("The floor safe held."))
 		if report.stolen.any(func(p): return p.kind == "ledger"):
-			lines.append("The customer ledger is gone. Reputation -%.1f." % VaultLayout.LEDGER_REPUTATION)
-		lines.append("Total lost: %s." % Market.format_money(report.value))
+			lines.append(tr("The customer ledger is gone. Reputation -%.1f.") % VaultLayout.LEDGER_REPUTATION)
+		lines.append(tr("Total lost: %s.") % Market.format_money(report.value))
 		if report.get("recovered", 0.0) >= 1.0:
-			lines.append("The cameras caught them. Police got back %s." % Market.format_money(report.recovered))
+			lines.append(tr("The cameras caught them. Police got back %s.") % Market.format_money(report.recovered))
 		if report.get("insured", 0.0) >= 1.0:
-			lines.append("Insurance pays back %s." % Market.format_money(report.insured))
-		Shop.log_event("Break-in overnight! Lost %s." % Market.format_money(report.value), "bad")
+			lines.append(tr("Insurance pays back %s.") % Market.format_money(report.insured))
+		Shop.log_event(tr("Break-in overnight! Lost %s.") % Market.format_money(report.value), "bad")
 	_result = PanelContainer.new()
 	add_child(_result)
 	_result.position = Vector2(38, 70)
@@ -412,7 +412,7 @@ func _show_result() -> void:
 		l.custom_minimum_size = Vector2(224, 0)
 		box.add_child(l)
 	var odds := Label.new()
-	odds.text = "Break-in risk was %d%%, with %d%% of the value locked away." % [roundi(report.risk * 100.0), roundi(report.secured * 100.0)]
+	odds.text = tr("Break-in risk was %d%%, with %d%% of the value locked away.") % [roundi(report.risk * 100.0), roundi(report.secured * 100.0)]
 	odds.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	odds.custom_minimum_size = Vector2(224, 0)
 	odds.add_theme_color_override("font_color", Pal.INK_FAINT)

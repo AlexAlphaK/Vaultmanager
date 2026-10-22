@@ -114,7 +114,7 @@ func skip() -> void:
 	if _vault and is_instance_valid(_vault):
 		_vault.paused = false
 	_hide()
-	Shop.log_event("Tutorial skipped. Good luck!")
+	Shop.log_event(tr("Tutorial skipped. Good luck!"))
 
 
 func _process(delta: float) -> void:
@@ -153,7 +153,7 @@ func _on_morning() -> void:
 		return
 	step = "welcome"
 	_show("Welcome to your shop", "You buy and sell gold, silver and platinum at real market prices. Your goal: the biggest store in town. Let's serve your first customers together.",
-		AT_SIDE, null, "Show me", _prices)
+		AT_SIDE, null, tr("Show me"), _prices)
 
 
 func _prices() -> void:
@@ -196,9 +196,9 @@ func _send(who: String) -> void:
 	step = who + "_walk"
 	shop.admit(c)
 	var lines := {
-		"june": "Your first customer is walking up to the counter.",
-		"slick": "Here comes someone else. Keep an eye on this one.",
-		"priya": "One more. This one wants to buy.",
+		"june": tr("Your first customer is walking up to the counter."),
+		"slick": tr("Here comes someone else. Keep an eye on this one."),
+		"priya": tr("One more. This one wants to buy."),
 	}
 	_show("A customer", lines[who], AT_ROOM)
 
@@ -220,7 +220,7 @@ func _make(who: String) -> Customer:
 			c.kind = "seller"
 			c.qty = 10
 			c.reserve = minf(0.85, Shop.buy_percent - 0.01)
-			c.say = "My dad's old Silver Eagles. I'd like a fair price."
+			c.say = tr("My dad's old Silver Eagles. I'd like a fair price.")
 		"slick":
 			Customers.apply_archetype(c, "shady", rng)
 			c.name = "Slick"
@@ -228,7 +228,7 @@ func _make(who: String) -> Customer:
 			c.qty = 8
 			c.fake = "steel"
 			c.reserve = 0.7
-			c.say = "Silver Eagles, cheap. Cash only, no questions, yeah?"
+			c.say = tr("Silver Eagles, cheap. Cash only, no questions, yeah?")
 			c.max_patience = 9999.0
 			c.patience = c.max_patience
 		"priya":
@@ -237,7 +237,7 @@ func _make(who: String) -> Customer:
 			c.qty = 5
 			c.wanted_exact = false
 			c.max_premium = maxf(0.1, Shop.sell_premium + 0.01)
-			c.say = "Five silver coins, please. A birthday present."
+			c.say = tr("Five silver coins, please. A birthday present.")
 	c.floor_reserve = c.reserve
 	c.ceiling_premium = c.max_premium
 	return c
@@ -248,7 +248,7 @@ func _at_counter() -> void:
 	match _who:
 		"june":
 			step = "june_counter"
-			_show("Your first customer", "June wants to sell %d Silver Eagles. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin." % c.qty,
+			_show("Your first customer", tr("June wants to sell %d Silver Eagles. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin.") % c.qty,
 				AT_ROOM, TEST_BUTTON)
 		"slick":
 			step = "slick_counter"
@@ -273,9 +273,9 @@ func _on_bench_opened(bench: Control, c: Customer) -> void:
 		return
 	_hide()
 	if c.piece and not Tutorial.has_seen("jewellery"):
-		_intro("jewellery", "Jewellery appraisal", "Weigh the piece. Then press 2 to rub a streak on the touchstone and drop acids on it (Q-Y): the streak survives acids up to its karat, and base metal fizzes. The Tester checks a stone; moissanite fools it, so look for doubled facet edges under the loupe. Set the grade (G) and the stone (D), then Finish appraisal.")
+		_intro("jewellery", tr("Jewellery appraisal"), tr("Weigh the piece. Then press 2 to rub a streak on the touchstone and drop acids on it (Q-Y): the streak survives acids up to its karat, and base metal fizzes. The Tester checks a stone; moissanite fools it, so look for doubled facet edges under the loupe. Set the grade (G) and the stone (D), then Finish appraisal."))
 	elif c.bar and not Tutorial.has_seen("bar"):
-		_intro("bar", "Bar test", "Tungsten weighs almost the same as gold, so the scale isn't enough. Press 3 and sweep the ultrasound probe over the whole bar: the echo must stay inside the gate, and an early echo means tungsten inside. Read the serial under the loupe; a copied serial gets flagged. The XRF gun comes as an upgrade.")
+		_intro("bar", tr("Bar test"), tr("Tungsten weighs almost the same as gold, so the scale isn't enough. Press 3 and sweep the ultrasound probe over the whole bar: the echo must stay inside the gate, and an early echo means tungsten inside. Read the serial under the loupe; a copied serial gets flagged. The XRF gun comes as an upgrade."))
 
 
 func _intro(id: String, title: String, text: String) -> void:
@@ -336,9 +336,9 @@ func _send_after(title: String, text: String, who: String) -> void:
 
 func _free_play(sold: bool) -> void:
 	step = "free"
-	_show("Sold!" if sold else "That's the counter",
-		"Now you're on your own. Customers keep coming until 17:00, then you lock up the vault. Jewellery and bars have their own benches; you'll get a quick intro to each the first time.",
-		AT_ROOM, null, "Got it", _release)
+	_show("Sold!" if sold else tr("That's the counter"),
+		tr("Now you're on your own. Customers keep coming until 17:00, then you lock up the vault. Jewellery and bars have their own benches; you'll get a quick intro to each the first time."),
+		AT_ROOM, null, tr("Got it"), _release)
 
 
 ## Hands the shop back: the clock runs and customers come in on their own.
@@ -356,7 +356,7 @@ func _on_vault_opened(vault: Control) -> void:
 	step = "vault"
 	vault.paused = true
 	_show("Lock up", "Burglars take whatever's left on the tray. Drag your stock into the safes: the floor safe never gets cracked, the wall safe sometimes does. Right-click turns a piece. The longer the lights stay on, the riskier it gets, so be quick.",
-		Vector2(80, 60), VAULT_SAFES, "Start the clock", _start_vault_clock)
+		Vector2(80, 60), VAULT_SAFES, tr("Start the clock"), _start_vault_clock)
 
 
 func _start_vault_clock() -> void:

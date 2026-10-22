@@ -52,6 +52,7 @@ func _ready() -> void:
 	_build_menu()
 	Market.prices_changed.connect(func(_p): _rebuild_ticker())
 	Market.currency_changed.connect(func(_c): _rebuild_ticker())
+	Settings.changed.connect(_rebuild_ticker)
 	_rebuild_ticker()
 	Music.play("title")
 
@@ -111,7 +112,7 @@ func _draw_ticker() -> void:
 			x += _ticker_w
 	# the feed badge sits over the scrolling text
 	draw_rect(Rect2(0, TICKER_Y + 1, 50, 11), Color("#120e0a"))
-	var badge: String = {"live": "● LIVE", "cached": "● CACHED"}.get(Market.source, "● OFFLINE")
+	var badge: String = {"live": tr("● LIVE"), "cached": tr("● CACHED")}.get(Market.source, tr("● OFFLINE"))
 	draw_string(font, Vector2(4, TICKER_Y + 9), badge, HORIZONTAL_ALIGNMENT_LEFT, -1, PixelFont.SIZE, {"live": Pal.GOOD, "cached": Pal.WARN}.get(Market.source, Pal.INK_FAINT))
 
 
@@ -120,13 +121,13 @@ func _rebuild_ticker() -> void:
 	for metal in ["XAU", "XAG", "XPT", "XPD"]:
 		if Market.prices.has(metal):
 			var change := Market.metal_move_percent(metal)
-			parts.append("%s %s %s%.1f%%" % [METAL_NAMES[metal], Market.format_money(Market.prices[metal], 2 if metal == "XAG" else 0), "▲" if change >= 0.0 else "▼", absf(change)])
+			parts.append("%s %s %s%.1f%%" % [tr(METAL_NAMES[metal]), Market.format_money(Market.prices[metal], 2 if metal == "XAG" else 0), "▲" if change >= 0.0 else "▼", absf(change)])
 	for group in [Market.crypto, Market.stocks]:
 		for symbol in group:
 			var q: Dictionary = group[symbol]
 			var change := float(q.get("change_pct", 0.0))
 			parts.append("%s %s %s%.1f%%" % [symbol, Market.format_money(float(q.get("price", 0.0)), 2 if float(q.get("price", 0.0)) < 10.0 else 0), "▲" if change >= 0.0 else "▼", absf(change)])
-	_ticker = "      ".join(parts) + "      " if not parts.is_empty() else "Fetching prices...      "
+	_ticker = "      ".join(parts) + "      " if not parts.is_empty() else tr("Fetching prices...      ")
 	_ticker_w = PixelFont.measure(_ticker) + 1
 
 
@@ -168,7 +169,7 @@ func _build_buttons() -> void:
 		_save_info.text = "No saved shop yet"
 		_new.grab_focus.call_deferred()
 	else:
-		_save_info.text = "Day %d · %s" % [_save.day + (1 if _save.day_over else 0), Progress.tier_name(clampi(_save.tier, 0, Progress.TIERS.size() - 1))]
+		_save_info.text = tr("Day %d · %s") % [_save.day + (1 if _save.day_over else 0), Progress.tier_name(clampi(_save.tier, 0, Progress.TIERS.size() - 1))]
 		_continue.grab_focus.call_deferred()
 
 
@@ -197,7 +198,7 @@ func _on_continue() -> void:
 func _on_new_game() -> void:
 	var n := SaveGame.first_empty_slot()
 	if n == 0:
-		_open_slots("Every slot is full. Delete one to start a new shop.")
+		_open_slots(tr("Every slot is full. Delete one to start a new shop."))
 		return
 	_start_slot(n, true)
 

@@ -86,11 +86,11 @@ static func book(pnl: float) -> void:
 	if absf(pnl) < 0.5:
 		return
 	if pnl > 0.0:
-		Day.add_income("Trading desk", pnl)
-		Shop.log_event("The trading desk made %s this morning." % Market.format_money(pnl), "good")
+		Day.add_income(Loc.t("Trading desk"), pnl)
+		Shop.log_event(Loc.t("The trading desk made %s this morning.") % Market.format_money(pnl), "good")
 	else:
-		Day.add_expense("Trading desk", pnl)
-		Shop.log_event("The trading desk lost %s this morning." % Market.format_money(-pnl), "bad")
+		Day.add_expense(Loc.t("Trading desk"), pnl)
+		Shop.log_event(Loc.t("The trading desk lost %s this morning.") % Market.format_money(-pnl), "bad")
 
 
 ## Today's board from the live quotes. A fixed `rng` seed replays a session.

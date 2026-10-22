@@ -36,7 +36,7 @@ func _ready() -> void:
 	title.add_theme_color_override("font_color", Pal.GOLD)
 	box.add_child(title)
 	_hint = Label.new()
-	_hint.text = _hint_text if _hint_text != "" else "Each slot saves every morning and every night."
+	_hint.text = _hint_text if _hint_text != "" else tr("Each slot saves every morning and every night.")
 	_hint.add_theme_color_override("font_color", Pal.INK_DIM if _hint_text == "" else Pal.WARN)
 	box.add_child(_hint)
 
@@ -94,14 +94,14 @@ func _slot_row(n: int) -> Control:
 	text.add_child(top)
 	text.add_child(bottom)
 	if info.is_empty():
-		top.text = "Slot %d · empty" % n
+		top.text = tr("Slot %d · empty") % n
 		top.add_theme_color_override("font_color", Pal.INK_DIM)
 		bottom.text = "Start a new shop here"
 		_row_button(h, "New", "PrimaryButton", func(): chosen.emit(n, true))
 	else:
-		top.text = "Slot %d · Day %d · %s" % [n, info.day + (1 if info.day_over else 0),
+		top.text = tr("Slot %d · Day %d · %s") % [n, info.day + (1 if info.day_over else 0),
 			Progress.tier_name(clampi(info.tier, 0, Progress.TIERS.size() - 1))]
-		bottom.text = "%s · saved %s" % [Market.format_money(info.cash), SaveGame.format_time(info.saved_unix)]
+		bottom.text = tr("%s · saved %s") % [Market.format_money(info.cash), SaveGame.format_time(info.saved_unix)]
 		_row_button(h, "Play", "PrimaryButton", func(): chosen.emit(n, false))
 		_row_button(h, "Sure?" if _confirm_delete == n else "Delete", "DangerButton", func(): _on_delete(n))
 	return row
@@ -127,6 +127,6 @@ func _on_delete(n: int) -> void:
 		return
 	_confirm_delete = 0
 	SaveGame.delete_slot(n)
-	_hint.text = "Slot %d deleted." % n
+	_hint.text = tr("Slot %d deleted.") % n
 	_hint.add_theme_color_override("font_color", Pal.INK_DIM)
 	_refresh()
