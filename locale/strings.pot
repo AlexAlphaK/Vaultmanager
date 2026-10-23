@@ -632,6 +632,14 @@ msgstr ""
 msgid "You are overdrawn. The bank charges interest every night."
 msgstr ""
 
+#: autoload/demo.gd
+msgid "%s Demo"
+msgstr ""
+
+#: autoload/demo.gd
+msgid "Vault Manager"
+msgstr ""
+
 #: autoload/investor.gd
 msgid "%d%% of each day's profit"
 msgstr ""
@@ -1038,6 +1046,10 @@ msgstr ""
 
 #: autoload/progress.gd
 msgid "Fraud insurance"
+msgstr ""
+
+#: autoload/progress.gd
+msgid "Full game only"
 msgstr ""
 
 #: autoload/progress.gd
@@ -2784,6 +2796,80 @@ msgstr ""
 msgid "from %s"
 msgstr ""
 
+#: scenes/menu/demo_end.gd
+msgid "%d day at your %s"
+msgid_plural "%d days at your %s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: scenes/menu/demo_end.gd scenes/shop/day_panels.gd
+msgid "Achievements"
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "Deals closed"
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "Fakes caught"
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "Grow past Main Street into the bullion house and the town landmark."
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "IN THE FULL GAME"
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "Mags's whole story, to the ribbon cutting at your landmark."
+msgstr ""
+
+#: scenes/menu/demo_end.gd scenes/shop/day_panels.gd scenes/shop/hud.gd
+msgid "Net worth"
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "Play again"
+msgstr ""
+
+#: scenes/menu/demo_end.gd scenes/shop/day_panels.gd
+msgid "Profit on sales"
+msgstr ""
+
+#: scenes/menu/demo_end.gd scenes/menu/title_screen.gd
+msgid "Quit"
+msgstr ""
+
+#: scenes/menu/demo_end.gd scenes/shop/day_panels.gd
+msgid "Reputation"
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "Rival shops, burglar crews, staff who grow with you, and all four seasons."
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "Thanks for playing the demo!"
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "The trading desk, the smelter and coin grading for collectors."
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "Title"
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "Wishlist Vault Manager to hear when it comes out."
+msgstr ""
+
+#: scenes/menu/demo_end.gd
+msgid "Wishlist on Steam"
+msgstr ""
+
 #: scenes/menu/pause_menu.gd scenes/shop/day_panels.gd
 msgid "%s, day %d"
 msgstr ""
@@ -2817,7 +2903,15 @@ msgid "Continue"
 msgstr ""
 
 #: scenes/menu/title_screen.gd
+msgid "DEMO · your first %d days"
+msgstr ""
+
+#: scenes/menu/title_screen.gd
 msgid "Day %d · %s"
+msgstr ""
+
+#: scenes/menu/title_screen.gd
+msgid "Demo finished"
 msgstr ""
 
 #: scenes/menu/title_screen.gd
@@ -2846,10 +2940,6 @@ msgstr ""
 
 #: scenes/menu/title_screen.gd
 msgid "PLATINUM"
-msgstr ""
-
-#: scenes/menu/title_screen.gd
-msgid "Quit"
 msgstr ""
 
 #: scenes/menu/title_screen.gd
@@ -3237,10 +3327,6 @@ msgid "A quiet morning on Main Street. Your share of the town's customers: %d%%.
 msgstr ""
 
 #: scenes/shop/day_panels.gd
-msgid "Achievements"
-msgstr ""
-
-#: scenes/shop/day_panels.gd
 msgid "Achievements (%d/%d)"
 msgstr ""
 
@@ -3588,10 +3674,6 @@ msgstr ""
 msgid "NEXT: %s"
 msgstr ""
 
-#: scenes/shop/day_panels.gd scenes/shop/hud.gd
-msgid "Net worth"
-msgstr ""
-
 #: scenes/shop/day_panels.gd
 msgid "Net worth at today's prices"
 msgstr ""
@@ -3667,10 +3749,6 @@ msgid "Platinum"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
-msgid "Profit on sales"
-msgstr ""
-
-#: scenes/shop/day_panels.gd
 msgid "Profit streak"
 msgstr ""
 
@@ -3693,10 +3771,6 @@ msgid "Repay %s"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
-msgid "Reputation"
-msgstr ""
-
-#: scenes/shop/day_panels.gd
 msgid "Restock"
 msgstr ""
 
@@ -3706,6 +3780,10 @@ msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "Say no"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "See how you did"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
@@ -3778,6 +3856,14 @@ msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "Tell Detective Ruiz about Lucky's stolen goods. A raid shuts the pawn shop for %d days."
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "That was the last day of the demo. Thanks for playing!"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "The %s opens in the full game. Wishlist it on Steam!"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
@@ -3955,6 +4041,10 @@ msgid "Day %d"
 msgstr ""
 
 #: scenes/shop/hud.gd
+msgid "Day %d/%d"
+msgstr ""
+
+#: scenes/shop/hud.gd
 msgid "Decline"
 msgstr ""
 
@@ -3968,6 +4058,10 @@ msgstr ""
 
 #: scenes/shop/hud.gd
 msgid "Fee %s if you grade it right"
+msgstr ""
+
+#: scenes/shop/hud.gd
+msgid "Full game"
 msgstr ""
 
 #: scenes/shop/hud.gd
@@ -4425,6 +4519,12 @@ msgstr ""
 #: scenes/shop/shop.gd
 msgid "Couldn't afford %s's %s today."
 msgstr ""
+
+#: scenes/shop/shop.gd
+msgid "Demo: %d day left to play."
+msgid_plural "Demo: %d days left to play."
+msgstr[0] ""
+msgstr[1] ""
 
 #: scenes/shop/shop.gd
 msgid "Fine. Pay me for the metal then."

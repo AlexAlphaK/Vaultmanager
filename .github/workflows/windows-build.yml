@@ -1,7 +1,9 @@
 # Builds the double-clickable Windows game (VaultManager.exe).
 # Every push to main refreshes the "Latest Windows build" release, so the download link
 # https://github.com/AlexAlphaK/Vaultmanager/releases/latest always has the newest game.
-# Pull requests just build it (as a downloadable artifact) to check the export still works.
+# The Steam demo (VaultManagerDemo.exe, the "Windows Demo" preset with the "demo" feature)
+# is built next to it and published as the "Latest Windows demo" release (tag demo-latest).
+# Pull requests just build both (as downloadable artifacts) to check the exports still work.
 name: Windows build
 
 on:
@@ -63,11 +65,24 @@ jobs:
           test -s build/windows/VaultManager.exe
           cd build/windows && zip -q ../VaultManager-windows.zip VaultManager.exe
 
+      - name: Export Windows demo
+        run: |
+          mkdir -p build/windows-demo
+          ~/godot/godot --headless --path . --export-release "Windows Demo" build/windows-demo/VaultManagerDemo.exe
+          test -s build/windows-demo/VaultManagerDemo.exe
+          cd build/windows-demo && zip -q ../VaultManagerDemo-windows.zip VaultManagerDemo.exe
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: VaultManager-windows
           path: build/windows/VaultManager.exe
+
+      - name: Upload demo artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VaultManagerDemo-windows
+          path: build/windows-demo/VaultManagerDemo.exe
 
       - name: Publish "Latest Windows build" release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -79,3 +94,14 @@ jobs:
             --target "$GITHUB_SHA" --latest \
             --title "Latest Windows build" \
             --notes "Built from ${GITHUB_SHA::7}. Download VaultManager-windows.zip, unzip it and double-click VaultManager.exe."
+
+      - name: Publish "Latest Windows demo" release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete demo-latest --cleanup-tag --yes || true
+          gh release create demo-latest build/VaultManagerDemo-windows.zip \
+            --target "$GITHUB_SHA" --latest=false --prerelease \
+            --title "Latest Windows demo (Steam Next Fest)" \
+            --notes "Built from ${GITHUB_SHA::7}. The Steam demo: the first 10 days, up to Main Street, ending on a wishlist screen. Download VaultManagerDemo-windows.zip, unzip it and double-click VaultManagerDemo.exe."
