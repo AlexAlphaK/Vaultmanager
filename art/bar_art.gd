@@ -125,7 +125,7 @@ static func _bitmap(text: String, crude: bool, rng: RandomNumberGenerator) -> Di
 		if ch == " ":
 			x += PixelFont.SPACE_ADVANCE
 			continue
-		var rows: Array = PixelFont.GLYPHS.get(ch, PixelFont.GLYPHS["?"])
+		var rows := PixelFont.plain_rows_of(ch)
 		var dy := rng.randi_range(0, 2) if crude else 0
 		for gy in rows.size():
 			for gx in rows[gy].length():
@@ -135,13 +135,10 @@ static func _bitmap(text: String, crude: bool, rng: RandomNumberGenerator) -> Di
 	return {"bits": bits, "bw": bw, "bh": bh}
 
 
-## Straight from Pal.METAL rather than Pal.metal(), whose cache is not safe to fill
-## from the loupe painting's worker thread.
+## Pal.ramp() rather than Pal.metal(), whose cache is not safe to fill from the loupe
+## painting's worker thread.
 static func _ramp(name: String) -> Array[Color]:
-	var out: Array[Color] = []
-	for hex in Pal.METAL.get(name, Pal.METAL["silver"]):
-		out.append(Color(hex))
-	return out
+	return Pal.ramp(name)
 
 
 ## Height of the relief at a point in millimetres: 0 on the face.

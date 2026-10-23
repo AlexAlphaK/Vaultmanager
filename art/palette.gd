@@ -26,16 +26,24 @@ const LED := Color("#9cf58a")
 const LED_BG := Color("#14200f")
 
 static var _cache := {}
+## METAL as plain copies, safe to read from the loupe painting's worker thread while the
+## main thread reads them too (see PixelFont._glyphs).
+static var _metal: Dictionary = METAL.duplicate(true)
 
 
 ## Colour `tone` (0-5, clamped) of the named metal ramp.
 static func metal(name: String, tone: int) -> Color:
 	if not _cache.has(name):
-		var ramp: Array[Color] = []
-		for hex in METAL.get(name, METAL["silver"]):
-			ramp.append(Color(hex))
-		_cache[name] = ramp
+		_cache[name] = ramp(name)
 	return _cache[name][clampi(tone, 0, 5)]
+
+
+## The named metal ramp, darkest to lightest, made fresh (no cache: safe on any thread).
+static func ramp(name: String) -> Array[Color]:
+	var out: Array[Color] = []
+	for hex in _metal.get(name, _metal["silver"]):
+		out.append(Color(hex))
+	return out
 
 
 ## Palette used for a metal symbol when an item does not name one.
