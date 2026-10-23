@@ -441,6 +441,25 @@ bench, a hold-up and the vault lock-up. With `--shots` it saves a screenshot at 
 capsules from the title screen's art (the night sky, the shop at dusk and the gold logo), small, and
 scales them up by whole numbers so the pixels stay sharp.
 
+## Steam demo
+
+A short demo for Steam Next Fest is built from the same code. It lasts the first 10 days, the shop
+can grow as far as Main Street, and when day 10 closes the player gets a thank-you screen with their
+results, what the full game adds, and a **Wishlist on Steam** button. Everything else (benches,
+customers, robberies, the story's first chapter) plays as in the full game. The demo keeps its
+saves in its own files (`demo_save_1.json` and on), so a demo shop never shows up in the full game.
+
+- Download it like the full game, from the **Latest Windows demo** release
+  (https://github.com/AlexAlphaK/Vaultmanager/releases/tag/demo-latest, `VaultManagerDemo-windows.zip`).
+  `.github/workflows/windows-build.yml` exports it from the "Windows Demo" preset, which adds the
+  `demo` feature tag.
+- The limits and the store link are at the top of `autoload/demo.gd` (`DAYS`, `MAX_TIER`,
+  `STEAM_APP_ID`). Put the full game's Steam app id in `STEAM_APP_ID` once Steamworks gives one;
+  until then the wishlist button opens a Steam search for "Vault Manager".
+- To try the demo from the editor or a terminal, add `--demo` after `--`:
+  `godot --path . -- --demo`. The bug bots take `--demo` too.
+- `store/demo.md` walks through setting the demo up in Steamworks and uploading the build.
+
 ## Bug bots
 
 `tests/bug_bot.tscn` plays the game from the title screen through the real GUI, like a

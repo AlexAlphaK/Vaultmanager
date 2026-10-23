@@ -13,7 +13,8 @@ extends Node
 ## Options: --seed=N, --minutes=N (real minutes), --speed=N (game seconds per real
 ## second, default 8), --rich (tops the cash up to $2M and the stars to 4.6 every morning so the bot reaches the late game),
 ## --broke (most mornings start overdrawn, so the angel investor keeps calling), --skip-tutorial, --days=N (stop after N shop days in total), --lang=de|es|fr|en (play in
-## that language, to catch text that breaks a translation).
+## that language, to catch text that breaks a translation), --demo (play the Steam demo: 10 days,
+## then the wishlist screen, Play again and round again).
 ## Prints "BUG BOT: ..." lines for each finding and exits 1 when it found any.
 
 const TitleScene := "res://scenes/menu/title_screen.tscn"
@@ -133,7 +134,8 @@ func _act() -> void:
 	actions += 1
 	_check_layout()
 	var roll := rng.randf()
-	var buttons := _buttons().filter(func(b): return not _label(b).begins_with("Quit"))
+	# Quit ends the run, and the demo's wishlist button opens a web browser
+	var buttons := _buttons().filter(func(b): return not _label(b).begins_with("Quit") and not _label(b).begins_with("Wishlist"))
 	if roll < 0.7 and not buttons.is_empty():
 		var b: BaseButton = _pick_button(buttons)
 		_note_action("click '%s'" % _label(b))
@@ -255,9 +257,11 @@ func _drag(from: Vector2, to: Vector2) -> void:
 	get_viewport().push_input(up, true)
 
 
-## A random click or drag must not land on a Quit button and end the run.
+## A random click or drag must not land on a Quit button and end the run (or on the demo's
+## wishlist button, which opens a web browser).
 func _on_quit(at: Vector2) -> bool:
-	return _buttons().any(func(b): return _label(b).begins_with("Quit") and b.get_global_rect().grow(2).has_point(at))
+	return _buttons().any(func(b): return (_label(b).begins_with("Quit") or _label(b).begins_with("Wishlist")) \
+		and b.get_global_rect().grow(2).has_point(at))
 
 
 func _mouse_move(at: Vector2, mask := 0) -> void:
@@ -496,6 +500,8 @@ func _wait_for_shop() -> bool:
 		if shop and shop.is_node_ready():
 			await _frames(3)
 			return true
+		if _where() == "demo_end": # a finished demo shop opens on the wishlist screen instead
+			return false
 	_report("stuck", "the shop never opened after leaving the title screen. %s" % _describe())
 	get_tree().change_scene_to_file(TitleScene)
 	return false

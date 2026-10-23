@@ -30,6 +30,7 @@ Decor="*res://autoload/decor.gd"
 Records="*res://autoload/records.gd"
 Story="*res://autoload/story.gd"
 Pad="*res://autoload/pad.gd"
+Demo="*res://autoload/demo.gd"
 
 [display]
 

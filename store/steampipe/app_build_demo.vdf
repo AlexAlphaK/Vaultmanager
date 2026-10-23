@@ -1,0 +1,11 @@
+"AppBuild"
+{
+	"AppID" "DEMO_APP_ID"
+	"Desc" "Vault Manager demo"
+	"ContentRoot" "content\"
+	"BuildOutput" "output\"
+	"Depots"
+	{
+		"DEMO_DEPOT_ID" "depot_build_demo.vdf"
+	}
+}

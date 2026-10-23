@@ -92,7 +92,7 @@ func _process(delta: float) -> void:
 
 
 func set_clock(day: int, minutes: int, closing: bool, rush := false) -> void:
-	_day.text = tr("Day %d") % day
+	_day.text = tr("Day %d/%d") % [day, Demo.DAYS] if Demo.enabled else tr("Day %d") % day
 	var when := tr("closing") if closing else (tr("RUSH") if rush else Day.weekday(day).substr(0, 3))
 	_clock.text = "%s %02d:%02d" % [when, minutes / 60, minutes % 60]
 	_clock.add_theme_color_override("font_color", Pal.WARN if rush else Pal.INK)
@@ -199,6 +199,8 @@ func _refresh() -> void:
 	_goal.value = Progress.next_tier_progress() * 100.0
 	if Progress.is_top_tier():
 		_goal_text.text = "Top of the town"
+	elif Demo.tier_locked(Progress.tier + 1):
+		_goal_text.text = "Full game"
 	else:
 		_goal_text.text = tr("Next %s") % Market.format_money(Progress.tier_info(Progress.tier + 1).need_worth)
 	_tier.text = Progress.tier_name()

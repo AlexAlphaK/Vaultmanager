@@ -178,6 +178,8 @@ func buy(id: String) -> bool:
 func expand_blocker() -> String:
 	if is_top_tier():
 		return tr("You run the biggest store in town.")
+	if Demo.tier_locked(tier + 1):
+		return tr("Full game only")
 	var next := tier_info(tier + 1)
 	if Shop.net_worth() < next.need_worth:
 		return tr("Needs net worth %s") % Market.format_money(next.need_worth)

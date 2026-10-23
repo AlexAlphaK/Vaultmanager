@@ -1,0 +1,9 @@
+"DepotBuild"
+{
+	"DepotID" "DEMO_DEPOT_ID"
+	"FileMapping"
+	{
+		"LocalPath" "VaultManagerDemo.exe"
+		"DepotPath" "."
+	}
+}
