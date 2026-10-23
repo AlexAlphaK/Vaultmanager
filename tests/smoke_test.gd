@@ -3,8 +3,9 @@ extends Node
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, counter, bench
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
 ## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
-## shops on the town map, the story campaign, the trading desk, the smelter and coin grading, the auction house,
-## gamepad controls with screen scaling, the seasons and town events, and the angel investor. Run:
+## shops on the town map, the story campaign, the trading desk, the smelter and coin grading,
+## the auction house, gamepad controls with screen scaling, the seasons and town events, the
+## angel investor and the Steam demo's limits. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -53,6 +54,7 @@ func _ready() -> void:
 	await _check_calendar()
 	await _check_story()
 	_check_investor()
+	await _check_demo()
 	_check_settings()
 	_check_localization()
 	await _check_translated_panels()
@@ -1479,6 +1481,42 @@ func _check_story() -> void:
 	expect(Story.pending.all(func(p): return p.reward.is_empty()), "skipped chapters pay no rewards")
 	SaveGame.new_game()
 	expect(Story.chapter == 0 and not Story.synced and Story.pending.is_empty(), "a new game resets the story")
+
+
+func _check_demo() -> void:
+	var was: bool = Demo.enabled
+	Demo.enabled = false
+	SaveGame.new_game()
+	Shop.day = Demo.DAYS + 5
+	expect(not Demo.is_over() and not Demo.tier_locked(3), "the full game has no demo limits")
+	Demo.enabled = true
+	Shop.day = Demo.DAYS - 1
+	expect(not Demo.last_day() and Demo.days_left() == 2, "the demo counts down its days")
+	Shop.day = Demo.DAYS
+	expect(Demo.last_day() and not Demo.is_over(), "the demo's last day still plays")
+	Shop.day = Demo.DAYS + 1
+	expect(Demo.is_over(), "the demo ends the morning after its last day")
+	Shop.cash = 1e7
+	Shop.reputation = 5.0
+	Shop.day = 2
+	expect(Progress.expand_blocker() == "" and Progress.expand(), "the demo shop can move to Main Street")
+	expect(Progress.expand_blocker() == "Full game only" and not Progress.expand() and Progress.tier == Demo.MAX_TIER,
+		"the bullion house waits for the full game")
+	expect("store.steampowered.com" in Demo.store_url(), "the wishlist button goes to Steam")
+	for lang in ["en", "de", "fr"]:
+		TranslationServer.set_locale(lang)
+		var end: Control = load("res://scenes/menu/demo_end.tscn").instantiate()
+		add_child(end)
+		await get_tree().process_frame
+		await get_tree().process_frame
+		var panel: Control = end.get_child(0)
+		expect(panel.size.y <= end.PANEL.size.y and panel.size.x <= end.PANEL.size.x and end._wishlist.text != "",
+			"the demo's end screen fits the panel in %s (%s)" % [lang, panel.size])
+		end.queue_free()
+		await get_tree().process_frame
+	TranslationServer.set_locale("en")
+	Demo.enabled = was
+	SaveGame.new_game()
 
 
 func _check_investor() -> void:
