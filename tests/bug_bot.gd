@@ -373,6 +373,8 @@ func _describe() -> String:
 
 func _page() -> String:
 	var shop := _shop()
+	if shop and shop.is_node_ready() and shop.hud.is_decorating():
+		return "decorate"
 	return shop.hud._panels.page if shop and shop.is_node_ready() else ""
 
 

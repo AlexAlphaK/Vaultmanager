@@ -39,6 +39,11 @@ var _time := 0.0
 var _last_pos := {}
 var _facing_back := {}
 var _left_at := {}
+## Decorating in the morning: spot markers show, `held` is the piece being placed and
+## `hover_spot` the spot under the pointer (-1 for none).
+var decorating := false
+var held := ""
+var hover_spot := -1
 
 
 func _ready() -> void:
@@ -104,22 +109,87 @@ func _draw() -> void:
 	ShopAmbience.draw_neon(self, _iso, _time, day_fraction < 1.0)
 	ShopAmbience.draw_camera_led(self, _iso, _time)
 	draw_texture(_shelf_stock, Vector2.ZERO)
-	var spot := ShopArt.KEEPER_AWAY if keeper_away else ShopArt.KEEPER_SPOT
-	var kp := screen_pos(spot.x, spot.y).round()
-	var breathe := 1.0 if fmod(_time, 2.4) < 1.2 else 0.0
-	draw_texture(_keeper[1 if _blinking(_time, 0.0) else 0], kp + Vector2(-8, -28 + breathe))
-	if Staff.on_duty("clerk"):
-		var cp := screen_pos(ShopArt.CLERK_SPOT.x, ShopArt.CLERK_SPOT.y).round()
-		var bob := (1.0 if fmod(_time, 0.5) < 0.25 else 0.0) if clerk_busy else breathe
-		draw_texture(_clerk, cp + Vector2(-8, -28 + bob))
+	_draw_behind_counter()
 	ShopAmbience.draw_motes(self, _iso, _time, dusk > 0.5)
 	draw_texture(_front[dusk > 0.5], Vector2.ZERO)
 	draw_texture(_case_stock, Vector2.ZERO)
 	draw_texture(_glass, Vector2.ZERO)
 	ShopAmbience.draw_cat(self, _iso, _cat, _time)
 	_draw_customers()
+	if decorating:
+		_draw_spots()
 	if dusk > 0.0:
 		draw_rect(Rect2(Vector2.ZERO, ShopArt.SIZE), Color(0.08, 0.06, 0.22, dusk * 0.28))
+
+
+## The keeper, the clerk and the decor behind the counter, back to front.
+func _draw_behind_counter() -> void:
+	var spot := ShopArt.KEEPER_AWAY if keeper_away else ShopArt.KEEPER_SPOT
+	var order: Array = [["keeper", spot]]
+	if Staff.on_duty("clerk"):
+		order.append(["clerk", ShopArt.CLERK_SPOT])
+	for n in Decor.placed:
+		if _behind_counter(n):
+			order.append([n, Decor.spot_at(n)])
+	order.sort_custom(func(a, b): return a[1].x + a[1].y < b[1].x + b[1].y)
+	var breathe := 1.0 if fmod(_time, 2.4) < 1.2 else 0.0
+	for e in order:
+		var at := screen_pos(e[1].x, e[1].y).round()
+		if e[0] is int:
+			_draw_decor(e[0])
+		elif e[0] == "keeper":
+			draw_texture(_keeper[1 if _blinking(_time, 0.0) else 0], at + Vector2(-8, -28 + breathe))
+		else:
+			var bob := (1.0 if fmod(_time, 0.5) < 0.25 else 0.0) if clerk_busy else breathe
+			draw_texture(_clerk, at + Vector2(-8, -28 + bob))
+
+
+## Spots behind the counter are drawn before it, the rest in with the customers.
+func _behind_counter(spot: int) -> bool:
+	return Decor.spot_at(spot).y < ShopArt.COUNTER.position.y
+
+
+func _draw_decor(spot: int) -> void:
+	var id := Decor.piece_on(spot)
+	if id == "" or not Decor.spot_open(spot):
+		return
+	var at := Decor.spot_at(spot)
+	var tex := DecorArt.texture(id)
+	var pos := screen_pos(at.x, at.y).round() - DecorArt.FOOT
+	if decorating and spot == hover_spot and held == "":
+		draw_texture(tex, pos, Color(1.25, 1.2, 1.0)) # lifts when you can pick it up
+	else:
+		draw_texture(tex, pos)
+
+
+## Diamonds on the floor where pieces can go: gold for a free spot, the held piece as a
+## ghost on the spot under the pointer.
+func _draw_spots() -> void:
+	var pulse := 0.55 + 0.25 * sin(_time * 5.0)
+	for n in Decor.spot_count():
+		var at := Decor.spot_at(n)
+		var hot := n == hover_spot
+		var col := Color(Pal.GOLD, pulse) if hot else Color(Pal.GOLD, 0.35)
+		if Decor.piece_on(n) != "" and not hot:
+			col = Color(Pal.INK, 0.2)
+		var r := 0.42
+		var pts := [screen_pos(at.x - r, at.y - r), screen_pos(at.x + r, at.y - r), screen_pos(at.x + r, at.y + r), screen_pos(at.x - r, at.y + r)]
+		for k in 4:
+			var a: Vector2 = pts[k].round()
+			var b: Vector2 = pts[(k + 1) % 4].round()
+			var steps := int(maxf(absf(b.x - a.x), absf(b.y - a.y)))
+			for t in steps:
+				if t % 2 == 0 or hot:
+					draw_rect(Rect2(a.lerp(b, t / float(maxi(steps, 1))).round(), Vector2.ONE), col)
+		if hot and held != "":
+			draw_texture(DecorArt.texture(held), screen_pos(at.x, at.y).round() - DecorArt.FOOT, Color(1, 1, 1, 0.6))
+
+
+## Where a floor spot sits on screen (room coordinates), for clicking and the pad.
+func spot_rect(spot: int) -> Rect2:
+	var at := Decor.spot_at(spot)
+	var foot := screen_pos(at.x, at.y).round()
+	return Rect2(foot + Vector2(-12, -22), Vector2(24, 28))
 
 
 ## Snow, falling leaves or blossom drifting past the window, by season.
@@ -196,6 +266,10 @@ func _draw_customers() -> void:
 		order.append(ShopArt.GUARD_SPOT)
 	if Progress.has_upgrade("queue_ropes"):
 		order.append_array(range(ShopArt.ROPE_POSTS.size()))
+	# decor on the shop floor, as {"decor": spot}
+	for n in Decor.placed:
+		if not _behind_counter(n):
+			order.append({"decor": n})
 	order.sort_custom(func(a, b): return _depth(a) < _depth(b))
 	for key in _last_pos.keys():
 		if not customers.has(key):
@@ -208,6 +282,9 @@ func _draw_customers() -> void:
 			continue
 		if c is int:
 			ShopArt.draw_rope_post(self, _iso, c)
+			continue
+		if c is Dictionary:
+			_draw_decor(c.decor)
 			continue
 		var base := screen_pos(c.pos.x, c.pos.y).round()
 		var frame := _frame_for(c)
@@ -228,7 +305,15 @@ func _draw_customers() -> void:
 
 
 func _depth(who) -> float:
-	var p: Vector2 = who if who is Vector2 else (ShopArt.ROPE_POSTS[who] if who is int else who.pos)
+	var p: Vector2
+	if who is Vector2:
+		p = who
+	elif who is int:
+		p = ShopArt.ROPE_POSTS[who]
+	elif who is Dictionary:
+		p = Decor.spot_at(who.decor)
+	else:
+		p = who.pos
 	return p.x + p.y
 
 

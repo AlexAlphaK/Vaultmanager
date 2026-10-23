@@ -582,6 +582,170 @@ msgstr "Mittwoch"
 msgid "You are overdrawn. The bank charges interest every night."
 msgstr "Du bist im Minus. Die Bank berechnet jede Nacht Zinsen."
 
+#: autoload/decor.gd
+msgid "\"We buy gold\" in your best chalk lettering."
+msgstr "\"Wir kaufen Gold\" in deiner schönsten Kreideschrift."
+
+#: autoload/decor.gd
+msgid "A big glossy palm, the kind hotel lobbies have."
+msgstr "Eine große, glänzende Palme wie in einer Hotellobby."
+
+#: autoload/decor.gd
+msgid "A buzzing neon gold bar on a stand. Customers love a photo with it."
+msgstr "Ein summender Neon-Goldbarren auf einem Ständer. Kunden lieben ein Foto damit."
+
+#: autoload/decor.gd
+msgid "A founding father of coinage, in white marble on a plinth."
+msgstr "Ein Gründervater der Münzprägung, in weißem Marmor auf einem Sockel."
+
+#: autoload/decor.gd
+msgid "A gilded lion spouting water into a marble basin. Coins in it go to charity."
+msgstr "Ein vergoldeter Löwe speit Wasser in ein Marmorbecken. Die Münzen darin gehen an die Wohlfahrt."
+
+#: autoload/decor.gd
+msgid "A glass-topped pedestal showing off a few proof coins."
+msgstr "Ein Sockel mit Glashaube, der ein paar polierte Platten zeigt."
+
+#: autoload/decor.gd
+msgid "A leafy fern in a terracotta pot."
+msgstr "Ein üppiger Farn im Terrakottatopf."
+
+#: autoload/decor.gd
+msgid "A life-size gilded eagle, wings spread, on a marble column."
+msgstr "Ein lebensgroßer vergoldeter Adler mit ausgebreiteten Schwingen auf einer Marmorsäule."
+
+#: autoload/decor.gd
+msgid "A standing lamp dripping with crystal drops."
+msgstr "Eine Stehlampe voller Kristalltropfen."
+
+#: autoload/decor.gd
+msgid "A tall glass cabinet of rings and chains, lit from inside."
+msgstr "Ein hoher Glasschrank voller Ringe und Ketten, von innen beleuchtet."
+
+#: autoload/decor.gd
+msgid "A tall indoor fig. Makes the corner feel like a shop, not a booth."
+msgstr "Ein hoher Zimmerfeigenbaum. Damit wirkt die Ecke wie ein Laden, nicht wie ein Stand."
+
+#: autoload/decor.gd
+msgid "An old walnut clock with a gold pendulum. It ticks reassuringly."
+msgstr "Eine alte Nussbaumuhr mit goldenem Pendel. Sie tickt beruhigend."
+
+#: autoload/decor.gd
+msgid "Appeal %d: good deals earn %d%% more stars, and the town talks."
+msgstr "Ausstrahlung %d: gute Geschäfte bringen %d%% mehr Sterne, und die Stadt redet."
+
+#: autoload/decor.gd autoload/progress.gd
+msgid "Bought %s."
+msgstr "%s gekauft."
+
+#: autoload/decor.gd
+msgid "Brass floor lamp"
+msgstr "Messing-Stehlampe"
+
+#: autoload/decor.gd
+msgid "Chalkboard sign"
+msgstr "Kreidetafel"
+
+#: autoload/decor.gd
+msgid "Coin pedestal case"
+msgstr "Münzvitrine auf Sockel"
+
+#: autoload/decor.gd
+msgid "Crystal torchère"
+msgstr "Kristall-Deckenfluter"
+
+#: autoload/decor.gd
+msgid "Fig tree"
+msgstr "Feigenbaum"
+
+#: autoload/decor.gd
+msgid "Gleaming bars stacked under a glass dome. Not the real ones, don't tell."
+msgstr "Glänzende Barren unter einer Glaskuppel. Nicht die echten, nicht weitersagen."
+
+#: autoload/decor.gd
+msgid "Gold bar pyramid"
+msgstr "Goldbarren-Pyramide"
+
+#: autoload/decor.gd
+msgid "Golden eagle statue"
+msgstr "Goldene Adlerstatue"
+
+#: autoload/decor.gd
+msgid "Grandfather clock"
+msgstr "Standuhr"
+
+#: autoload/decor.gd
+msgid "Jewellery vitrine"
+msgstr "Schmuckvitrine"
+
+#: autoload/decor.gd
+msgid "Lion fountain"
+msgstr "Löwenbrunnen"
+
+#: autoload/decor.gd
+msgid "Marble bust"
+msgstr "Marmorbüste"
+
+#: autoload/decor.gd
+msgid "Neon gold sign"
+msgstr "Neon-Goldschild"
+
+#: autoload/decor.gd
+msgid "No decoration yet. Pieces on the floor win you stars."
+msgstr "Noch keine Deko. Stücke im Laden bringen dir Sterne."
+
+#: autoload/decor.gd
+msgid "Palm in a brass urn"
+msgstr "Palme im Messingkübel"
+
+#: autoload/decor.gd
+msgid "People talk about your shop's decor: +%.2f stars."
+msgstr "Die Leute reden über die Deko deines Ladens: +%.2f Sterne."
+
+#: autoload/decor.gd
+msgid "Potted fern"
+msgstr "Topffarn"
+
+#: autoload/decor.gd
+msgid "Sold back: %s"
+msgstr "Zurückverkauft: %s"
+
+#: autoload/decor.gd
+msgid "Somewhere comfy for a collector to sit and think it over."
+msgstr "Ein bequemer Platz, an dem ein Sammler sitzen und nachdenken kann."
+
+#: autoload/decor.gd
+msgid "Velvet armchair"
+msgstr "Samtsessel"
+
+#: autoload/decor.gd
+msgid "Warm light and polished brass."
+msgstr "Warmes Licht und poliertes Messing."
+
+#: autoload/decor.gd
+msgid "art"
+msgstr "Kunst"
+
+#: autoload/decor.gd
+msgid "display case"
+msgstr "Vitrine"
+
+#: autoload/decor.gd
+msgid "lamp"
+msgstr "Lampe"
+
+#: autoload/decor.gd
+msgid "plant"
+msgstr "Pflanze"
+
+#: autoload/decor.gd
+msgid "seat"
+msgstr "Sitz"
+
+#: autoload/decor.gd
+msgid "sign"
+msgstr "Schild"
+
 #: autoload/investor.gd
 msgid "%d%% of each day's profit"
 msgstr "%d%% des Tagesgewinns"
@@ -943,10 +1107,6 @@ msgid "Alarm system"
 msgstr "Alarmanlage"
 
 #: autoload/progress.gd
-msgid "Bought %s."
-msgstr "%s gekauft."
-
-#: autoload/progress.gd
 msgid "Brass queue ropes"
 msgstr "Messing-Absperrkordeln"
 
@@ -1159,6 +1319,10 @@ msgid "Collector's friend"
 msgstr "Freund der Sammler"
 
 #: autoload/records.gd
+msgid "Decorate the shop up to 50 appeal."
+msgstr "Dekoriere den Laden bis 50 Ausstrahlung."
+
+#: autoload/records.gd
 msgid "Eagle eye"
 msgstr "Adlerauge"
 
@@ -1333,6 +1497,10 @@ msgstr "Scharfes Auge"
 #: autoload/records.gd
 msgid "Show table"
 msgstr "Messestand"
+
+#: autoload/records.gd
+msgid "Showroom"
+msgstr "Schauraum"
 
 #: autoload/records.gd
 msgid "Six figures"
@@ -3224,7 +3392,7 @@ msgstr "Bauen"
 msgid "Built"
 msgstr "Gebaut"
 
-#: scenes/shop/day_panels.gd scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
+#: scenes/shop/day_panels.gd scenes/shop/decor_panel.gd scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
 msgid "Buy"
 msgstr "Kaufen"
 
@@ -3309,6 +3477,10 @@ msgstr "Händler verlangen den Großteil des Sammleraufschlags. Verkäufer bring
 #: scenes/shop/day_panels.gd
 msgid "Deals closed (buys / sales)"
 msgstr "Geschäfte (Ankauf / Verkauf)"
+
+#: scenes/shop/day_panels.gd scenes/shop/decor_panel.gd
+msgid "Decorate"
+msgstr "Dekorieren"
 
 #: scenes/shop/day_panels.gd
 msgid "Due"
@@ -3519,6 +3691,10 @@ msgstr "Zahl ihr den offenen Betrag und behalte ab jetzt deinen ganzen Gewinn."
 #: scenes/shop/day_panels.gd
 msgid "Pays %s in all on delivery."
 msgstr "Zahlt insgesamt %s bei Lieferung."
+
+#: scenes/shop/day_panels.gd
+msgid "Place plants, display cases and signs on the shop floor. A handsome shop earns more stars."
+msgstr "Stell Pflanzen, Vitrinen und Schilder in den Laden. Ein schöner Laden bringt mehr Sterne."
 
 #: scenes/shop/day_panels.gd
 msgid "Platinum"
@@ -3746,6 +3922,76 @@ msgstr "heute keine"
 msgid "top level"
 msgstr "höchste Stufe"
 
+#: scenes/shop/decor_panel.gd
+msgid "%d more piece in bigger shops."
+msgid_plural "%d more pieces in bigger shops."
+msgstr[0] "%d weiteres Stück in größeren Läden."
+msgstr[1] "%d weitere Stücke in größeren Läden."
+
+#: scenes/shop/decor_panel.gd
+msgid "%d of %d spots used"
+msgstr "%d von %d Plätzen belegt"
+
+#: scenes/shop/decor_panel.gd
+msgid "+%d appeal (%s). %s"
+msgstr "+%d Ausstrahlung (%s). %s"
+
+#: scenes/shop/decor_panel.gd
+msgid "An empty spot."
+msgstr "Ein freier Platz."
+
+#: scenes/shop/decor_panel.gd
+msgid "Buy a piece, then click a gold spot on the floor to place it."
+msgstr "Kauf ein Stück und klick dann auf einen goldenen Platz am Boden."
+
+#: scenes/shop/decor_panel.gd
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: scenes/shop/decor_panel.gd
+msgid "Click a piece on the floor to move it."
+msgstr "Klick auf ein Stück, um es zu verschieben."
+
+#: scenes/shop/decor_panel.gd scenes/smelter/smelter.gd
+msgid "Done"
+msgstr "Fertig"
+
+#: scenes/shop/decor_panel.gd
+msgid "In your storeroom. Sells back for %s."
+msgstr "Im Lager. Rückverkauf für %s."
+
+#: scenes/shop/decor_panel.gd
+msgid "Moving the %s: click a spot, or put it away."
+msgstr "%s verschieben: Platz anklicken oder wegräumen."
+
+#: scenes/shop/decor_panel.gd
+msgid "Pick up the %s."
+msgstr "%s aufheben."
+
+#: scenes/shop/decor_panel.gd
+msgid "Place"
+msgstr "Stellen"
+
+#: scenes/shop/decor_panel.gd
+msgid "Placing the %s: click a gold spot on the floor."
+msgstr "%s aufstellen: auf einen goldenen Platz klicken."
+
+#: scenes/shop/decor_panel.gd
+msgid "Put away"
+msgstr "Wegräumen"
+
+#: scenes/shop/decor_panel.gd
+msgid "Put the %s here."
+msgstr "%s hierhin stellen."
+
+#: scenes/shop/decor_panel.gd scenes/shop/hud.gd scenes/trading_desk/trading_desk.gd
+msgid "Sell"
+msgstr "Verkaufen"
+
+#: scenes/shop/decor_panel.gd
+msgid "Swap it with the %s."
+msgstr "Mit %s tauschen."
+
 #: scenes/shop/hud.gd
 msgid "  tested"
 msgstr "  geprüft"
@@ -3903,10 +4149,6 @@ msgstr "ANSTURM"
 #: scenes/shop/hud.gd
 msgid "Refuse"
 msgstr "Ablehnen"
-
-#: scenes/shop/hud.gd scenes/trading_desk/trading_desk.gd
-msgid "Sell"
-msgstr "Verkaufen"
 
 #: scenes/shop/hud.gd
 msgid "Stock at spot"
@@ -4609,10 +4851,6 @@ msgstr "Kaltschweiße, wo der Guss stockte: -1%"
 #: scenes/smelter/smelter.gd
 msgid "Dealer pays"
 msgstr "Händler zahlt"
-
-#: scenes/smelter/smelter.gd
-msgid "Done"
-msgstr "Fertig"
 
 #: scenes/smelter/smelter.gd
 msgid "Esc: back"

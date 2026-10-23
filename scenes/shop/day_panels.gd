@@ -10,6 +10,7 @@ signal next_day_requested
 signal new_game_requested
 signal desk_requested
 signal smelter_requested
+signal decorate_requested
 
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
@@ -344,6 +345,8 @@ func _build_upgrades() -> void:
 		_button(row, "Staff", "Button", show_staff)
 	var rooms := Progress.available_upgrades("room").size()
 	_button(row, tr("Floor plan%s") % (tr(" (%d to build)") % rooms if rooms > 0 else ""), "Button", show_plan)
+	_button(row, "Decorate", "Button", func(): decorate_requested.emit()).tooltip_text = \
+		"Place plants, display cases and signs on the shop floor. A handsome shop earns more stars."
 
 
 # ---------------------------------------------------------------- staff

@@ -23,7 +23,8 @@ platinum and palladium prices follow the real market.
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses, fullscreen and screen scaling, saved in `user://settings.cfg` |
 | `autoload/pad.gd` | `Pad` singleton: gamepad controls (a pointer on the left stick, d-pad jumps between buttons, scene shortcuts on the bumpers and triggers, the controls list) |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
-| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 30 achievements; saved with the game |
+| `autoload/decor.gd` | `Decor` singleton: the decoration catalogue, the floor spots each tier opens, the storeroom, appeal and the stars it earns; saved with the game |
+| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 34 achievements; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
@@ -252,11 +253,21 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   fencing, **Tip off police** (a raid shuts it for five days and earns you stars). The rivals'
   net worth grows every day, and passing them is how you become the biggest store in town. The
   numbers live in `autoload/rivals.gd`, the map in `art/town_art.gd`.
+- **Decorating.** Press **Decorate** on the Upgrades page in the morning. Buy plants, display
+  cases, signs, lamps, chairs and art from the catalogue on the right, then click one of the
+  gold spots on the shop floor to put the piece there (click a placed piece to move it, put it
+  away in the storeroom, or sell it back for half). The corner counter has 4 spots and each move
+  up opens 2 more; finer pieces unlock as the shop grows. Pieces on the floor add up to the
+  shop's **appeal**: a second copy of a piece counts half, and every kind on show (plant, display
+  case, sign, lamp, seat, art) adds 2. Appeal makes every good deal earn more stars (0.5% per
+  point, up to +50%), and each night the town talks about a handsome shop (up to +0.03 stars a
+  night, until 4 stars). Reach 50 appeal for the **Showroom** achievement. The pieces are drawn
+  in `art/decor_art.gd`; the numbers live in `autoload/decor.gd`.
 - Every price comes from the live market feed, so the same coin is worth more or less from one
   day to the next. The LED board on the back wall shows today's spot prices.
 - **The ledger.** The **Ledger** button on the morning panel shows your lifetime record: deals,
   money bought and sold, profit, fakes caught and missed, losses to thieves, your highest net
-  worth and stars, your profit streak and your three best days. **Achievements** lists 30 goals
+  worth and stars, your profit streak and your three best days. **Achievements** lists 34 goals
   (hover one to see how to earn it and how close you are). Earning one pops up in the log, and
   the day's summary lists what you earned and tells you when you've had your best day yet.
 

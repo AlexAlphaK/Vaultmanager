@@ -40,6 +40,9 @@ var _stock_lines: Array[Label] = []
 var _stock_values: Array[Label] = []
 var _log_lines: Array[Label] = []
 var _panels: DayPanels
+var _decor: DecorPanel
+## The shop floor, for decorating (set by shop.gd).
+var room: Node2D
 var _customer: Customer
 ## The cash figure rolls towards Shop.cash and flashes green or red as it moves.
 var _cash_shown := NAN
@@ -60,6 +63,12 @@ func _ready() -> void:
 	_panels.new_game_requested.connect(func(): new_game_requested.emit())
 	_panels.desk_requested.connect(func(): desk_requested.emit())
 	_panels.smelter_requested.connect(func(): smelter_requested.emit())
+	_panels.decorate_requested.connect(open_decor)
+	_decor = DecorPanel.new()
+	add_child(_decor)
+	_decor.closed.connect(func():
+		if Day.phase == Day.MORNING:
+			_panels.show_upgrades())
 	Market.prices_changed.connect(func(_p): _refresh())
 	Market.source_changed.connect(func(_s): _refresh())
 	Market.currency_changed.connect(func(_c): _refresh())
@@ -140,15 +149,30 @@ func add_log(text: String, mood := "") -> void:
 ## The morning briefing over the shop floor, with upgrades one click away.
 func show_morning() -> void:
 	show_customer(null, "The shop opens when you press Open the shop.")
+	_decor.close(false)
 	_panels.show_morning()
 
 
 func hide_panels() -> void:
 	_panels.hide_panel()
+	_decor.close(false)
+
+
+## Decorating: the morning panel steps aside so the shop floor shows.
+func open_decor() -> void:
+	if room == null or Day.phase != Day.MORNING:
+		return
+	_panels.hide_panel()
+	_decor.open(room)
+
+
+func is_decorating() -> bool:
+	return _decor.is_open()
 
 
 ## `report` comes from Day.end_day().
 func show_day_summary(report: Dictionary) -> void:
+	_decor.close(false)
 	_panels.show_summary(report)
 
 
