@@ -808,7 +808,8 @@ func _build_bank() -> void:
 	var draw := _button(row, tr("Draw %s") % Market.format_money(take), "Button", func(): Bank.draw(take))
 	draw.disabled = not Bank.can_draw(take)
 	var back := minf(Bank.step(), Bank.repayable())
-	var repay := _button(row, tr("Repay %s") % Market.format_money(back), "Button", func(): Bank.repay(back))
+	var repay := _button(row, tr("Repay %s") % Market.format_money(back if back > 0.0 else minf(Bank.step(), Bank.line_limit())),
+		"Button", func(): Bank.repay(back))
 	repay.disabled = not Bank.can_repay(back)
 	var cover := _button(row, tr("Cover overdrafts: on") if Bank.auto_cover else tr("Cover overdrafts: off"), "Button", func():
 		Bank.auto_cover = not Bank.auto_cover
