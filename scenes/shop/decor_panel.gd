@@ -211,7 +211,10 @@ func _rebuild() -> void:
 	if locked > 0:
 		_label(tr_n("%d more piece in bigger shops.", "%d more pieces in bigger shops.", locked) % locked, Pal.INK_FAINT)
 	_hint = _label(_hand_text(), Pal.WARN if held != "" else Pal.INK_DIM)
-	_hint.custom_minimum_size = Vector2(0, 26)
+	# a fixed three lines, so a long description on hover can't push the buttons off
+	_hint.custom_minimum_size.y = 26
+	_hint.max_lines_visible = 3
+	_hint.clip_text = true
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 3)
 	_box.add_child(row)
@@ -253,7 +256,7 @@ func _row(grid: GridContainer, title: String, col: Color, middle: String, on_mid
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.clip_text = true
 	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	name_label.custom_minimum_size = Vector2(60, 0)
+	name_label.custom_minimum_size = Vector2(36, 0)
 	name_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	name_label.tooltip_text = desc
 	grid.add_child(name_label)
@@ -277,7 +280,7 @@ func _row(grid: GridContainer, title: String, col: Color, middle: String, on_mid
 		grid.add_child(price)
 	var b := Button.new()
 	b.text = verb
-	b.custom_minimum_size = Vector2(30, 11)
+	b.custom_minimum_size = Vector2(26, 11)
 	b.focus_mode = Control.FOCUS_NONE
 	b.theme_type_variation = "PrimaryButton" if enabled else "Button"
 	b.disabled = not enabled
@@ -293,7 +296,7 @@ func _label(text: String, col: Color) -> Label:
 	l.text = text
 	l.add_theme_color_override("font_color", col)
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.custom_minimum_size = Vector2(RECT.size.x - 12, 0)
+	l.custom_minimum_size = Vector2(RECT.size.x - 16, 0)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_box.add_child(l)
 	return l

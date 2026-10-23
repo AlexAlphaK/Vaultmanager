@@ -2289,11 +2289,30 @@ func _check_decor() -> void:
 		var r: Rect2 = panel._spot_buttons[n].get_global_rect()
 		expect(Rect2(Vector2.ZERO, Vector2(ShopArt.SIZE)).encloses(r), "spot %d is on the shop floor" % n)
 		expect(not r.intersects(Rect2(DecorPanel.RECT)), "spot %d is clear of the panel" % n)
+	# a busy storeroom (Sell buttons), a long hover text, the landmark's whole catalogue
+	Progress.tier = 3
+	for id in ["fountain", "eagle", "grandfather_clock", "chandelier_lamp", "fountain"]:
+		Decor.stored.append(id)
 	for lang in ["en", "de", "es", "fr"]:
 		TranslationServer.set_locale(lang)
-		panel._rebuild()
+		panel.drop()
+		panel._hint.text = panel._desc("fountain") + " " + panel._desc("eagle")
 		await get_tree().process_frame
-		expect(panel._box.size.x <= DecorPanel.RECT.size.x - 10, "%s decorate panel fits (%d px)" % [lang, panel._box.size.x])
+		await get_tree().process_frame
+		var box: Rect2 = panel._box.get_global_rect()
+		expect(Rect2(DecorPanel.RECT).grow(-2).encloses(box), "%s decorate panel fits (%s)" % [lang, box])
+		# the catalogue scrolls; everything else must be on screen
+		for c in panel.find_children("*", "Control", true, false):
+			var in_list := false
+			var up := c.get_parent()
+			while up != panel:
+				in_list = in_list or up is ScrollContainer
+				up = up.get_parent()
+			if c is ScrollContainer or c is Button and not in_list:
+				expect(Rect2(0, 0, 480, 270).encloses(c.get_global_rect()), "%s decorate %s is on screen" % [lang, c.name])
+	Decor.stored.clear()
+	Progress.tier = 0
+	panel.drop()
 	TranslationServer.set_locale("en")
 	var esc := InputEventKey.new()
 	esc.keycode = KEY_ESCAPE
