@@ -3,7 +3,7 @@ extends PanelContainer
 ## The panels over the shop floor between shop hours: the morning briefing, the
 ## upgrades, staff and expansion page, the floor plan where rooms are built, the town
 ## map with the rival shops, the staff and how they are getting on, the collectors' special orders, the story's chapter and goals,
-## the ledger of records and achievements, and the end-of-day summary. Rebuilt each time one opens.
+## the angel investor's offer and stake, the ledger of records and achievements, and the end-of-day summary. Rebuilt each time one opens.
 
 signal open_requested
 signal next_day_requested
@@ -14,7 +14,7 @@ signal smelter_requested
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
-var page := "" # "morning", "upgrades", "staff", "plan", "wholesale", "town", "orders", "story", "ledger", "achievements", "summary" or "" when hidden
+var page := "" # "morning", "upgrades", "staff", "plan", "wholesale", "town", "orders", "story", "investor", "ledger", "achievements", "summary" or "" when hidden
 ## The morning's Open the shop button, for the tutorial to point at.
 var open_button: Button
 var _box: VBoxContainer
@@ -39,6 +39,7 @@ func _ready() -> void:
 	Rivals.changed.connect(_refresh_page)
 	Calendar.changed.connect(_refresh_page)
 	Story.changed.connect(_refresh_page)
+	Investor.changed.connect(_refresh_page)
 
 
 func hide_panel() -> void:
@@ -47,8 +48,13 @@ func hide_panel() -> void:
 
 
 func show_morning() -> void:
-	page = "morning"
 	_confirm_new = false
+	# a fresh offer from the investor comes first, once a morning
+	if Investor.has_offer() and not Investor.offer_seen:
+		Investor.offer_seen = true
+		show_investor()
+		return
+	page = "morning"
 	_build_morning()
 
 
@@ -88,6 +94,11 @@ func show_story() -> void:
 	_build_story()
 
 
+func show_investor() -> void:
+	page = "investor"
+	_build_investor()
+
+
 func show_ledger() -> void:
 	page = "ledger"
 	_build_ledger()
@@ -121,6 +132,8 @@ func _refresh_page() -> void:
 		_build_orders()
 	elif page == "story":
 		_build_story()
+	elif page == "investor":
+		_build_investor()
 	elif page == "ledger":
 		_build_ledger()
 	elif page == "achievements":
@@ -149,6 +162,9 @@ func _build_morning() -> void:
 	var staff := Staff.morning_line()
 	if staff != "":
 		_text(staff, Pal.WARN)
+	var angel := Investor.morning_line()
+	if angel != "":
+		_text(angel, Pal.GOLD if Investor.has_offer() else Pal.INK_DIM)
 	if not Orders.open.is_empty():
 		_text(_orders_hint(), Pal.GOLD)
 	if not Rivals.news.is_empty():
@@ -194,7 +210,8 @@ func _build_morning() -> void:
 	_button(pages, tr("Town map%s") % (" !" if not Rivals.news.is_empty() else ""), "Button", show_town).tooltip_text = "The rival shops, their prices and what they are up to."
 	if not Orders.open.is_empty():
 		_button(pages, tr("Orders (%d)") % Orders.open.size(), "Button", show_orders).tooltip_text = "Collectors' special orders and the dealer network."
-	_button(pages, "Ledger", "Button", show_ledger)
+	# the investor's page hangs off the ledger: the morning rows are full
+	_button(pages, tr("Ledger") + (" !" if Investor.has_offer() else ""), "Button", show_ledger)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
 	_box.add_child(row)
@@ -703,6 +720,56 @@ func _build_story() -> void:
 	_button(row, "Back", "Button", show_morning)
 
 
+# ---------------------------------------------------------------- investor
+
+func _build_investor() -> void:
+	_clear()
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	if Investor.has_offer():
+		_title("An angel investor")
+		_text(tr("%s heard the bank is calling. She backs small shops she believes in, and she believes in yours.") % Investor.NAME, Pal.INK)
+		_gap()
+		var grid := _grid()
+		var stake := float(Investor.offer.stake)
+		_pair(grid, "She puts in", Market.format_money(stake), Pal.GOOD)
+		_pair(grid, "In return", Investor.share_text(float(Investor.offer.share)), Pal.WARN)
+		_pair(grid, "Until she has had", Market.format_money(stake * Investor.RETURN))
+		_pair(grid, "Cash now", Market.format_money(Shop.cash), Pal.BAD if Shop.cash < 0.0 else Pal.INK)
+		_pair(grid, "Tonight's bills", Market.format_money(Investor.bills_tonight()))
+		_gap()
+		_text("A day without profit costs you nothing. Buy her out any morning for what she is still owed.", Pal.INK_DIM)
+		_text("Open the shop without shaking on it and she walks away.", Pal.INK_FAINT)
+		_spacer()
+		_box.add_child(row)
+		_button(row, "Take the money", "PrimaryButton", func():
+			Investor.accept()
+			show_morning()).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_button(row, "Not now", "Button", show_morning)
+		return
+	_title(tr("%s's stake") % Investor.NAME)
+	if Investor.has_deal():
+		var d := Investor.deal
+		_text(tr("She bought in on day %d. Her share comes off each day's profit when you lock up.") % int(d.day), Pal.INK_DIM)
+		_gap()
+		var grid := _grid()
+		_pair(grid, "She put in", Market.format_money(float(d.stake)))
+		_pair(grid, "Her share", Investor.share_text(float(d.share)), Pal.WARN)
+		_pair(grid, "Paid so far", Market.format_money(float(d.paid)))
+		_pair(grid, "Still owed", Market.format_money(Investor.owed()), Pal.GOLD)
+		_gap()
+		_text(tr("She is out once she has had %s. Or buy her out now for what she is still owed.") % Market.format_money(float(d.cap)), Pal.INK_DIM)
+	else:
+		_text("Nobody holds a stake in your shop.", Pal.INK_DIM)
+	_spacer()
+	_box.add_child(row)
+	_button(row, "Back", "Button", show_morning)
+	if Investor.has_deal():
+		var out := _button(row, tr("Buy out for %s") % Market.format_money(Investor.owed()), "PrimaryButton", func(): Investor.buy_out())
+		out.disabled = not Investor.can_buy_out()
+		out.tooltip_text = "Pay her what she is still owed and keep all your profit from now on."
+
+
 # ---------------------------------------------------------------- ledger
 
 func _build_ledger() -> void:
@@ -718,6 +785,8 @@ func _build_ledger() -> void:
 	var profit := Records.total("profit")
 	_pair(grid, "Lifetime profit", Market.format_money(profit), Pal.GOOD if profit >= 0.0 else Pal.BAD)
 	_pair(grid, "Fakes caught / missed", "%d / %d (%d%%)" % [Records.total("caught"), Records.total("scammed"), roundi(Records.catch_rate() * 100.0)])
+	if Investor.total_paid > 0.0:
+		_pair(grid, "Paid to investors", Market.format_money(Investor.total_paid), Pal.WARN)
 	_pair(grid, "Lost to thieves", Market.format_money(Records.total("stolen")), Pal.BAD if Records.total("stolen") > 0.0 else Pal.INK)
 	_pair(grid, "Highest net worth", Market.format_money(Records.peaks.worth), Pal.GOLD)
 	_pair(grid, "Best reputation", tr("%.1f stars") % Records.peaks.rep)
@@ -738,6 +807,9 @@ func _build_ledger() -> void:
 	_box.add_child(row)
 	_button(row, "Back", "Button", show_morning)
 	_button(row, tr("Achievements (%d/%d)") % [Records.earned.size(), Records.ACHIEVEMENTS.size()], "PrimaryButton", show_achievements)
+	if Investor.has_offer() or Investor.has_deal():
+		_button(row, tr("Investor") + (" !" if Investor.has_offer() else ""), "Button", show_investor).tooltip_text = \
+			"Celeste Wren, the angel investor: her offer, or her stake in the shop."
 
 
 func _build_achievements() -> void:

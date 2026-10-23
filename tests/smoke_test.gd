@@ -4,7 +4,7 @@ extends Node
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
 ## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
 ## shops on the town map, the story campaign, the trading desk, the smelter and coin grading,
-## gamepad controls with screen scaling, and the seasons and town events. Run:
+## gamepad controls with screen scaling, the seasons and town events, and the angel investor. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -51,6 +51,7 @@ func _ready() -> void:
 	await _check_rivals()
 	await _check_calendar()
 	await _check_story()
+	_check_investor()
 	_check_settings()
 	_check_localization()
 	await _check_translated_panels()
@@ -1479,6 +1480,118 @@ func _check_story() -> void:
 	expect(Story.chapter == 0 and not Story.synced and Story.pending.is_empty(), "a new game resets the story")
 
 
+func _check_investor() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Shop.cash = -2500.0
+	Day.begin_day()
+	expect(not Investor.has_offer(), "the investor never calls on day 1")
+	Day.open_shop()
+	Day.close_shop()
+	Day.end_day()
+	Shop.next_day()
+	Shop.cash = 20000.0
+	Day.begin_day()
+	expect(not Investor.has_offer() and Investor.morning_line() == "", "a shop that can pay its bills gets no offer")
+	Day.open_shop()
+	Day.close_shop()
+	Day.end_day()
+	Shop.next_day()
+	Shop.cash = -2500.0
+	Day.begin_day()
+	expect(Investor.has_offer(), "an overdrawn shop gets an offer")
+	expect(float(Investor.offer.stake) == Investor.STAKE[0] + 3000.0, "the stake clears the overdraft, in thousands (%s)" % Investor.offer.get("stake"))
+	expect(float(Investor.offer.share) == Investor.SHARES[0], "the first stake asks for the first share")
+	# the morning replays from its save with the same offer
+	var saved = JSON.parse_string(JSON.stringify(Investor.to_dict()))
+	Investor.reset()
+	Investor.from_dict(saved)
+	Shop.cash = -2400.0
+	Day.begin_day()
+	expect(Investor.has_offer() and float(Investor.offer.stake) == Investor.STAKE[0] + 3000.0, "a replayed morning keeps its offer")
+	# the offer page opens first, once
+	var panels := DayPanels.new()
+	add_child(panels)
+	panels.show_morning()
+	expect(panels.page == "investor", "a fresh offer opens before the morning panel")
+	panels.show_morning()
+	expect(panels.page == "morning", "the offer page opens on its own only once a morning")
+	var stake := float(Investor.offer.stake)
+	expect(Investor.accept(), "the offer can be taken")
+	expect(not Investor.accept() and not Investor.has_offer(), "one stake at a time")
+	expect(is_equal_approx(Shop.cash, -2400.0 + stake), "the stake is paid in cash")
+	expect(Day.ledger.any(func(e): return e.label == "Angel investment"), "the stake goes on the ledger")
+	expect(not Story.pending.is_empty() and Story.pending[0].beat == "investor_deal", "Celeste drops by the day she buys in")
+	expect(Investor.morning_line().begins_with(Investor.NAME), "the morning panel shows her share")
+	panels.show_investor()
+	expect(panels.page == "investor" and panels.visible, "the stake page opens")
+	# her share of a good day
+	Day.open_shop()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 3
+	var visitor := Customers.next_customer(rng)
+	expect(visitor.story == "investor_deal" and visitor.name == Investor.NAME and Customers.tag(visitor) == "investor", "Celeste walks in as a story visitor")
+	Customers.on_leave(visitor)
+	Shop.stats.profit = 1000.0
+	Day.close_shop()
+	var report := Day.end_day()
+	var share := 1000.0 * Investor.SHARES[0]
+	expect(report.ledger.any(func(e): return e.label == "Investor's share" and is_equal_approx(e.usd, -share)), "she takes her share of the day's profit")
+	expect(is_equal_approx(float(Investor.deal.paid), share), "her share counts towards what she is owed")
+	# a day without profit costs nothing
+	Shop.next_day()
+	Day.begin_day()
+	expect(not Investor.has_offer(), "no second offer while she holds a stake")
+	Day.open_shop()
+	Shop.stats.profit = -300.0
+	Day.close_shop()
+	report = Day.end_day()
+	expect(not report.ledger.any(func(e): return e.label == "Investor's share"), "a day without profit costs nothing")
+	# buying her out
+	Shop.next_day()
+	Day.begin_day()
+	var owed := Investor.owed()
+	expect(is_equal_approx(owed, stake * Investor.RETURN - share), "she is owed her return less what she has had")
+	Shop.cash = owed - 1.0
+	expect(not Investor.can_buy_out(), "a buy-out needs the cash")
+	Shop.cash = owed + 5000.0
+	panels.show_investor()
+	expect(Investor.buy_out(), "she can be bought out in the morning")
+	expect(is_equal_approx(Shop.cash, 5000.0) and not Investor.has_deal(), "the buy-out pays what she is owed")
+	expect(Investor.repaid == 1 and Records.is_earned("investor_out"), "buying her out earns Own it outright")
+	expect(Story.pending[0].beat == "investor_done", "Celeste comes to say goodbye")
+	expect(Investor.next_offer_day == Shop.day + Investor.WAIT_AFTER, "she waits a while before offering again")
+	panels.show_ledger()
+	panels.queue_free()
+	# paid off through her share
+	Investor.deal = {"stake": 1000.0, "share": 0.5, "cap": 1750.0, "paid": 1700.0, "day": Shop.day}
+	Day.open_shop()
+	Shop.stats.profit = 1000.0
+	Day.close_shop()
+	report = Day.end_day()
+	expect(report.ledger.any(func(e): return e.label == "Investor's share" and is_equal_approx(e.usd, -50.0)), "her last share stops at what she is owed")
+	expect(not Investor.has_deal() and Investor.repaid == 2, "she is out once paid in full")
+	expect(report.lines.any(func(l): return Investor.NAME in l), "the summary says she is out")
+	# turning her down, and the limit
+	Investor.next_offer_day = 0
+	Shop.next_day()
+	Shop.cash = -100.0
+	Day.begin_day()
+	expect(Investor.has_offer() and float(Investor.offer.share) == Investor.SHARES[1], "the next stake asks for a bigger share")
+	Day.open_shop()
+	expect(not Investor.has_offer() and Investor.next_offer_day == Shop.day + Investor.WAIT_DECLINED, "opening without shaking on it turns her down")
+	Day.close_shop()
+	Day.end_day()
+	Investor.next_offer_day = 0
+	Investor.deals = Investor.MAX_DEALS
+	Shop.next_day()
+	Day.begin_day()
+	expect(not Investor.has_offer(), "she offers %d stakes a game at most" % Investor.MAX_DEALS)
+	SaveGame.new_game()
+	expect(Investor.deals == 0 and Investor.repaid == 0 and not Investor.has_deal(), "a new game resets the investor")
+	Shop.reset()
+
+
 func _check_rush_hours() -> void:
 	expect(RushHours.at(1, 12 * 60).name == "Lunch rush", "lunch is busy on a Monday")
 	expect(RushHours.at(1, 10 * 60).is_empty(), "mid-morning is calm on a Monday")
@@ -2143,13 +2256,29 @@ func _check_translated_panels() -> void:
 		Orders.open.append({"id": Orders.open.size(), "name": "Professor Okonkwo-Hargreaves", "qty": 3, "item": item.id,
 			"due": Shop.day + 2, "premium": 0.5})
 		Orders.dealer[item.id] = 2
+	Investor.offer = {"day": Shop.day, "stake": 13000.0, "share": 0.15}
+	Investor.offer_seen = true
+	Investor.total_paid = 1234.0
 	for lang in ["en", "de", "es", "fr"]:
 		TranslationServer.set_locale(lang)
-		for page in ["show_morning", "show_upgrades", "show_plan", "show_wholesale", "show_town", "show_orders", "show_ledger"]:
+		for page in ["show_morning", "show_upgrades", "show_plan", "show_wholesale", "show_town", "show_orders", "show_ledger", "show_investor"]:
 			panels.call(page)
 			await get_tree().process_frame
 			expect(panels.size.x <= panels.AREA.size.x, "%s %s fits the panel width (%d px)" % [lang, page, panels.size.x])
+			if page == "show_investor":
+				expect(panels.size.y <= panels.AREA.size.y, "%s %s fits the panel height (%d px)" % [lang, page, panels.size.y])
+	# and with her stake in the shop
+	Investor.offer = {}
+	Investor.deal = {"stake": 13000.0, "share": 0.15, "cap": 22750.0, "paid": 1234.0, "day": Shop.day}
+	for lang in ["en", "de", "es", "fr"]:
+		TranslationServer.set_locale(lang)
+		for page in ["show_morning", "show_ledger", "show_investor"]:
+			panels.call(page)
+			await get_tree().process_frame
+			expect(panels.size.x <= panels.AREA.size.x and (page != "show_investor" or panels.size.y <= panels.AREA.size.y),
+				"%s %s with a stake fits the panel (%d x %d px)" % [lang, page, panels.size.x, panels.size.y])
 	TranslationServer.set_locale("en")
+	Investor.reset()
 	Orders.reset()
 	shop.queue_free()
 	await get_tree().process_frame

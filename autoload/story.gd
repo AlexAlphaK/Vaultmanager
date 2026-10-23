@@ -5,6 +5,8 @@ extends Node
 ##   Victor Sterling owns Sterling Bullion Co. across the street (see Rivals). He wanted the
 ##                   corner counter for himself, and he turns up as you grow: to sneer, to
 ##                   start a price war, and in the end to shake your hand.
+##   Celeste Wren    an angel investor (see Investor). She drops by when she buys into
+##                   the shop and again when she is out, outside the chapters (drop_in).
 ## Each chapter has a few goals, measured like achievements (Records.value_of) plus a few
 ## of its own (value_of). Meet them all and the chapter closes: its line goes in tonight's
 ## summary, and the next chapter's visitors walk in at the next chance, Mags first with the
@@ -20,9 +22,12 @@ const MAGS_LOOK := {"skin": "#e3b48a", "hair": "#d8d8d0", "hair_style": 4, "shir
 	"pants": "#2f3442", "glasses": true, "beard": false, "hat": false, "apron": false}
 const STERLING_LOOK := {"skin": "#f2cfa8", "hair": "#5a3418", "hair_style": 3, "shirt": "#1f1f24", "top": 1,
 	"pants": "#1f1f24", "glasses": false, "beard": false, "hat": false, "apron": false, "chain": true}
+const CELESTE_LOOK := {"skin": "#c68a5e", "hair": "#2a1a12", "hair_style": 2, "shirt": "#2f6f6a", "top": 1,
+	"pants": "#3a3a44", "glasses": false, "beard": false, "hat": false, "apron": false, "chain": true}
 const PEOPLE := {
 	"mags": {"name": "Mags Holloway", "look": MAGS_LOOK, "tag": "mentor"},
 	"sterling": {"name": "Victor Sterling", "look": STERLING_LOOK, "tag": "rival"},
+	"celeste": {"name": "Celeste Wren", "look": CELESTE_LOOK, "tag": "investor"},
 }
 
 ## A visit: who comes, what they say at the counter (short, it fits the card), the shop
@@ -55,6 +60,12 @@ const BEATS := {
 	"sterling_handshake": {"who": "sterling",
 		"say": "All right. You win the street. If you ever need a buyer for scrap, I'm across the road.",
 		"log": "Victor Sterling shook your hand. He meant it, mostly."},
+	"investor_deal": {"who": "celeste",
+		"say": "Don't thank me. Buy low, sell high, and send me my share every night.",
+		"log": "Celeste Wren dropped by to see what she bought into."},
+	"investor_done": {"who": "celeste",
+		"say": "Paid in full. You don't need me any more, and that's the best kind of deal.",
+		"log": "Celeste Wren shook your hand on her way out of the business."},
 	"mags_ribbon": {"who": "mags",
 		"say": "Forty years at a corner counter, and look what my apprentice built. Cut the ribbon!",
 		"log": "Mags Holloway cut the ribbon on your Town landmark."},
@@ -276,6 +287,14 @@ func on_leave(c: Customer) -> void:
 		Rivals.start_move(b.who, b.rival_move)
 	Shop.log_event(tr(b.log), "good" if b.who == "mags" else "")
 	_today.append(tr(b.log))
+	changed.emit()
+
+
+## A visit outside the chapters (the investor), at the front of the line, from today.
+func drop_in(beat: String) -> void:
+	if not BEATS.has(beat):
+		return
+	pending.push_front({"beat": beat, "reward": {}, "from_day": Shop.day})
 	changed.emit()
 
 
