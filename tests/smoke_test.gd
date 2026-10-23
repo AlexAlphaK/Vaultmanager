@@ -1338,12 +1338,10 @@ func _check_calendar() -> void:
 	add_child(panels)
 	panels.show_morning()
 	var texts := []
-	for child in panels._box.get_children():
-		if child is Label:
+	# the morning's lines sit in a scroll box; find them wherever they are
+	for child in panels._box.find_children("*", "", true, false):
+		if child is Label or child is Button:
 			texts.append(child.text)
-		for b in child.get_children():
-			if b is Button:
-				texts.append(b.text)
 	expect(texts.any(func(t): return str(t).begins_with("Town coin show tomorrow")), "the morning warns about the coin show")
 	expect(texts.any(func(t): return str(t).begins_with("Booth booked")), "the morning shows the booked booth")
 	panels.queue_free()

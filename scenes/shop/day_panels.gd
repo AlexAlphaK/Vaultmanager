@@ -160,6 +160,9 @@ func _clear() -> void:
 func _build_morning() -> void:
 	_clear()
 	_title(tr("%s, day %d") % [Day.weekday(), Shop.day])
+	# a busy morning (and the longer languages) can hold more lines than the panel: they
+	# scroll, and the buttons stay on screen
+	var outer := _begin_scroll()
 	_text(tr("%s · %s. Set your prices, then open up.") % [Progress.tier_name(), Calendar.label()], Pal.INK_DIM)
 	var town := _town_hint()
 	if town != "":
@@ -219,7 +222,7 @@ func _build_morning() -> void:
 		_requirement(req, "Net worth", Shop.net_worth(), next.need_worth, true)
 		_requirement(req, "Reputation", Shop.reputation, next.need_rep, false)
 		_requirement(req, "Cash to move", Shop.cash, next.cost, true)
-	_spacer()
+	_end_scroll(outer)
 	var pages := HBoxContainer.new()
 	pages.add_theme_constant_override("separation", 4)
 	_box.add_child(pages)
@@ -931,15 +934,7 @@ func _build_summary(report: Dictionary) -> void:
 	_title(tr("Day %d closed") % report.get("day", Shop.day))
 	# a busy day can fill more lines than the panel holds: they scroll, and the
 	# button stays in reach
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_box.add_child(scroll)
-	var outer := _box
-	_box = VBoxContainer.new()
-	_box.add_theme_constant_override("separation", 3)
-	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(_box)
+	var outer := _begin_scroll()
 	var grid := _grid()
 	_pair(grid, "Bought from customers", Market.format_money(stats.get("bought", 0.0)))
 	_pair(grid, "Sold to customers", Market.format_money(stats.get("sold", 0.0)))
@@ -956,10 +951,7 @@ func _build_summary(report: Dictionary) -> void:
 		_text(str(line), Pal.WARN).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var bills_in: int = report.get("next_bills_in", 0)
 	_text(tr_n("Next rent and insurance in %d day.", "Next rent and insurance in %d days.", bills_in) % bills_in, Pal.INK_FAINT)
-	for l in _box.get_children():
-		if l is Label:
-			l.custom_minimum_size.x = 0.0 # the scroll bar takes some of the width
-	_box = outer
+	_end_scroll(outer)
 	var demo_over := Demo.last_day(int(report.get("day", Shop.day)))
 	if demo_over: # outside the scroll, so it is never missed
 		_text("That was the last day of the demo. Thanks for playing!", Pal.GOLD)
@@ -989,6 +981,28 @@ func _grouped(ledger: Array) -> Array[Dictionary]:
 
 
 # ---------------------------------------------------------------- helpers
+
+## Puts what follows in a box that scrolls and takes the panel's spare height, until
+## _end_scroll(). Returns the box to go back to.
+func _begin_scroll() -> VBoxContainer:
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_box.add_child(scroll)
+	var outer := _box
+	_box = VBoxContainer.new()
+	_box.add_theme_constant_override("separation", 3)
+	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_box)
+	return outer
+
+
+func _end_scroll(outer: VBoxContainer) -> void:
+	for l in _box.get_children():
+		if l is Label:
+			l.custom_minimum_size.x = 0.0 # the scroll bar takes some of the width
+	_box = outer
+
 
 func _title(text: String) -> Label:
 	var l := _text(text, Pal.GOLD)
