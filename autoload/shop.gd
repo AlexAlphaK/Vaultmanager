@@ -201,9 +201,10 @@ func adjust_reputation(delta: float) -> void:
 	changed.emit()
 
 
-## Applies one of the REPUTATION moves.
+## Applies one of the REPUTATION moves. A decorated shop earns more from the good ones (see Decor).
 func reputation_for(what: String) -> void:
-	adjust_reputation(REPUTATION[what])
+	var delta: float = REPUTATION[what]
+	adjust_reputation(delta * (1.0 + Decor.star_bonus()) if delta > 0.0 else delta)
 
 
 func set_buy_percent(value: float) -> void:

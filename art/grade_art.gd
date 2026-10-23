@@ -204,7 +204,7 @@ static func bake(cg: CoinGrade, scale: int) -> Dictionary:
 ## The design laid out at bench size: device coverage and grooves (bilinear grids),
 ## the distance in from the design's edge, the letter pixels and the design's middle.
 static func _base_layers(cg: CoinGrade) -> Dictionary:
-	var rows: Array = CoinArt.MOTIFS.get(cg.item.motif, CoinArt.MOTIFS["eagle"])
+	var rows := CoinArt.motif_rows(cg.item.motif)
 	var cols: int = rows[0].length()
 	var c := SIZE / 2.0
 	var inner := RADIUS - 16.0

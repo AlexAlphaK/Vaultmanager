@@ -4,8 +4,8 @@ extends Node
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
 ## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
 ## shops on the town map, the story campaign, the trading desk, the smelter and coin grading,
-## gamepad controls with screen scaling, the seasons and town events, the angel investor, the
-## bank's credit line and loans, and the Steam demo's limits. Run:
+## the auction house, gamepad controls with screen scaling, the seasons and town events, the
+## angel investor, the bank's credit line and loans, shop decoration and the Steam demo's limits. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -47,6 +47,7 @@ func _ready() -> void:
 	await _check_trading_desk()
 	await _check_smelter()
 	await _check_grading()
+	await _check_auction()
 	_check_burglar_crews()
 	await _check_holdups()
 	await _check_rivals()
@@ -54,6 +55,7 @@ func _ready() -> void:
 	await _check_story()
 	_check_investor()
 	_check_bank()
+	await _check_decor()
 	await _check_demo()
 	_check_settings()
 	_check_localization()
@@ -1338,7 +1340,6 @@ func _check_calendar() -> void:
 	add_child(panels)
 	panels.show_morning()
 	var texts := []
-	# the morning's lines sit in a scroll box; find them wherever they are
 	for child in panels._box.find_children("*", "", true, false):
 		if child is Label or child is Button:
 			texts.append(child.text)
@@ -2283,6 +2284,134 @@ func _check_vault_scene() -> void:
 	Shop.reset()
 
 
+func _check_decor() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Shop.cash = 100000.0
+	Day.phase = Day.MORNING
+	expect(Decor.appeal() == 0 and is_zero_approx(Decor.star_bonus()), "a bare shop has no appeal")
+	expect(Decor.spot_count() == 4 and not Decor.spot_open(4), "the corner counter has 4 decor spots")
+	expect(not Decor.can_buy("armchair") and Decor.for_sale().has("fern"), "Main Street pieces wait for Main Street")
+	var cash := Shop.cash
+	expect(Decor.buy("fern", 0) and Decor.piece_on(0) == "fern", "buy a fern straight onto a spot")
+	expect(is_equal_approx(Shop.cash, cash - Decor.CATALOG.fern.cost), "the fern is paid for")
+	expect(Decor.appeal() == Decor.CATALOG.fern.appeal + Decor.VARIETY, "a fern adds its appeal and a kind")
+	Decor.buy("fern")
+	expect(Decor.stored == ["fern"] and Decor.place("fern", 1), "a second fern waits in the storeroom, then goes on a spot")
+	expect(Decor.appeal() == int(Decor.CATALOG.fern.appeal * 1.5) + Decor.VARIETY, "a second fern counts half and adds no new kind")
+	Decor.buy("coin_pedestal")
+	expect(Decor.place("coin_pedestal", 1) and Decor.stored == ["fern"], "placing on a taken spot sends its piece to the storeroom")
+	expect(Decor.move(1, 2) and Decor.piece_on(2) == "coin_pedestal" and Decor.piece_on(1) == "", "move a piece to a free spot")
+	expect(Decor.move(0, 2) and Decor.piece_on(2) == "fern" and Decor.piece_on(0) == "coin_pedestal", "moving onto a piece swaps them")
+	expect(not Decor.place("fern", 7), "spots open with the shop's tier")
+	cash = Shop.cash
+	expect(Decor.sell("fern") and is_equal_approx(Shop.cash, cash + Decor.CATALOG.fern.cost * Decor.RESALE) and Decor.stored.is_empty(),
+		"sell a stored piece back for half")
+	expect(Decor.pick_up(0) == "coin_pedestal" and Decor.stored == ["coin_pedestal"], "pick a piece up into the storeroom")
+	Decor.place("coin_pedestal", 0)
+	# reputation: good deals earn more, bad ones cost the same, and the town talks at night
+	var bonus := Decor.star_bonus()
+	expect(bonus > 0.0, "appeal gives a star bonus")
+	Shop.reputation = 2.0
+	Shop.reputation_for("sold")
+	expect(is_equal_approx(Shop.reputation, 2.0 + Shop.REPUTATION.sold * (1.0 + bonus)), "good deals earn more stars in a decorated shop")
+	Shop.reputation = 2.0
+	Shop.reputation_for("walked_out")
+	expect(is_equal_approx(Shop.reputation, 2.0 + Shop.REPUTATION.walked_out), "bad moments cost the same")
+	Shop.reputation = 2.0
+	var buzz := Decor.charm()
+	expect(buzz > 0.0 and buzz <= Decor.CHARM_MAX, "the town talks about a decorated shop")
+	Day.phase = Day.CLOSING
+	var report := Day.end_day()
+	expect(is_equal_approx(Shop.reputation, 2.0 + buzz), "the buzz adds stars when the day ends")
+	expect(report.lines.any(func(l): return "decor" in l), "the summary mentions the decor")
+	Shop.reputation = Decor.CHARM_UP_TO
+	expect(is_zero_approx(Decor.charm()), "the buzz stops at %.1f stars" % Decor.CHARM_UP_TO)
+	expect(Decor.star_bonus(1000) == Decor.STAR_BONUS_MAX, "the star bonus is capped")
+	# saved with the game
+	Decor.stored.append("a_board")
+	var saved := Decor.to_dict()
+	var json: Dictionary = JSON.parse_string(JSON.stringify(saved))
+	Decor.reset()
+	Decor.from_dict(json)
+	expect(Decor.piece_on(0) == "coin_pedestal" and Decor.piece_on(2) == "fern" and Decor.stored == ["a_board"], "decor survives a save and load")
+	Decor.from_dict({"placed": {"0": "no_such_thing", "99": "fern"}, "stored": ["nope"]})
+	expect(Decor.placed.is_empty() and Decor.stored.is_empty(), "a broken save loads an empty shop")
+	# every piece paints, inside its canvas
+	for id in Decor.CATALOG:
+		var art := DecorArt.paint(id)
+		var used := art.image.get_used_rect()
+		expect(used.has_area() and used.position.y > 0 and used.end.y <= int(DecorArt.FOOT.y) + 8, "%s paints" % id)
+	# the decorate panel: buy, place on the floor, move, put away, Esc closes it
+	Day.phase = Day.MORNING
+	Decor.reset()
+	Shop.cash = 100000.0
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	Day.phase = Day.MORNING
+	var panel: DecorPanel = shop.hud._decor
+	shop.hud._panels.show_upgrades()
+	var decorate: Button = null
+	for b in shop.hud._panels.find_children("*", "Button", true, false):
+		if b.text == "Decorate":
+			decorate = b
+	expect(decorate != null, "the upgrades page has a Decorate button")
+	if decorate:
+		decorate.pressed.emit()
+	await get_tree().process_frame
+	expect(panel.is_open() and not shop.hud._panels.visible and shop.room.decorating, "Decorate opens the panel over the shop floor")
+	expect(panel._spot_buttons.size() == Decor.spot_count(), "a button on every open spot")
+	panel.buy("fig_tree")
+	expect(panel.held == "fig_tree" and Decor.stored == ["fig_tree"], "a bought piece lands in your hands")
+	panel._spot_buttons[3].pressed.emit()
+	expect(Decor.piece_on(3) == "fig_tree" and panel.held == "", "click a spot to place it")
+	panel.click_spot(3)
+	expect(panel.held == "fig_tree" and panel.held_from == 3, "click it again to pick it up")
+	panel.click_spot(1)
+	expect(Decor.piece_on(1) == "fig_tree" and Decor.piece_on(3) == "", "and click another spot to move it")
+	for n in Decor.spot_count():
+		var r: Rect2 = panel._spot_buttons[n].get_global_rect()
+		expect(Rect2(Vector2.ZERO, Vector2(ShopArt.SIZE)).encloses(r), "spot %d is on the shop floor" % n)
+		expect(not r.intersects(Rect2(DecorPanel.RECT)), "spot %d is clear of the panel" % n)
+	# a busy storeroom (Sell buttons), a long hover text, the landmark's whole catalogue
+	Progress.tier = 3
+	for id in ["fountain", "eagle", "grandfather_clock", "chandelier_lamp", "fountain"]:
+		Decor.stored.append(id)
+	for lang in ["en", "de", "es", "fr"]:
+		TranslationServer.set_locale(lang)
+		panel.drop()
+		panel._hint.text = panel._desc("fountain") + " " + panel._desc("eagle")
+		await get_tree().process_frame
+		await get_tree().process_frame
+		var box: Rect2 = panel._box.get_global_rect()
+		expect(Rect2(DecorPanel.RECT).grow(-2).encloses(box), "%s decorate panel fits (%s)" % [lang, box])
+		# the catalogue scrolls; everything else must be on screen
+		for c in panel.find_children("*", "Control", true, false):
+			var in_list := false
+			var up := c.get_parent()
+			while up != panel:
+				in_list = in_list or up is ScrollContainer
+				up = up.get_parent()
+			if c is ScrollContainer or c is Button and not in_list:
+				expect(Rect2(0, 0, 480, 270).encloses(c.get_global_rect()), "%s decorate %s is on screen" % [lang, c.name])
+	Decor.stored.clear()
+	Progress.tier = 0
+	panel.drop()
+	TranslationServer.set_locale("en")
+	var esc := InputEventKey.new()
+	esc.keycode = KEY_ESCAPE
+	esc.pressed = true
+	Input.parse_input_event(esc)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	expect(not panel.is_open() and shop.hud._panels.page == "upgrades" and not shop.room.decorating, "Esc closes it back to the upgrades page")
+	expect(not shop._pause.visible, "Esc while decorating doesn't open the pause menu")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.new_game()
+
+
 func _check_settings() -> void:
 	var real_path := Settings.path
 	Settings.path = "user://smoke_test_settings.cfg"
@@ -2409,6 +2538,32 @@ func _check_translated_panels() -> void:
 			await get_tree().process_frame
 			expect(panels.size.x <= panels.AREA.size.x and (page != "show_bank" or panels.size.y <= panels.AREA.size.y),
 				"%s %s with a loan fits the panel (%d x %d px)" % [lang, page, panels.size.x, panels.size.y])
+	# the busiest overdrawn morning: every line of the briefing and every button at once.
+	# The briefing scrolls; the button rows must stay inside the panel and on screen.
+	Shop.cash = -4321.0
+	for id in Staff.ROLES:
+		if not id in Staff.hired:
+			Staff.hired.append(id)
+	Rivals.news.append("Sterling Bullion slashed prices: it pays 92% of melt and sells at spot +3%.")
+	for id in ["trading_desk", "furnace"]:
+		if not id in Progress.owned:
+			Progress.owned.append(id)
+	for lang in ["en", "de", "es", "fr"]:
+		TranslationServer.set_locale(lang)
+		panels.show_morning()
+		await get_tree().process_frame
+		var area: Rect2 = panels.get_global_rect()
+		var off := []
+		for b in panels.find_children("*", "BaseButton", true, false):
+			var r: Rect2 = b.get_global_rect()
+			if b.is_visible_in_tree() and not (area.encloses(r) and Rect2(0, 0, 480, 270).encloses(r)):
+				off.append(b.text)
+		expect(panels.size.x <= panels.AREA.size.x and panels.size.y <= panels.AREA.size.y and off.is_empty(),
+			"%s busy overdrawn morning fits (%d x %d px, off-panel buttons %s)" % [lang, panels.size.x, panels.size.y, off])
+	Staff.hired.clear()
+	Rivals.news.clear()
+	Progress.owned.erase("trading_desk")
+	Progress.owned.erase("furnace")
 	TranslationServer.set_locale("en")
 	Bank.reset()
 	Investor.reset()
@@ -2902,6 +3057,170 @@ func _check_smelter() -> void:
 	SaveGame.new_game()
 	expect(ScrapYard.bin.is_empty() and ScrapYard.bars_cast == 0, "a new game empties the scrap bin")
 
+
+
+func _check_auction() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	AuctionHouse.hook_up()
+	Shop.day = 1
+	expect(not AuctionHouse.is_sale_day(1) and AuctionHouse.is_sale_day(3) and AuctionHouse.is_sale_day(6) and not AuctionHouse.is_sale_day(7),
+		"sales on Wednesdays and Saturdays from day 3")
+	expect(AuctionHouse.next_sale_day(4) == 6 and AuctionHouse.next_sale_day(7) == 10, "the next sale day")
+	# the catalogue
+	Shop.day = 6
+	AuctionHouse.catalogue_day = 0
+	AuctionHouse.refresh_catalogue()
+	expect(AuctionHouse.lots.size() == AuctionHouse.LOT_COUNT[0] and AuctionHouse.views_left == AuctionHouse.VIEWINGS[0], "a sale morning brings the catalogue")
+	var first: Dictionary = AuctionHouse.lots[0].duplicate(true)
+	AuctionHouse.catalogue_day = 0
+	AuctionHouse.refresh_catalogue()
+	expect(AuctionHouse.lots[0].items == first.items, "replaying a morning brings the same lots")
+	for lot in AuctionHouse.lots:
+		var est := AuctionHouse.estimate(lot)
+		expect(est.x > 0.0 and est.y > est.x and AuctionHouse.title_of(lot) != "", "lot %d has a title and an estimate" % lot.n)
+		for it in lot.items:
+			expect(AuctionHouse.coin_of(it) != null and int(it.qty) > 0, "lot %d's coins are real" % lot.n)
+			if it.pouch:
+				expect(float(it.guess) > 0.0, "a pouch has a catalogue guess")
+	expect(AuctionHouse.increment(150.0) == 10.0 and AuctionHouse.increment(4000.0) == 200.0 and AuctionHouse.nice(4130.0) == 4200.0, "bid steps")
+	# looking inside a pouch
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	var estate := AuctionHouse.roll_estate(rng)
+	estate.n = 1
+	estate.seed = 1
+	estate.result = {}
+	var p := -1
+	for i in estate.items.size():
+		if estate.items[i].pouch:
+			p = i
+	var before := AuctionHouse.known_melt(estate)
+	AuctionHouse.views_left = 1
+	expect(AuctionHouse.view(estate, p) and estate.items[p].seen and AuctionHouse.views_left == 0, "open a pouch at the viewing")
+	expect(is_equal_approx(AuctionHouse.known_melt(estate), before + AuctionHouse.melt_of(estate.items[p])), "what's in an opened pouch counts as seen")
+	expect(not AuctionHouse.view(estate, 0), "no more looks once they're used")
+	# a lot under the hammer: the room bids it up and the gavel comes down
+	var seats := AuctionHouse.attendees()
+	expect(seats.size() >= 4 and seats.any(func(s): return s.who == "sterling"), "Sterling is in the room")
+	var sold := 0
+	var passed := 0
+	for n in 40:
+		rng.seed = n + 1
+		var lot := AuctionHouse.roll_bulk(rng)
+		lot.n = 1
+		lot.seed = n
+		lot.result = {}
+		var sale := AuctionSale.of(lot, seats, n + 1)
+		var steps := 0
+		var last := 0.0
+		var rising := true
+		while not sale.advance(0.05) and steps < 4000:
+			steps += 1
+			if sale.high < last:
+				rising = false
+			last = sale.high
+		expect(sale.done and rising, "the bidding only goes up and ends")
+		if sale.winner() != "":
+			sold += 1
+			var w := int(sale.leader)
+			expect(sale.high <= float(sale.bidders[w].limit), "nobody bids past their limit")
+		else:
+			passed += 1
+	expect(sold > 30, "most dealer lots sell (%d of 40)" % sold)
+	# you bid, a jump bid, and winning
+	Shop.cash = 1000000.0
+	rng.seed = 77
+	var lot := AuctionHouse.roll_bulk(rng)
+	lot.n = 1
+	lot.seed = 3
+	lot.result = {}
+	var sale := AuctionSale.of(lot, seats, 9)
+	var ask := sale.ask
+	expect(sale.bid_you() and sale.leader == "you" and sale.high == ask and not sale.can_bid(), "your paddle takes the ask")
+	var jump := sale.jump_amount()
+	expect(jump > AuctionSale.next_ask(sale.ask), "a jump bid skips steps")
+	sale.leader = ""
+	expect(sale.bid_you(true) and sale.high == jump, "jump bid")
+	for b in sale.bidders:
+		b.in = false # the room gives up
+	var cash := Shop.cash
+	var held := Shop.count_of_item(AuctionHouse.coin_of(lot.items[0]))
+	while not sale.advance(0.1):
+		pass
+	expect(sale.winner() == "you" and sale.calls == 3, "going once, going twice, sold to you")
+	sale.settle()
+	expect(is_equal_approx(cash - Shop.cash, AuctionHouse.price_with_premium(jump)), "you pay the hammer and the buyer's premium")
+	expect(Shop.count_of_item(AuctionHouse.coin_of(lot.items[0])) == held + int(lot.items[0].qty), "the coins go in the vault")
+	expect(Day.ledger.any(func(e): return e.label == "Auction house"), "the auction is on today's ledger")
+	expect(AuctionHouse.won == 1 and Shop.stats.get("auction_won", 0.0) == 1.0, "the win is counted")
+	# a sleeper in a won pouch
+	var rare := Shop.rare_list()[0]
+	var sleeper := {"n": 2, "kind": "estate", "who": "Test", "seed": 1, "result": {}, "items": [AuctionHouse._group(rare, 1)]}
+	sleeper.items[0].pouch = true
+	AuctionHouse.settle(sleeper, "you", "", 500.0)
+	expect(AuctionHouse.sleepers == 1 and Records.value_of("sleepers") >= 1.0 and Records.is_earned("sleeper"), "a rare coin in a pouch is a sleeper")
+	# your lot: consigned, not sold under its reserve, and sold
+	Shop.day = 10
+	AuctionHouse.catalogue_day = 0
+	AuctionHouse.held_day = 0
+	AuctionHouse.refresh_catalogue()
+	var count := AuctionHouse.lots.size()
+	expect(rare in AuctionHouse.consignable() and AuctionHouse.consign(rare), "consign a rare coin")
+	expect(AuctionHouse.lots.size() == count + 1 and AuctionHouse.lots[-1].kind == "mine" and Shop.count_of_item(rare) == 0, "your coin leaves the vault for the sale")
+	var mine: Dictionary = AuctionHouse.lots[-1]
+	var mine_sale := AuctionSale.of(mine, seats, 4)
+	expect(not mine_sale.bid_you(), "you can't bid on your own lot")
+	AuctionHouse.settle(mine, "", "", 0.0)
+	expect(Shop.count_of_item(rare) == 1, "an unsold lot comes back to the vault")
+	expect(AuctionHouse.consign(rare), "consign it again")
+	cash = Shop.cash
+	AuctionHouse.settle(AuctionHouse.lots[-1], "collector", "Dr. Ng", 6000.0)
+	expect(is_equal_approx(Shop.cash - cash, 6000.0 * (1.0 - AuctionHouse.SELLERS_FEE)), "your lot's price less the fee")
+	expect(AuctionHouse.consign(Shop.rare_list()[1]) == false, "only coins you hold can be consigned")
+	# a rival's buy adds to their worth
+	var worth := Rivals.worth_of("sterling")
+	AuctionHouse.settle(AuctionHouse.lots[0], "sterling", "Victor Sterling", 1000.0, 5000.0)
+	expect(Rivals.worth_of("sterling") > worth, "Sterling's bargains make his shop worth more")
+	# saved with the game
+	expect(SaveGame.save_game(), "save with a catalogue")
+	var saved := AuctionHouse.lots.size()
+	var won := AuctionHouse.won
+	AuctionHouse.from_dict({})
+	expect(SaveGame.load_game() and AuctionHouse.lots.size() == saved and AuctionHouse.won == won and won == 2 and AuctionHouse.sleepers == 1, "the auction is saved")
+	# the saleroom from the town map
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Shop.day = 13
+	Shop.cash = 500000.0
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	expect(AuctionHouse.available(), "the auction is on this Saturday morning")
+	var opened := []
+	shop.auction_opened.connect(func(a): opened.append(a))
+	shop.open_auction()
+	expect(opened.size() == 1 and shop._auction != null, "the town map opens the saleroom")
+	var room: AuctionRoom = shop._auction
+	expect(room.phase == "viewing" and room.seats.size() >= 4 and not AuctionHouse.lots.is_empty(),
+		"the viewing shows the lots")
+	room.take_seat()
+	expect(room.phase == "sale" and AuctionHouse.held_day == Shop.day and not AuctionHouse.available(), "taking a seat starts the sale")
+	room._process(AuctionRoom.INTRO + 0.1)
+	room.bid()
+	expect(room.sale.leader == "you" or room.sale.done, "Space bids")
+	var guard := 0
+	while room.phase == "sale" and guard < 20000:
+		room._process(0.05)
+		guard += 1
+	expect(room.phase == "done", "the sale runs to the end")
+	expect(AuctionHouse.lots.all(func(l): return not l.result.is_empty()), "every lot has a result")
+	room.finished.emit()
+	expect(shop._auction == null and shop.hud._panels.page == "morning", "the saleroom closes back to the morning")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.new_game()
+	expect(AuctionHouse.lots.is_empty() and AuctionHouse.won == 0, "a new game clears the auction")
 
 func _check_grading() -> void:
 	SaveGame.new_game()

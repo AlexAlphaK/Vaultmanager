@@ -23,6 +23,7 @@ signal vault_opened(vault: Control)
 signal summary_shown
 signal desk_opened(desk: Control)
 signal smelter_opened(smelter: Control)
+signal auction_opened(auction: Control)
 
 const DAY_SECONDS := 120.0 # 09:00 to 17:00; daily bills are sized for this length (see README, Balance)
 const WALK_SPEED := 1.8 # tiles per second
@@ -35,6 +36,7 @@ const BarTestScene := preload("res://scenes/bar_test/bar_test.tscn")
 const GradingScene := preload("res://scenes/grading/grading_bench.tscn")
 const TradingDeskScene := preload("res://scenes/trading_desk/trading_desk.tscn")
 const SmelterScene := preload("res://scenes/smelter/smelter.tscn")
+const AuctionScene := preload("res://scenes/auction/auction_room.tscn")
 const DemoEndScene := "res://scenes/menu/demo_end.tscn"
 const STONE_NAMES := {"cz": "cubic zirconia", "glass": "glass", "moissanite": "moissanite"}
 const VAULT_RUN_SECONDS := 3.0 # away from the counter while you take the till to the vault
@@ -74,6 +76,7 @@ var _test: Control
 var _vault: Control
 var _desk: Control
 var _smelter: Control
+var _auction: Control
 var _pause: PauseMenu
 var coach: Coach
 ## Particles, reactions and their sounds over the room.
@@ -87,6 +90,8 @@ func _ready() -> void:
 	DeskSession.hook_up()
 	ScrapYard.hook_up()
 	CoinGrade.hook_up()
+	hud.room = room
+	AuctionHouse.hook_up()
 	hud.action.connect(_on_action)
 	hud.open_requested.connect(_open_shop)
 	hud.next_day_requested.connect(_open_next_day)
@@ -94,6 +99,7 @@ func _ready() -> void:
 	hud.menu_requested.connect(open_pause_menu)
 	hud.desk_requested.connect(open_desk)
 	hud.smelter_requested.connect(open_smelter)
+	hud.auction_requested.connect(open_auction)
 	_pause = PauseMenu.new()
 	add_child(_pause)
 	Music.play("shop")
@@ -151,7 +157,8 @@ func _everyone() -> Array[Customer]:
 
 ## Esc opens the pause menu, except in the coin and jewellery benches, where it means "back".
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE and _test == null and _desk == null and _smelter == null:
+	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE and _test == null and _desk == null and _smelter == null and _auction == null \
+			and not hud.is_decorating():
 		open_pause_menu()
 		get_viewport().set_input_as_handled()
 
@@ -790,6 +797,24 @@ func open_smelter() -> void:
 func _on_smelter_finished() -> void:
 	_smelter.queue_free()
 	_smelter = null
+	hud.show_morning()
+
+
+## The Ashworth & Finch saleroom, over the morning panel, on a sale morning.
+func open_auction() -> void:
+	if _auction != null or not AuctionHouse.available():
+		return
+	hud.hide_panels()
+	_auction = AuctionScene.instantiate()
+	hud.add_child(_auction)
+	_auction.start()
+	_auction.finished.connect(_on_auction_finished)
+	auction_opened.emit(_auction)
+
+
+func _on_auction_finished() -> void:
+	_auction.queue_free()
+	_auction = null
 	hud.show_morning()
 
 

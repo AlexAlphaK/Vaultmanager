@@ -945,6 +945,11 @@ func _button(text: String, r: Rect2, variation: String, on_press: Callable) -> B
 	b.theme_type_variation = variation
 	b.position = r.position
 	b.size = r.size
+	# a longer translation ("Schmelzen") grows the button: grow it leftwards, so the
+	# buttons at the panel's right edge stay on screen
+	var grown := b.get_combined_minimum_size().x - r.size.x
+	if grown > 0.0:
+		b.position.x -= grown
 	b.focus_mode = Control.FOCUS_NONE
 	b.pressed.connect(on_press)
 	return b

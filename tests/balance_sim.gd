@@ -7,7 +7,8 @@ extends Node
 ## break-ins) is the game's own code. Run:
 ##   godot --headless --path . res://tests/balance_sim.tscn -- --runs=8 --days=120
 ## Options: --runs=N seeds per bot, --days=N days per run, --bots=novice,average,expert,
-## --seed=N first seed, --csv=PATH writes one row per bot per day.
+## --seed=N first seed, --csv=PATH writes one row per bot per day, --no-decor leaves the
+## shop floor bare (to compare).
 
 const STEP := 0.25 # shop-clock seconds per tick
 
@@ -69,6 +70,7 @@ var _busy := 0.0
 ## A test in progress during a rush: {"c", "verdict", "left"}.
 var _bench := {}
 var _csv: FileAccess
+var _decor := true
 
 
 func _ready() -> void:
@@ -76,9 +78,10 @@ func _ready() -> void:
 	var runs := int(args.get("runs", 8))
 	var days := int(args.get("days", 120))
 	var first_seed := int(args.get("seed", 1))
+	_decor = not args.has("no-decor")
 	var names: PackedStringArray = String(args.get("bots", "novice,average,expert")).split(",")
 	# each process gets its own save, so several sims (other bots or seeds) can run side by side
-	SaveGame.path = "user://balance_sim_%s_%d.json" % [String(args.get("bots", "all")).replace(",", "_"), first_seed]
+	SaveGame.path = "user://balance_sim_%s_%d.json" % [String(args.get("bots", "all")).replace(",", "_") + ("" if _decor else "_bare"), first_seed]
 	SaveGame.delete_save()
 	_quiet_market()
 	if args.has("csv"):
@@ -118,7 +121,7 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 		"premium_income": 0.0, "lowest_cash": Shop.cash, "losses": {}, "gains": {}, "short_cash": 0, "out_of_stock": 0, "walked_by": 0,
 		"holdups": 0, "robbers_stopped": 0, "restocked": 0.0, "lost_to_rivals": 0, "tip_offs": 0, "rank": [],
 		"orders_taken": 0, "orders_filled": 0, "orders_failed": 0, "dealer": 0.0, "chapter_day": [-1, -1, -1, -1, -1],
-		"town_served": {}, "booths": 0, "investor_deals": 0, "investor_day": -1, "line_peak": 0.0}
+		"town_served": {}, "booths": 0, "investor_deals": 0, "investor_day": -1, "decor_spent": 0.0, "appeal": 0, "line_peak": 0.0}
 	for d in days:
 		_morning(out)
 		_play_day(out)
@@ -173,6 +176,7 @@ func _morning(out: Dictionary) -> void:
 		if Shop.cash - Progress.upgrades[id].cost >= reserve:
 			Progress.buy(id)
 			out.upgrades[id] = Shop.day
+	_decorate(out)
 	for h in bot.hire:
 		if Progress.tier >= h[1] and Staff.can_hire(h[0]) and Shop.cash - Staff.ROLES[h[0]].fee >= Progress.weekly_rent() * bot.buffer + 8000.0:
 			Staff.hire(h[0])
@@ -190,6 +194,28 @@ func _morning(out: Dictionary) -> void:
 		Calendar.book_booth()
 		out.booths += 1
 	shop._open_shop()
+
+
+## Fills free decor spots with spare cash: the most appeal per dollar the bot hasn't got
+## yet. The novice only decorates when cash is piling up.
+func _decorate(out: Dictionary) -> void:
+	if not _decor:
+		return
+	var reserve: float = (Progress.weekly_rent() + 8000.0) * bot.buffer * (3.0 if bot == BOTS.novice else 1.5)
+	if not Progress.is_top_tier():
+		reserve += Progress.tier_info(Progress.tier + 1).cost
+	for spot in Decor.spot_count():
+		if Decor.piece_on(spot) != "":
+			continue
+		var best := ""
+		for id in Decor.for_sale():
+			if Decor.owned_count(id) > 0 or Shop.cash - Decor.CATALOG[id].cost < reserve:
+				continue
+			if best == "" or Decor.appeal_with(id, spot) / Decor.CATALOG[id].cost > Decor.appeal_with(best, spot) / Decor.CATALOG[best].cost:
+				best = id
+		if best == "" or not Decor.buy(best, spot):
+			return
+		out.decor_spent += Decor.CATALOG[best].cost
 
 
 ## Finds the coins open special orders still need: everyday coins from the wholesaler,
@@ -487,6 +513,7 @@ func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) ->
 		if out.chapter_day[ch] < 0:
 			out.chapter_day[ch] = Shop.day
 	out.lowest_cash = minf(out.lowest_cash, Shop.cash)
+	out.appeal = Decor.appeal()
 	if Shop.cash < 0.0:
 		out.overdrawn_days += 1
 	var bills := 0.0
@@ -607,7 +634,12 @@ func _print_summary(name: String, results: Array, days: int) -> void:
 		var d: Array = ups[id]
 		d.sort()
 		parts.append("%s d%d" % [id, d[d.size() / 2]])
-	print("  upgrades (median day bought): %s\n" % ", ".join(parts))
+	print("  upgrades (median day bought): %s" % ", ".join(parts))
+	var spent := results.map(func(r): return r.decor_spent)
+	var appeal := results.map(func(r): return r.appeal)
+	appeal.sort()
+	print("  decor: median appeal %d at the end, %s spent on average\n" % [appeal[appeal.size() / 2],
+		Market.format_money(spent.reduce(func(a, b): return a + b, 0.0) / results.size())])
 
 
 func _add(d: Dictionary, key: String, usd: float) -> void:
