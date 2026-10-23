@@ -9,6 +9,7 @@ signal open_requested
 signal next_day_requested
 signal new_game_requested
 signal desk_requested
+signal smelter_requested
 
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
@@ -203,6 +204,10 @@ func _build_morning() -> void:
 		var desk := _button(row, "Trading desk", "Button", func(): desk_requested.emit())
 		desk.disabled = not DeskSession.available()
 		desk.tooltip_text = "Trade at the desk this morning." if not desk.disabled else tr("The desk has traded today. Back tomorrow morning.")
+	if ScrapYard.owned():
+		var fresh := ScrapYard.offers.size() > 0 or not ScrapYard.bin.is_empty()
+		_button(row, tr("Smelter") + (" !" if fresh else ""), "Button", func(): smelter_requested.emit()).tooltip_text = \
+			"Buy the scrap dealer's lots and melt scrap into bars."
 	var show := Calendar.booth_event()
 	if not show.is_empty():
 		var booked := Calendar.has_booth(show)

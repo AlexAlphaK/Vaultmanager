@@ -3,8 +3,8 @@ extends Node
 ## the customers (archetypes, haggling, regulars' stories), staff and rush hours, counter, bench
 ## and room upgrades with the floor plan, the menus, settings and music, the tutorial, the
 ## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
-## shops on the town map, the story campaign, the trading desk, gamepad controls with screen
-## scaling, and the seasons and town events. Run:
+## shops on the town map, the story campaign, the trading desk, the smelter and coin grading,
+## gamepad controls with screen scaling, and the seasons and town events. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -44,6 +44,8 @@ func _ready() -> void:
 	await _check_rush_day()
 	await _check_shop_upgrades()
 	await _check_trading_desk()
+	await _check_smelter()
+	await _check_grading()
 	_check_burglar_crews()
 	await _check_holdups()
 	await _check_rivals()
@@ -2502,3 +2504,229 @@ func _check_tutorial() -> void:
 func _press_card(coach: Coach, index: int) -> void:
 	var b: Button = coach._row.get_child(index)
 	b.pressed.emit()
+
+
+## Plays a melt the way a careful player would: every steel bit out, the furnace held in
+## the middle of the pour band till it's all molten, borax until the scum is gone, then a
+## steady pour below the splash line. `heat` shifts the furnace's target from mid-band.
+func _careful_melt(m: Melt, heat := 0.0, flow_tilt := 0.66) -> void:
+	while m.pull_steel():
+		pass
+	m.load_crucible()
+	var b := m.band()
+	m.set_gas(((b.x + b.y) / 2.0 + heat - Melt.AMBIENT) / (Melt.MAX_TEMP - Melt.AMBIENT))
+	for n in 600:
+		if m.molten >= 1.0 and (heat > 0.0 or m.in_band()):
+			break
+		m.advance(0.05, false)
+	# an impatient player leaves the gas up while they reach for the borax
+	for n in (120 if heat > 0.0 else 0):
+		m.advance(0.05, false)
+	while m.dross > 0.001:
+		m.add_flux()
+	for n in 1200:
+		if m.done:
+			break
+		m.advance(0.05, m.tilt < flow_tilt)
+
+
+func _check_smelter() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 21
+	expect(absf(Melt.melting_point_of("XAG", 0.999) - 961.0) < 1.0 and Melt.melting_point_of("XAU", 0.585) < Melt.melting_point_of("XAU", 0.916),
+		"fine silver melts at 961 C, and 22K gold melts hotter than 14K")
+	# the dealer's lots
+	for metal in ["XAU", "XAG"]:
+		for n in 20:
+			var lot := ScrapYard.roll_lot(metal, rng)
+			var share: float = lot.cost / ScrapYard.claimed_value(lot)
+			expect(share >= ScrapYard.PRICE_SHARE.x - 0.001 and share <= ScrapYard.PRICE_SHARE.y + 0.001, "a %s lot costs %d%% of its stamped metal" % [metal, roundi(share * 100.0)])
+			expect(float(lot.purity) <= float(lot.claimed) * ScrapYard.TRUTH.y + 0.0001, "a lot is never better than its stamp says by much")
+	# a careful melt of an honest lot makes money and a clean bar
+	var lot := ScrapYard.roll_lot("XAU", rng)
+	lot.purity = lot.claimed
+	lot.steel = 3
+	var good := Melt.of([lot] as Array[Dictionary], 3)
+	_careful_melt(good)
+	var r := good.result()
+	expect(good.done and good.steel_pulled == 3 and r.flaws.is_empty(), "a careful melt pours a clean bar")
+	expect(r.recovery > 0.98 and r.skull.is_empty(), "a careful melt recovers over 98%% of the gold (%.1f%%)" % (r.recovery * 100.0))
+	expect(r.payout > r.cost, "a careful melt of an honest lot makes a profit")
+	expect(absf(r.fine - good.fine * 0.997) / good.fine < 0.02, "the assay finds the gold that went in")
+	# sloppy work costs metal
+	var hot := Melt.of([lot] as Array[Dictionary], 3)
+	_careful_melt(hot, 220.0)
+	expect(hot.fumed > 0.0 and hot.result().recovery < r.recovery, "an overheated melt fumes metal away")
+	var fast := Melt.of([lot] as Array[Dictionary], 3)
+	_careful_melt(fast, 0.0, 1.0)
+	expect(fast.splashed > 0.0 and fast.result().recovery < r.recovery, "pouring flat out splashes")
+	var steel := Melt.of([lot] as Array[Dictionary], 3)
+	steel.load_crucible()
+	expect(steel.dross >= 3 * Melt.STEEL_DROSS, "steel left in the scrap adds dross")
+	var cold := Melt.of([lot] as Array[Dictionary], 3)
+	cold.load_crucible()
+	cold.set_gas((cold.melting_point + 40.0 - Melt.AMBIENT) / (Melt.MAX_TEMP - Melt.AMBIENT))
+	for n in 400:
+		cold.advance(0.05, false)
+		if cold.molten >= 1.0:
+			break
+	for n in 400:
+		if cold.done:
+			break
+		cold.advance(0.05, cold.tilt < 0.45)
+	var cr := cold.result()
+	expect(cold.frozen and not cr.skull.is_empty() and cr.skull.grams > 0.0, "a pour started too cold freezes in the crucible")
+	expect(absf(cr.cost + float(cr.skull.cost) - cold.cost) < 0.01, "the frozen metal goes back to the bin with its share of the cost")
+	var shut := Melt.of([lot] as Array[Dictionary], 3)
+	_careful_melt(shut, 0.0, 0.0)
+	shut.molten = 1.0
+	shut.temp = shut.melting_point + 120.0
+	for n in 12:
+		shut.advance(0.05, true)
+	for n in 20:
+		shut.advance(0.05, false)
+	for n in 300:
+		if shut.done:
+			break
+		shut.advance(0.05, shut.tilt < 0.66)
+	expect("cold_shut" in shut.result().flaws, "a long pause mid-pour leaves a cold shut")
+	# the furnace, the morning's lots and the bin
+	ScrapYard.hook_up()
+	expect(not ScrapYard.available() and ScrapYard.offers.is_empty(), "no smelter or lots before the furnace")
+	Shop.cash = 200000.0
+	expect(not Progress.can_buy("furnace"), "the furnace waits for Main Street")
+	Progress.tier = 1
+	expect(Progress.buy("furnace"), "buy the melting furnace")
+	expect(ScrapYard.offers.size() >= 2 and ScrapYard.offer_day == Shop.day, "the scrap dealer brings lots once the furnace is in")
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	expect(ScrapYard.available(), "the smelter opens in the morning")
+	var opened := []
+	shop.smelter_opened.connect(func(sm): opened.append(sm))
+	shop.open_smelter()
+	expect(opened.size() == 1 and shop._smelter != null, "the morning panel opens the smelter")
+	var sm: Smelter = shop._smelter
+	var worth := Shop.net_worth()
+	var offered := ScrapYard.offers.size()
+	var first: Dictionary = ScrapYard.offers[0]
+	sm.buy(0)
+	expect(ScrapYard.bin.size() == 1 and ScrapYard.offers.size() == offered - 1, "a bought lot goes in the scrap bin")
+	expect(absf(Shop.net_worth() - worth) < 0.01, "scrap in the bin counts in net worth at cost")
+	expect(SaveGame.save_game(), "save with scrap in the bin")
+	ScrapYard.from_dict({})
+	expect(SaveGame.load_game() and ScrapYard.bin.size() == 1 and ScrapYard.bin[0].name == first.name, "the scrap bin is saved")
+	sm.begin(first.metal)
+	expect(sm.phase == "sort" and ScrapYard.bin.is_empty() and not sm.pieces.is_empty(), "melting takes the bin's lots onto the tray")
+	expect(sm.pieces.filter(func(p): return p.steel).size() == int(first.steel), "the tray shows the steel hidden in the lot")
+	sm.back()
+	expect(sm.phase == "yard" and ScrapYard.bin.size() == 1, "Esc puts the scrap back in the bin")
+	sm.begin(first.metal)
+	sm.load_crucible()
+	expect(sm.phase == "melt", "load the crucible")
+	_careful_melt(sm.melt)
+	sm._process(0.05)
+	expect(sm.phase == "result" and not sm.assay.is_empty(), "the pour ends in the assay")
+	var booked := Day.ledger.filter(func(e): return e.label == "Bullion dealer (cast bars)")
+	expect(booked.size() == 1 and absf(booked[0].usd - sm.assay.payout) < 0.01, "the bullion dealer pays for the bar on today's ledger")
+	expect(ScrapYard.bars_cast == 1 and Shop.stats.get("bars_cast", 0.0) == 1.0, "the bar is counted")
+	sm._show_yard()
+	sm.finished.emit()
+	expect(shop._smelter == null and shop.hud._panels.page == "morning", "the smelter closes back to the morning")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.new_game()
+	expect(ScrapYard.bin.is_empty() and ScrapYard.bars_cast == 0, "a new game empties the scrap bin")
+
+
+func _check_grading() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	var morgan: BullionItem = Shop.coins["morgan_dollar_1881"]
+	# wear planes the design flat and takes the lustre with it
+	var lustrous := {}
+	for g in [0, 4, 8]:
+		var cg := CoinGrade.create(rng, morgan, g)
+		cg.cleaned = false
+		var art: Dictionary = GradeArt.bake(cg, 1)
+		expect(art.relief.get_width() == GradeArt.SIZE and art.surface.get_width() == GradeArt.SIZE, "the grading coin bakes at bench size")
+		var n := 0
+		for y in range(0, GradeArt.SIZE, 2):
+			for x in range(0, GradeArt.SIZE, 2):
+				if art.surface.get_pixel(x, y).r > 0.1:
+					n += 1
+		lustrous[g] = n
+	expect(lustrous[0] == 0 and lustrous[4] < lustrous[8], "worn coins have less lustre than mint-state ones")
+	var loupe: Dictionary = GradeArt.bake(CoinGrade.create(rng, morgan, 8), GradeArt.LOUPE_SCALE)
+	expect(loupe.relief.get_width() == GradeArt.SIZE * GradeArt.LOUPE_SCALE, "the loupe's coin bakes at 3x")
+	var cleaned := CoinGrade.create(rng, morgan, 6)
+	cleaned.cleaned = true
+	var hair: Image = GradeArt.bake(cleaned, GradeArt.LOUPE_SCALE).surface
+	var lines := 0
+	for y in range(0, hair.get_height(), 3):
+		for x in range(0, hair.get_width(), 3):
+			if hair.get_pixel(x, y).g > 0.5:
+				lines += 1
+	expect(lines > 20, "a cleaned coin shows hairlines under the loupe")
+	# the collector's verdict
+	var cg := CoinGrade.create(rng, morgan, 6)
+	cg.cleaned = false
+	var exact := cg.judge(6, false, "Dr. Ng")
+	expect(exact.steps == 0 and is_equal_approx(exact.pay, CoinGrade.fee() * (1.0 + CoinGrade.TIP)) and exact.rep > 0.0, "the exact grade earns the fee and a tip")
+	var near := cg.judge(5, false, "Dr. Ng")
+	expect(is_equal_approx(near.pay, CoinGrade.fee()), "a grade one off earns the fee")
+	var far := cg.judge(2, false, "Dr. Ng")
+	expect(far.pay == 0.0 and far.rep < 0.0, "a grade far off earns nothing and costs stars")
+	cg.cleaned = true
+	expect(cg.judge(6, false, "Dr. Ng").pay == 0.0, "missing a cleaned coin earns nothing")
+	expect(cg.judge(6, true, "Dr. Ng").pay > 0.0, "calling it cleaned, at the right grade, earns the fee")
+	# collectors only come once the lamp is bought
+	CoinGrade.hook_up()
+	var none := 0
+	for n in 200:
+		if CoinGrade.next_customer(rng) != null:
+			none += 1
+	expect(none == 0, "no grading customers before the grading lamp")
+	Shop.cash = 100000.0
+	Shop.day = 5
+	expect(Progress.buy("grading_lamp"), "buy the grading lamp")
+	var came := 0
+	for n in 400:
+		if CoinGrade.next_customer(rng) != null:
+			came += 1
+	expect(came > 10 and came < 70, "collectors bring coins to grade now and then (%d of 400)" % came)
+	# at the counter and on the bench
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	shop.hud.open_requested.emit()
+	var c := CoinGrade.customer(rng, 7)
+	c.grading.cleaned = false
+	shop.queue.append(c)
+	c.pos = ShopArt.SLOTS[0]
+	shop._process(0.01)
+	expect(shop._front() == c, "the collector waits at the counter")
+	shop._on_action("test")
+	expect(shop._test is GradingBench, "Grade it opens the grading bench")
+	var bench: GradingBench = shop._test
+	var m: Array = c.grading.marks[0]
+	expect(bench.tag_at(GradingBench.COIN_AT + (m[0] + m[1]) / 2.0) and bench.tagged.size() == 1, "clicking a bag mark under the loupe tags it")
+	expect(not bench.tag_at(GradingBench.COIN_AT + Vector2(200, 0)), "clicking bare velvet tags nothing")
+	bench.move_lamp(GradingBench.COIN_AT + Vector2(140, 0))
+	var low := bench.light_dir()
+	bench.move_lamp(GradingBench.COIN_AT + Vector2(10, 0))
+	expect(low.z < 0.3 and bench.light_dir().z > 0.9, "the lamp rakes low far out and shines from above close in")
+	var stars := Shop.reputation
+	bench.set_grade(7)
+	bench.finish()
+	expect(shop._test == null and not shop.queue.has(c), "grading sends the collector on their way")
+	var fees := Day.ledger.filter(func(e): return e.label == "Grading fees")
+	expect(fees.size() == 1 and fees[0].usd > CoinGrade.fee(), "the exact grade's fee and tip go on today's ledger")
+	expect(Shop.reputation > stars and Shop.stats.get("graded_exact", 0.0) == 1.0, "a spot-on grade earns stars and counts")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.new_game()

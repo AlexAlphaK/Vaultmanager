@@ -23,7 +23,7 @@ platinum and palladium prices follow the real market.
 | `autoload/settings.gd` | `Settings` singleton: volume for the Master, Music and SFX buses, fullscreen and screen scaling, saved in `user://settings.cfg` |
 | `autoload/pad.gd` | `Pad` singleton: gamepad controls (a pointer on the left stick, d-pad jumps between buttons, scene shortcuts on the bumpers and triggers, the controls list) |
 | `autoload/tutorial.gd` | `Tutorial` singleton: remembers whether the guided first day and the bench intros have been shown; saved with the game |
-| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 28 achievements; saved with the game |
+| `autoload/records.gd` | `Records` singleton: the long-term ledger (lifetime totals, best days, streaks) and the 30 achievements; saved with the game |
 | `autoload/music.gd` | `Music` singleton: plays and crossfades the music, rendering each track once on a thread and caching it in `user://music_cache/` |
 | `items/bullion_item.gd` | `BullionItem` resource: value computed from weight x purity x live price, plus the art settings for its coin face |
 | `items/jewellery_piece.gd` | `JewelleryPiece`: a ring, chain, bracelet or pendant, what the customer claims it is and what it really is (plated, under-karat, a better karat than claimed, or a CZ, glass or moissanite stone) |
@@ -37,9 +37,11 @@ platinum and palladium prices follow the real market.
 | `scenes/jewellery_test/` | The jewellery appraisal: scale, touchstone and acids, thermal diamond tester, magnet and loupe |
 | `scenes/bar_test/` | The bar test: scale, calipers, ultrasound flaw detector, XRF gun and loupe |
 | `scenes/trading_desk/` | The trading desk minigame on the morning panel; `desk_session.gd` holds the tapes, trades, limit and hedging |
+| `scenes/smelter/` | The smelter: sort scrap with a magnet, melt it, flux it and pour a bar; `scrap_yard.gd` holds the scrap dealer's lots and the bin, `melt.gd` the furnace, melt and pour rules |
+| `scenes/grading/` | The coin grading bench: a movable lamp, loupe and grading guide; `coin_grade.gd` holds the grades, the collectors and how a call is judged |
 | `scenes/vault/` | The vault lock-up minigame at closing time; `vault_layout.gd` holds the packing and break-in rules |
-| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people (walk cycle, back view, moods), coin, jewellery, bar, vault, trading desk and title screen painters. `shop_ambience.gd` adds the sunbeam, dust, neon sign and shop cat; `bench_art.gd` the testing benches' wood, housings and lamp light. No image files |
-| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds, `bar_sfx.gd` the gel, ultrasound and X-ray sounds, `shop_sfx.gd` the shop floor: door bell, register, coin clinks, service bell and customer voices) |
+| `art/` | Code-drawn pixel art: bitmap font, iso projection, shop, people (walk cycle, back view, moods), coin, jewellery, bar, vault, trading desk, smelter (`smelter_art.gd`), graded coin (`grade_art.gd`, a lit relief shader) and title screen painters. `shop_ambience.gd` adds the sunbeam, dust, neon sign and shop cat; `bench_art.gd` the testing benches' wood, housings and lamp light. No image files |
+| `audio/sfx.gd` | Sound effects synthesised at runtime, including each coin's ring (`jewellery_sfx.gd` adds the touchstone, acid and tester sounds, `bar_sfx.gd` the gel, ultrasound and X-ray sounds, `shop_sfx.gd` the shop floor: door bell, register, coin clinks, service bell and customer voices, `smelter_sfx.gd` the furnace roar, borax fizz, pour and quench) |
 | `audio/music_synth.gd` | The music, synthesised at runtime: a music-box title theme and a slow jazzy shop loop |
 | `ui/ui_theme.gd` | Pixel UI theme (font, panels, buttons, sliders) |
 | `ui/settings_panel.gd` | The settings page shared by the title screen and the pause menu |
@@ -211,6 +213,28 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   shorts the metal in your vault ounce for ounce with up to half the limit, so a falling price
   costs the vault on paper but pays at the desk. At the closing bell everything closes and the
   profit or loss goes on today's ledger. The rules live in `scenes/trading_desk/desk_session.gd`.
+- **Smelter.** Buy the **Melting furnace** (Upgrades, $9,000 once the shop has grown) and a
+  **Smelter** button joins the morning panel. The scrap dealer offers a few lots of broken gold
+  and silver each morning (chains, odd earrings, class rings, dental gold, flatware, spoons,
+  candlesticks) at a little under melt value as stamped. Some lots are salted with plated junk,
+  and most hide steel: clasp springs, knife blades, candlestick rods. Press **Melt** on a metal
+  to tip its lots onto the tray, sweep the **magnet** (1) over it to pull the steel out, then
+  load the crucible. Up/Down (or W/S) set the gas: bring the pyrometer into the green pour band
+  and hold it there until the whole charge melts (too hot and metal fumes away up the hood). Drop
+  a pinch of **borax** (F) until the grey scum clears and the melt shines; too much and the glassy
+  slag traps beads of metal. Then hold **Space** to tip the crucible: a steady pour fills the
+  mould, too fast splashes, and stopping halfway leaves a cold shut. The assay weighs the bar and
+  reads its fineness, and the bullion dealer pays 97% of spot for the fine metal in it. Anything
+  that froze in the crucible goes back in the bin. The **Refining workshop** makes the dealer's lots twice
+  the size. The rules live in `scenes/smelter/melt.gd`.
+- **Coin grading.** Buy the **Grading lamp and loupe** (Upgrades, $5,000) and now and then a
+  collector brings an old coin and asks for its grade, from G-4 to MS-67. Move the lamp round the
+  coin with the mouse: close in it lights from above, far out it rakes low across the relief.
+  Worn high points stay flat and dull, and the "cartwheel" of lustre that spins round a mint-state
+  coin breaks where it is worn. Press 2 for the loupe and click bag marks to count them (mint-state
+  grades are mostly a count of marks), and 3 for the grading guide. Tick **Cleaned** if fine
+  parallel hairlines show under a low light. Exact grades earn the fee and a tip, one grade off the
+  fee, further off nothing and a few stars; missing a cleaning costs stars too.
 - **Rival shops.** You are not the only dealer in town. **Sterling Bullion Co.** across the street
   is the big established dealer, and **Lucky's Pawn & Loan** across the side street pays far
   less for metal but asks no questions. Every customer weighs the shops by what they pay or
@@ -232,7 +256,7 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   day to the next. The LED board on the back wall shows today's spot prices.
 - **The ledger.** The **Ledger** button on the morning panel shows your lifetime record: deals,
   money bought and sold, profit, fakes caught and missed, losses to thieves, your highest net
-  worth and stars, your profit streak and your three best days. **Achievements** lists 28 goals
+  worth and stars, your profit streak and your three best days. **Achievements** lists 30 goals
   (hover one to see how to earn it and how close you are). Earning one pops up in the log, and
   the day's summary lists what you earned and tells you when you've had your best day yet.
 
@@ -410,7 +434,7 @@ scales them up by whole numbers so the pixels stay sharp.
 
 `tests/bug_bot.tscn` plays the game from the title screen through the real GUI, like a
 restless player: it clicks whatever buttons are on screen, clicks and drags over the
-benches, the vault and the trading desk, presses Esc, quits to the title mid-day and on the
+benches, the vault, the trading desk and the smelter, presses Esc, quits to the title mid-day and on the
 summary, switches save slots and starts new shops. It reports:
 
 - stuck screens (no progress for a long time whatever it clicks), with its last actions
@@ -418,7 +442,7 @@ summary, switches save slots and starts new shops. It reports:
 - saves that load differently from what was written, and new shops that inherit an old shop's state
 
 `tests/run_bug_bots.sh` runs several bots side by side (half of them topped up with cash and
-stars every morning so they reach the late game) and sums up their findings and every
+stars every morning, and given the smelter and grading lamp, so they reach the late game) and sums up their findings and every
 script error Godot printed:
 
     GODOT=/path/to/godot tests/run_bug_bots.sh 4 15 --speed=40

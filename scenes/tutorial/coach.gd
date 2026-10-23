@@ -276,6 +276,8 @@ func _on_bench_opened(bench: Control, c: Customer) -> void:
 		_intro("jewellery", tr("Jewellery appraisal"), tr("Weigh the piece. Then press 2 to rub a streak on the touchstone and drop acids on it (Q-Y): the streak survives acids up to its karat, and base metal fizzes. The Tester checks a stone; moissanite fools it, so look for doubled facet edges under the loupe. Set the grade (G) and the stone (D), then Finish appraisal."))
 	elif c.bar and not Tutorial.has_seen("bar"):
 		_intro("bar", tr("Bar test"), tr("Tungsten weighs almost the same as gold, so the scale isn't enough. Press 3 and sweep the ultrasound probe over the whole bar: the echo must stay inside the gate, and an early echo means tungsten inside. Read the serial under the loupe; a copied serial gets flagged. The XRF gun comes as an upgrade."))
+	elif c.kind == "grade" and not Tutorial.has_seen("grading"):
+		_intro("grading", tr("Coin grading"), tr("Move the lamp round the coin with the mouse: close in it shines from above, far out it rakes low. Worn high points stay flat and dull and break the lustre's spinning cartwheel. Press 2 for the loupe and click bag marks to count them; 3 opens the guide. Tick Cleaned if fine hairlines show under a low light."))
 
 
 func _intro(id: String, title: String, text: String) -> void:

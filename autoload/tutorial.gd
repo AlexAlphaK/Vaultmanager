@@ -7,7 +7,7 @@ extends Node
 signal changed
 
 ## Intros shown once each, the first time their bench opens.
-const INTROS := ["jewellery", "bar"]
+const INTROS := ["jewellery", "bar", "grading"]
 
 var first_day_done := false
 var seen := {}

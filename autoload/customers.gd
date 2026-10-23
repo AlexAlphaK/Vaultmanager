@@ -152,6 +152,9 @@ func next_customer(rng: RandomNumberGenerator, event := {}) -> Customer:
 	var collector := Orders.next_customer(rng, event)
 	if collector:
 		return collector
+	var grader := CoinGrade.next_customer(rng, event)
+	if grader:
+		return grader
 	if event.is_empty() and rng.randf() < REGULAR_ODDS:
 		var due := due_regulars()
 		if not due.is_empty():

@@ -149,7 +149,8 @@ func _morning(out: Dictionary) -> void:
 			out.tier_day[Progress.tier] = Shop.day
 	var order: Array = EXPERT_ORDER if bot == BOTS.expert else Progress.available_upgrades()
 	for id in order:
-		if not Progress.upgrades.has(id) or not Progress.can_buy(id):
+		# the sim doesn't play the smelter, so its furnace would be dead money
+		if id == "furnace" or not Progress.upgrades.has(id) or not Progress.can_buy(id):
 			continue
 		var reserve: float = Progress.weekly_rent() * bot.buffer + 8000.0 * bot.buffer
 		# saving up for the move matters more than the next gadget
@@ -266,6 +267,9 @@ func _serve(c: Customer, out: Dictionary) -> void:
 	if c.kind == "robber":
 		_face_robber()
 		return
+	if c.kind == "grade":
+		_grade(c)
+		return
 	if c.kind == "buyer":
 		_sell_to(c, out)
 		return
@@ -278,6 +282,17 @@ func _serve(c: Customer, out: Dictionary) -> void:
 			_test(c, out)
 			return
 	_buy_from(c, out)
+
+
+## A coin to grade: right as often as the bot reads jewellery grades, else a step or two off.
+func _grade(c: Customer) -> void:
+	var g := c.grading
+	var call := g.grade
+	if rng.randf() >= bot.grade:
+		call = clampi(g.grade + (1 if rng.randf() < 0.5 else -1) * (2 if rng.randf() < 1.0 - bot.grade else 1), 0, CoinGrade.GRADES.size() - 1)
+	var cleaned := g.cleaned if rng.randf() < bot.grade else not g.cleaned
+	c.assessed = {"grade": call, "cleaned": cleaned}
+	_finish_test(c, "graded", {})
 
 
 ## A hold-up. The novice guesses; the others weigh the till against what a failed

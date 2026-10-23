@@ -31,6 +31,7 @@ const INSURANCE_RATE := 0.0013
 ##   queue         extra waiting spots in the shop  till         +share the till holds before thieves notice
 ##   clerk_speed   +share of the clerk's speed      calm_queue   share off queue impatience while you test
 ##   refine        +share the refiner pays          deal_size    +share of what each customer brings
+##   scrap_size    +share of the scrap dealer's lots (see ScrapYard)
 ## Staff on the payroll add their effects too (see Staff.ROLES).
 ## `line` groups an upgrade: "counter" and "tools" grow the counter and the testing
 ## benches and show up on the shop floor, "room" builds a room on the floor plan (PlanArt).
@@ -76,7 +77,8 @@ var upgrades := {
 		"desc": "A back room with proper benches. In a rush the queue gets impatient half as fast while you test.",
 		"effects": {"calm_queue": 0.5}},
 	"workshop": {"name": "Refining workshop", "cost": 50000.0, "tier": 2, "line": "room",
-		"desc": "Melt scrap in-house: the refiner pays 6% more for the jewellery you buy.", "effects": {"refine": 0.06}},
+		"desc": "Melt scrap in-house: the refiner pays 6% more for the jewellery you buy, and with a melting furnace the scrap dealer brings lots twice the size.",
+		"effects": {"refine": 0.06, "scrap_size": 1.0}},
 	"trading_desk": {"name": "Bullion trading desk", "cost": 75000.0, "tier": 2, "line": "room",
 		"desc": "A dealing room with live screens. Each morning, trade metals, stocks and crypto and hedge your vault. Investors bring 25% more.",
 		"effects": {"deal_size": 0.25}},
