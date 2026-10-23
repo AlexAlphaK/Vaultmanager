@@ -91,6 +91,10 @@ func _ready() -> void:
 	ScrapYard.hook_up()
 	CoinGrade.hook_up()
 	hud.room = room
+	# under the HUD's panels, so the morning briefing and the benches cover it
+	var cat := ShopCat.new(room)
+	hud.add_child(cat)
+	hud.move_child(cat, 0)
 	AuctionHouse.hook_up()
 	hud.action.connect(_on_action)
 	hud.open_requested.connect(_open_shop)

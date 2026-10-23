@@ -1361,6 +1361,10 @@ msgid "Cast 10 bars at the smelter."
 msgstr ""
 
 #: autoload/records.gd
+msgid "Cat person"
+msgstr ""
+
+#: autoload/records.gd
 msgid "Catch 100 fakes."
 msgstr ""
 
@@ -1546,6 +1550,10 @@ msgstr ""
 
 #: autoload/records.gd
 msgid "Pay off an angel investor, or buy out their stake."
+msgstr ""
+
+#: autoload/records.gd
+msgid "Pet the shop cat 30 times."
 msgstr ""
 
 #: autoload/records.gd
@@ -5378,6 +5386,10 @@ msgstr ""
 
 #: scenes/shop/shop.gd
 msgid "the stone was %s"
+msgstr ""
+
+#: scenes/shop/shop_cat.gd
+msgid "Pet the cat"
 msgstr ""
 
 #: scenes/shop/shop_room.gd

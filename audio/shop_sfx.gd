@@ -130,6 +130,47 @@ static func whoosh() -> AudioStreamWAV:
 		return _wav(buf, 0.12))
 
 
+## The shop cat purring: a rumble of soft pulses, about 26 a second, breathing in and out.
+static func purr() -> AudioStreamWAV:
+	return _cached("purr", func():
+		var buf := _buf(1.6)
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 23
+		var low := 0.0
+		var band := 0.0
+		for n in buf.size():
+			var t := n / float(Sfx.RATE)
+			# breathing in (quieter, a touch faster) for 0.7 s, then out for 0.9 s
+			var out := t >= 0.7
+			var phase_t := t - 0.7 if out else t
+			var length := 0.9 if out else 0.7
+			var breath := sin(PI * clampf(phase_t / length, 0.0, 1.0))
+			var rate := 25.0 if out else 28.0
+			var pulse := pow(0.5 + 0.5 * sin(TAU * rate * t), 3.0)
+			low = lerpf(low, rng.randf_range(-1.0, 1.0), 0.06)
+			band = lerpf(band, low, 0.3)
+			var tone := sin(TAU * rate * 2.0 * t) * 0.5 + sin(TAU * rate * 4.0 * t) * 0.25
+			buf[n] = (band * 5.0 + tone) * pulse * breath * (1.0 if out else 0.7)
+		return _wav(buf, 0.3))
+
+
+## A cat's "mrrp?" as it wakes up: a short rolled chirp that rises at the end.
+static func mrrp() -> AudioStreamWAV:
+	return _cached("mrrp", func():
+		var buf := _buf(0.3)
+		var phase := 0.0
+		for n in buf.size():
+			var t := n / float(Sfx.RATE)
+			var f := t / 0.3
+			var hz := lerpf(420.0, 380.0, f / 0.6) if f < 0.6 else lerpf(380.0, 720.0, (f - 0.6) / 0.4)
+			phase += hz / Sfx.RATE
+			var roll := 0.6 + 0.4 * sin(TAU * 32.0 * t)
+			var env := minf(t / 0.02, 1.0) * (1.0 - smoothstep(0.7, 1.0, f))
+			var x := TAU * phase
+			buf[n] = (sin(x) + 0.4 * sin(2.0 * x) + 0.15 * sin(3.0 * x)) * roll * env
+		return _wav(buf, 0.22))
+
+
 ## A customer's made-up voice for `mood` (see MOODS) at their own pitch (about 0.75-1.35).
 static func voice(mood: String, pitch: float) -> AudioStreamWAV:
 	var bucket := clampi(roundi((pitch - 0.75) / 0.15), 0, 4)

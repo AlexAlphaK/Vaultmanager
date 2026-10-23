@@ -1363,6 +1363,10 @@ msgid "Cast 10 bars at the smelter."
 msgstr "Gieße 10 Barren in der Schmelze."
 
 #: autoload/records.gd
+msgid "Cat person"
+msgstr "Katzenmensch"
+
+#: autoload/records.gd
 msgid "Catch 100 fakes."
 msgstr "Erwische 100 Fälschungen."
 
@@ -1549,6 +1553,10 @@ msgstr "Zahle einen Bankkredit ab."
 #: autoload/records.gd
 msgid "Pay off an angel investor, or buy out their stake."
 msgstr "Zahle eine Investorin aus oder kaufe ihren Anteil zurück."
+
+#: autoload/records.gd
+msgid "Pet the shop cat 30 times."
+msgstr "Streichle die Ladenkatze 30-mal."
 
 #: autoload/records.gd
 msgid "Reach 4 stars of reputation."
@@ -5381,6 +5389,10 @@ msgstr "Stück"
 #: scenes/shop/shop.gd
 msgid "the stone was %s"
 msgstr "der Stein war %s"
+
+#: scenes/shop/shop_cat.gd
+msgid "Pet the cat"
+msgstr "Die Katze streicheln"
 
 #: scenes/shop/shop_room.gd
 msgid "AG"

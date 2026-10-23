@@ -54,6 +54,7 @@ const ACHIEVEMENTS := {
 	"grader_10": {"name": "Eagle eye", "desc": "Grade 10 coins spot on for collectors.", "key": "graded_exact", "goal": 10},
 	"auction_10": {"name": "Going, going, gone", "desc": "Win 10 lots at the Ashworth & Finch auction.", "key": "auction_won", "goal": 10},
 	"sleeper": {"name": "Sleeper", "desc": "Find a rare coin in a sealed pouch you won at auction.", "key": "sleepers", "goal": 1},
+	"cat_person": {"name": "Cat person", "desc": "Pet the shop cat 30 times.", "key": "cat_pets", "goal": 30},
 }
 
 ## Lifetime sums of the day reports. Deal counts come from Shop.noted.
@@ -91,7 +92,7 @@ func _ready() -> void:
 func reset() -> void:
 	totals = {"days": 0, "bought": 0.0, "sold": 0.0, "profit": 0.0, "caught": 0, "scammed": 0,
 		"stolen": 0.0, "buys": 0, "sales": 0, "robbers_stopped": 0, "tipped_off": 0, "orders_filled": 0,
-		"bars_cast": 0, "graded_exact": 0, "auction_won": 0, "sleepers": 0}
+		"bars_cast": 0, "graded_exact": 0, "auction_won": 0, "sleepers": 0, "cat_pets": 0}
 	peaks = {"worth": 0.0, "rep": 0.0, "best_day": 0.0, "streak": 0, "clean": 0}
 	streak = 0
 	clean_streak = 0
@@ -194,6 +195,14 @@ func _on_noted(key: String, _amount: float) -> void:
 		"tipped_off":
 			_today["tipped_off"] = int(_today.get("tipped_off", 0)) + 1
 	check()
+
+
+## One stroke of the shop cat (ShopCat). Counted straight into the totals: petting is
+## never replayed, so it doesn't wait for the day to close.
+func pet_cat() -> void:
+	totals.cat_pets = int(totals.get("cat_pets", 0)) + 1
+	if not is_earned("cat_person"):
+		check()
 
 
 func _check_peaks() -> void:
