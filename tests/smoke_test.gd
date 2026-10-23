@@ -5,7 +5,7 @@ extends Node
 ## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
 ## shops on the town map, the story campaign, the trading desk, the smelter and coin grading,
 ## the auction house, gamepad controls with screen scaling, the seasons and town events, the
-## angel investor and the Steam demo's limits. Run:
+## angel investor, shop decoration and the Steam demo's limits. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -54,6 +54,7 @@ func _ready() -> void:
 	await _check_calendar()
 	await _check_story()
 	_check_investor()
+	await _check_decor()
 	await _check_demo()
 	_check_settings()
 	_check_localization()
@@ -2196,6 +2197,134 @@ func _check_vault_scene() -> void:
 	expect(vault._result != null, "the night's result shows")
 	vault.queue_free()
 	Shop.reset()
+
+
+func _check_decor() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Shop.cash = 100000.0
+	Day.phase = Day.MORNING
+	expect(Decor.appeal() == 0 and is_zero_approx(Decor.star_bonus()), "a bare shop has no appeal")
+	expect(Decor.spot_count() == 4 and not Decor.spot_open(4), "the corner counter has 4 decor spots")
+	expect(not Decor.can_buy("armchair") and Decor.for_sale().has("fern"), "Main Street pieces wait for Main Street")
+	var cash := Shop.cash
+	expect(Decor.buy("fern", 0) and Decor.piece_on(0) == "fern", "buy a fern straight onto a spot")
+	expect(is_equal_approx(Shop.cash, cash - Decor.CATALOG.fern.cost), "the fern is paid for")
+	expect(Decor.appeal() == Decor.CATALOG.fern.appeal + Decor.VARIETY, "a fern adds its appeal and a kind")
+	Decor.buy("fern")
+	expect(Decor.stored == ["fern"] and Decor.place("fern", 1), "a second fern waits in the storeroom, then goes on a spot")
+	expect(Decor.appeal() == int(Decor.CATALOG.fern.appeal * 1.5) + Decor.VARIETY, "a second fern counts half and adds no new kind")
+	Decor.buy("coin_pedestal")
+	expect(Decor.place("coin_pedestal", 1) and Decor.stored == ["fern"], "placing on a taken spot sends its piece to the storeroom")
+	expect(Decor.move(1, 2) and Decor.piece_on(2) == "coin_pedestal" and Decor.piece_on(1) == "", "move a piece to a free spot")
+	expect(Decor.move(0, 2) and Decor.piece_on(2) == "fern" and Decor.piece_on(0) == "coin_pedestal", "moving onto a piece swaps them")
+	expect(not Decor.place("fern", 7), "spots open with the shop's tier")
+	cash = Shop.cash
+	expect(Decor.sell("fern") and is_equal_approx(Shop.cash, cash + Decor.CATALOG.fern.cost * Decor.RESALE) and Decor.stored.is_empty(),
+		"sell a stored piece back for half")
+	expect(Decor.pick_up(0) == "coin_pedestal" and Decor.stored == ["coin_pedestal"], "pick a piece up into the storeroom")
+	Decor.place("coin_pedestal", 0)
+	# reputation: good deals earn more, bad ones cost the same, and the town talks at night
+	var bonus := Decor.star_bonus()
+	expect(bonus > 0.0, "appeal gives a star bonus")
+	Shop.reputation = 2.0
+	Shop.reputation_for("sold")
+	expect(is_equal_approx(Shop.reputation, 2.0 + Shop.REPUTATION.sold * (1.0 + bonus)), "good deals earn more stars in a decorated shop")
+	Shop.reputation = 2.0
+	Shop.reputation_for("walked_out")
+	expect(is_equal_approx(Shop.reputation, 2.0 + Shop.REPUTATION.walked_out), "bad moments cost the same")
+	Shop.reputation = 2.0
+	var buzz := Decor.charm()
+	expect(buzz > 0.0 and buzz <= Decor.CHARM_MAX, "the town talks about a decorated shop")
+	Day.phase = Day.CLOSING
+	var report := Day.end_day()
+	expect(is_equal_approx(Shop.reputation, 2.0 + buzz), "the buzz adds stars when the day ends")
+	expect(report.lines.any(func(l): return "decor" in l), "the summary mentions the decor")
+	Shop.reputation = Decor.CHARM_UP_TO
+	expect(is_zero_approx(Decor.charm()), "the buzz stops at %.1f stars" % Decor.CHARM_UP_TO)
+	expect(Decor.star_bonus(1000) == Decor.STAR_BONUS_MAX, "the star bonus is capped")
+	# saved with the game
+	Decor.stored.append("a_board")
+	var saved := Decor.to_dict()
+	var json: Dictionary = JSON.parse_string(JSON.stringify(saved))
+	Decor.reset()
+	Decor.from_dict(json)
+	expect(Decor.piece_on(0) == "coin_pedestal" and Decor.piece_on(2) == "fern" and Decor.stored == ["a_board"], "decor survives a save and load")
+	Decor.from_dict({"placed": {"0": "no_such_thing", "99": "fern"}, "stored": ["nope"]})
+	expect(Decor.placed.is_empty() and Decor.stored.is_empty(), "a broken save loads an empty shop")
+	# every piece paints, inside its canvas
+	for id in Decor.CATALOG:
+		var art := DecorArt.paint(id)
+		var used := art.image.get_used_rect()
+		expect(used.has_area() and used.position.y > 0 and used.end.y <= int(DecorArt.FOOT.y) + 8, "%s paints" % id)
+	# the decorate panel: buy, place on the floor, move, put away, Esc closes it
+	Day.phase = Day.MORNING
+	Decor.reset()
+	Shop.cash = 100000.0
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	Day.phase = Day.MORNING
+	var panel: DecorPanel = shop.hud._decor
+	shop.hud._panels.show_upgrades()
+	var decorate: Button = null
+	for b in shop.hud._panels.find_children("*", "Button", true, false):
+		if b.text == "Decorate":
+			decorate = b
+	expect(decorate != null, "the upgrades page has a Decorate button")
+	if decorate:
+		decorate.pressed.emit()
+	await get_tree().process_frame
+	expect(panel.is_open() and not shop.hud._panels.visible and shop.room.decorating, "Decorate opens the panel over the shop floor")
+	expect(panel._spot_buttons.size() == Decor.spot_count(), "a button on every open spot")
+	panel.buy("fig_tree")
+	expect(panel.held == "fig_tree" and Decor.stored == ["fig_tree"], "a bought piece lands in your hands")
+	panel._spot_buttons[3].pressed.emit()
+	expect(Decor.piece_on(3) == "fig_tree" and panel.held == "", "click a spot to place it")
+	panel.click_spot(3)
+	expect(panel.held == "fig_tree" and panel.held_from == 3, "click it again to pick it up")
+	panel.click_spot(1)
+	expect(Decor.piece_on(1) == "fig_tree" and Decor.piece_on(3) == "", "and click another spot to move it")
+	for n in Decor.spot_count():
+		var r: Rect2 = panel._spot_buttons[n].get_global_rect()
+		expect(Rect2(Vector2.ZERO, Vector2(ShopArt.SIZE)).encloses(r), "spot %d is on the shop floor" % n)
+		expect(not r.intersects(Rect2(DecorPanel.RECT)), "spot %d is clear of the panel" % n)
+	# a busy storeroom (Sell buttons), a long hover text, the landmark's whole catalogue
+	Progress.tier = 3
+	for id in ["fountain", "eagle", "grandfather_clock", "chandelier_lamp", "fountain"]:
+		Decor.stored.append(id)
+	for lang in ["en", "de", "es", "fr"]:
+		TranslationServer.set_locale(lang)
+		panel.drop()
+		panel._hint.text = panel._desc("fountain") + " " + panel._desc("eagle")
+		await get_tree().process_frame
+		await get_tree().process_frame
+		var box: Rect2 = panel._box.get_global_rect()
+		expect(Rect2(DecorPanel.RECT).grow(-2).encloses(box), "%s decorate panel fits (%s)" % [lang, box])
+		# the catalogue scrolls; everything else must be on screen
+		for c in panel.find_children("*", "Control", true, false):
+			var in_list := false
+			var up := c.get_parent()
+			while up != panel:
+				in_list = in_list or up is ScrollContainer
+				up = up.get_parent()
+			if c is ScrollContainer or c is Button and not in_list:
+				expect(Rect2(0, 0, 480, 270).encloses(c.get_global_rect()), "%s decorate %s is on screen" % [lang, c.name])
+	Decor.stored.clear()
+	Progress.tier = 0
+	panel.drop()
+	TranslationServer.set_locale("en")
+	var esc := InputEventKey.new()
+	esc.keycode = KEY_ESCAPE
+	esc.pressed = true
+	Input.parse_input_event(esc)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	expect(not panel.is_open() and shop.hud._panels.page == "upgrades" and not shop.room.decorating, "Esc closes it back to the upgrades page")
+	expect(not shop._pause.visible, "Esc while decorating doesn't open the pause menu")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.new_game()
 
 
 func _check_settings() -> void:

@@ -10,6 +10,7 @@ signal next_day_requested
 signal new_game_requested
 signal desk_requested
 signal smelter_requested
+signal decorate_requested
 signal auction_requested
 
 const AREA := Rect2(12, 18, 292, 208)
@@ -362,6 +363,8 @@ func _build_upgrades() -> void:
 		_button(row, "Staff", "Button", show_staff)
 	var rooms := Progress.available_upgrades("room").size()
 	_button(row, tr("Floor plan%s") % (tr(" (%d to build)") % rooms if rooms > 0 else ""), "Button", show_plan)
+	_button(row, "Decorate", "Button", func(): decorate_requested.emit()).tooltip_text = \
+		"Place plants, display cases and signs on the shop floor. A handsome shop earns more stars."
 
 
 # ---------------------------------------------------------------- staff
@@ -504,7 +507,7 @@ func _room_entry(list: VBoxContainer, room: Dictionary) -> void:
 	b.tooltip_text = desc
 	list.add_child(b)
 	var hover := func():
-		if _hint:
+		if is_instance_valid(_hint):
 			_hint.text = desc
 	b.mouse_entered.connect(hover)
 	label.mouse_entered.connect(hover)
@@ -525,7 +528,7 @@ func _upgrade_row(grid: GridContainer, title: String, cost: float, enabled: bool
 		b.pressed.connect(on_buy)
 	grid.add_child(b)
 	var hover := func():
-		if _hint:
+		if is_instance_valid(_hint):
 			_hint.text = desc
 	b.mouse_entered.connect(hover)
 	name_label.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -659,7 +662,7 @@ func _town_button(parent: Control, text: String, enabled: bool, on_press: Callab
 	b.disabled = not enabled
 	b.tooltip_text = desc
 	b.mouse_entered.connect(func():
-		if _hint:
+		if is_instance_valid(_hint):
 			_hint.text = desc)
 
 
@@ -858,7 +861,7 @@ func _build_achievements() -> void:
 			desc += tr(" %d%% there.") % floori(Records.progress_of(id) * 100.0)
 		label.tooltip_text = desc
 		label.mouse_entered.connect(func():
-			if _hint:
+			if is_instance_valid(_hint):
 				_hint.text = desc)
 	_spacer()
 	_hint = _text("", Pal.INK)

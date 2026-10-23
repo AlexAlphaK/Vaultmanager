@@ -48,6 +48,7 @@ const ACHIEVEMENTS := {
 	"gift_rush": {"name": "Season's greetings", "desc": "Serve 40 gift shoppers in one holiday rush.", "key": "gift_best", "goal": 40},
 	"smelter_10": {"name": "Hot metal", "desc": "Cast 10 bars at the smelter.", "key": "bars_cast", "goal": 10},
 	"investor_out": {"name": "Own it outright", "desc": "Pay off an angel investor, or buy out their stake.", "key": "investors_repaid", "goal": 1},
+	"showroom": {"name": "Showroom", "desc": "Decorate the shop up to 50 appeal.", "key": "appeal", "goal": 50},
 	"grader_10": {"name": "Eagle eye", "desc": "Grade 10 coins spot on for collectors.", "key": "graded_exact", "goal": 10},
 	"auction_10": {"name": "Going, going, gone", "desc": "Win 10 lots at the Ashworth & Finch auction.", "key": "auction_won", "goal": 10},
 	"sleeper": {"name": "Sleeper", "desc": "Find a rare coin in a sealed pouch you won at auction.", "key": "sleepers", "goal": 1},
@@ -149,6 +150,8 @@ func value_of(key: String) -> float:
 			return Story.chapters_done()
 		"staff_level":
 			return Staff.top_level()
+		"appeal":
+			return Decor.appeal()
 	return total(key)
 
 

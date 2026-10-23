@@ -90,6 +90,7 @@ func _ready() -> void:
 	DeskSession.hook_up()
 	ScrapYard.hook_up()
 	CoinGrade.hook_up()
+	hud.room = room
 	AuctionHouse.hook_up()
 	hud.action.connect(_on_action)
 	hud.open_requested.connect(_open_shop)
@@ -156,7 +157,8 @@ func _everyone() -> Array[Customer]:
 
 ## Esc opens the pause menu, except in the coin and jewellery benches, where it means "back".
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE and _test == null and _desk == null and _smelter == null and _auction == null:
+	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE and _test == null and _desk == null and _smelter == null and _auction == null \
+			and not hud.is_decorating():
 		open_pause_menu()
 		get_viewport().set_input_as_handled()
 
