@@ -173,6 +173,13 @@ const ACCENTED := {
 const SPACE_ADVANCE := 3
 
 static var _font: FontFile
+## GLYPHS and ACCENTED again as plain copies, which every lookup reads. In Godot 4.3 each
+## item read from a const array goes through one scratch slot that array shares, so two
+## threads reading the same glyph at once free it under each other and crash the game
+## later. The loupe paintings (BarArt, GradeArt) run on a worker thread while the main
+## thread draws text; plain arrays are safe to read from both.
+static var _glyphs: Dictionary = GLYPHS.duplicate(true)
+static var _accented: Dictionary = ACCENTED.duplicate(true)
 
 
 ## The shared font, built on first use.
@@ -191,8 +198,17 @@ static func measure(text: String) -> int:
 
 
 static func glyph_width(ch: String) -> int:
-	var rows: Array = ACCENTED.get(ch, GLYPHS.get(ch, GLYPHS["?"]))
-	return rows[0].length()
+	return rows_of(ch)[0].length()
+
+
+## The glyph's rows ('#' lit), accented capitals included; '?' for a character it lacks.
+static func rows_of(ch: String) -> Array:
+	return _accented.get(ch, _glyphs.get(ch, _glyphs["?"]))
+
+
+## Like rows_of(), without the accented capitals (a bar stamp has none).
+static func plain_rows_of(ch: String) -> Array:
+	return _glyphs.get(ch, _glyphs["?"])
 
 
 ## Calls `plot.call(x, y)` for every lit pixel of `text`, top-left at the cap line.
@@ -203,8 +219,8 @@ static func plot_text(text: String, plot: Callable) -> void:
 		if ch == " ":
 			x += SPACE_ADVANCE
 			continue
-		var rows: Array = ACCENTED.get(ch, GLYPHS.get(ch, GLYPHS["?"]))
-		var top := -1 if ACCENTED.has(ch) else 0
+		var rows := rows_of(ch)
+		var top := -1 if _accented.has(ch) else 0
 		for y in rows.size():
 			var row: String = rows[y]
 			for px in row.length():

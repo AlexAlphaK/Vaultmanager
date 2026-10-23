@@ -67,6 +67,9 @@ var marks: Array = []
 
 
 static var _hooked := false
+## GRADES as plain copies for wear() and lustre(), which the loupe painting calls on its
+## worker thread while the bench lists the grades (see PixelFont._glyphs).
+static var _grades: Array[Dictionary] = GRADES.duplicate(true)
 
 
 static func hook_up() -> void:
@@ -117,11 +120,11 @@ static func _weighted_grade(rng: RandomNumberGenerator) -> int:
 
 
 func wear() -> float:
-	return float(GRADES[grade].wear)
+	return float(_grades[grade].wear)
 
 
 func lustre() -> float:
-	return float(GRADES[grade].lustre) * (CLEANED_LUSTRE if cleaned else 1.0)
+	return float(_grades[grade].lustre) * (CLEANED_LUSTRE if cleaned else 1.0)
 
 
 func id() -> String:

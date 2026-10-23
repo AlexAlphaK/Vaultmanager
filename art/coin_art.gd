@@ -95,6 +95,9 @@ const MOTIFS := {
 	],
 }
 ## Light comes from the top left.
+## MOTIFS as plain copies, safe to read from the grading loupe's worker thread while the
+## main thread paints coins (see PixelFont._glyphs).
+static var _motifs: Dictionary = MOTIFS.duplicate(true)
 const LIGHT := Vector2(-0.6, -0.8)
 const BAYER := [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
 ## Pixels per millimetre of coin diameter on the testing bench.
@@ -210,8 +213,13 @@ static func _field_tone(x: int, y: int, dx: float, dy: float, r: float, radial: 
 	return clampi(int(floor(v)) + (1 if fmod(v, 1.0) > threshold else 0), 1, 4)
 
 
+## The motif's device mask, one string per row (the eagle for an unknown motif).
+static func motif_rows(motif: String) -> Array:
+	return _motifs.get(motif, _motifs["eagle"])
+
+
 static func _device_heights(motif: String, cx: float, cy: float, inner: float) -> Dictionary:
-	var rows: Array = MOTIFS.get(motif, MOTIFS["eagle"])
+	var rows := motif_rows(motif)
 	var cols: int = rows[0].length()
 	var aspect := float(rows.size()) / cols
 	var w := inner * 1.45
