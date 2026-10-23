@@ -153,6 +153,16 @@ func _clear() -> void:
 func _build_morning() -> void:
 	_clear()
 	_title(tr("%s, day %d") % [Day.weekday(), Shop.day])
+	# the briefing scrolls on a busy morning, so the button rows below always stay on screen
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_box.add_child(scroll)
+	var outer := _box
+	_box = VBoxContainer.new()
+	_box.add_theme_constant_override("separation", 3)
+	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_box)
 	_text(tr("%s · %s. Set your prices, then open up.") % [Progress.tier_name(), Calendar.label()], Pal.INK_DIM)
 	var town := _town_hint()
 	if town != "":
@@ -198,9 +208,11 @@ func _build_morning() -> void:
 		_requirement(req, "Net worth", Shop.net_worth(), next.need_worth, true)
 		_requirement(req, "Reputation", Shop.reputation, next.need_rep, false)
 		_requirement(req, "Cash to move", Shop.cash, next.cost, true)
-	_spacer()
-	var pages := HBoxContainer.new()
-	pages.add_theme_constant_override("separation", 4)
+	_box = outer
+	# the button rows flow onto a second line when a full morning (or a long translation) runs out of width
+	var pages := HFlowContainer.new()
+	pages.add_theme_constant_override("h_separation", 4)
+	pages.add_theme_constant_override("v_separation", 3)
 	_box.add_child(pages)
 	var count := Progress.available_upgrades().size() + Staff.ROLES.size() - Staff.hired.size()
 	var expand_ready := Progress.expand_blocker() == "" and not Progress.is_top_tier()
@@ -213,8 +225,9 @@ func _build_morning() -> void:
 		_button(pages, tr("Orders (%d)") % Orders.open.size(), "Button", show_orders).tooltip_text = "Collectors' special orders and the dealer network."
 	# the investor's page hangs off the ledger: the morning rows are full
 	_button(pages, tr("Ledger") + (" !" if Investor.has_offer() else ""), "Button", show_ledger)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 4)
+	var row := HFlowContainer.new()
+	row.add_theme_constant_override("h_separation", 4)
+	row.add_theme_constant_override("v_separation", 3)
 	_box.add_child(row)
 	open_button = _button(row, "Open the shop", "PrimaryButton", func(): open_requested.emit())
 	open_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -937,8 +950,8 @@ func _text(text: String, col: Color) -> Label:
 	var l := Label.new()
 	l.text = text
 	l.add_theme_color_override("font_color", col)
-	l.custom_minimum_size = Vector2(AREA.size.x - 16, 0)
-	# wrap rather than widen the panel: translations run longer than the English
+	# wrap to whatever width the page gives it, rather than widen the panel: translations
+	# run longer than the English, and a scrolling page loses the scroll bar's width
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_box.add_child(l)
 	return l

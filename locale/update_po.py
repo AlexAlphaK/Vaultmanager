@@ -37,7 +37,7 @@ def is_text(s, alone_ok):
 	bare = re.sub(r'%[-+0-9.]*[sdfx%]|\{[a-z_]+\}', '', s)
 	if not re.search(r'[A-Za-z]{2}', bare) or s in NOT_TEXT:
 		return False
-	if re.search(r'[A-Za-z]\s+[A-Za-z]', bare):
+	if re.search(r'[A-Za-z]\s+[\d.,]*\s*[A-Za-z]', bare):
 		return True
 	if alone_ok and re.match(r'^[A-Za-z][a-z]+[.!?]$|^[A-Z]+$', s.strip()):
 		return True

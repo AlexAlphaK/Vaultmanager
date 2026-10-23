@@ -1151,6 +1151,14 @@ msgid "Cast 10 bars at the smelter."
 msgstr "Funde 10 lingotes en la fundición."
 
 #: autoload/records.gd
+msgid "Catch 100 fakes."
+msgstr "Atrapa 100 falsificaciones."
+
+#: autoload/records.gd
+msgid "Catch 25 fakes."
+msgstr "Atrapa 25 falsificaciones."
+
+#: autoload/records.gd
 msgid "Catch your first fake."
 msgstr "Pilla tu primera falsificación."
 
@@ -1719,6 +1727,10 @@ msgid "All right. You win the street. If you ever need a buyer for scrap, I'm ac
 msgstr "Está bien. La calle es tuya. Si alguna vez necesitas un comprador de chatarra, estoy enfrente."
 
 #: autoload/story.gd
+msgid "Catch 3 fakes"
+msgstr "Atrapa 3 falsificaciones"
+
+#: autoload/story.gd
 msgid "Celeste Wren dropped by to see what she bought into."
 msgstr "Celeste Wren pasó a ver en qué ha invertido."
 
@@ -1729,6 +1741,10 @@ msgstr "Celeste Wren te estrechó la mano al dejar el negocio."
 #: autoload/story.gd
 msgid "Chapter %d: %s"
 msgstr "Capítulo %d: %s"
+
+#: autoload/story.gd
+msgid "Close 15 deals"
+msgstr "Cierra 15 tratos"
 
 #: autoload/story.gd
 msgid "Don't thank me. Buy low, sell high, and send me my share every night."
@@ -1845,6 +1861,14 @@ msgstr "Abre el edificio emblemático"
 #: autoload/story.gd
 msgid "Paid in full. You don't need me any more, and that's the best kind of deal."
 msgstr "Pagado del todo. Ya no me necesitas, y ese es el mejor trato."
+
+#: autoload/story.gd
+msgid "Reach 3 stars"
+msgstr "Llega a 3 estrellas"
+
+#: autoload/story.gd
+msgid "Reach 4.5 stars"
+msgstr "Llega a 4,5 estrellas"
 
 #: autoload/story.gd
 msgid "Reach a net worth of $400,000"
@@ -5040,6 +5064,10 @@ msgstr "El comerciante pagó %s por tu lingote de plata (pérdida %s)."
 msgid "The bullion dealer paid %s for your silver bar (profit %s)."
 msgstr "El comerciante pagó %s por tu lingote de plata (beneficio %s)."
 
+#: scenes/smelter/scrap_yard.gd
+msgid "mostly 14K"
+msgstr "casi todo 14K"
+
 #: scenes/smelter/smelter.gd
 msgid "%.1f g fine"
 msgstr "%.1f g finos"
@@ -5461,6 +5489,10 @@ msgstr "Preapertura"
 #: scenes/trading_desk/trading_desk.gd
 msgid "Previous / next row"
 msgstr "Fila anterior / siguiente"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "REAL 24H"
+msgstr "REAL 24H"
 
 #: scenes/trading_desk/trading_desk.gd
 msgid "RT"
