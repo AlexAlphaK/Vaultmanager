@@ -135,7 +135,7 @@ func _run(delta: float) -> void:
 			_stage_left -= delta
 			if _stage_left <= 0.0:
 				stage = "bidding"
-				_say(tr("Who'll start me at %s?") % Market.format_money(sale.ask))
+				_say(tr("Start me at %s?") % Market.format_money(sale.ask))
 		"bidding":
 			var was_done := sale.advance(delta)
 			_take_events()
@@ -324,7 +324,7 @@ func _take_events() -> void:
 				if str(e.who) != "you":
 					_bid_at[int(e.who)] = _time
 					Sfx.play(self, AuctionSfx.paddle(), -8.0)
-				_say(tr("%s! Do I hear %s?") % [Market.format_money(e.amount), Market.format_money(sale.ask)])
+				_say(tr("%s, thank you!") % Market.format_money(e.amount))
 				if e.what == "jump":
 					Sfx.play(self, AuctionSfx.murmur(), -10.0)
 			"out", "fold":
@@ -457,15 +457,17 @@ func _draw_tray() -> void:
 				_draw_fan(coin, it, centre + Vector2(16, 4), it.junk)
 		else:
 			_draw_fan(coin, it, centre, false)
-		var label := AuctionHouse.label_of(it)
 		var col := Pal.BAD if it.junk and it.seen else (Pal.GOLD if coin.rare and (not it.pouch or it.seen) else AuctionArt.PAPER)
+		var mid := cell.get_center().x
 		if it.pouch and not it.seen:
-			col = Pal.INK_DIM
-		_text_centred(label, Vector2(cell.get_center().x, cell.end.y - 22), col, cell.size.x - 4)
-		if it.pouch and not it.seen:
-			_text_centred(tr("Catalogue guess %s") % Market.format_money(it.guess), Vector2(cell.get_center().x, cell.end.y - 12), Pal.INK_FAINT, cell.size.x - 4)
-		elif not it.junk:
-			_text_centred(Market.format_money(AuctionHouse.melt_of(it)), Vector2(cell.get_center().x, cell.end.y - 12), Pal.INK_DIM, cell.size.x - 4)
+			_text_centred(tr("Sealed pouch"), Vector2(mid, cell.end.y - 22), Pal.INK_DIM, cell.size.x - 4)
+			_text_centred(tr("Guess %s") % Market.format_money(it.guess), Vector2(mid, cell.end.y - 12), Pal.INK_FAINT, cell.size.x - 4)
+		elif it.junk:
+			_text_centred(AuctionHouse.label_of(it), Vector2(mid, cell.end.y - 22), col, cell.size.x - 4)
+			_text_centred(tr("Worthless"), Vector2(mid, cell.end.y - 12), Pal.INK_FAINT, cell.size.x - 4)
+		else:
+			_text_centred(coin.display_name, Vector2(mid, cell.end.y - 22), col, cell.size.x - 4)
+			_text_centred("× %d   %s" % [int(it.qty), Market.format_money(AuctionHouse.melt_of(it))], Vector2(mid, cell.end.y - 12), Pal.INK_DIM, cell.size.x - 4)
 
 
 ## Up to four coins of a group, fanned out from back to front.
@@ -490,6 +492,8 @@ func _draw() -> void:
 	_draw_auctioneer()
 	_draw_bidders()
 	draw_texture(_chairs, Vector2.ZERO)
+	if phase == "sale":
+		_draw_name_tags()
 	_draw_your_paddle()
 	if phase == "sale":
 		_draw_call()
@@ -525,8 +529,11 @@ func _draw_chandelier() -> void:
 func _draw_board() -> void:
 	var g := Rect2(AuctionArt.BOARD_GLASS)
 	if phase != "sale" or sale == null:
-		_led(tr("VIEWING"), g.position + Vector2(4, 4))
-		_led(tr("SALE AT 9:00") if phase == "viewing" else tr("SALE OVER"), g.position + Vector2(4, 18))
+		if phase == "viewing":
+			_led(tr("VIEWING"), g.position + Vector2(4, 4))
+			_led(tr("%d LOTS") % AuctionHouse.lots.size(), g.position + Vector2(4, 18))
+		else:
+			_led(tr("SALE OVER"), g.position + Vector2(4, 4))
 		return
 	_led(tr("LOT %d") % sale.lot.n, g.position + Vector2(4, 4))
 	if sale.high > 0.0:
@@ -621,7 +628,7 @@ func _draw_bidders() -> void:
 		if _time - _bid_at[i] < PADDLE_UP:
 			paddle_y = -30.0 # up, high and clear
 		elif not b.is_empty() and b.in and b.hesitant and sale.leader != str(i) and stage == "bidding":
-			paddle_y = -10.0 + sin(_time * 9.0 + i) * 2.0 # half up, wavering
+			paddle_y = -19.0 + sin(_time * 9.0 + i) * 2.0 # half up, wavering
 		if paddle_y > -1.0:
 			var pt: Texture2D = _paddle_tex[i]
 			var hand_x := at.x + (40 if i % 2 == 0 else 10)
@@ -629,10 +636,17 @@ func _draw_bidders() -> void:
 		draw_texture(_bidder_tex[i][turn], (at + breathe).round())
 		if not b.is_empty() and b.hesitant and b.in and stage == "bidding" and sale.leader != str(i):
 			_draw_sweat(at + Vector2(AuctionArt.BIDDER_SIZE.x / 2.0, 0), i)
+
+
+## Who just bid, or folded, on the back of their chair.
+func _draw_name_tags() -> void:
+	for i in seats.size():
+		var at := Vector2(AuctionArt.SEATS[i], AuctionArt.CHAIR_TOP + 10)
+		var b: Dictionary = sale.bidders[i] if sale != null else {}
 		if _time - _bid_at[i] < PADDLE_UP + 0.5:
-			_name_tag(str(seats[i].name), Vector2(sx, at.y - 38))
-		elif shaking and not b.is_empty() and b.folded:
-			_name_tag(tr("%s folds") % str(seats[i].name), Vector2(sx, at.y - 38), Pal.WARN)
+			_name_tag(str(seats[i].name), at)
+		elif _time - _out_at[i] < SHAKE and not b.is_empty() and b.folded:
+			_name_tag(tr("%s folds") % str(seats[i].name), at, Pal.WARN)
 
 
 func _draw_sweat(head: Vector2, i: int) -> void:
@@ -666,7 +680,7 @@ func _draw_call() -> void:
 	if _call == "" or _time - _call_at > 2.6:
 		return
 	var w := mini(PixelFont.measure(_call) + 8, 150)
-	var r := Rect2(AuctionArt.ROSTRUM.position.x - w + 6, 34, w, 12)
+	var r := Rect2(AuctionArt.ROSTRUM.position.x - w + 6, 76, w, 12)
 	draw_rect(r, AuctionArt.PAPER)
 	draw_rect(Rect2(r.position.x, r.end.y, r.size.x, 1), Color(0, 0, 0, 0.3))
 	draw_rect(Rect2(r.end.x - 1, r.position.y, 1, r.size.y), Color("#b8a888"))
@@ -747,7 +761,7 @@ func _build_viewing() -> void:
 		_label(tr("A collector's order wants this %s.") % wanted.display_name, Vector2(x, y), Pal.GOOD, 156, HORIZONTAL_ALIGNMENT_LEFT, 18)
 		y += 20
 	if lot.kind == "mine":
-		_label(tr("Your lot. Reserve: %s.") % Market.format_money(AuctionHouse.reserve(lot)), Vector2(x, y), Pal.GOLD, 156)
+		_label(tr("Your lot. Reserve %s.") % Market.format_money(AuctionHouse.reserve(lot)), Vector2(x, y), Pal.GOLD, 156)
 		y += 10
 	y += 4
 	if unseen > 0 or AuctionHouse.views_left < AuctionHouse.VIEWINGS[clampi(Progress.tier, 0, 3)]:
