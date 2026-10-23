@@ -582,6 +582,54 @@ msgstr "Mercredi"
 msgid "You are overdrawn. The bank charges interest every night."
 msgstr "Vous êtes à découvert. La banque prend des intérêts chaque nuit."
 
+#: autoload/investor.gd
+msgid "%d%% of each day's profit"
+msgstr "%d%% du bénéfice de chaque jour"
+
+#: autoload/investor.gd
+msgid "%s has her money back and more. She's out."
+msgstr "%s a récupéré sa mise et plus. Elle se retire."
+
+#: autoload/investor.gd
+msgid "%s is out: the shop is all yours again."
+msgstr "%s se retire : la boutique est de nouveau toute à toi."
+
+#: autoload/investor.gd
+msgid "%s put %s into the shop for %d%% of each day's profit."
+msgstr "%s place %s dans la boutique contre %d%% du bénéfice de chaque jour."
+
+#: autoload/investor.gd
+msgid "%s takes %d%% of each day's profit. Still owed: %s."
+msgstr "%s prend %d%% du bénéfice de chaque jour. Encore dû : %s."
+
+#: autoload/investor.gd
+msgid "%s, an angel investor, wants a word before you open."
+msgstr "%s, une investisseuse, veut te parler avant l'ouverture."
+
+#: autoload/investor.gd
+msgid "%s, an angel investor, will put in %s to keep you afloat. See the Ledger."
+msgstr "%s, une investisseuse, apporte %s pour te maintenir à flot. Voir le registre."
+
+#: autoload/investor.gd
+msgid "Angel investment"
+msgstr "Apport de l'investisseuse"
+
+#: autoload/investor.gd autoload/story.gd
+msgid "Celeste Wren"
+msgstr "Celeste Wren"
+
+#: autoload/investor.gd
+msgid "Investor buy-out"
+msgstr "Rachat de sa part"
+
+#: autoload/investor.gd
+msgid "Investor's share"
+msgstr "Part de l'investisseuse"
+
+#: autoload/investor.gd
+msgid "You bought out %s's stake for %s. The shop is all yours again."
+msgstr "Tu as racheté la part de %s pour %s. La boutique est de nouveau toute à toi."
+
 #: autoload/market_events.gd
 msgid "BITCOIN CRASHES {move}. Burned crypto traders want something real."
 msgstr "LE BITCOIN S'EFFONDRE {move}. Les traders crypto échaudés veulent du concret."
@@ -1235,8 +1283,16 @@ msgid "Open the town landmark store."
 msgstr "Ouvrez la boutique du monument de la ville."
 
 #: autoload/records.gd
+msgid "Own it outright"
+msgstr "Seul maître à bord"
+
+#: autoload/records.gd
 msgid "Part of the family"
 msgstr "De la famille"
+
+#: autoload/records.gd
+msgid "Pay off an angel investor, or buy out their stake."
+msgstr "Rembourse une investisseuse ou rachète sa part."
 
 #: autoload/records.gd
 msgid "Reach 4 stars of reputation."
@@ -1639,8 +1695,20 @@ msgid "All right. You win the street. If you ever need a buyer for scrap, I'm ac
 msgstr "Bon. La rue est à vous. Si vous cherchez un acheteur pour de la casse, je suis en face."
 
 #: autoload/story.gd
+msgid "Celeste Wren dropped by to see what she bought into."
+msgstr "Celeste Wren est passée voir dans quoi elle a investi."
+
+#: autoload/story.gd
+msgid "Celeste Wren shook your hand on her way out of the business."
+msgstr "Celeste Wren t'a serré la main en quittant l'affaire."
+
+#: autoload/story.gd
 msgid "Chapter %d: %s"
 msgstr "Chapitre %d : %s"
+
+#: autoload/story.gd
+msgid "Don't thank me. Buy low, sell high, and send me my share every night."
+msgstr "Ne me remercie pas. Achète bas, vends haut, et envoie ma part chaque soir."
 
 #: autoload/story.gd
 msgid "Fill 3 special orders"
@@ -1751,6 +1819,10 @@ msgid "Open the Town landmark"
 msgstr "Ouvrez le monument"
 
 #: autoload/story.gd
+msgid "Paid in full. You don't need me any more, and that's the best kind of deal."
+msgstr "Tout est payé. Tu n'as plus besoin de moi, c'est la meilleure des affaires."
+
+#: autoload/story.gd
 msgid "Reach a net worth of $400,000"
 msgstr "Atteignez un patrimoine de 400 000 $"
 
@@ -1801,6 +1873,10 @@ msgstr "Victor Sterling vous a serré la main. Presque sincèrement."
 #: autoload/story.gd
 msgid "You've the name and the money. The old bank on the square is for sale. Buy it."
 msgstr "Vous avez le nom et l'argent. L'ancienne banque de la place est à vendre. Achetez-la."
+
+#: autoload/story.gd
+msgid "investor"
+msgstr "investisseuse"
 
 #: autoload/story.gd
 msgid "mentor"
@@ -3023,6 +3099,10 @@ msgid "%s asks for a raise of %s a day."
 msgstr "%s demande une augmentation de %s par jour."
 
 #: scenes/shop/day_panels.gd
+msgid "%s heard the bank is calling. She backs small shops she believes in, and she believes in yours."
+msgstr "%s a appris que la banque te relance. Elle soutient les petites boutiques en qui elle croit, et elle croit en la tienne."
+
+#: scenes/shop/day_panels.gd
 msgid "%s is down %.1f%%. Bargain hunters will be out."
 msgstr "%s baisse de %.1f%%. Les chasseurs d'affaires seront de sortie."
 
@@ -3047,6 +3127,10 @@ msgid "%s · %s. Set your prices, then open up."
 msgstr "%s · %s. Fixez vos prix, puis ouvrez."
 
 #: scenes/shop/day_panels.gd
+msgid "%s's stake"
+msgstr "La part de %s"
+
+#: scenes/shop/day_panels.gd
 msgid "%s, %s (level %d)"
 msgstr "%s, %s (niveau %d)"
 
@@ -3061,6 +3145,10 @@ msgstr ", quand Mags passera."
 #: scenes/shop/day_panels.gd
 msgid "A NOTE FROM MAGS HOLLOWAY"
 msgstr "UN MOT DE MAGS HOLLOWAY"
+
+#: scenes/shop/day_panels.gd
+msgid "A day without profit costs you nothing. Buy her out any morning for what she is still owed."
+msgstr "Un jour sans bénéfice ne te coûte rien. Rachète sa part chaque matin pour ce qui lui reste dû."
 
 #: scenes/shop/day_panels.gd
 msgid "A quiet morning on Main Street. Your share of the town's customers: %d%%."
@@ -3083,6 +3171,10 @@ msgstr[1] "Annonce : encore %d jours"
 #: scenes/shop/day_panels.gd
 msgid "An ad in the town paper: for %d days more customers pick your shop over the others."
 msgstr "Une annonce dans le journal local : pendant %d jours, plus de clients choisissent votre boutique."
+
+#: scenes/shop/day_panels.gd
+msgid "An angel investor"
+msgstr "Une investisseuse"
 
 #: scenes/shop/day_panels.gd
 msgid "At work"
@@ -3145,6 +3237,10 @@ msgid "Buy coins from the wholesaler before you open."
 msgstr "Achetez des pièces au grossiste avant d'ouvrir."
 
 #: scenes/shop/day_panels.gd
+msgid "Buy out for %s"
+msgstr "Racheter : %s"
+
+#: scenes/shop/day_panels.gd
 msgid "Buy the scrap dealer's lots and melt scrap into bars."
 msgstr "Achetez les lots du ferrailleur et fondez-les en lingots."
 
@@ -3161,8 +3257,16 @@ msgid "Cash change today"
 msgstr "Variation du liquide"
 
 #: scenes/shop/day_panels.gd
+msgid "Cash now"
+msgstr "Liquide actuel"
+
+#: scenes/shop/day_panels.gd
 msgid "Cash to move"
 msgstr "Liquide pour déménager"
+
+#: scenes/shop/day_panels.gd
+msgid "Celeste Wren, the angel investor: her offer, or her stake in the shop."
+msgstr "Celeste Wren, l'investisseuse : son offre ou sa part de la boutique."
 
 #: scenes/shop/day_panels.gd
 msgid "Close a day in profit to start the list."
@@ -3251,6 +3355,10 @@ msgid "Have"
 msgstr "Stock"
 
 #: scenes/shop/day_panels.gd
+msgid "Her share"
+msgstr "Sa part"
+
+#: scenes/shop/day_panels.gd
 msgid "Highest net worth"
 msgstr "Patrimoine max."
 
@@ -3269,6 +3377,14 @@ msgstr "Comment va votre personnel : niveaux, humeur et salaire."
 #: scenes/shop/day_panels.gd
 msgid "In a foul mood"
 msgstr "De mauvaise humeur"
+
+#: scenes/shop/day_panels.gd
+msgid "In return"
+msgstr "En retour"
+
+#: scenes/shop/day_panels.gd
+msgid "Investor"
+msgstr "Investisseuse"
 
 #: scenes/shop/day_panels.gd
 msgid "Keep growing your vault and reputation."
@@ -3357,12 +3473,24 @@ msgstr[0] "Prochain loyer et assurance dans %d jour."
 msgstr[1] "Prochain loyer et assurance dans %d jours."
 
 #: scenes/shop/day_panels.gd
+msgid "Nobody holds a stake in your shop."
+msgstr "Personne n'a de part dans ta boutique."
+
+#: scenes/shop/day_panels.gd scenes/shop/hud.gd
+msgid "Not now"
+msgstr "Pas maintenant"
+
+#: scenes/shop/day_panels.gd
 msgid "Off sick (unpaid)"
 msgstr "Malade (non payé)"
 
 #: scenes/shop/day_panels.gd
 msgid "Open the shop"
 msgstr "Ouvrir la boutique"
+
+#: scenes/shop/day_panels.gd
+msgid "Open the shop without shaking on it and she walks away."
+msgstr "Ouvre sans toper et elle s'en va."
 
 #: scenes/shop/day_panels.gd
 msgid "Orders (%d)"
@@ -3373,8 +3501,20 @@ msgid "Owned"
 msgstr "Acquis"
 
 #: scenes/shop/day_panels.gd
+msgid "Paid so far"
+msgstr "Déjà payé"
+
+#: scenes/shop/day_panels.gd
+msgid "Paid to investors"
+msgstr "Versé aux investisseurs"
+
+#: scenes/shop/day_panels.gd
 msgid "Palladium"
 msgstr "Palladium"
+
+#: scenes/shop/day_panels.gd
+msgid "Pay her what she is still owed and keep all your profit from now on."
+msgstr "Paie-lui ce qui lui reste dû et garde tout ton bénéfice désormais."
 
 #: scenes/shop/day_panels.gd
 msgid "Pays %s in all on delivery."
@@ -3427,6 +3567,22 @@ msgid "Set your board a point better than Sterling's: pay %d%% of melt, sell at 
 msgstr "Réglez votre tableau un point mieux que Sterling : payez %d%% de la fonte, vendez au cours +%d%%."
 
 #: scenes/shop/day_panels.gd
+msgid "She bought in on day %d. Her share comes off each day's profit when you lock up."
+msgstr "Elle est entrée au jour %d. Sa part est prise sur le bénéfice du jour à la fermeture."
+
+#: scenes/shop/day_panels.gd
+msgid "She is out once she has had %s. Or buy her out now for what she is still owed."
+msgstr "Elle se retire une fois %s touchés. Ou rachète sa part maintenant pour ce qui reste dû."
+
+#: scenes/shop/day_panels.gd
+msgid "She put in"
+msgstr "Son apport"
+
+#: scenes/shop/day_panels.gd
+msgid "She puts in"
+msgstr "Elle apporte"
+
+#: scenes/shop/day_panels.gd
 msgid "Silver"
 msgstr "Argent"
 
@@ -3455,6 +3611,10 @@ msgid "Staff%s"
 msgstr "Personnel%s"
 
 #: scenes/shop/day_panels.gd
+msgid "Still owed"
+msgstr "Encore dû"
+
+#: scenes/shop/day_panels.gd
 msgid "Stops %d%% of robbers at the door."
 msgstr "Arrête %d%% des braqueurs à la porte."
 
@@ -3465,6 +3625,10 @@ msgstr "Histoire"
 #: scenes/shop/day_panels.gd
 msgid "Sure? Click again"
 msgstr "Sûr ? Recliquez"
+
+#: scenes/shop/day_panels.gd
+msgid "Take the money"
+msgstr "Accepter"
 
 #: scenes/shop/day_panels.gd
 msgid "Tell Detective Ruiz about Lucky's stolen goods. A raid shuts the pawn shop for %d days."
@@ -3495,6 +3659,10 @@ msgid "Today"
 msgstr "Aujourd'hui"
 
 #: scenes/shop/day_panels.gd
+msgid "Tonight's bills"
+msgstr "Factures du soir"
+
+#: scenes/shop/day_panels.gd
 msgid "Town map"
 msgstr "Plan de la ville"
 
@@ -3513,6 +3681,10 @@ msgstr "Tradez à la salle ce matin."
 #: scenes/shop/day_panels.gd scenes/trading_desk/desk_session.gd
 msgid "Trading desk"
 msgstr "Salle de marché"
+
+#: scenes/shop/day_panels.gd
+msgid "Until she has had"
+msgstr "Jusqu'à toucher"
 
 #: scenes/shop/day_panels.gd
 msgid "Upgrades"
@@ -3683,10 +3855,6 @@ msgstr "Non merci"
 #: scenes/shop/hud.gd
 msgid "Not enough cash: %s"
 msgstr "Pas assez de liquide : %s"
-
-#: scenes/shop/hud.gd
-msgid "Not now"
-msgstr "Pas maintenant"
 
 #: scenes/shop/hud.gd
 msgid "Off to the vault..."

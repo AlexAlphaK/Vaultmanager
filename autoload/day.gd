@@ -6,12 +6,15 @@ extends Node
 ##   phase_changed / day_started / shop_opened / shop_closed / day_ended signals.
 ##   add_income() and add_expense() put money on today's ledger (and in the summary).
 ##   day_ended hands out the report before it is shown: append strings to report.lines.
+##   settling fires as the day's books close, before the bills: the last chance to put
+##   a share of the day's results on the ledger (see Investor).
 
 signal phase_changed(phase: String)
 signal day_started(day: int)
 signal shop_opened(day: int)
 signal shop_closed(day: int)
 signal day_ended(day: int, report: Dictionary)
+signal settling(day: int)
 
 ## morning: set prices and buy upgrades. open: customers arrive. closing: the last
 ## customers are served. after_hours: the shop is shut and the summary is up.
@@ -100,6 +103,7 @@ func close_shop() -> void:
 func end_day() -> Dictionary:
 	if phase == AFTER_HOURS:
 		return {}
+	settling.emit(Shop.day)
 	add_expense(tr("Upkeep"), Progress.daily_upkeep())
 	if is_bill_day():
 		for bill in upcoming_bills():

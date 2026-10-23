@@ -4,7 +4,8 @@
 # printed, with how many bots hit it.
 #   tests/run_bug_bots.sh [bots] [minutes] [extra bot options...]
 #   GODOT=/path/to/godot tests/run_bug_bots.sh 6 10 --speed=30
-# Half the bots start rich (--rich) so they reach the late game. Logs go to bug_bot_logs/.
+# Half the bots start rich (--rich) so they reach the late game; every third of the others
+# starts most mornings overdrawn (--broke) so the angel investor calls. Logs go to bug_bot_logs/.
 set -u
 cd "$(dirname "$0")/.."
 GODOT=${GODOT:-godot}
@@ -15,7 +16,7 @@ mkdir -p bug_bot_logs
 rm -f bug_bot_logs/bot_*.log
 for n in $(seq 1 "$BOTS"); do
 	extra=()
-	if (( n % 2 == 0 )); then extra+=(--rich); fi
+	if (( n % 2 == 0 )); then extra+=(--rich); elif (( n % 3 == 0 )); then extra+=(--broke); fi
 	"$GODOT" --headless --path . res://tests/bug_bot.tscn -- --seed="$n" --minutes="$MINUTES" "${extra[@]}" "$@" \
 		> "bug_bot_logs/bot_$n.log" 2>&1 &
 done

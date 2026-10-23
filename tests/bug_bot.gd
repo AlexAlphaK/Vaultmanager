@@ -12,7 +12,7 @@ extends Node
 ##   godot --headless --path . res://tests/bug_bot.tscn -- --seed=3 --minutes=10
 ## Options: --seed=N, --minutes=N (real minutes), --speed=N (game seconds per real
 ## second, default 8), --rich (tops the cash up to $2M and the stars to 4.6 every morning so the bot reaches the late game),
-## --skip-tutorial, --days=N (stop after N shop days in total), --lang=de|es|fr|en (play in
+## --broke (most mornings start overdrawn, so the angel investor keeps calling), --skip-tutorial, --days=N (stop after N shop days in total), --lang=de|es|fr|en (play in
 ## that language, to catch text that breaks a translation).
 ## Prints "BUG BOT: ..." lines for each finding and exits 1 when it found any.
 
@@ -29,6 +29,7 @@ var rng := RandomNumberGenerator.new()
 var seed_value := 1
 var speed := 8.0
 var rich := false
+var broke := false
 var skip_tutorial := false
 var max_days := 0
 var deadline_msec := 0
@@ -61,6 +62,7 @@ func _ready() -> void:
 	seed_value = int(args.get("seed", 1))
 	speed = float(args.get("speed", 8.0))
 	rich = args.has("rich")
+	broke = args.has("broke")
 	skip_tutorial = args.has("skip-tutorial")
 	max_days = int(args.get("days", 0))
 	deadline_msec = Time.get_ticks_msec() + int(float(args.get("minutes", 5.0)) * 60000.0)
@@ -82,7 +84,7 @@ func _ready() -> void:
 	Engine.time_scale = speed
 	Day.phase_changed.connect(_on_phase)
 	SaveGame.new_game_started.connect(func(): _new_shop = true)
-	print("BUG BOT seed %d, speed %.0fx%s%s, %s" % [seed_value, speed, ", rich" if rich else "", ", no tutorial" if skip_tutorial else "", TranslationServer.get_locale()])
+	print("BUG BOT seed %d, speed %.0fx%s%s, %s" % [seed_value, speed, ", rich" if rich else (", broke" if broke else ""), ", no tutorial" if skip_tutorial else "", TranslationServer.get_locale()])
 	# stay alive across scene changes: hand the current scene slot to the game
 	get_tree().current_scene = null
 	get_tree().change_scene_to_file.call_deferred(TitleScene)
@@ -309,11 +311,14 @@ func _on_phase(phase: String) -> void:
 	# a rich shop gets topped up every morning, since burglars take cash left out of the safes
 	if rich and phase == Day.MORNING:
 		_top_up.call_deferred()
+	# before the morning starts, so the investor sees an overdrawn shop
+	if broke and phase == Day.MORNING and Shop.day > 1 and not Investor.has_deal() and rng.randf() < 0.7:
+		Shop.cash = -rng.randf_range(200.0, 6000.0)
 	if phase == Day.AFTER_HOURS:
 		days_played += 1
 		if days_played % 5 == 0:
-			print("BUG BOT progress: %d days, %d actions, %d loads checked, day %d, tier %d, cash %s" % [
-				days_played, actions, loads_checked, Shop.day, Progress.tier, Market.format_money(Shop.cash)])
+			print("BUG BOT progress: %d days, %d actions, %d loads checked, day %d, tier %d, cash %s, investor stakes %d" % [
+				days_played, actions, loads_checked, Shop.day, Progress.tier, Market.format_money(Shop.cash), Investor.deals])
 
 
 ## Something should change every so often: the clock, the day, the phase, the screen.
