@@ -919,6 +919,8 @@ func _build_achievements() -> void:
 	_title("Achievements")
 	_text(tr("%d of %d earned. Hover one to see how to earn it.") % [Records.earned.size(), Records.ACHIEVEMENTS.size()], Pal.INK_DIM)
 	_gap()
+	# the list outgrows the panel: it scrolls, and Back stays in reach
+	var outer := _begin_scroll()
 	var grid := _grid()
 	for id in Records.ACHIEVEMENTS:
 		var a: Dictionary = Records.ACHIEVEMENTS[id]
@@ -935,7 +937,7 @@ func _build_achievements() -> void:
 		label.mouse_entered.connect(func():
 			if is_instance_valid(_hint):
 				_hint.text = desc)
-	_spacer()
+	_end_scroll(outer)
 	_hint = _text("", Pal.INK)
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint.custom_minimum_size = Vector2(0, 17)

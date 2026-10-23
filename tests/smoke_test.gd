@@ -56,6 +56,7 @@ func _ready() -> void:
 	_check_investor()
 	_check_bank()
 	await _check_decor()
+	await _check_shop_cat()
 	await _check_demo()
 	_check_settings()
 	_check_localization()
@@ -387,7 +388,7 @@ func _check_customers() -> void:
 
 
 func _check_shop_sounds() -> void:
-	var streams := [Sfx.door_bell(), Sfx.register_chime(), ShopSfx.service_bell(), ShopSfx.sparkle(), ShopSfx.wrong(), ShopSfx.whoosh()]
+	var streams := [Sfx.door_bell(), Sfx.register_chime(), ShopSfx.service_bell(), ShopSfx.sparkle(), ShopSfx.wrong(), ShopSfx.whoosh(), ShopSfx.purr(), ShopSfx.mrrp()]
 	for take in 3:
 		streams.append(ShopSfx.coin_clink(take))
 	for mood in ShopSfx.MOODS:
@@ -2407,6 +2408,83 @@ func _check_decor() -> void:
 	await get_tree().process_frame
 	expect(not panel.is_open() and shop.hud._panels.page == "upgrades" and not shop.room.decorating, "Esc closes it back to the upgrades page")
 	expect(not shop._pause.visible, "Esc while decorating doesn't open the pause menu")
+	shop.queue_free()
+	await get_tree().process_frame
+	SaveGame.new_game()
+
+
+## The shop cat: point at it for a hand, click to pet it (purr, hearts, a happy face),
+## hold to keep petting, and the pad's d-pad stops at it.
+func _check_shop_cat() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	var shop: Node = load("res://scenes/shop/shop.tscn").instantiate()
+	add_child(shop)
+	await get_tree().process_frame
+	var cats: Array = shop.hud.find_children("*", "ShopCat", false, false)
+	expect(cats.size() == 1, "the shop has a button over the cat")
+	if cats.is_empty():
+		shop.queue_free()
+		return
+	var cat: ShopCat = cats[0]
+	var r: Rect2 = cat.get_global_rect()
+	expect(r.encloses(Rect2(shop.room.cat_rect().position + shop.room.position, shop.room.cat_rect().size)), "the button covers the cat (%s)" % r)
+	expect(Rect2(Vector2.ZERO, Vector2(ShopArt.SIZE)).encloses(r), "the cat is on the shop floor")
+	expect(cat.mouse_default_cursor_shape == Control.CURSOR_POINTING_HAND and cat.tooltip_text == "Pet the cat", "pointing at the cat shows a hand and says so")
+	expect(cat.get_index() == 0, "the morning panel and the benches sit over the cat")
+	shop.hud.hide_panels()
+	Day.phase = Day.OPEN
+	await get_tree().process_frame
+	var found := false
+	for t in Pad.targets():
+		found = found or t.node == cat
+	expect(found, "the pad's d-pad can reach the cat")
+	expect(not shop.room.cat_is_happy(), "the cat starts asleep")
+	var before := int(Records.totals.cat_pets)
+	var at: Vector2 = get_tree().root.get_final_transform() * r.get_center()
+	var move := InputEventMouseMotion.new()
+	move.position = at
+	move.global_position = at
+	Input.parse_input_event(move)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	expect(shop.room.cat_hover, "pointing at the cat shows the petting hand")
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	click.position = at
+	click.global_position = at
+	Input.parse_input_event(click)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	expect(shop.room.cat_is_happy() and shop.room._cat_hearts.size() == 1, "a click pets the cat: a happy face and a heart")
+	expect(cat._purr.playing, "the cat purrs")
+	expect(int(Records.totals.cat_pets) == before + 1, "a stroke is counted")
+	# holding the button keeps stroking
+	await get_tree().create_timer(ShopCat.STROKE_EVERY * 2.5).timeout
+	expect(int(Records.totals.cat_pets) >= before + 3, "holding the button keeps petting (%d strokes)" % (int(Records.totals.cat_pets) - before))
+	var release: InputEventMouseButton = click.duplicate()
+	release.pressed = false
+	Input.parse_input_event(release)
+	await get_tree().process_frame
+	var held := int(Records.totals.cat_pets)
+	await get_tree().create_timer(ShopCat.STROKE_EVERY * 1.5).timeout
+	expect(int(Records.totals.cat_pets) == held, "letting go stops the petting")
+	await get_tree().create_timer(2.0).timeout
+	expect(not shop.room.cat_is_happy() and shop.room._cat_hearts.is_empty(), "the cat dozes off again")
+	while int(Records.totals.cat_pets) < 30:
+		cat.stroke()
+	expect(Records.is_earned("cat_person"), "30 strokes earn Cat person")
+	# every achievement, Cat person too, fits the page: the list scrolls and Back stays put
+	shop.hud._panels.show_ledger()
+	shop.hud._panels.show_achievements()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	for b in shop.hud._panels.find_children("*", "Button", true, false):
+		expect(Rect2(DayPanels.AREA).encloses(b.get_global_rect()), "achievements %s button stays on the panel (%s)" % [b.text, b.get_global_rect()])
+	move.position = Vector2.ZERO
+	move.global_position = Vector2.ZERO
+	Input.parse_input_event(move)
 	shop.queue_free()
 	await get_tree().process_frame
 	SaveGame.new_game()

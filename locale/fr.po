@@ -1363,6 +1363,10 @@ msgid "Cast 10 bars at the smelter."
 msgstr "Coulez 10 lingots à la fonderie."
 
 #: autoload/records.gd
+msgid "Cat person"
+msgstr "Ami des chats"
+
+#: autoload/records.gd
 msgid "Catch 100 fakes."
 msgstr "Démasquez 100 faux."
 
@@ -1549,6 +1553,10 @@ msgstr "Rembourse un prêt bancaire."
 #: autoload/records.gd
 msgid "Pay off an angel investor, or buy out their stake."
 msgstr "Rembourse une investisseuse ou rachète sa part."
+
+#: autoload/records.gd
+msgid "Pet the shop cat 30 times."
+msgstr "Caresse le chat de la boutique 30 fois."
 
 #: autoload/records.gd
 msgid "Reach 4 stars of reputation."
@@ -5381,6 +5389,10 @@ msgstr "pièce"
 #: scenes/shop/shop.gd
 msgid "the stone was %s"
 msgstr "la pierre était en %s"
+
+#: scenes/shop/shop_cat.gd
+msgid "Pet the cat"
+msgstr "Caresser le chat"
 
 #: scenes/shop/shop_room.gd
 msgid "AG"

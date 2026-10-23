@@ -44,6 +44,11 @@ var _left_at := {}
 var decorating := false
 var held := ""
 var hover_spot := -1
+## The pointer is on the cat (ShopCat), which shows a hand over it.
+var cat_hover := false
+## Seconds the cat stays awake and happy after its last stroke, and the hearts floating up.
+var _cat_happy := 0.0
+var _cat_hearts: Array = []
 
 
 func _ready() -> void:
@@ -67,7 +72,26 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	_cat_happy = maxf(_cat_happy - delta, 0.0)
+	for h in _cat_hearts:
+		h[0] += delta
+	_cat_hearts = _cat_hearts.filter(func(h): return h[0] < 1.4)
 	queue_redraw()
+
+
+## One stroke of the cat: it wakes up happy for a moment and a heart floats up.
+func pet_cat() -> void:
+	_cat_happy = 1.8
+	_cat_hearts.append([0.0, randf_range(-3.0, 3.0)])
+
+
+func cat_is_happy() -> bool:
+	return _cat_happy > 0.0
+
+
+## The cat on screen, in room pixels, for the button over it.
+func cat_rect() -> Rect2:
+	return ShopAmbience.cat_rect(_iso)
 
 
 func screen_pos(i: float, j: float, z := 0.0) -> Vector2:
@@ -114,7 +138,10 @@ func _draw() -> void:
 	draw_texture(_front[dusk > 0.5], Vector2.ZERO)
 	draw_texture(_case_stock, Vector2.ZERO)
 	draw_texture(_glass, Vector2.ZERO)
-	ShopAmbience.draw_cat(self, _iso, _cat, _time)
+	ShopAmbience.draw_cat(self, _iso, _cat, _time, _cat_happy)
+	ShopAmbience.draw_cat_hearts(self, _iso, _cat_hearts)
+	if cat_hover and _cat_happy <= 0.0:
+		ShopAmbience.draw_pet_prompt(self, _iso, _time)
 	_draw_customers()
 	if decorating:
 		_draw_spots()
