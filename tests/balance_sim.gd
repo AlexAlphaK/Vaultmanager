@@ -118,7 +118,7 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 		"premium_income": 0.0, "lowest_cash": Shop.cash, "losses": {}, "gains": {}, "short_cash": 0, "out_of_stock": 0, "walked_by": 0,
 		"holdups": 0, "robbers_stopped": 0, "restocked": 0.0, "lost_to_rivals": 0, "tip_offs": 0, "rank": [],
 		"orders_taken": 0, "orders_filled": 0, "orders_failed": 0, "dealer": 0.0, "chapter_day": [-1, -1, -1, -1, -1],
-		"town_served": {}, "booths": 0, "investor_deals": 0, "investor_day": -1}
+		"town_served": {}, "booths": 0, "investor_deals": 0, "investor_day": -1, "line_peak": 0.0}
 	for d in days:
 		_morning(out)
 		_play_day(out)
@@ -150,6 +150,11 @@ func _morning(out: Dictionary) -> void:
 			out.investor_day = Shop.day
 	elif bot != BOTS.novice and Investor.has_deal() and Shop.cash - Investor.owed() >= (Progress.weekly_rent() + 8000.0) * bot.buffer:
 		Investor.buy_out()
+	# every bot leaves the bank's credit line to cover overdrafts at night, and pays it back
+	# from the cash it can spare in the morning
+	var spare: float = Shop.cash - (Progress.weekly_rent() + 5000.0) * bot.buffer
+	if Bank.line > 0.0 and spare > 0.0:
+		Bank.repay(minf(spare, Bank.repayable()))
 	# move up first, then spend what's left on upgrades
 	if Progress.expand_blocker() == "":
 		var next := Progress.tier_info(Progress.tier + 1)
@@ -506,6 +511,9 @@ func _tally(out: Dictionary, report: Dictionary, bot_name: String, seed: int) ->
 			_add(out.gains, "investor stakes", e.usd)
 		elif e.label in ["Investor's share", "Investor buy-out"]:
 			_add(out.losses, "paid to investor", -e.usd)
+		elif e.label in ["Credit line interest", "Late fee"]:
+			_add(out.losses, "bank interest and fees", -e.usd)
+	out.line_peak = maxf(out.line_peak, Bank.line)
 	var town := Calendar.event_on(Shop.day)
 	if not town.is_empty() and Calendar.last_day(town) == Shop.day:
 		_add(out.town_served, town.id, Calendar.served.get(town.id, 0))
@@ -574,6 +582,9 @@ func _print_summary(name: String, results: Array, days: int) -> void:
 	backed.sort()
 	print("  per run: %.1f angel investor stakes; %d/%d runs took one%s" % [_sum(results, "investor_deals") / n, backed.size(), results.size(),
 		"" if backed.is_empty() else " (first on median day %d)" % backed[backed.size() / 2]])
+	var drew := results.filter(func(r): return r.line_peak > 0.0)
+	print("  per run: %d/%d runs drew on the bank's credit line (average peak %s)" % [drew.size(), results.size(),
+		Market.format_money(_sum(drew, "line_peak") / maxf(1.0, drew.size()))])
 	var passed := []
 	for t in [7, 14, 30, 60, days]:
 		var ranks := results.map(func(r): return r.rank[mini(t, r.rank.size()) - 1])

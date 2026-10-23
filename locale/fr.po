@@ -4,6 +4,58 @@ msgstr ""
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: autoload/bank.gd
+msgid "%.2f%% a night"
+msgstr "%.2f%% par nuit"
+
+#: autoload/bank.gd
+msgid "Bank loan"
+msgstr "Prêt bancaire"
+
+#: autoload/bank.gd
+msgid "Credit line covered the overdraft"
+msgstr "La ligne a couvert le découvert"
+
+#: autoload/bank.gd
+msgid "Credit line draw"
+msgstr "Tirage sur la ligne"
+
+#: autoload/bank.gd
+msgid "Credit line interest"
+msgstr "Intérêts de la ligne"
+
+#: autoload/bank.gd
+msgid "Credit line repaid"
+msgstr "Ligne remboursée"
+
+#: autoload/bank.gd
+msgid "Late fee"
+msgstr "Pénalité de retard"
+
+#: autoload/bank.gd
+msgid "Loan paid off"
+msgstr "Prêt soldé"
+
+#: autoload/bank.gd
+msgid "Loan payment"
+msgstr "Échéance du prêt"
+
+#: autoload/bank.gd
+msgid "The bank lent you %s, paid back over %d days."
+msgstr "La banque t'a prêté %s, à rembourser sur %d jours."
+
+#: autoload/bank.gd
+msgid "The bank moved your credit rating from %s to %s."
+msgstr "La banque a fait passer ta note de %s à %s."
+
+#: autoload/bank.gd
+msgid "You couldn't cover tonight's loan payment. The bank took it anyway, with a late fee."
+msgstr "Tu n'as pas pu couvrir l'échéance de ce soir. La banque l'a prise quand même, avec une pénalité."
+
+#: autoload/bank.gd
+msgid "Your bank loan is paid off. Your credit rating is %s."
+msgstr "Ton prêt est soldé. Ta note de crédit est %s."
+
 #: autoload/calendar.gd
 msgid "%d more day"
 msgid_plural "%d more days"
@@ -1147,6 +1199,10 @@ msgid "Clean books"
 msgstr "Comptes propres"
 
 #: autoload/records.gd
+msgid "Clean slate"
+msgstr "Ardoise effacée"
+
+#: autoload/records.gd
 msgid "Close 100 deals, buying or selling."
 msgstr "Concluez 100 affaires, achat ou vente."
 
@@ -1161,6 +1217,10 @@ msgstr "Ami des collectionneurs"
 #: autoload/records.gd
 msgid "Eagle eye"
 msgstr "Oeil de lynx"
+
+#: autoload/records.gd
+msgid "Earn an A credit rating at the bank."
+msgstr "Obtiens la note A à la banque."
 
 #: autoload/records.gd
 msgid "End a day worth more than Lucky's Pawn & Loan."
@@ -1213,6 +1273,10 @@ msgstr "Bon citoyen"
 #: autoload/records.gd
 msgid "Good day"
 msgstr "Bonne journée"
+
+#: autoload/records.gd
+msgid "Good for it"
+msgstr "Solvable"
 
 #: autoload/records.gd
 msgid "Grade 10 coins spot on for collectors."
@@ -1289,6 +1353,10 @@ msgstr "Seul maître à bord"
 #: autoload/records.gd
 msgid "Part of the family"
 msgstr "De la famille"
+
+#: autoload/records.gd
+msgid "Pay off a bank loan."
+msgstr "Rembourse un prêt bancaire."
 
 #: autoload/records.gd
 msgid "Pay off an angel investor, or buy out their stake."
@@ -1384,7 +1452,7 @@ msgstr[1] "%d clients sont allés chez la concurrence (%s). Voyez le plan de la 
 msgid "%d to %s"
 msgstr "%d chez %s"
 
-#: autoload/rivals.gd
+#: autoload/rivals.gd scenes/shop/day_panels.gd
 msgid "%s (%d day left)"
 msgid_plural "%s (%d days left)"
 msgstr[0] "%s (encore %d jour)"
@@ -3095,6 +3163,10 @@ msgid "%s a day%s"
 msgstr "%s par jour%s"
 
 #: scenes/shop/day_panels.gd
+msgid "%s a night"
+msgstr "%s par nuit"
+
+#: scenes/shop/day_panels.gd
 msgid "%s asks for a raise of %s a day."
 msgstr "%s demande une augmentation de %s par jour."
 
@@ -3109,6 +3181,14 @@ msgstr "%s baisse de %.1f%%. Les chasseurs d'affaires seront de sortie."
 #: scenes/shop/day_panels.gd
 msgid "%s is up %.1f%%. Expect more sellers cashing in."
 msgstr "%s monte de %.1f%%. Attendez-vous à plus de vendeurs."
+
+#: scenes/shop/day_panels.gd
+msgid "%s of %s"
+msgstr "%s sur %s"
+
+#: scenes/shop/day_panels.gd
+msgid "%s over %d days"
+msgstr "%s sur %d jours"
 
 #: scenes/shop/day_panels.gd
 msgid "%s to move up."
@@ -3177,6 +3257,10 @@ msgid "An angel investor"
 msgstr "Une investisseuse"
 
 #: scenes/shop/day_panels.gd
+msgid "At night the line clears an overdraft, at the line's rate instead of the overdraft's."
+msgstr "La nuit, la ligne couvre le découvert, à son taux et non à celui du découvert."
+
+#: scenes/shop/day_panels.gd
 msgid "At work"
 msgstr "Au travail"
 
@@ -3187,6 +3271,14 @@ msgstr "MEILLEURES JOURNÉES"
 #: scenes/shop/day_panels.gd
 msgid "BILLS"
 msgstr "FACTURES"
+
+#: scenes/shop/day_panels.gd
+msgid "Bank"
+msgstr "Banque"
+
+#: scenes/shop/day_panels.gd
+msgid "Bank payments tonight"
+msgstr "Paiements à la banque ce soir"
 
 #: scenes/shop/day_panels.gd
 msgid "Beat Sterling"
@@ -3207,6 +3299,10 @@ msgstr "Stand "
 #: scenes/shop/day_panels.gd
 msgid "Booth booked"
 msgstr "Stand réservé"
+
+#: scenes/shop/day_panels.gd
+msgid "Borrow"
+msgstr "Emprunter"
 
 #: scenes/shop/day_panels.gd
 msgid "Bought from customers"
@@ -3249,6 +3345,10 @@ msgid "CHAPTERS"
 msgstr "CHAPITRES"
 
 #: scenes/shop/day_panels.gd
+msgid "CREDIT LINE"
+msgstr "LIGNE DE CRÉDIT"
+
+#: scenes/shop/day_panels.gd
 msgid "Cash %s. Hover an upgrade to see what it does."
 msgstr "Liquide %s. Survolez une amélioration pour voir son effet."
 
@@ -3289,6 +3389,18 @@ msgid "Collectors' special orders and the dealer network."
 msgstr "Commandes spéciales des collectionneurs et réseau de négociants."
 
 #: scenes/shop/day_panels.gd
+msgid "Cover overdrafts: off"
+msgstr "Couvrir découvert : non"
+
+#: scenes/shop/day_panels.gd
+msgid "Cover overdrafts: on"
+msgstr "Couvrir découvert : oui"
+
+#: scenes/shop/day_panels.gd
+msgid "Credit rating %s. Pay on time and the bank lends more, for less."
+msgstr "Note de crédit %s. Paie à temps et la banque te prêtera plus, pour moins cher."
+
+#: scenes/shop/day_panels.gd
 msgid "DEALER NETWORK"
 msgstr "RÉSEAU DE NÉGOCIANTS"
 
@@ -3309,6 +3421,14 @@ msgstr "Les négociants prennent l'essentiel de la prime du collectionneur. Les 
 #: scenes/shop/day_panels.gd
 msgid "Deals closed (buys / sales)"
 msgstr "Affaires (achats / ventes)"
+
+#: scenes/shop/day_panels.gd
+msgid "Draw %s"
+msgstr "Tirer %s"
+
+#: scenes/shop/day_panels.gd
+msgid "Drawn"
+msgstr "Utilisé"
 
 #: scenes/shop/day_panels.gd
 msgid "Due"
@@ -3383,6 +3503,14 @@ msgid "In return"
 msgstr "En retour"
 
 #: scenes/shop/day_panels.gd
+msgid "Interest"
+msgstr "Intérêts"
+
+#: scenes/shop/day_panels.gd
+msgid "Interest paid to the bank"
+msgstr "Intérêts payés à la banque"
+
+#: scenes/shop/day_panels.gd
 msgid "Investor"
 msgstr "Investisseuse"
 
@@ -3395,12 +3523,20 @@ msgid "Keep trading: the town is yours."
 msgstr "Continuez à commercer : la ville est à vous."
 
 #: scenes/shop/day_panels.gd
+msgid "LOAN"
+msgstr "PRÊT"
+
+#: scenes/shop/day_panels.gd
 msgid "Ledger"
 msgstr "Registre"
 
 #: scenes/shop/day_panels.gd
 msgid "Left"
 msgstr "Reste"
+
+#: scenes/shop/day_panels.gd
+msgid "Left to pay"
+msgstr "Reste à payer"
 
 #: scenes/shop/day_panels.gd
 msgid "Let go"
@@ -3473,6 +3609,10 @@ msgstr[0] "Prochain loyer et assurance dans %d jour."
 msgstr[1] "Prochain loyer et assurance dans %d jours."
 
 #: scenes/shop/day_panels.gd
+msgid "Nightly payment"
+msgstr "Échéance par nuit"
+
+#: scenes/shop/day_panels.gd
 msgid "Nobody holds a stake in your shop."
 msgstr "Personne n'a de part dans ta boutique."
 
@@ -3517,6 +3657,10 @@ msgid "Pay her what she is still owed and keep all your profit from now on."
 msgstr "Paie-lui ce qui lui reste dû et garde tout ton bénéfice désormais."
 
 #: scenes/shop/day_panels.gd
+msgid "Pay off %s"
+msgstr "Solder %s"
+
+#: scenes/shop/day_panels.gd
 msgid "Pays %s in all on delivery."
 msgstr "Paie %s au total à la livraison."
 
@@ -3545,6 +3689,10 @@ msgstr "Loyer %s par semaine. Plus de clients, de plus grosses affaires et plus 
 #: scenes/shop/day_panels.gd
 msgid "Rent and insurance"
 msgstr "Loyer et assurance"
+
+#: scenes/shop/day_panels.gd
+msgid "Repay %s"
+msgstr "Rendre %s"
 
 #: scenes/shop/day_panels.gd
 msgid "Reputation"
@@ -3633,6 +3781,14 @@ msgstr "Accepter"
 #: scenes/shop/day_panels.gd
 msgid "Tell Detective Ruiz about Lucky's stolen goods. A raid shuts the pawn shop for %d days."
 msgstr "Parlez au détective Ruiz des objets volés de Lucky's. Une descente ferme le prêteur sur gages %d jours."
+
+#: scenes/shop/day_panels.gd
+msgid "The bank"
+msgstr "La banque"
+
+#: scenes/shop/day_panels.gd
+msgid "The bank won't lend at a D rating. Stay out of the red to win back its trust."
+msgstr "Avec la note D, la banque ne prête pas. Reste hors du rouge pour regagner sa confiance."
 
 #: scenes/shop/day_panels.gd
 msgid "The desk has traded today. Back tomorrow morning."
@@ -3729,6 +3885,10 @@ msgstr "VOUS AVEZ LA PLUS GRANDE BOUTIQUE DE LA VILLE"
 #: scenes/shop/day_panels.gd
 msgid "You run the biggest precious metal store in town. Mags tells everyone she taught you all you know, and Victor Sterling buys his scrap from you now."
 msgstr "Vous tenez la plus grande boutique de métaux précieux de la ville. Mags raconte à tout le monde qu'elle vous a tout appris, et Victor Sterling vous achète sa casse."
+
+#: scenes/shop/day_panels.gd
+msgid "Your credit line, bank loans and credit rating."
+msgstr "Ta ligne de crédit, tes prêts et ta note de crédit."
 
 #: scenes/shop/day_panels.gd
 msgid "Your table at the coin show %s."

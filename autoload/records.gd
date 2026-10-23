@@ -48,6 +48,8 @@ const ACHIEVEMENTS := {
 	"gift_rush": {"name": "Season's greetings", "desc": "Serve 40 gift shoppers in one holiday rush.", "key": "gift_best", "goal": 40},
 	"smelter_10": {"name": "Hot metal", "desc": "Cast 10 bars at the smelter.", "key": "bars_cast", "goal": 10},
 	"investor_out": {"name": "Own it outright", "desc": "Pay off an angel investor, or buy out their stake.", "key": "investors_repaid", "goal": 1},
+	"loan_repaid": {"name": "Clean slate", "desc": "Pay off a bank loan.", "key": "loans_repaid", "goal": 1},
+	"credit_a": {"name": "Good for it", "desc": "Earn an A credit rating at the bank.", "key": "credit_score", "goal": 80},
 	"grader_10": {"name": "Eagle eye", "desc": "Grade 10 coins spot on for collectors.", "key": "graded_exact", "goal": 10},
 }
 
@@ -141,6 +143,10 @@ func value_of(key: String) -> float:
 			return Calendar.booths
 		"investors_repaid":
 			return Investor.repaid
+		"loans_repaid":
+			return Bank.loans_repaid
+		"credit_score":
+			return Bank.best_score
 		"gift_best":
 			return Calendar.best_of("gift_rush")
 		"chapters":

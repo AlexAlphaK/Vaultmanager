@@ -3,7 +3,7 @@ extends PanelContainer
 ## The panels over the shop floor between shop hours: the morning briefing, the
 ## upgrades, staff and expansion page, the floor plan where rooms are built, the town
 ## map with the rival shops, the staff and how they are getting on, the collectors' special orders, the story's chapter and goals,
-## the angel investor's offer and stake, the ledger of records and achievements, and the end-of-day summary. Rebuilt each time one opens.
+## the angel investor's offer and stake, the bank's credit line and loans, the ledger of records and achievements, and the end-of-day summary. Rebuilt each time one opens.
 
 signal open_requested
 signal next_day_requested
@@ -14,7 +14,7 @@ signal smelter_requested
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
-var page := "" # "morning", "upgrades", "staff", "plan", "wholesale", "town", "orders", "story", "investor", "ledger", "achievements", "summary" or "" when hidden
+var page := "" # "morning", "upgrades", "staff", "plan", "wholesale", "town", "orders", "story", "investor", "bank", "ledger", "achievements", "summary" or "" when hidden
 ## The morning's Open the shop button, for the tutorial to point at.
 var open_button: Button
 var _box: VBoxContainer
@@ -40,6 +40,7 @@ func _ready() -> void:
 	Calendar.changed.connect(_refresh_page)
 	Story.changed.connect(_refresh_page)
 	Investor.changed.connect(_refresh_page)
+	Bank.changed.connect(_refresh_page)
 
 
 func hide_panel() -> void:
@@ -99,6 +100,11 @@ func show_investor() -> void:
 	_build_investor()
 
 
+func show_bank() -> void:
+	page = "bank"
+	_build_bank()
+
+
 func show_ledger() -> void:
 	page = "ledger"
 	_build_ledger()
@@ -134,6 +140,8 @@ func _refresh_page() -> void:
 		_build_story()
 	elif page == "investor":
 		_build_investor()
+	elif page == "bank":
+		_build_bank()
 	elif page == "ledger":
 		_build_ledger()
 	elif page == "achievements":
@@ -175,9 +183,19 @@ func _build_morning() -> void:
 	if Story.synced and not Story.is_finished():
 		_text(tr("%s · %d/%d goals") % [Story.chapter_title(), Story.goals_met_count(), Story.current().goals.size()], Pal.GOLD)
 	_gap()
-	_heading("BILLS")
+	# the bank's button sits by the bills: the button rows below are full
+	var bills := HBoxContainer.new()
+	_box.add_child(bills)
+	var heading := _heading("BILLS")
+	heading.reparent(bills)
+	heading.custom_minimum_size.x = 0.0
+	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_button(bills, tr("Bank") + (" !" if Shop.cash < 0.0 else ""), "Button", show_bank).tooltip_text = \
+		"Your credit line, bank loans and credit rating."
 	var grid := _grid()
 	_pair(grid, "Upkeep tonight", Market.format_money(Progress.daily_upkeep()))
+	if Bank.due_tonight() > 0.0:
+		_pair(grid, "Bank payments tonight", Market.format_money(Bank.due_tonight()))
 	if not Staff.hired.is_empty():
 		_pair(grid, "Staff wages tonight", Market.format_money(Staff.daily_wages()))
 	var weekly := 0.0
@@ -770,6 +788,60 @@ func _build_investor() -> void:
 		out.tooltip_text = "Pay her what she is still owed and keep all your profit from now on."
 
 
+# ---------------------------------------------------------------- bank
+
+func _build_bank() -> void:
+	_clear()
+	_title("The bank")
+	_text(tr("Credit rating %s. Pay on time and the bank lends more, for less.") % Bank.grade(),
+		Pal.GOOD if Bank.grade() == "A" else Pal.BAD if Bank.grade() == "D" else Pal.INK_DIM)
+	_gap()
+	_heading("CREDIT LINE")
+	var grid := _grid()
+	_pair(grid, "Drawn", tr("%s of %s") % [Market.format_money(Bank.line), Market.format_money(Bank.line_limit())],
+		Pal.WARN if Bank.line > 0.0 else Pal.INK)
+	_pair(grid, "Interest", Bank.rate_text(Bank.line_rate()), Pal.INK_DIM)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	_box.add_child(row)
+	var take := minf(Bank.step(), Bank.headroom())
+	var draw := _button(row, tr("Draw %s") % Market.format_money(take), "Button", func(): Bank.draw(take))
+	draw.disabled = not Bank.can_draw(take)
+	var back := minf(Bank.step(), Bank.repayable())
+	var repay := _button(row, tr("Repay %s") % Market.format_money(back), "Button", func(): Bank.repay(back))
+	repay.disabled = not Bank.can_repay(back)
+	var cover := _button(row, tr("Cover overdrafts: on") if Bank.auto_cover else tr("Cover overdrafts: off"), "Button", func():
+		Bank.auto_cover = not Bank.auto_cover
+		_build_bank())
+	cover.tooltip_text = "At night the line clears an overdraft, at the line's rate instead of the overdraft's."
+	_gap()
+	_heading("LOAN")
+	if Bank.has_loan():
+		var l := Bank.loan
+		var lg := _grid()
+		_pair(lg, "Left to pay", Market.format_money(float(l.balance)), Pal.GOLD)
+		_pair(lg, "Nightly payment", tr_n("%s (%d day left)", "%s (%d days left)", int(l.days_left)) % [
+			Market.format_money(Bank.loan_payment()), int(l.days_left)])
+		var off := _button(_box, tr("Pay off %s") % Market.format_money(float(l.balance)), "Button", func(): Bank.pay_off())
+		off.disabled = not Bank.can_pay_off()
+		off.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	elif Bank.offers().is_empty():
+		_text("The bank won't lend at a D rating. Stay out of the red to win back its trust.", Pal.INK_FAINT)
+	else:
+		var offers := _grid(3)
+		var list := Bank.offers()
+		for i in list.size():
+			var o: Dictionary = list[i]
+			_shrinkable(_cell(offers, tr("%s over %d days") % [Market.format_money(o.amount), o.term], Pal.INK))
+			_cell(offers, tr("%s a night") % Market.format_money(o.payment), Pal.INK_DIM).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			var b := _button(offers, "Borrow", "Button", func(): Bank.borrow(i))
+			b.disabled = not Bank.can_borrow()
+	_spacer()
+	var bottom := HBoxContainer.new()
+	_box.add_child(bottom)
+	_button(bottom, "Back", "Button", show_morning)
+
+
 # ---------------------------------------------------------------- ledger
 
 func _build_ledger() -> void:
@@ -785,6 +857,8 @@ func _build_ledger() -> void:
 	var profit := Records.total("profit")
 	_pair(grid, "Lifetime profit", Market.format_money(profit), Pal.GOOD if profit >= 0.0 else Pal.BAD)
 	_pair(grid, "Fakes caught / missed", "%d / %d (%d%%)" % [Records.total("caught"), Records.total("scammed"), roundi(Records.catch_rate() * 100.0)])
+	if Bank.interest_paid > 0.0:
+		_pair(grid, "Interest paid to the bank", Market.format_money(Bank.interest_paid), Pal.WARN)
 	if Investor.total_paid > 0.0:
 		_pair(grid, "Paid to investors", Market.format_money(Investor.total_paid), Pal.WARN)
 	_pair(grid, "Lost to thieves", Market.format_money(Records.total("stolen")), Pal.BAD if Records.total("stolen") > 0.0 else Pal.INK)

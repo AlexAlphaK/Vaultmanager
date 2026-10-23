@@ -2,6 +2,58 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+#: autoload/bank.gd
+msgid "%.2f%% a night"
+msgstr ""
+
+#: autoload/bank.gd
+msgid "Bank loan"
+msgstr ""
+
+#: autoload/bank.gd
+msgid "Credit line covered the overdraft"
+msgstr ""
+
+#: autoload/bank.gd
+msgid "Credit line draw"
+msgstr ""
+
+#: autoload/bank.gd
+msgid "Credit line interest"
+msgstr ""
+
+#: autoload/bank.gd
+msgid "Credit line repaid"
+msgstr ""
+
+#: autoload/bank.gd
+msgid "Late fee"
+msgstr ""
+
+#: autoload/bank.gd
+msgid "Loan paid off"
+msgstr ""
+
+#: autoload/bank.gd
+msgid "Loan payment"
+msgstr ""
+
+#: autoload/bank.gd
+msgid "The bank lent you %s, paid back over %d days."
+msgstr ""
+
+#: autoload/bank.gd
+msgid "The bank moved your credit rating from %s to %s."
+msgstr ""
+
+#: autoload/bank.gd
+msgid "You couldn't cover tonight's loan payment. The bank took it anyway, with a late fee."
+msgstr ""
+
+#: autoload/bank.gd
+msgid "Your bank loan is paid off. Your credit rating is %s."
+msgstr ""
+
 #: autoload/calendar.gd
 msgid "%d more day"
 msgid_plural "%d more days"
@@ -1145,6 +1197,10 @@ msgid "Clean books"
 msgstr ""
 
 #: autoload/records.gd
+msgid "Clean slate"
+msgstr ""
+
+#: autoload/records.gd
 msgid "Close 100 deals, buying or selling."
 msgstr ""
 
@@ -1158,6 +1214,10 @@ msgstr ""
 
 #: autoload/records.gd
 msgid "Eagle eye"
+msgstr ""
+
+#: autoload/records.gd
+msgid "Earn an A credit rating at the bank."
 msgstr ""
 
 #: autoload/records.gd
@@ -1210,6 +1270,10 @@ msgstr ""
 
 #: autoload/records.gd
 msgid "Good day"
+msgstr ""
+
+#: autoload/records.gd
+msgid "Good for it"
 msgstr ""
 
 #: autoload/records.gd
@@ -1286,6 +1350,10 @@ msgstr ""
 
 #: autoload/records.gd
 msgid "Part of the family"
+msgstr ""
+
+#: autoload/records.gd
+msgid "Pay off a bank loan."
 msgstr ""
 
 #: autoload/records.gd
@@ -1382,7 +1450,7 @@ msgstr[1] ""
 msgid "%d to %s"
 msgstr ""
 
-#: autoload/rivals.gd
+#: autoload/rivals.gd scenes/shop/day_panels.gd
 msgid "%s (%d day left)"
 msgid_plural "%s (%d days left)"
 msgstr[0] ""
@@ -3093,6 +3161,10 @@ msgid "%s a day%s"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
+msgid "%s a night"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
 msgid "%s asks for a raise of %s a day."
 msgstr ""
 
@@ -3106,6 +3178,14 @@ msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "%s is up %.1f%%. Expect more sellers cashing in."
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "%s of %s"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "%s over %d days"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
@@ -3175,6 +3255,10 @@ msgid "An angel investor"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
+msgid "At night the line clears an overdraft, at the line's rate instead of the overdraft's."
+msgstr ""
+
+#: scenes/shop/day_panels.gd
 msgid "At work"
 msgstr ""
 
@@ -3184,6 +3268,14 @@ msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "BILLS"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Bank"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Bank payments tonight"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
@@ -3204,6 +3296,10 @@ msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "Booth booked"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Borrow"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
@@ -3247,6 +3343,10 @@ msgid "CHAPTERS"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
+msgid "CREDIT LINE"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
 msgid "Cash %s. Hover an upgrade to see what it does."
 msgstr ""
 
@@ -3287,6 +3387,18 @@ msgid "Collectors' special orders and the dealer network."
 msgstr ""
 
 #: scenes/shop/day_panels.gd
+msgid "Cover overdrafts: off"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Cover overdrafts: on"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Credit rating %s. Pay on time and the bank lends more, for less."
+msgstr ""
+
+#: scenes/shop/day_panels.gd
 msgid "DEALER NETWORK"
 msgstr ""
 
@@ -3306,6 +3418,14 @@ msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "Deals closed (buys / sales)"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Draw %s"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Drawn"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
@@ -3381,6 +3501,14 @@ msgid "In return"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
+msgid "Interest"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Interest paid to the bank"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
 msgid "Investor"
 msgstr ""
 
@@ -3393,11 +3521,19 @@ msgid "Keep trading: the town is yours."
 msgstr ""
 
 #: scenes/shop/day_panels.gd
+msgid "LOAN"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
 msgid "Ledger"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "Left"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Left to pay"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
@@ -3471,6 +3607,10 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: scenes/shop/day_panels.gd
+msgid "Nightly payment"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
 msgid "Nobody holds a stake in your shop."
 msgstr ""
 
@@ -3515,6 +3655,10 @@ msgid "Pay her what she is still owed and keep all your profit from now on."
 msgstr ""
 
 #: scenes/shop/day_panels.gd
+msgid "Pay off %s"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
 msgid "Pays %s in all on delivery."
 msgstr ""
 
@@ -3542,6 +3686,10 @@ msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "Rent and insurance"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Repay %s"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
@@ -3630,6 +3778,14 @@ msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "Tell Detective Ruiz about Lucky's stolen goods. A raid shuts the pawn shop for %d days."
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "The bank"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "The bank won't lend at a D rating. Stay out of the red to win back its trust."
 msgstr ""
 
 #: scenes/shop/day_panels.gd
@@ -3726,6 +3882,10 @@ msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "You run the biggest precious metal store in town. Mags tells everyone she taught you all you know, and Victor Sterling buys his scrap from you now."
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Your credit line, bank loans and credit rating."
 msgstr ""
 
 #: scenes/shop/day_panels.gd
