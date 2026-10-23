@@ -211,7 +211,7 @@ func _center(c: Control) -> Vector2:
 func _play_area() -> Rect2:
 	var shop := _shop()
 	if shop:
-		for key in ["_test", "_vault", "_desk", "_smelter"]:
+		for key in ["_test", "_vault", "_desk", "_smelter", "_auction"]:
 			var c = shop.get(key)
 			if c is Control and is_instance_valid(c) and c.is_visible_in_tree():
 				return c.get_global_rect().intersection(Rect2(0, 0, 480, 270))
@@ -331,8 +331,8 @@ func _watch_progress(delta: float) -> void:
 	var sig := _where()
 	if shop and shop.is_node_ready():
 		# in the shop only the game moving on counts, not menus opening and closing
-		sig += "|%d|%s|%d|%d|%s|%s|%s|%s" % [Shop.day, Day.phase, int(shop.time), shop.queue.size(),
-			shop._test != null, shop._vault != null, shop._desk != null, shop._smelter != null]
+		sig += "|%d|%s|%d|%d|%s|%s|%s|%s|%s" % [Shop.day, Day.phase, int(shop.time), shop.queue.size(),
+			shop._test != null, shop._vault != null, shop._desk != null, shop._smelter != null, shop._auction != null]
 	else:
 		sig += "|" + ",".join(_buttons().map(_label))
 	if sig != _signature:
@@ -359,8 +359,8 @@ func _describe() -> String:
 		bits.append("day %d %s, clock %.1f, paused %s, closing %s, queue %d, leaving %d, at clerk %s, away %.1f" % [
 			Shop.day, Day.phase, shop.time, shop.paused, shop.closing, shop.queue.size(), shop.leaving.size(),
 			shop.at_clerk != null, shop.away])
-		bits.append("bench %s, vault %s, desk %s, smelter %s, pause menu %s, tree paused %s, coach '%s' guiding %s" % [
-			shop._test != null, shop._vault != null, shop._desk != null, shop._smelter != null, shop._pause.is_open(), get_tree().paused,
+		bits.append("bench %s, vault %s, desk %s, smelter %s, auction %s, pause menu %s, tree paused %s, coach '%s' guiding %s" % [
+			shop._test != null, shop._vault != null, shop._desk != null, shop._smelter != null, shop._auction != null, shop._pause.is_open(), get_tree().paused,
 			shop.coach.step, shop.coach.guiding])
 		var front: Customer = shop._front()
 		if front:

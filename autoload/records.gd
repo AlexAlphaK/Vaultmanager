@@ -12,7 +12,7 @@ const HISTORY_DAYS := 60
 const BEST_DAYS := 5
 ## Stats in Shop.stats that total() adds while the shop is trading.
 const LIVE_STATS := ["bought", "sold", "profit", "caught", "scammed", "stolen", "robbers_stopped", "orders_filled",
-	"bars_cast", "graded_exact"]
+	"bars_cast", "graded_exact", "auction_won", "sleepers"]
 
 ## id -> {"name", "desc", "key" (a value from value_of()), "goal"}. Checked in this order.
 const ACHIEVEMENTS := {
@@ -50,6 +50,8 @@ const ACHIEVEMENTS := {
 	"investor_out": {"name": "Own it outright", "desc": "Pay off an angel investor, or buy out their stake.", "key": "investors_repaid", "goal": 1},
 	"showroom": {"name": "Showroom", "desc": "Decorate the shop up to 50 appeal.", "key": "appeal", "goal": 50},
 	"grader_10": {"name": "Eagle eye", "desc": "Grade 10 coins spot on for collectors.", "key": "graded_exact", "goal": 10},
+	"auction_10": {"name": "Going, going, gone", "desc": "Win 10 lots at the Ashworth & Finch auction.", "key": "auction_won", "goal": 10},
+	"sleeper": {"name": "Sleeper", "desc": "Find a rare coin in a sealed pouch you won at auction.", "key": "sleepers", "goal": 1},
 }
 
 ## Lifetime sums of the day reports. Deal counts come from Shop.noted.
@@ -87,7 +89,7 @@ func _ready() -> void:
 func reset() -> void:
 	totals = {"days": 0, "bought": 0.0, "sold": 0.0, "profit": 0.0, "caught": 0, "scammed": 0,
 		"stolen": 0.0, "buys": 0, "sales": 0, "robbers_stopped": 0, "tipped_off": 0, "orders_filled": 0,
-		"bars_cast": 0, "graded_exact": 0}
+		"bars_cast": 0, "graded_exact": 0, "auction_won": 0, "sleepers": 0}
 	peaks = {"worth": 0.0, "rep": 0.0, "best_day": 0.0, "streak": 0, "clean": 0}
 	streak = 0
 	clean_streak = 0
@@ -208,7 +210,7 @@ func _on_day_ended(day: int, report: Dictionary) -> void:
 	totals.scammed = int(totals.scammed) + scammed
 	totals.robbers_stopped = int(totals.get("robbers_stopped", 0)) + int(stats.get("robbers_stopped", 0.0))
 	totals.orders_filled = int(totals.get("orders_filled", 0)) + int(stats.get("orders_filled", 0.0))
-	for key in ["bars_cast", "graded_exact"]:
+	for key in ["bars_cast", "graded_exact", "auction_won", "sleepers"]:
 		totals[key] = int(totals.get(key, 0)) + int(stats.get(key, 0.0))
 	totals.buys = int(totals.buys) + int(_today.get("buys", 0))
 	totals.sales = int(totals.sales) + int(_today.get("sales", 0))
