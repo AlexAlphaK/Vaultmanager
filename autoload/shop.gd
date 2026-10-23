@@ -87,9 +87,10 @@ func vault_value() -> float:
 	return total
 
 
-## Cash, the vault at spot and the scrap waiting to be melted (at what it cost).
+## Cash, the vault at spot and the scrap waiting to be melted (at what it cost), less
+## what the shop owes the bank.
 func net_worth() -> float:
-	return cash + vault_value() + ScrapYard.bin_value()
+	return cash + vault_value() + ScrapYard.bin_value() - Bank.debt()
 
 
 ## Everyday coins of one metal that a buyer off the street can have: rare coins and

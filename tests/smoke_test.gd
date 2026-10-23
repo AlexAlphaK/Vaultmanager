@@ -5,7 +5,7 @@ extends Node
 ## ledger of records and achievements, robberies (hold-ups and burglar crews), the rival
 ## shops on the town map, the story campaign, the trading desk, the smelter and coin grading,
 ## the auction house, gamepad controls with screen scaling, the seasons and town events, the
-## angel investor, shop decoration and the Steam demo's limits. Run:
+## angel investor, the bank's credit line and loans, shop decoration and the Steam demo's limits. Run:
 ##   godot --headless --path . res://tests/smoke_test.tscn
 ## Exits with code 0 when everything passes, 1 otherwise.
 
@@ -54,6 +54,7 @@ func _ready() -> void:
 	await _check_calendar()
 	await _check_story()
 	_check_investor()
+	_check_bank()
 	await _check_decor()
 	await _check_demo()
 	_check_settings()
@@ -1629,6 +1630,90 @@ func _check_investor() -> void:
 	Shop.reset()
 
 
+func _check_bank() -> void:
+	SaveGame.new_game()
+	Tutorial.skip_all()
+	Day.begin_day()
+	expect(Bank.grade() == "B" and Bank.debt() == 0.0 and Bank.auto_cover, "a new shop starts with a B rating and no debt")
+	expect(is_equal_approx(Bank.line_limit(), Bank.LINE_LIMIT[0]), "the corner counter's credit line")
+	expect(Bank.offers().size() == 3, "three loans on offer at B")
+	# the credit line
+	var worth := Shop.net_worth()
+	var cash := Shop.cash
+	expect(Bank.draw(2000.0), "drawing on the line in the morning")
+	expect(is_equal_approx(Shop.cash, cash + 2000.0) and is_equal_approx(Bank.line, 2000.0), "the draw is paid in cash")
+	expect(is_equal_approx(Shop.net_worth(), worth), "a debt to the bank doesn't add to net worth")
+	expect(not Bank.draw(Bank.headroom() + 1.0), "no drawing past the limit")
+	expect(Bank.repay(500.0) and is_equal_approx(Bank.line, 1500.0), "repaying part of the line")
+	# a loan, paid nightly
+	var offer: Dictionary = Bank.offers()[0]
+	expect(Bank.borrow(0) and Bank.has_loan(), "taking out a loan")
+	expect(not Bank.borrow(1), "one loan at a time")
+	expect(Day.ledger.any(func(e): return e.label == "Bank loan" and is_equal_approx(e.usd, offer.amount)), "the loan goes on the ledger")
+	var panels := DayPanels.new()
+	add_child(panels)
+	panels.show_bank()
+	expect(panels.page == "bank" and panels.visible, "the bank page opens")
+	expect(is_equal_approx(Investor.bills_tonight(), Progress.daily_upkeep() + Staff.daily_wages() + Bank.due_tonight()
+		+ (Progress.weekly_rent() + Progress.weekly_insurance() if Day.is_bill_day() else 0.0)), "the investor counts the bank's payments as bills")
+	Day.open_shop()
+	Day.close_shop()
+	var report := Day.end_day()
+	expect(report.ledger.any(func(e): return e.label == "Credit line interest" and is_equal_approx(e.usd, -1500.0 * Bank.LINE_RATE.B)), "interest on the line every night")
+	expect(report.ledger.any(func(e): return e.label == "Loan payment" and is_equal_approx(e.usd, -offer.payment)), "the loan's nightly payment")
+	expect(int(Bank.loan.days_left) == offer.term - 1 and float(Bank.loan.balance) < offer.amount, "the payment pays the loan down")
+	expect(Bank.score > Bank.START_SCORE, "a night in the black with a debt raises the score")
+	# saved with the game
+	var saved = JSON.parse_string(JSON.stringify(Bank.to_dict()))
+	var balance := float(Bank.loan.balance)
+	Bank.reset()
+	Bank.from_dict(saved)
+	expect(is_equal_approx(float(Bank.loan.balance), balance) and is_equal_approx(Bank.line, 1500.0), "the bank is saved")
+	# paying it off early
+	Shop.next_day()
+	Day.begin_day()
+	Shop.cash = balance - 1.0
+	expect(not Bank.pay_off(), "paying off needs the cash")
+	Shop.cash = balance + 100.0
+	expect(Bank.pay_off() and not Bank.has_loan() and Bank.loans_repaid == 1, "paying off the loan early")
+	expect(Records.is_earned("loan_repaid"), "paying off a loan earns Clean slate")
+	panels.show_bank()
+	# a missed payment, and the line covering an overdraft
+	Bank.repay(Bank.repayable())
+	expect(Bank.line > 0.0, "the line stays drawn while the cash is short")
+	Shop.cash = 5000.0
+	Bank.repay(Bank.repayable())
+	expect(Bank.line == 0.0, "repaying the line in full")
+	Bank.borrow(1)
+	Shop.cash = 0.0
+	var score := Bank.score
+	Day.open_shop()
+	Day.close_shop()
+	report = Day.end_day()
+	expect(Bank.missed == 1 and report.ledger.any(func(e): return e.label == "Late fee"), "a payment the cash can't cover is missed, with a late fee")
+	expect(Shop.cash == 0.0 and Bank.line > 0.0, "the line covers the overdraft")
+	expect(not report.ledger.any(func(e): return e.label == "Overdraft interest"), "no overdraft interest when the line covers it")
+	expect(Bank.score < score, "a missed payment lowers the score")
+	# an overdraft past the line, and the rating falling
+	Shop.next_day()
+	Day.begin_day()
+	Bank.auto_cover = false
+	Shop.cash = -1000.0
+	Day.open_shop()
+	Day.close_shop()
+	report = Day.end_day()
+	expect(report.ledger.any(func(e): return e.label == "Overdraft interest"), "with cover off the overdraft charges its own interest")
+	Bank.score = 20.0
+	expect(Bank.grade() == "D" and Bank.line_limit() == 0.0 and Bank.offers().is_empty(), "the bank won't lend at D")
+	panels.show_bank()
+	Bank.score = 40.0
+	expect(Bank.offers().size() == 2, "two loans on offer at C")
+	panels.queue_free()
+	SaveGame.new_game()
+	expect(Bank.debt() == 0.0 and Bank.score == Bank.START_SCORE and Bank.loans_repaid == 0, "a new game resets the bank")
+	Shop.reset()
+
+
 func _check_rush_hours() -> void:
 	expect(RushHours.at(1, 12 * 60).name == "Lunch rush", "lunch is busy on a Monday")
 	expect(RushHours.at(1, 10 * 60).is_empty(), "mid-morning is calm on a Monday")
@@ -2426,11 +2511,11 @@ func _check_translated_panels() -> void:
 	Investor.total_paid = 1234.0
 	for lang in ["en", "de", "es", "fr"]:
 		TranslationServer.set_locale(lang)
-		for page in ["show_morning", "show_upgrades", "show_plan", "show_wholesale", "show_town", "show_orders", "show_ledger", "show_investor"]:
+		for page in ["show_morning", "show_upgrades", "show_plan", "show_wholesale", "show_town", "show_orders", "show_ledger", "show_investor", "show_bank"]:
 			panels.call(page)
 			await get_tree().process_frame
 			expect(panels.size.x <= panels.AREA.size.x, "%s %s fits the panel width (%d px)" % [lang, page, panels.size.x])
-			if page == "show_investor":
+			if page in ["show_investor", "show_bank"]:
 				expect(panels.size.y <= panels.AREA.size.y, "%s %s fits the panel height (%d px)" % [lang, page, panels.size.y])
 	# and with her stake in the shop
 	Investor.offer = {}
@@ -2442,6 +2527,17 @@ func _check_translated_panels() -> void:
 			await get_tree().process_frame
 			expect(panels.size.x <= panels.AREA.size.x and (page != "show_investor" or panels.size.y <= panels.AREA.size.y),
 				"%s %s with a stake fits the panel (%d x %d px)" % [lang, page, panels.size.x, panels.size.y])
+	# and with a loan and the line drawn
+	Bank.line = 12345.0
+	Bank.loan = {"amount": 20000.0, "rate": 0.0009, "term": 56, "days_left": 40, "balance": 15432.0, "payment": 380.0, "day": 1}
+	Bank.interest_paid = 999.0
+	for lang in ["en", "de", "es", "fr"]:
+		TranslationServer.set_locale(lang)
+		for page in ["show_morning", "show_ledger", "show_bank"]:
+			panels.call(page)
+			await get_tree().process_frame
+			expect(panels.size.x <= panels.AREA.size.x and (page != "show_bank" or panels.size.y <= panels.AREA.size.y),
+				"%s %s with a loan fits the panel (%d x %d px)" % [lang, page, panels.size.x, panels.size.y])
 	# the busiest overdrawn morning: every line of the briefing and every button at once.
 	# The briefing scrolls; the button rows must stay inside the panel and on screen.
 	Shop.cash = -4321.0
@@ -2469,6 +2565,7 @@ func _check_translated_panels() -> void:
 	Progress.owned.erase("trading_desk")
 	Progress.owned.erase("furnace")
 	TranslationServer.set_locale("en")
+	Bank.reset()
 	Investor.reset()
 	Orders.reset()
 	shop.queue_free()

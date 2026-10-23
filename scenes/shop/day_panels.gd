@@ -3,7 +3,7 @@ extends PanelContainer
 ## The panels over the shop floor between shop hours: the morning briefing, the
 ## upgrades, staff and expansion page, the floor plan where rooms are built, the town
 ## map with the rival shops, the staff and how they are getting on, the collectors' special orders, the story's chapter and goals,
-## the angel investor's offer and stake, the ledger of records and achievements, and the end-of-day summary. Rebuilt each time one opens.
+## the angel investor's offer and stake, the bank's credit line and loans, the ledger of records and achievements, and the end-of-day summary. Rebuilt each time one opens.
 
 signal open_requested
 signal next_day_requested
@@ -16,7 +16,7 @@ signal auction_requested
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
 
-var page := "" # "morning", "upgrades", "staff", "plan", "wholesale", "town", "orders", "story", "investor", "ledger", "achievements", "summary" or "" when hidden
+var page := "" # "morning", "upgrades", "staff", "plan", "wholesale", "town", "orders", "story", "investor", "bank", "ledger", "achievements", "summary" or "" when hidden
 ## The morning's Open the shop button, for the tutorial to point at.
 var open_button: Button
 var _box: VBoxContainer
@@ -42,6 +42,7 @@ func _ready() -> void:
 	Calendar.changed.connect(_refresh_page)
 	Story.changed.connect(_refresh_page)
 	Investor.changed.connect(_refresh_page)
+	Bank.changed.connect(_refresh_page)
 
 
 func hide_panel() -> void:
@@ -101,6 +102,11 @@ func show_investor() -> void:
 	_build_investor()
 
 
+func show_bank() -> void:
+	page = "bank"
+	_build_bank()
+
+
 func show_ledger() -> void:
 	page = "ledger"
 	_build_ledger()
@@ -136,6 +142,8 @@ func _refresh_page() -> void:
 		_build_story()
 	elif page == "investor":
 		_build_investor()
+	elif page == "bank":
+		_build_bank()
 	elif page == "ledger":
 		_build_ledger()
 	elif page == "achievements":
@@ -154,16 +162,9 @@ func _clear() -> void:
 func _build_morning() -> void:
 	_clear()
 	_title(tr("%s, day %d") % [Day.weekday(), Shop.day])
-	# the briefing scrolls on a busy morning, so the button rows below always stay on screen
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_box.add_child(scroll)
-	var outer := _box
-	_box = VBoxContainer.new()
-	_box.add_theme_constant_override("separation", 3)
-	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(_box)
+	# a busy morning (and the longer languages) can hold more lines than the panel: they
+	# scroll, and the buttons stay on screen
+	var outer := _begin_scroll()
 	_text(tr("%s · %s. Set your prices, then open up.") % [Progress.tier_name(), Calendar.label()], Pal.INK_DIM)
 	var town := _town_hint()
 	if town != "":
@@ -187,17 +188,31 @@ func _build_morning() -> void:
 	if Story.synced and not Story.is_finished():
 		_text(tr("%s · %d/%d goals") % [Story.chapter_title(), Story.goals_met_count(), Story.current().goals.size()], Pal.GOLD)
 	_gap()
-	_heading("BILLS")
+	# the bank's button sits by the bills: the button rows below are full
+	var bills := HBoxContainer.new()
+	_box.add_child(bills)
+	var heading := _heading("BILLS")
+	heading.reparent(bills)
+	heading.custom_minimum_size.x = 0.0
+	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var bank := _button(bills, tr("Bank") + (" !" if Shop.cash < 0.0 else ""), "Button", show_bank)
+	bank.tooltip_text = "Your credit line, bank loans and credit rating."
+	bank.custom_minimum_size.y = 0.0 # no taller than the heading
 	var grid := _grid()
-	_pair(grid, "Upkeep tonight", Market.format_money(Progress.daily_upkeep()))
+	# the bank's payments share the upkeep's row: a busy morning has no room for another
+	if Bank.due_tonight() > 0.0:
+		_pair(grid, "Upkeep and bank payments tonight", Market.format_money(Progress.daily_upkeep() + Bank.due_tonight()))
+	else:
+		_pair(grid, "Upkeep tonight", Market.format_money(Progress.daily_upkeep()))
 	if not Staff.hired.is_empty():
 		_pair(grid, "Staff wages tonight", Market.format_money(Staff.daily_wages()))
 	var weekly := 0.0
 	for bill in Day.upcoming_bills():
 		weekly += bill.usd
 	var due := Day.days_until_bills()
-	_pair(grid, "Rent and insurance", Market.format_money(weekly), Pal.BAD if due == 0 else Pal.INK)
-	_pair(grid, "Due", "tonight" if due == 0 else tr_n("%s (in %d day)", "%s (in %d days)", due) % [Day.weekday(Shop.day + due), due], Pal.INK_DIM)
+	# when they fall due shares the row, so the bank's row doesn't push the buttons down
+	var when := tr("tonight") if due == 0 else tr_n("%s (in %d day)", "%s (in %d days)", due) % [Day.weekday(Shop.day + due), due]
+	_pair(grid, "Rent and insurance", tr("%s, %s") % [Market.format_money(weekly), when], Pal.BAD if due == 0 else Pal.INK)
 	_gap()
 	if Progress.goal_reached():
 		_heading("YOU RUN THE BIGGEST STORE IN TOWN")
@@ -209,7 +224,7 @@ func _build_morning() -> void:
 		_requirement(req, "Net worth", Shop.net_worth(), next.need_worth, true)
 		_requirement(req, "Reputation", Shop.reputation, next.need_rep, false)
 		_requirement(req, "Cash to move", Shop.cash, next.cost, true)
-	_box = outer
+	_end_scroll(outer)
 	# the button rows flow onto a second line when a full morning (or a long translation) runs out of width
 	var pages := HFlowContainer.new()
 	pages.add_theme_constant_override("h_separation", 4)
@@ -800,6 +815,61 @@ func _build_investor() -> void:
 		out.tooltip_text = "Pay her what she is still owed and keep all your profit from now on."
 
 
+# ---------------------------------------------------------------- bank
+
+func _build_bank() -> void:
+	_clear()
+	_title("The bank")
+	_text(tr("Credit rating %s. Pay on time and the bank lends more, for less.") % Bank.grade(),
+		Pal.GOOD if Bank.grade() == "A" else Pal.BAD if Bank.grade() == "D" else Pal.INK_DIM)
+	_gap()
+	_heading("CREDIT LINE")
+	var grid := _grid()
+	_pair(grid, "Drawn", tr("%s of %s") % [Market.format_money(Bank.line), Market.format_money(Bank.line_limit())],
+		Pal.WARN if Bank.line > 0.0 else Pal.INK)
+	_pair(grid, "Interest", Bank.rate_text(Bank.line_rate()), Pal.INK_DIM)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	_box.add_child(row)
+	var take := minf(Bank.step(), Bank.headroom())
+	var draw := _button(row, tr("Draw %s") % Market.format_money(take), "Button", func(): Bank.draw(take))
+	draw.disabled = not Bank.can_draw(take)
+	var back := minf(Bank.step(), Bank.repayable())
+	var repay := _button(row, tr("Repay %s") % Market.format_money(back if back > 0.0 else minf(Bank.step(), Bank.line_limit())),
+		"Button", func(): Bank.repay(back))
+	repay.disabled = not Bank.can_repay(back)
+	var cover := _button(row, tr("Cover overdrafts: on") if Bank.auto_cover else tr("Cover overdrafts: off"), "Button", func():
+		Bank.auto_cover = not Bank.auto_cover
+		_build_bank())
+	cover.tooltip_text = "At night the line clears an overdraft, at the line's rate instead of the overdraft's."
+	_gap()
+	_heading("LOAN")
+	if Bank.has_loan():
+		var l := Bank.loan
+		var lg := _grid()
+		_pair(lg, "Left to pay", Market.format_money(float(l.balance)), Pal.GOLD)
+		_pair(lg, "Nightly payment", tr_n("%s (%d day left)", "%s (%d days left)", int(l.days_left)) % [
+			Market.format_money(Bank.loan_payment()), int(l.days_left)])
+		var off := _button(_box, tr("Pay off %s") % Market.format_money(float(l.balance)), "Button", func(): Bank.pay_off())
+		off.disabled = not Bank.can_pay_off()
+		off.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	elif Bank.offers().is_empty():
+		_text("The bank won't lend at a D rating. Stay out of the red to win back its trust.", Pal.INK_FAINT)
+	else:
+		var offers := _grid(3)
+		var list := Bank.offers()
+		for i in list.size():
+			var o: Dictionary = list[i]
+			_shrinkable(_cell(offers, tr("%s over %d days") % [Market.format_money(o.amount), o.term], Pal.INK))
+			_cell(offers, tr("%s a night") % Market.format_money(o.payment), Pal.INK_DIM).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			var b := _button(offers, "Borrow", "Button", func(): Bank.borrow(i))
+			b.disabled = not Bank.can_borrow()
+	_spacer()
+	var bottom := HBoxContainer.new()
+	_box.add_child(bottom)
+	_button(bottom, "Back", "Button", show_morning)
+
+
 # ---------------------------------------------------------------- ledger
 
 func _build_ledger() -> void:
@@ -815,6 +885,8 @@ func _build_ledger() -> void:
 	var profit := Records.total("profit")
 	_pair(grid, "Lifetime profit", Market.format_money(profit), Pal.GOOD if profit >= 0.0 else Pal.BAD)
 	_pair(grid, "Fakes caught / missed", "%d / %d (%d%%)" % [Records.total("caught"), Records.total("scammed"), roundi(Records.catch_rate() * 100.0)])
+	if Bank.interest_paid > 0.0:
+		_pair(grid, "Interest paid to the bank", Market.format_money(Bank.interest_paid), Pal.WARN)
 	if Investor.total_paid > 0.0:
 		_pair(grid, "Paid to investors", Market.format_money(Investor.total_paid), Pal.WARN)
 	_pair(grid, "Lost to thieves", Market.format_money(Records.total("stolen")), Pal.BAD if Records.total("stolen") > 0.0 else Pal.INK)
@@ -880,15 +952,7 @@ func _build_summary(report: Dictionary) -> void:
 	_title(tr("Day %d closed") % report.get("day", Shop.day))
 	# a busy day can fill more lines than the panel holds: they scroll, and the
 	# button stays in reach
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_box.add_child(scroll)
-	var outer := _box
-	_box = VBoxContainer.new()
-	_box.add_theme_constant_override("separation", 3)
-	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(_box)
+	var outer := _begin_scroll()
 	var grid := _grid()
 	_pair(grid, "Bought from customers", Market.format_money(stats.get("bought", 0.0)))
 	_pair(grid, "Sold to customers", Market.format_money(stats.get("sold", 0.0)))
@@ -905,10 +969,7 @@ func _build_summary(report: Dictionary) -> void:
 		_text(str(line), Pal.WARN).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var bills_in: int = report.get("next_bills_in", 0)
 	_text(tr_n("Next rent and insurance in %d day.", "Next rent and insurance in %d days.", bills_in) % bills_in, Pal.INK_FAINT)
-	for l in _box.get_children():
-		if l is Label:
-			l.custom_minimum_size.x = 0.0 # the scroll bar takes some of the width
-	_box = outer
+	_end_scroll(outer)
 	var demo_over := Demo.last_day(int(report.get("day", Shop.day)))
 	if demo_over: # outside the scroll, so it is never missed
 		_text("That was the last day of the demo. Thanks for playing!", Pal.GOLD)
@@ -938,6 +999,28 @@ func _grouped(ledger: Array) -> Array[Dictionary]:
 
 
 # ---------------------------------------------------------------- helpers
+
+## Puts what follows in a box that scrolls and takes the panel's spare height, until
+## _end_scroll(). Returns the box to go back to.
+func _begin_scroll() -> VBoxContainer:
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_box.add_child(scroll)
+	var outer := _box
+	_box = VBoxContainer.new()
+	_box.add_theme_constant_override("separation", 3)
+	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_box)
+	return outer
+
+
+func _end_scroll(outer: VBoxContainer) -> void:
+	for l in _box.get_children():
+		if l is Label:
+			l.custom_minimum_size.x = 0.0 # the scroll bar takes some of the width
+	_box = outer
+
 
 func _title(text: String) -> Label:
 	var l := _text(text, Pal.GOLD)

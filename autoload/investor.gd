@@ -74,9 +74,10 @@ func has_deal() -> bool:
 	return not deal.is_empty()
 
 
-## Tonight's bills: upkeep, wages, and rent and insurance when they fall due tonight.
+## Tonight's bills: upkeep, wages, the bank's payments, and rent and insurance when they
+## fall due tonight.
 func bills_tonight() -> float:
-	var total := Progress.daily_upkeep() + Staff.daily_wages()
+	var total := Progress.daily_upkeep() + Staff.daily_wages() + Bank.due_tonight()
 	if Day.is_bill_day():
 		for bill in Day.upcoming_bills():
 			total += bill.usd
