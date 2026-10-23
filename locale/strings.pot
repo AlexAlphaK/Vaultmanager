@@ -552,7 +552,7 @@ msgstr ""
 msgid "Rent"
 msgstr ""
 
-#: autoload/day.gd scenes/shop/rush_hours.gd
+#: autoload/day.gd scenes/auction/auction_house.gd scenes/shop/rush_hours.gd
 msgid "Saturday"
 msgstr ""
 
@@ -572,7 +572,7 @@ msgstr ""
 msgid "Upkeep"
 msgstr ""
 
-#: autoload/day.gd
+#: autoload/day.gd scenes/auction/auction_house.gd
 msgid "Wednesday"
 msgstr ""
 
@@ -1189,6 +1189,10 @@ msgid "Fill 5 special orders for collectors."
 msgstr ""
 
 #: autoload/records.gd
+msgid "Find a rare coin in a sealed pouch you won at auction."
+msgstr ""
+
+#: autoload/records.gd
 msgid "Finish the story: Mags cuts the ribbon on your landmark."
 msgstr ""
 
@@ -1349,6 +1353,10 @@ msgid "Six figures"
 msgstr ""
 
 #: autoload/records.gd
+msgid "Sleeper"
+msgstr ""
+
+#: autoload/records.gd
 msgid "Stop a robber, with the guard or the panic button."
 msgstr ""
 
@@ -1378,6 +1386,10 @@ msgstr ""
 
 #: autoload/records.gd
 msgid "Well stocked"
+msgstr ""
+
+#: autoload/records.gd
+msgid "Win 10 lots at the Ashworth & Finch auction."
 msgstr ""
 
 #: autoload/records.gd
@@ -2096,6 +2108,394 @@ msgstr ""
 msgid "{grade} {kind}"
 msgstr ""
 
+#: scenes/auction/auction_house.gd
+msgid "%d brass copy"
+msgid_plural "%d brass copies"
+msgstr[0] ""
+msgstr[1] ""
+
+#: scenes/auction/auction_house.gd
+msgid "A pouch held %d brass copy. Worthless."
+msgid_plural "A pouch held %d brass copies. Worthless."
+msgstr[0] ""
+msgstr[1] ""
+
+#: scenes/auction/auction_house.gd
+msgid "A sealed pouch held a %s! A sleeper."
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Agatha Crane"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Ashworth & Finch's expert says your %s is a fake. They won't sell it."
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Auction house"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Auction house (your lots)"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Consigned your %s to today's sale."
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Dealer stock from %s"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Ellen Marsh"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Estate of the late %s"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Felix Durand"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Harold Voss"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Ivy Lambert"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Nora Quill"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Otto Brandt"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Rosa Bell"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Rupert Hay"
+msgstr ""
+
+#: scenes/auction/auction_house.gd scenes/auction/auction_room.gd
+msgid "Sealed pouch"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Walter Pike"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Won lot %d for %s with the buyer's premium."
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Your %s"
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Your %s didn't reach its reserve. It's back in the vault."
+msgstr ""
+
+#: scenes/auction/auction_house.gd
+msgid "Your %s sold for %s after the fee."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "%d LOTS"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "%s (paddle %d)"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "%s folds"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "%s hesitates..."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "%s, thank you!"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "A collector's order wants this %s."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "A on a pouch"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "ASK %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "ASKING"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "An order wants this coin."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Ashworth & Finch sell it last today and keep %d%%. It won't go under melt."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "At %s you'd pay %s."
+msgstr ""
+
+#: scenes/auction/auction_room.gd scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
+msgid "Back to the morning"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Bid"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Bid %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Bought in."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Cash %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Click a pouch to look inside: %d look left."
+msgid_plural "Click a pouch to look inside: %d looks left."
+msgstr[0] ""
+msgstr[1] ""
+
+#: scenes/auction/auction_room.gd
+msgid "Consign %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd scenes/smelter/smelter.gd
+msgid "Esc: back"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Esc: leave"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Estimate %s-%s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Going once..."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Going twice..."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Guess %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "HIGH BID"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Jump bid"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Jump to %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/grading/grading_bench.gd scenes/jewellery_test/jewellery_test.gd scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
+msgid "LB / RB"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "LOT %d"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "LOT %d OF %d"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Leave the sale"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Let it go"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Look inside"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d of %d"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d: %s, %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d: no sale"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d: your coin came back"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d: your coin sold, %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d: yours, %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Melt you can see: %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "NO SALE"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Next sale: %s."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "No more looks inside the pouches."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "No sale today."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "No sale."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "PADDLE %d"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Plus %d sealed pouch."
+msgid_plural "Plus %d sealed pouches."
+msgstr[0] ""
+msgstr[1] ""
+
+#: scenes/auction/auction_room.gd
+msgid "Pouch: %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Previous / next lot"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "SALE OVER"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "SELL YOUR RARE COINS"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "SOLD %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Skip ahead a few steps. Someone near their limit may give up."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Sold, to %s!"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Sold, to paddle %d!"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Space: bid   J: jump"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Spent %s. The coins are in your vault."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Start me at %s?"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "THE SALE IS OVER"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Take your seat"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "The winner pays %d%% on top of the hammer price."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "VIEWING"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Viewing"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Worthless"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "YOURS! %s"
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "You hold the bid."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "You went home with nothing this time."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "You'd pay %s with the premium."
+msgstr ""
+
+#: scenes/auction/auction_room.gd
+msgid "Your lot. Reserve %s."
+msgstr ""
+
 #: scenes/bar_test/bar_test.gd
 msgid "%.1f mm"
 msgstr ""
@@ -2162,10 +2562,6 @@ msgstr ""
 
 #: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
 msgid "Genuine"
-msgstr ""
-
-#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/grading/grading_bench.gd scenes/jewellery_test/jewellery_test.gd scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
-msgid "LB / RB"
 msgstr ""
 
 #: scenes/bar_test/bar_test.gd
@@ -3215,6 +3611,14 @@ msgid "%s · %s. Set your prices, then open up."
 msgstr ""
 
 #: scenes/shop/day_panels.gd
+msgid "%s's next sale: %s."
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "%s's sale is this morning: estates, rare coins and dealer stock. Bid against Sterling and the collectors."
+msgstr ""
+
+#: scenes/shop/day_panels.gd
 msgid "%s's stake"
 msgstr ""
 
@@ -3262,6 +3666,14 @@ msgstr ""
 
 #: scenes/shop/day_panels.gd
 msgid "At work"
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Auction day at %s: %d lots. Go from the Town map."
+msgstr ""
+
+#: scenes/shop/day_panels.gd
+msgid "Auction: %d lots"
 msgstr ""
 
 #: scenes/shop/day_panels.gd
@@ -4676,10 +5088,6 @@ msgstr ""
 msgid "ASSAY"
 msgstr ""
 
-#: scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
-msgid "Back to the morning"
-msgstr ""
-
 #: scenes/smelter/smelter.gd
 msgid "Bars cast: %d. Profit so far: %s"
 msgstr ""
@@ -4710,10 +5118,6 @@ msgstr ""
 
 #: scenes/smelter/smelter.gd
 msgid "Done"
-msgstr ""
-
-#: scenes/smelter/smelter.gd
-msgid "Esc: back"
 msgstr ""
 
 #: scenes/smelter/smelter.gd

@@ -10,6 +10,7 @@ signal next_day_requested
 signal new_game_requested
 signal desk_requested
 signal smelter_requested
+signal auction_requested
 
 const AREA := Rect2(12, 18, 292, 208)
 const METAL_NAMES := {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XPD": "Palladium"}
@@ -207,7 +208,7 @@ func _build_morning() -> void:
 	if not Staff.hired.is_empty():
 		_button(pages, tr("Staff%s") % (" !" if not Staff.raise_requests().is_empty() else ""), "Button", show_staff).tooltip_text = "How your staff are getting on: levels, mood and pay."
 	_button(pages, "Restock", "Button", show_wholesale).tooltip_text = "Buy coins from the wholesaler before you open."
-	_button(pages, tr("Town map%s") % (" !" if not Rivals.news.is_empty() else ""), "Button", show_town).tooltip_text = "The rival shops, their prices and what they are up to."
+	_button(pages, tr("Town map%s") % (" !" if not Rivals.news.is_empty() or AuctionHouse.available() else ""), "Button", show_town).tooltip_text = "The rival shops, their prices and what they are up to."
 	if not Orders.open.is_empty():
 		_button(pages, tr("Orders (%d)") % Orders.open.size(), "Button", show_orders).tooltip_text = "Collectors' special orders and the dealer network."
 	# the investor's page hangs off the ledger: the morning rows are full
@@ -242,6 +243,8 @@ func _town_hint() -> String:
 	var e := Calendar.today()
 	if not e.is_empty():
 		return Calendar.morning_line(e)
+	if AuctionHouse.available():
+		return tr("Auction day at %s: %d lots. Go from the Town map.") % [AuctionHouse.NAME, AuctionHouse.lots.size()]
 	var next := Calendar.next_event()
 	if Tutorial.first_day_done and not next.is_empty() and int(next.day) - Shop.day <= 3:
 		return Calendar.morning_line(next.event, int(next.day))
@@ -589,6 +592,15 @@ func _build_town() -> void:
 	_spacer()
 	_hint = _text("", Pal.INK)
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if AuctionHouse.available():
+		var sale := HBoxContainer.new()
+		sale.add_theme_constant_override("separation", 4)
+		_box.add_child(sale)
+		_town_button(sale, tr("Auction: %d lots") % AuctionHouse.lots.size(), true, func(): auction_requested.emit(),
+			tr("%s's sale is this morning: estates, rare coins and dealer stock. Bid against Sterling and the collectors.") % AuctionHouse.NAME)
+	else:
+		_text(tr("%s's next sale: %s.") % [AuctionHouse.NAME, Day.weekday(AuctionHouse.next_sale_day(Shop.day + (1 if AuctionHouse.held_day == Shop.day else 0)))],
+			Pal.INK_FAINT)
 	var buttons := HBoxContainer.new()
 	buttons.add_theme_constant_override("separation", 4)
 	_box.add_child(buttons)
