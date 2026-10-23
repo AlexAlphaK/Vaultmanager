@@ -190,20 +190,24 @@ func _build_morning() -> void:
 	heading.reparent(bills)
 	heading.custom_minimum_size.x = 0.0
 	heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_button(bills, tr("Bank") + (" !" if Shop.cash < 0.0 else ""), "Button", show_bank).tooltip_text = \
-		"Your credit line, bank loans and credit rating."
+	var bank := _button(bills, tr("Bank") + (" !" if Shop.cash < 0.0 else ""), "Button", show_bank)
+	bank.tooltip_text = "Your credit line, bank loans and credit rating."
+	bank.custom_minimum_size.y = 0.0 # no taller than the heading
 	var grid := _grid()
-	_pair(grid, "Upkeep tonight", Market.format_money(Progress.daily_upkeep()))
+	# the bank's payments share the upkeep's row: a busy morning has no room for another
 	if Bank.due_tonight() > 0.0:
-		_pair(grid, "Bank payments tonight", Market.format_money(Bank.due_tonight()))
+		_pair(grid, "Upkeep and bank payments tonight", Market.format_money(Progress.daily_upkeep() + Bank.due_tonight()))
+	else:
+		_pair(grid, "Upkeep tonight", Market.format_money(Progress.daily_upkeep()))
 	if not Staff.hired.is_empty():
 		_pair(grid, "Staff wages tonight", Market.format_money(Staff.daily_wages()))
 	var weekly := 0.0
 	for bill in Day.upcoming_bills():
 		weekly += bill.usd
 	var due := Day.days_until_bills()
-	_pair(grid, "Rent and insurance", Market.format_money(weekly), Pal.BAD if due == 0 else Pal.INK)
-	_pair(grid, "Due", "tonight" if due == 0 else tr_n("%s (in %d day)", "%s (in %d days)", due) % [Day.weekday(Shop.day + due), due], Pal.INK_DIM)
+	# when they fall due shares the row, so the bank's row doesn't push the buttons down
+	var when := tr("tonight") if due == 0 else tr_n("%s (in %d day)", "%s (in %d days)", due) % [Day.weekday(Shop.day + due), due]
+	_pair(grid, "Rent and insurance", tr("%s, %s") % [Market.format_money(weekly), when], Pal.BAD if due == 0 else Pal.INK)
 	_gap()
 	if Progress.goal_reached():
 		_heading("YOU RUN THE BIGGEST STORE IN TOWN")

@@ -254,7 +254,7 @@ msgstr "heute"
 msgid "tomorrow"
 msgstr "morgen"
 
-#: autoload/calendar.gd
+#: autoload/calendar.gd scenes/shop/day_panels.gd
 msgid "tonight"
 msgstr "heute Abend"
 
@@ -3211,6 +3211,10 @@ msgid "%s's stake"
 msgstr "Anteil von %s"
 
 #: scenes/shop/day_panels.gd
+msgid "%s, %s"
+msgstr "%s, %s"
+
+#: scenes/shop/day_panels.gd
 msgid "%s, %s (level %d)"
 msgstr "%s, %s (Stufe %d)"
 
@@ -3275,10 +3279,6 @@ msgstr "RECHNUNGEN"
 #: scenes/shop/day_panels.gd
 msgid "Bank"
 msgstr "Bank"
-
-#: scenes/shop/day_panels.gd
-msgid "Bank payments tonight"
-msgstr "Bankraten heute Nacht"
 
 #: scenes/shop/day_panels.gd
 msgid "Beat Sterling"
@@ -3853,6 +3853,10 @@ msgstr "Upgrades (%d)%s"
 #: scenes/shop/day_panels.gd
 msgid "Upgrades and staff"
 msgstr "Upgrades und Personal"
+
+#: scenes/shop/day_panels.gd
+msgid "Upkeep and bank payments tonight"
+msgstr "Unterhalt und Bankraten heute"
 
 #: scenes/shop/day_panels.gd
 msgid "Upkeep tonight"
