@@ -334,7 +334,9 @@ func _build_upgrades() -> void:
 	_hint = _text("", Pal.INK)
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint.custom_minimum_size = Vector2(0, 17)
-	if not Progress.is_top_tier() and Progress.expand_blocker() != "":
+	if Demo.tier_locked(Progress.tier + 1):
+		_hint.text = tr("The %s opens in the full game. Wishlist it on Steam!") % tr(Progress.tier_info(Progress.tier + 1).name)
+	elif not Progress.is_top_tier() and Progress.expand_blocker() != "":
 		_hint.text = tr("%s to move up.") % Progress.expand_blocker()
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
@@ -879,9 +881,12 @@ func _build_summary(report: Dictionary) -> void:
 		if l is Label:
 			l.custom_minimum_size.x = 0.0 # the scroll bar takes some of the width
 	_box = outer
+	var demo_over := Demo.last_day(int(report.get("day", Shop.day)))
+	if demo_over: # outside the scroll, so it is never missed
+		_text("That was the last day of the demo. Thanks for playing!", Pal.GOLD)
 	var row := HBoxContainer.new()
 	_box.add_child(row)
-	var go := _button(row, "Lock up and go home", "PrimaryButton", func(): next_day_requested.emit())
+	var go := _button(row, "See how you did" if demo_over else "Lock up and go home", "PrimaryButton", func(): next_day_requested.emit())
 	go.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 

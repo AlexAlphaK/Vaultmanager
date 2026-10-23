@@ -3,6 +3,7 @@ extends Control
 ## the logo, a live price ticker, and Continue / Save slots / New game / Settings / Quit.
 
 const ShopScene := "res://scenes/shop/shop.tscn"
+const DemoEndScene := "res://scenes/menu/demo_end.tscn"
 const SHOP_POS := Vector2(2, 22)
 const COLUMN_X := 322
 const COLUMN_W := 154
@@ -138,6 +139,9 @@ func _build_menu() -> void:
 	add_child(sub) # in the tree first, so it measures with the pixel font
 	sub.text = "Run the biggest gold shop in town"
 	sub.add_theme_color_override("font_color", Pal.INK_DIM)
+	if Demo.enabled:
+		sub.text = tr("DEMO · your first %d days") % Demo.DAYS
+		sub.add_theme_color_override("font_color", Pal.GOLD)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub.position = Vector2(COLUMN_X - 10, 68)
 	sub.size = Vector2(COLUMN_W + 20, 8)
@@ -169,7 +173,9 @@ func _build_buttons() -> void:
 		_save_info.text = "No saved shop yet"
 		_new.grab_focus.call_deferred()
 	else:
-		_save_info.text = tr("Day %d · %s") % [_save.day + (1 if _save.day_over else 0), Progress.tier_name(clampi(_save.tier, 0, Progress.TIERS.size() - 1))]
+		var day: int = _save.day + (1 if _save.day_over else 0)
+		_save_info.text = tr("Demo finished") if Demo.is_over(day) else \
+			tr("Day %d · %s") % [day, Progress.tier_name(clampi(_save.tier, 0, Progress.TIERS.size() - 1))]
 		_continue.grab_focus.call_deferred()
 
 
@@ -248,7 +254,12 @@ func _close_overlay() -> void:
 
 func _go_to_shop() -> void:
 	_leaving = true
+	var scene := ShopScene
+	# a demo shop that has used up its days goes straight to the demo's end screen
+	var save := SaveGame.peek()
+	if Demo.enabled and not save.is_empty() and Demo.is_over(save.day + (1 if save.day_over else 0)) and SaveGame.load_game():
+		scene = DemoEndScene
 	Sfx.play(get_tree().root, Sfx.door_bell(), -6.0)
 	var t := create_tween()
 	t.tween_property(_fade, "color:a", 1.0, 0.35)
-	t.finished.connect(func(): get_tree().change_scene_to_file(ShopScene))
+	t.finished.connect(func(): get_tree().change_scene_to_file(scene))

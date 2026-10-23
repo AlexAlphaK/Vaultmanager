@@ -35,6 +35,7 @@ const BarTestScene := preload("res://scenes/bar_test/bar_test.tscn")
 const GradingScene := preload("res://scenes/grading/grading_bench.tscn")
 const TradingDeskScene := preload("res://scenes/trading_desk/trading_desk.tscn")
 const SmelterScene := preload("res://scenes/smelter/smelter.tscn")
+const DemoEndScene := "res://scenes/menu/demo_end.tscn"
 const STONE_NAMES := {"cz": "cubic zirconia", "glass": "glass", "moissanite": "moissanite"}
 const VAULT_RUN_SECONDS := 3.0 # away from the counter while you take the till to the vault
 
@@ -108,6 +109,8 @@ func _ready() -> void:
 		Shop.log_event(tr("Welcome back. Day %d at your %s.") % [Shop.day, Progress.tier_name()])
 	else:
 		Shop.log_event(tr("Welcome to your shop. Test coins before you buy them."))
+	if Demo.enabled and not Demo.is_over():
+		Shop.log_event(tr_n("Demo: %d day left to play.", "Demo: %d days left to play.", Demo.days_left()) % Demo.days_left())
 	coach = Coach.new()
 	add_child(coach)
 	coach.attach(self)
@@ -823,6 +826,10 @@ func _open_next_day() -> void:
 
 
 func _start_morning() -> void:
+	if Demo.is_over(): # the demo's days are used up: no more mornings
+		paused = true
+		get_tree().change_scene_to_file(DemoEndScene)
+		return
 	time = 0.0
 	closing = false
 	paused = true
