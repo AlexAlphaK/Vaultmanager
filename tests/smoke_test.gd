@@ -1337,12 +1337,9 @@ func _check_calendar() -> void:
 	add_child(panels)
 	panels.show_morning()
 	var texts := []
-	for child in panels._box.get_children():
-		if child is Label:
+	for child in panels._box.find_children("*", "", true, false):
+		if child is Label or child is Button:
 			texts.append(child.text)
-		for b in child.get_children():
-			if b is Button:
-				texts.append(b.text)
 	expect(texts.any(func(t): return str(t).begins_with("Town coin show tomorrow")), "the morning warns about the coin show")
 	expect(texts.any(func(t): return str(t).begins_with("Booth booked")), "the morning shows the booked booth")
 	panels.queue_free()
@@ -2315,6 +2312,32 @@ func _check_translated_panels() -> void:
 			await get_tree().process_frame
 			expect(panels.size.x <= panels.AREA.size.x and (page != "show_investor" or panels.size.y <= panels.AREA.size.y),
 				"%s %s with a stake fits the panel (%d x %d px)" % [lang, page, panels.size.x, panels.size.y])
+	# the busiest overdrawn morning: every line of the briefing and every button at once.
+	# The briefing scrolls; the button rows must stay inside the panel and on screen.
+	Shop.cash = -4321.0
+	for id in Staff.ROLES:
+		if not id in Staff.hired:
+			Staff.hired.append(id)
+	Rivals.news.append("Sterling Bullion slashed prices: it pays 92% of melt and sells at spot +3%.")
+	for id in ["trading_desk", "furnace"]:
+		if not id in Progress.owned:
+			Progress.owned.append(id)
+	for lang in ["en", "de", "es", "fr"]:
+		TranslationServer.set_locale(lang)
+		panels.show_morning()
+		await get_tree().process_frame
+		var area: Rect2 = panels.get_global_rect()
+		var off := []
+		for b in panels.find_children("*", "BaseButton", true, false):
+			var r: Rect2 = b.get_global_rect()
+			if b.is_visible_in_tree() and not (area.encloses(r) and Rect2(0, 0, 480, 270).encloses(r)):
+				off.append(b.text)
+		expect(panels.size.x <= panels.AREA.size.x and panels.size.y <= panels.AREA.size.y and off.is_empty(),
+			"%s busy overdrawn morning fits (%d x %d px, off-panel buttons %s)" % [lang, panels.size.x, panels.size.y, off])
+	Staff.hired.clear()
+	Rivals.news.clear()
+	Progress.owned.erase("trading_desk")
+	Progress.owned.erase("furnace")
 	TranslationServer.set_locale("en")
 	Investor.reset()
 	Orders.reset()
