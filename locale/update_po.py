@@ -12,10 +12,11 @@ English until someone fills it in); strings the code no longer uses are dropped.
 import os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LANGS = ["de", "es", "fr", "zh_CN"]
+LANGS = ["de", "es", "fr", "zh_CN", "zh_TW", "zh_HK"]
 SKIP_DIRS = (".tmp", "tests", "tools", "store", ".godot", ".git", "price-service", "prototype", "art", "audio", "build", "docs", "locale")
 PLURAL = {"de": "nplurals=2; plural=(n != 1);", "es": "nplurals=2; plural=(n != 1);", "fr": "nplurals=2; plural=(n > 1);",
-	"zh_CN": "nplurals=1; plural=0;"}
+	"zh_CN": "nplurals=1; plural=0;",
+	"zh_TW": "nplurals=1; plural=0;", "zh_HK": "nplurals=1; plural=0;"}
 
 LIT = r'"((?:[^"\\\n]|\\.)*)"'
 TR_N = re.compile(r'\b(?:tr_n|Loc\.n)\(\s*' + LIT + r'\s*,\s*' + LIT)

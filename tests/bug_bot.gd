@@ -12,7 +12,7 @@ extends Node
 ##   godot --headless --path . res://tests/bug_bot.tscn -- --seed=3 --minutes=10
 ## Options: --seed=N, --minutes=N (real minutes), --speed=N (game seconds per real
 ## second, default 8), --rich (tops the cash up to $2M and the stars to 4.6 every morning so the bot reaches the late game),
-## --broke (most mornings start overdrawn, so the angel investor keeps calling), --skip-tutorial, --days=N (stop after N shop days in total), --lang=de|es|fr|zh|en (play in
+## --broke (most mornings start overdrawn, so the angel investor keeps calling), --skip-tutorial, --days=N (stop after N shop days in total), --lang=de|es|fr|zh|zh_TW|zh_HK|en (play in
 ## that language, to catch text that breaks a translation), --demo (play the Steam demo: 10 days,
 ## then the wishlist screen, Play again and round again).
 ## Prints "BUG BOT: ..." lines for each finding and exits 1 when it found any.
