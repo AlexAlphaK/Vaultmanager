@@ -1,0 +1,6487 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh_HK\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: autoload/bank.gd
+msgid "%.2f%% a night"
+msgstr "每晚%.2f%%"
+
+#: autoload/bank.gd
+msgid "Bank loan"
+msgstr "銀行貸款"
+
+#: autoload/bank.gd
+msgid "Credit line covered the overdraft"
+msgstr "信用額度補上了透支"
+
+#: autoload/bank.gd
+msgid "Credit line draw"
+msgstr "動用信用額度"
+
+#: autoload/bank.gd
+msgid "Credit line interest"
+msgstr "信用額度利息"
+
+#: autoload/bank.gd
+msgid "Credit line repaid"
+msgstr "還清信用額度"
+
+#: autoload/bank.gd
+msgid "Late fee"
+msgstr "滯納金"
+
+#: autoload/bank.gd
+msgid "Loan paid off"
+msgstr "貸款已還清"
+
+#: autoload/bank.gd
+msgid "Loan payment"
+msgstr "貸款還款"
+
+#: autoload/bank.gd
+msgid "The bank lent you %s, paid back over %d days."
+msgstr "銀行借給你%s，分%d天還清。"
+
+#: autoload/bank.gd
+msgid "The bank moved your credit rating from %s to %s."
+msgstr "銀行把你的信用評級從%s調整為%s。"
+
+#: autoload/bank.gd
+msgid "You couldn't cover tonight's loan payment. The bank took it anyway, with a late fee."
+msgstr "你付不起今晚的貸款還款。銀行照樣扣了錢，還加收了滯納金。"
+
+#: autoload/bank.gd
+msgid "Your bank loan is paid off. Your credit rating is %s."
+msgstr "你的銀行貸款已經還清。你的信用評級是%s。"
+
+#: autoload/calendar.gd
+msgid "%d more day"
+msgid_plural "%d more days"
+msgstr[0] "還有%d天"
+
+#: autoload/calendar.gd
+msgid "%s (in %d days)"
+msgstr "%s（%d天后）"
+
+#: autoload/calendar.gd
+msgid "%s is over. %s starts tomorrow."
+msgstr "%s結束了。明天開始%s。"
+
+#: autoload/calendar.gd
+msgid "%s is over. You served %d of its customers."
+msgstr "%s結束了。你接待了%d位顧客。"
+
+#: autoload/calendar.gd
+msgid "%s, day %d of %d"
+msgstr "%s，第%d天/共%d天"
+
+#: autoload/calendar.gd
+msgid "A silver coin for my nephew's stocking, please."
+msgstr "唔該俾我一個銀幣，放入我外甥嘅聖誕襪度。"
+
+#: autoload/calendar.gd
+msgid "Autumn"
+msgstr "秋季"
+
+#: autoload/calendar.gd
+msgid "COIN SHOW: collectors from three counties are in town for the weekend."
+msgstr "錢幣展：三個縣的收藏家這個週末都來鎮上了。"
+
+#: autoload/calendar.gd
+msgid "Coin show booth"
+msgstr "錢幣展展位"
+
+#: autoload/calendar.gd
+msgid "Collectors pay well for exact coins and rare ones. A booth brings more of them."
+msgstr "收藏家願意為指定錢幣和稀有錢幣出高價。展位能吸引更多收藏家。"
+
+#: autoload/calendar.gd
+msgid "Debug: skipped ahead to day %d, %s."
+msgstr "調試：跳到第%d天，%s。"
+
+#: autoload/calendar.gd
+msgid "Everyone's paying up for gold this week. My turn."
+msgstr "呢個禮拜個個都高價買金。輪到我喇。"
+
+#: autoload/calendar.gd
+msgid "GOLD FEVER: Prospector Days are on and the whole town wants gold."
+msgstr "淘金熱：淘金節開始了，全鎮都想要黃金。"
+
+#: autoload/calendar.gd
+msgid "Gift buyers want small coins and pay a good premium. Keep the shelves full."
+msgstr "買禮物的人想要小錢幣，還肯多付溢價。把貨架擺滿。"
+
+#: autoload/calendar.gd
+msgid "Gift-wrapped, if you can. It's for my mum."
+msgstr "可唔可以幫我包好佢？送俾我阿媽架。"
+
+#: autoload/calendar.gd
+msgid "Gold buyers pay more all week. Stock up on gold coins."
+msgstr "這一週買金的人出價更高。多囤些金幣。"
+
+#: autoload/calendar.gd
+msgid "Gold fever week"
+msgstr "淘金熱周"
+
+#: autoload/calendar.gd
+msgid "Gold fever, they call it. I've caught it."
+msgstr "佢哋話呢樣嘢叫淘金熱。我都中咗。"
+
+#: autoload/calendar.gd
+msgid "HOLIDAY RUSH: shoppers want coins to give as gifts, and they pay for the wrapping."
+msgstr "節日搶購：顧客想買錢幣當禮物，還願意付包裝費。"
+
+#: autoload/calendar.gd
+msgid "Holiday gift rush"
+msgstr "節日禮物搶購"
+
+#: autoload/calendar.gd
+msgid "In town for the show. What have you got?"
+msgstr "我嚟睇錢幣展架。你有咩貨？"
+
+#: autoload/calendar.gd
+msgid "Last-minute present. You're a lifesaver."
+msgstr "臨急臨忙先買禮物。你真係救咗我。"
+
+#: autoload/calendar.gd
+msgid "My accountant says sell. So I'm selling."
+msgstr "我個會計話賣，咁我咪嚟賣囉。"
+
+#: autoload/calendar.gd
+msgid "Owe more than I thought this year. Cash, please."
+msgstr "今年欠嘅稅多過我估。唔該俾現金。"
+
+#: autoload/calendar.gd
+msgid "Panned this lot at the festival. Well, my grandpa did."
+msgstr "呢啲係我喺節日淘返嚟架。好啦，係我阿爺淘嘅。"
+
+#: autoload/calendar.gd
+msgid "Prospector Days! I want real gold, not the fudge kind."
+msgstr "淘金節！我要真金，唔要朱古力金幣。"
+
+#: autoload/calendar.gd
+msgid "Saw the parade. Now I want a gold coin of my own."
+msgstr "睇完巡遊。而家我都想要個自己嘅金幣。"
+
+#: autoload/calendar.gd
+msgid "Sellers want cash for their tax bills. Keep cash in the safe."
+msgstr "賣家需要現金交稅。保險櫃裏多備些現金。"
+
+#: autoload/calendar.gd
+msgid "Something gold for my wife. Not too big, I'm not made of money."
+msgstr "買啲金嘢俾老婆。唔好太大，我唔係印銀紙架。"
+
+#: autoload/calendar.gd
+msgid "Spring"
+msgstr "春季"
+
+#: autoload/calendar.gd
+msgid "Summer"
+msgstr "夏季"
+
+#: autoload/calendar.gd
+msgid "TAX SEASON: the town is selling metal to pay the taxman. Tax Day is {last}."
+msgstr "報稅季：全鎮都在賣金屬交稅。報稅日是{last}。"
+
+#: autoload/calendar.gd
+msgid "Tax Day"
+msgstr "報稅日"
+
+#: autoload/calendar.gd
+msgid "Tax Day: no profit since the last one, so no tax to pay."
+msgstr "報稅日：自上次以來沒有利潤，所以不用交稅。"
+
+#: autoload/calendar.gd
+msgid "Tax Day: you paid %s, %d%% of your %s profit (after costs) since the last one."
+msgstr "報稅日：你交了%s，即自上次以來%d%%的%s利潤（扣除成本後）。"
+
+#: autoload/calendar.gd
+msgid "Tax season"
+msgstr "報稅季"
+
+#: autoload/calendar.gd
+msgid "The taxman wants his cut. These have to go."
+msgstr "稅局要分一杯羹。呢啲要賣咗佢。"
+
+#: autoload/calendar.gd
+msgid "Tomorrow: %s. %s"
+msgstr "明天：%s。%s"
+
+#: autoload/calendar.gd
+msgid "Town coin show"
+msgstr "小鎮錢幣展"
+
+#: autoload/calendar.gd
+msgid "Winter"
+msgstr "冬季"
+
+#: autoload/calendar.gd
+msgid "You booked a booth at the coin show. Collectors will find you."
+msgstr "你訂了錢幣展的展位。收藏家會找上門來。"
+
+#: autoload/calendar.gd
+msgid "collectors pay well."
+msgstr "收藏家出價高。"
+
+#: autoload/calendar.gd
+msgid "gold buyers pay more."
+msgstr "買金的人出價更高。"
+
+#: autoload/calendar.gd
+msgid "last day"
+msgstr "最後一天"
+
+#: autoload/calendar.gd
+msgid "on %s"
+msgstr "%s"
+
+#: autoload/calendar.gd
+msgid "small gifts sell well."
+msgstr "小禮物好賣。"
+
+#: autoload/calendar.gd
+msgid "tax of about {tax} due {tax_day}."
+msgstr "{tax_day}需繳稅約{tax}。"
+
+#: autoload/calendar.gd scenes/shop/day_panels.gd
+msgid "today"
+msgstr "今天"
+
+#: autoload/calendar.gd
+msgid "tomorrow"
+msgstr "明天"
+
+#: autoload/calendar.gd scenes/shop/day_panels.gd
+msgid "tonight"
+msgstr "今晚"
+
+#: autoload/customers.gd
+msgid "%s coins for the collection. I pay for quality."
+msgstr "收藏用嘅%s錢幣。品相好我就俾好價。"
+
+#: autoload/customers.gd
+msgid "%s has found another shop."
+msgstr "%s找了另一家店。"
+
+#: autoload/customers.gd
+msgid "%s is back."
+msgstr "%s回來了。"
+
+#: autoload/customers.gd
+msgid "%s sold you fakes and walked off laughing."
+msgstr "%s賣給你假幣，笑着走了。"
+
+#: autoload/customers.gd
+msgid "%s walked in."
+msgstr "%s走了進來。"
+
+#: autoload/customers.gd
+msgid "%s will come back when you have %s in stock."
+msgstr "等你有%s的貨，%s會再來。"
+
+#: autoload/customers.gd
+msgid "%s won't be coming back."
+msgstr "%s不會再來了。"
+
+#: autoload/customers.gd
+msgid "%s%.1f stars"
+msgstr "%s%.1f星"
+
+#: autoload/customers.gd
+msgid "Ada Okafor"
+msgstr "Ada Okafor"
+
+#: autoload/customers.gd
+msgid "Ada Okafor is your newest customer. Her grandma is very proud."
+msgstr "Ada Okafor是你最新的顧客。她奶奶為她驕傲極了。"
+
+#: autoload/customers.gd
+msgid "Ada got into the science programme! Ten more for the fund."
+msgstr "Ada入咗理科班！基金再加十個。"
+
+#: autoload/customers.gd
+msgid "Any %s coins? Nice strike, no spots, please."
+msgstr "有冇%s錢幣？壓印要靚，唔好有斑。"
+
+#: autoload/customers.gd
+msgid "Back from the dead! Diamond hands. Give me your shiniest."
+msgstr "起死回生！鑽石手。俾你最閃嗰啲我。"
+
+#: autoload/customers.gd
+msgid "Brayden"
+msgstr "Brayden"
+
+#: autoload/customers.gd
+msgid "Britannias next. Three, for a display on the history of coinage."
+msgstr "下一個係不列顛尼亞。要三個，做錢幣歷史展覽。"
+
+#: autoload/customers.gd
+msgid "Buying the crypto dip. Need cash for it, bro."
+msgstr "撈底買幣。要現金呀，兄弟。"
+
+#: autoload/customers.gd
+msgid "Cash only. No paperwork. You understand."
+msgstr "淨係收現金。唔要文件。你明架啦。"
+
+#: autoload/customers.gd
+msgid "Chad"
+msgstr "Chad"
+
+#: autoload/customers.gd
+msgid "Chad bought gold to 'diversify his bag'."
+msgstr "Chad買了金子，說是\"分散他的倉位\"。"
+
+#: autoload/customers.gd
+msgid "Chad posted your shop to all his followers. 'Based gold guy.'"
+msgstr "Chad把你的店發給了他所有粉絲。\"黃金大佬，靠譜。\""
+
+#: autoload/customers.gd
+msgid "Chad sold his gold back after a bad week in crypto."
+msgstr "Chad在加密幣裏虧了一週，又把金子賣了回來。"
+
+#: autoload/customers.gd
+msgid "Detective Ruiz"
+msgstr "Detective Ruiz"
+
+#: autoload/customers.gd
+msgid "Detective Ruiz paid you the reward for Vinnie's fakes."
+msgstr "Detective Ruiz把Vinnie假幣案的賞金付給了你。"
+
+#: autoload/customers.gd
+msgid "Detective Ruiz warned you about buying from Vinnie."
+msgstr "Detective Ruiz提醒你別從Vinnie那兒收貨。"
+
+#: autoload/customers.gd
+msgid "Diversifying my bag. Need gold, like, now."
+msgstr "分散倉位。我要金，即刻要。"
+
+#: autoload/customers.gd
+msgid "Don't ask about my portfolio. Just buy these."
+msgstr "唔好問我啲投資。買咗佢哋就得。"
+
+#: autoload/customers.gd
+msgid "Dr. Vance is building a museum display on the history of coinage."
+msgstr "Dr. Vance正在籌辦一個錢幣史博物館展覽。"
+
+#: autoload/customers.gd
+msgid "Dr. Vance's display opens at the town museum next week."
+msgstr "Dr. Vance的展覽下週在鎮博物館開幕。"
+
+#: autoload/customers.gd
+msgid "Dr. Vance, a collector, added your Krugerrand to her cabinet."
+msgstr "收藏家Dr. Vance把你的克魯格金幣收進了她的櫃子。"
+
+#: autoload/customers.gd
+msgid "Everything's negotiable, friend."
+msgstr "乜都有得傾，朋友。"
+
+#: autoload/customers.gd
+msgid "Fresh from my uncle's estate. Very fresh. Cash, yeah?"
+msgstr "啱啱由我阿叔嘅遺產度攞嚟。新鮮熱辣。現金，得唔得？"
+
+#: autoload/customers.gd
+msgid "Gold's the OG blockchain, bro."
+msgstr "黃金先係元祖區塊鏈呀，兄弟。"
+
+#: autoload/customers.gd
+msgid "Got liquidated. Need those eagles turned back into fiat. Don't tell anyone."
+msgstr "俾人斬倉。要將呢啲鷹幣換返做法幣。唔好話俾人知。"
+
+#: autoload/customers.gd
+msgid "Got margin-called. Need fiat, fast."
+msgstr "俾人追保證金。急住要法幣。"
+
+#: autoload/customers.gd
+msgid "Grandma's silver paid for my first year. Now I'm starting my own stack."
+msgstr "阿嫲啲銀幣俾咗我第一年學費。而家我要開始儲返自己嘅。"
+
+#: autoload/customers.gd
+msgid "Grandpa Lev"
+msgstr "Grandpa Lev"
+
+#: autoload/customers.gd
+msgid "Grandpa Lev sold you the first of his late wife's coins. He'll be back."
+msgstr "Grandpa Lev賣給你他亡妻的第一批錢幣。他還會再來。"
+
+#: autoload/customers.gd
+msgid "Grandpa Lev sold you the last of Mira's coins. He looked lighter, somehow."
+msgstr "Grandpa Lev賣給你Mira的最後一批錢幣。他看起來輕鬆了些。"
+
+#: autoload/customers.gd
+msgid "Grandpa Lev told the whole bowling league about your shop."
+msgstr "Grandpa Lev跟整個保齡球隊都說了你的店。"
+
+#: autoload/customers.gd
+msgid "Grandpa Lev told you how Mira saved a coin from every trip they took."
+msgstr "Grandpa Lev告訴你，Mira每次旅行都會留一枚錢幣。"
+
+#: autoload/customers.gd
+msgid "Her favourite. I kept this one till last."
+msgstr "佢最鍾意呢個。我留到最後先賣。"
+
+#: autoload/customers.gd
+msgid "I collect %s coins. Nothing else will do."
+msgstr "我收藏%s錢幣。其他唔要。"
+
+#: autoload/customers.gd
+msgid "I collect Krugerrands. Do you have one with a crisp springbok?"
+msgstr "我收藏克魯格金幣。有冇跳羚圖案清楚嘅？"
+
+#: autoload/customers.gd
+msgid "I never pay sticker. Let's talk."
+msgstr "我從來唔會照標價買。傾吓先。"
+
+#: autoload/customers.gd
+msgid "Jaxon"
+msgstr "Jaxon"
+
+#: autoload/customers.gd
+msgid "Just took profits. Turn it into something shiny."
+msgstr "啱啱食咗糊。換啲閃閃吓嘅嘢。"
+
+#: autoload/customers.gd
+msgid "Last time, I promise. These ones are definitely real."
+msgstr "最後一次，我保證。呢啲實係真嘅。"
+
+#: autoload/customers.gd
+msgid "Last top-up before she goes. Ten more, and wish her luck."
+msgstr "佢走之前最後一次儲。再嚟十個，祝佢好運。"
+
+#: autoload/customers.gd
+msgid "Let's not insult each other. What's your real number?"
+msgstr "大家唔好侮辱大家啦。你真正出幾多？"
+
+#: autoload/customers.gd
+msgid "Moonboy Mike"
+msgstr "Moonboy Mike"
+
+#: autoload/customers.gd
+msgid "More of Mira's collection. She'd want it to go to someone honest."
+msgstr "Mira啲收藏又嚟喇。佢會想交俾一個老實人。"
+
+#: autoload/customers.gd
+msgid "Mrs. Okafor finished Ada's college fund."
+msgstr "Okafor太太存滿了Ada的大學基金。"
+
+#: autoload/customers.gd
+msgid "Mrs. Okafor started a college fund in silver for her granddaughter."
+msgstr "Okafor太太用銀幣為孫女開了一個大學基金。"
+
+#: autoload/customers.gd
+msgid "Mrs. Okafor's granddaughter got into the science programme."
+msgstr "Okafor太太的孫女考上了理科班。"
+
+#: autoload/customers.gd
+msgid "My Mira bought one of these every birthday. Time to let a few go."
+msgstr "我屋企Mira每年生日都買一個。係時候放手幾個喇。"
+
+#: autoload/customers.gd
+msgid "My cousin's coins. He's... away."
+msgstr "我表哥啲錢幣。佢……出咗遠門。"
+
+#: autoload/customers.gd
+msgid "My grandson graduates Friday. I want to buy him a gold coin, and I want it from you."
+msgstr "我個孫星期五畢業。我想送佢一個金幣，仲要喺你度買。"
+
+#: autoload/customers.gd
+msgid "My old teacher's eagles. I want them in good hands, not a fair price."
+msgstr "我老師啲鷹幣。我想佢哋搵個好主人，價錢唔緊要。"
+
+#: autoload/customers.gd
+msgid "New batch. Same uncle. Different estate."
+msgstr "新一批。同一個阿叔。唔同嘅遺產。"
+
+#: autoload/customers.gd
+msgid "Priced to move. Don't ask where they're from."
+msgstr "平價放。唔好問邊度嚟。"
+
+#: autoload/customers.gd autoload/orders.gd scenes/grading/coin_grade.gd
+msgid "Professor Hale"
+msgstr "Professor Hale"
+
+#: autoload/customers.gd
+msgid "Quick deal, yeah? I'm double parked."
+msgstr "快啲搞掂好唔好？我架車違泊呀。"
+
+#: autoload/customers.gd
+msgid "Reward"
+msgstr "獎勵"
+
+#: autoload/customers.gd autoload/story.gd
+msgid "Reward: "
+msgstr "獎勵："
+
+#: autoload/customers.gd
+msgid "Silver for my granddaughter Ada's college fund. Five, please."
+msgstr "幫我個孫女Ada嘅大學基金買銀幣。唔該五個。"
+
+#: autoload/customers.gd
+msgid "Some Guy"
+msgstr "Some Guy"
+
+#: autoload/customers.gd
+msgid "Tanner"
+msgstr "Tanner"
+
+#: autoload/customers.gd
+msgid "The centrepiece: a platinum eagle. The museum opens next week."
+msgstr "壓軸：一個鉑金鷹幣。博物館下個禮拜開幕。"
+
+#: autoload/customers.gd
+msgid "The museum display credits your shop. People are talking."
+msgstr "博物館展覽上寫了你店的名字。大家都在議論。"
+
+#: autoload/customers.gd
+msgid "Took some profits, bro. Gold's the original blockchain."
+msgstr "食咗糊喇，兄弟。黃金係最早嘅區塊鏈。"
+
+#: autoload/customers.gd
+msgid "Two-Phones Tony"
+msgstr "Two-Phones Tony"
+
+#: autoload/customers.gd
+msgid "Vinnie"
+msgstr "Vinnie"
+
+#: autoload/customers.gd
+msgid "Vinnie's been passing fakes all over town. Some ended up in your vault. Test your coins."
+msgstr "Vinnie喺成個鎮散播假幣。有啲入咗你個金庫。驗吓你啲錢幣啦。"
+
+#: autoload/customers.gd
+msgid "We picked up Vinnie's counterfeit ring. Your tips helped. The town's reward is yours."
+msgstr "我哋拉咗Vinnie個假幣集團。你嘅線報幫咗好大忙。鎮上嘅賞金歸你。"
+
+#: autoload/customers.gd
+msgid "You caught %s's %s fakes. He'll try again."
+msgstr "你識破了%s的%s假幣。他還會再試。"
+
+#: autoload/customers.gd
+msgid "You caught %s's fakes again. Word is the police are interested."
+msgstr "你又識破了%s的假幣。聽說警察很感興趣。"
+
+#: autoload/customers.gd
+msgid "collector"
+msgstr "收藏家"
+
+#: autoload/customers.gd
+msgid "crypto bro"
+msgstr "幣圈小哥"
+
+#: autoload/customers.gd
+msgid "haggler"
+msgstr "砍價高手"
+
+#: autoload/customers.gd
+msgid "looks nervous"
+msgstr "神色緊張"
+
+#: autoload/customers.gd
+msgid "old coin"
+msgstr "老錢幣"
+
+#: autoload/customers.gd
+msgid "regular"
+msgstr "常客"
+
+#: autoload/day.gd
+msgid "Friday"
+msgstr "星期五"
+
+#: autoload/day.gd
+msgid "Insurance"
+msgstr "保險"
+
+#: autoload/day.gd
+msgid "Monday"
+msgstr "星期一"
+
+#: autoload/day.gd
+msgid "Overdraft interest"
+msgstr "透支利息"
+
+#: autoload/day.gd
+msgid "Rent"
+msgstr "房租"
+
+#: autoload/day.gd scenes/auction/auction_house.gd scenes/shop/rush_hours.gd
+msgid "Saturday"
+msgstr "星期六"
+
+#: autoload/day.gd
+msgid "Sunday"
+msgstr "星期日"
+
+#: autoload/day.gd
+msgid "Thursday"
+msgstr "星期四"
+
+#: autoload/day.gd
+msgid "Tuesday"
+msgstr "星期二"
+
+#: autoload/day.gd
+msgid "Upkeep"
+msgstr "維護費"
+
+#: autoload/day.gd scenes/auction/auction_house.gd
+msgid "Wednesday"
+msgstr "星期三"
+
+#: autoload/day.gd
+msgid "You are overdrawn. The bank charges interest every night."
+msgstr "你已透支。銀行每晚都會收取利息。"
+
+#: autoload/decor.gd
+msgid "\"We buy gold\" in your best chalk lettering."
+msgstr "用你最漂亮的粉筆字寫着\"收購黃金\"。"
+
+#: autoload/decor.gd
+msgid "A big glossy palm, the kind hotel lobbies have."
+msgstr "一棵油亮的大棕櫚，酒店大堂裏那種。"
+
+#: autoload/decor.gd
+msgid "A buzzing neon gold bar on a stand. Customers love a photo with it."
+msgstr "支架上一塊嗡嗡作響的霓虹金條。顧客都愛和它合影。"
+
+#: autoload/decor.gd
+msgid "A founding father of coinage, in white marble on a plinth."
+msgstr "一位錢幣先賢的白色大理石半身像，立在底座上。"
+
+#: autoload/decor.gd
+msgid "A gilded lion spouting water into a marble basin. Coins in it go to charity."
+msgstr "一頭鍍金獅子往大理石池裏噴水。池裏的硬幣都捐給慈善。"
+
+#: autoload/decor.gd
+msgid "A glass-topped pedestal showing off a few proof coins."
+msgstr "一個玻璃頂展台，陳列着幾枚精製幣。"
+
+#: autoload/decor.gd
+msgid "A leafy fern in a terracotta pot."
+msgstr "陶盆裏一株茂盛的蕨類。"
+
+#: autoload/decor.gd
+msgid "A life-size gilded eagle, wings spread, on a marble column."
+msgstr "一隻真鳥大小的鍍金雄鷹，展翅立在大理石柱上。"
+
+#: autoload/decor.gd
+msgid "A standing lamp dripping with crystal drops."
+msgstr "一盞掛滿水晶墜子的落地燈。"
+
+#: autoload/decor.gd
+msgid "A tall glass cabinet of rings and chains, lit from inside."
+msgstr "一個高高的玻璃櫃，擺着戒指和項鍊，內部有燈光。"
+
+#: autoload/decor.gd
+msgid "A tall indoor fig. Makes the corner feel like a shop, not a booth."
+msgstr "一棵高大的室內無花果樹。讓這個角落像家店，而不是小攤。"
+
+#: autoload/decor.gd
+msgid "An old walnut clock with a gold pendulum. It ticks reassuringly."
+msgstr "一座老胡桃木鐘，配着金色鐘擺。滴答聲讓人安心。"
+
+#: autoload/decor.gd
+msgid "Appeal %d: good deals earn %d%% more stars, and the town talks."
+msgstr "吸引力%d：好交易多得%d%%星級，鎮上的人也會議論。"
+
+#: autoload/decor.gd autoload/progress.gd
+msgid "Bought %s."
+msgstr "買了%s。"
+
+#: autoload/decor.gd
+msgid "Brass floor lamp"
+msgstr "黃銅落地燈"
+
+#: autoload/decor.gd
+msgid "Chalkboard sign"
+msgstr "黑板招牌"
+
+#: autoload/decor.gd
+msgid "Coin pedestal case"
+msgstr "錢幣展台"
+
+#: autoload/decor.gd
+msgid "Crystal torchère"
+msgstr "水晶落地燈"
+
+#: autoload/decor.gd
+msgid "Fig tree"
+msgstr "無花果樹"
+
+#: autoload/decor.gd
+msgid "Gleaming bars stacked under a glass dome. Not the real ones, don't tell."
+msgstr "玻璃罩下堆着閃亮的金條。不是真的，別說出去。"
+
+#: autoload/decor.gd
+msgid "Gold bar pyramid"
+msgstr "金條金字塔"
+
+#: autoload/decor.gd
+msgid "Golden eagle statue"
+msgstr "金鷹鵰像"
+
+#: autoload/decor.gd
+msgid "Grandfather clock"
+msgstr "落地大擺鍾"
+
+#: autoload/decor.gd
+msgid "Jewellery vitrine"
+msgstr "珠寶櫃"
+
+#: autoload/decor.gd
+msgid "Lion fountain"
+msgstr "獅子噴泉"
+
+#: autoload/decor.gd
+msgid "Marble bust"
+msgstr "大理石半身像"
+
+#: autoload/decor.gd
+msgid "Neon gold sign"
+msgstr "霓虹金色招牌"
+
+#: autoload/decor.gd
+msgid "No decoration yet. Pieces on the floor win you stars."
+msgstr "還沒有裝飾。店裏的擺件能為你贏得星級。"
+
+#: autoload/decor.gd
+msgid "Palm in a brass urn"
+msgstr "黃銅甕裏的棕櫚"
+
+#: autoload/decor.gd
+msgid "People talk about your shop's decor: +%.2f stars."
+msgstr "大家都在誇你店裏的裝潢：+%.2f星。"
+
+#: autoload/decor.gd
+msgid "Potted fern"
+msgstr "盆栽蕨類"
+
+#: autoload/decor.gd
+msgid "Sold back: %s"
+msgstr "賣回：%s"
+
+#: autoload/decor.gd
+msgid "Somewhere comfy for a collector to sit and think it over."
+msgstr "給收藏家一個舒服的地方坐下來好好考慮。"
+
+#: autoload/decor.gd
+msgid "Velvet armchair"
+msgstr "天鵝絨扶手椅"
+
+#: autoload/decor.gd
+msgid "Warm light and polished brass."
+msgstr "温暖的燈光和閃亮的黃銅。"
+
+#: autoload/decor.gd
+msgid "art"
+msgstr "藝術品"
+
+#: autoload/decor.gd
+msgid "display case"
+msgstr "展示櫃"
+
+#: autoload/decor.gd
+msgid "lamp"
+msgstr "燈具"
+
+#: autoload/decor.gd
+msgid "plant"
+msgstr "植物"
+
+#: autoload/decor.gd
+msgid "seat"
+msgstr "座椅"
+
+#: autoload/decor.gd
+msgid "sign"
+msgstr "招牌"
+
+#: autoload/demo.gd
+msgid "%s Demo"
+msgstr "%s 試玩版"
+
+#: autoload/demo.gd
+msgid "Vault Manager"
+msgstr "Vault Manager"
+
+#: autoload/investor.gd
+msgid "%d%% of each day's profit"
+msgstr "每天利潤的%d%%"
+
+#: autoload/investor.gd
+msgid "%s has her money back and more. She's out."
+msgstr "%s已經連本帶利拿回了錢。她退出了。"
+
+#: autoload/investor.gd
+msgid "%s is out: the shop is all yours again."
+msgstr "%s退出了：店又完全屬於你了。"
+
+#: autoload/investor.gd
+msgid "%s put %s into the shop for %d%% of each day's profit."
+msgstr "%s向店裏投了%s，換取每天利潤的%d%%。"
+
+#: autoload/investor.gd
+msgid "%s takes %d%% of each day's profit. Still owed: %s."
+msgstr "%s拿走每天利潤的%d%%。尚欠：%s。"
+
+#: autoload/investor.gd
+msgid "%s, an angel investor, wants a word before you open."
+msgstr "天使投資人%s想在你開門前和你談談。"
+
+#: autoload/investor.gd
+msgid "%s, an angel investor, will put in %s to keep you afloat. See the Ledger."
+msgstr "天使投資人%s願意投入%s幫你渡過難關。去看看賬本。"
+
+#: autoload/investor.gd
+msgid "Angel investment"
+msgstr "天使投資"
+
+#: autoload/investor.gd autoload/story.gd
+msgid "Celeste Wren"
+msgstr "Celeste Wren"
+
+#: autoload/investor.gd
+msgid "Investor buy-out"
+msgstr "買斷投資人股份"
+
+#: autoload/investor.gd
+msgid "Investor's share"
+msgstr "投資人分成"
+
+#: autoload/investor.gd
+msgid "You bought out %s's stake for %s. The shop is all yours again."
+msgstr "你花%s買斷了%s的股份。店又完全屬於你了。"
+
+#: autoload/market_events.gd
+msgid "BITCOIN CRASHES {move}. Burned crypto traders want something real."
+msgstr "比特幣暴跌{move}。被燒傷的幣民想要實實在在的東西。"
+
+#: autoload/market_events.gd
+msgid "BITCOIN SOARS {move}. Gold bugs sell up to chase crypto."
+msgstr "比特幣暴漲{move}。金蟲們賣金追幣。"
+
+#: autoload/market_events.gd
+msgid "Buying the dip, like my dad taught me."
+msgstr "撈底，我老豆教我架。"
+
+#: autoload/market_events.gd
+msgid "CHIP STOCKS PLUNGE: NVIDIA {move}. Tech money looks for shelter in silver."
+msgstr "晶片股暴跌：英偉達{move}。科技資金湧向白銀避險。"
+
+#: autoload/market_events.gd
+msgid "DOGECOIN MOONS {move}. Lucky winners want to lock in their gains in gold."
+msgstr "狗狗幣暴漲{move}。幸運兒想把收益鎖進黃金。"
+
+#: autoload/market_events.gd
+msgid "Dog money paid off. Turning it into real money."
+msgstr "狗狗幣賺咗錢。換返啲真錢。"
+
+#: autoload/market_events.gd
+msgid "Done with crypto. Give me something I can hold."
+msgstr "受夠加密幣喇。俾啲拎得上手嘅嘢我。"
+
+#: autoload/market_events.gd
+msgid "Forums say buy physical. How many do you have?"
+msgstr "討論區話要買實物。你有幾多？"
+
+#: autoload/market_events.gd
+msgid "GOLD JUMPS {move}. Folks dig out old coins to cash in at the top."
+msgstr "金價跳漲{move}。大家翻出舊錢幣，趁高價套現。"
+
+#: autoload/market_events.gd
+msgid "GOLD SLIDES {move}. Panic sellers want out before it drops further."
+msgstr "金價下滑{move}。恐慌的賣家想在繼續下跌前脱手。"
+
+#: autoload/market_events.gd
+msgid "Gold's boring. Selling to buy tech."
+msgstr "黃金好悶。賣咗去買科技股。"
+
+#: autoload/market_events.gd
+msgid "Gold's crashing! Take them before they're worth nothing."
+msgstr "金價跌爆！趁仲值錢快啲收咗佢哋。"
+
+#: autoload/market_events.gd
+msgid "Gold's up again. Time to cash in."
+msgstr "金價又升喇。係時候套現。"
+
+#: autoload/market_events.gd
+msgid "Heard spot is flying today. What'll you give me?"
+msgstr "聽講今日現貨價飛咗上天。你出幾多？"
+
+#: autoload/market_events.gd
+msgid "Lost a month's pay on chips today. Silver, please."
+msgstr "今日喺晶片股輸咗成個月人工。唔該俾銀幣我。"
+
+#: autoload/market_events.gd
+msgid "Much profit. Very gold. Wow."
+msgstr "好多利潤。非常黃金。嘩。"
+
+#: autoload/market_events.gd
+msgid "My broker isn't picking up. You'll buy these, right?"
+msgstr "我個經紀唔聽電話。你會收呢啲架嘛？"
+
+#: autoload/market_events.gd
+msgid "My coins halved overnight. Gold doesn't do that, right?"
+msgstr "我啲幣一晚冇咗一半。黃金唔會咁架嘛？"
+
+#: autoload/market_events.gd
+msgid "My nephew says gold is a boomer rock. Buy these?"
+msgstr "我外甥話黃金係老餅嘢。你收唔收？"
+
+#: autoload/market_events.gd
+msgid "My retirement account is red. Something safe, please."
+msgstr "我個退休戶口一片紅。俾啲穩陣嘅嘢我。"
+
+#: autoload/market_events.gd
+msgid "NEWS: "
+msgstr "新聞："
+
+#: autoload/market_events.gd
+msgid "Need cash fast, Bitcoin's taking off without me."
+msgstr "要急錢，比特幣起飛緊，我又冇上車。"
+
+#: autoload/market_events.gd
+msgid "PLATINUM POPS {move}. Owners rush to sell."
+msgstr "鉑金跳漲{move}。持有者趕着賣。"
+
+#: autoload/market_events.gd
+msgid "Platinum's finally moving. Selling while it lasts."
+msgstr "鉑金終於郁喇。趁而家賣。"
+
+#: autoload/market_events.gd
+msgid "SILVER ON SALE: SILVER {move}. Bargain hunters line up."
+msgstr "白銀大促銷：白銀{move}。撿便宜的人排起了長隊。"
+
+#: autoload/market_events.gd
+msgid "SILVER SQUEEZE: SILVER {move}. Stackers storm the shops."
+msgstr "白銀逼空：白銀{move}。囤銀族衝進各家店鋪。"
+
+#: autoload/market_events.gd
+msgid "STOCKS RALLY: S&P 500 {move}. Metal holders sell to buy shares."
+msgstr "股市反彈：標普500{move}。金屬持有者賣出換股票。"
+
+#: autoload/market_events.gd
+msgid "STOCKS TUMBLE: S&P 500 {move}. Investors run to safe-haven gold."
+msgstr "股市下跌：標普500{move}。投資者紛紛買入避險黃金。"
+
+#: autoload/market_events.gd
+msgid "Saw it on the news. I'm getting out now."
+msgstr "喺新聞度睇到。我而家就要走人。"
+
+#: autoload/market_events.gd
+msgid "Silver's going to the moon. I need tubes, now."
+msgstr "白銀要上太空喇。我要成筒嘅，即刻。"
+
+#: autoload/market_events.gd
+msgid "Silver's on sale. I'll take some."
+msgstr "白銀減價。我要啲。"
+
+#: autoload/market_events.gd
+msgid "Sold my Bitcoin at the bottom. Never again."
+msgstr "喺最低位賣咗比特幣。以後都唔玩。"
+
+#: autoload/market_events.gd
+msgid "Stocks are flying. Moving my stack into the market."
+msgstr "股市飛緊。將我儲落嘅貨轉入股市。"
+
+#: autoload/market_events.gd
+msgid "Tech's crashing. I want something shiny I can hold."
+msgstr "科技股爆煲。我想要啲拎得上手、閃閃吓嘅嘢。"
+
+#: autoload/market_events.gd
+msgid "The market's a bloodbath. I want gold."
+msgstr "股市血流成河。我要黃金。"
+
+#: autoload/orders.gd
+msgid "%s collected their %s. Order filled!"
+msgstr "%s取走了他們的%s。訂單完成！"
+
+#: autoload/orders.gd
+msgid "%s ordered %d × %s by %s. Pays %s."
+msgstr "%s訂購了%d × %s，截止%s。報酬%s。"
+
+#: autoload/orders.gd
+msgid "%s picked up the %s you found for them. Collectors talk."
+msgstr "%s取走了你幫忙找到的%s。收藏家之間會傳開的。"
+
+#: autoload/orders.gd
+msgid "%s will come back on %s."
+msgstr "%s會在%s回來。"
+
+#: autoload/orders.gd
+msgid "%s's order fell through. They won't forget it."
+msgstr "%s的訂單落空了。他們不會忘記的。"
+
+#: autoload/orders.gd
+msgid "A %s, in decent condition. I'll pay a collector's price."
+msgstr "一個%s，品相過得去就得。我俾收藏價。"
+
+#: autoload/orders.gd
+msgid "A collector"
+msgstr "一位收藏家"
+
+#: autoload/orders.gd
+msgid "Colonel Ashby"
+msgstr "Colonel Ashby"
+
+#: autoload/orders.gd
+msgid "Dealer network: 1 × %s for %s."
+msgstr "同行網絡：1 × %s，價格%s。"
+
+#: autoload/orders.gd
+msgid "Did you find my %s? We agreed on today."
+msgstr "搵到我個%s未？我哋約咗今日架。"
+
+#: autoload/orders.gd
+msgid "Dug this out of the garden, believe it or not."
+msgstr "信唔信由你，係喺花園度掘出嚟架。"
+
+#: autoload/orders.gd
+msgid "Found this old coin in grandad's desk. Is it worth anything?"
+msgstr "喺阿爺張書枱度搵到呢個舊錢幣。值唔值錢架？"
+
+#: autoload/orders.gd
+msgid "I heard you found my %s already!"
+msgstr "聽講你已經搵到我個%s！"
+
+#: autoload/orders.gd
+msgid "I'm buying for a client. Can you get me %d %s coins?"
+msgstr "我幫客人買貨。你搞唔搞到%d個%s？"
+
+#: autoload/orders.gd
+msgid "I'm here for the %s. Tell me you found it."
+msgstr "我嚟攞個%s。話我知你搵到啦。"
+
+#: autoload/orders.gd
+msgid "I've hunted a %s for years. Find me one?"
+msgstr "我搵一個%s搵咗好多年。幫我搵一個？"
+
+#: autoload/orders.gd
+msgid "It was my aunt's. Gold's gold, right?"
+msgstr "呢個係我姑媽架。金就係金，係咪？"
+
+#: autoload/orders.gd
+msgid "Judge Amari"
+msgstr "Judge Amari"
+
+#: autoload/orders.gd
+msgid "My collection is missing a %s. Can you track one down?"
+msgstr "我啲收藏差一個%s。你搵唔搵到？"
+
+#: autoload/orders.gd
+msgid "Our company is giving %d %s coins to its staff. Can you source them?"
+msgstr "我哋公司要派%d個%s俾員工。你有冇貨？"
+
+#: autoload/orders.gd
+msgid "Some old coin from a box of junk. Melt price is fine."
+msgstr "喺一箱雜物度搵到嘅舊錢幣。照熔化價都得。"
+
+#: autoload/orders.gd
+msgid "Today's the day. Have you got my %s?"
+msgstr "就係今日喇。我個%s到咗未？"
+
+#: autoload/orders.gd
+msgid "Wedding gifts for the whole family: %d %s coins."
+msgstr "成家人嘅結婚禮物：%d個%s。"
+
+#: autoload/orders.gd
+msgid "Word is my %s came in. Is it ready?"
+msgstr "聽講我個%s到咗貨。準備好未？"
+
+#: autoload/orders.gd
+msgid "You let %s down: no %s on the day you promised."
+msgstr "你讓%s失望了：約定的日子沒有%s。"
+
+#: autoload/pad.gd scenes/shop/day_panels.gd ui/save_slots_panel.gd ui/settings_panel.gd
+msgid "Back"
+msgstr "返回"
+
+#: autoload/pad.gd
+msgid "Click (hold to drag)"
+msgstr "點擊（按住拖動）"
+
+#: autoload/pad.gd
+msgid "Confirm"
+msgstr "確認"
+
+#: autoload/pad.gd
+msgid "Controller connected. Press View for the controls."
+msgstr "手柄已連接。按\"視圖\"鍵查看操作。"
+
+#: autoload/pad.gd
+msgid "Jump to the next button"
+msgstr "跳到下一個按鈕"
+
+#: autoload/pad.gd
+msgid "Left stick"
+msgstr "左搖桿"
+
+#: autoload/pad.gd
+msgid "Move the pointer"
+msgstr "移動指針"
+
+#: autoload/pad.gd
+msgid "Pause"
+msgstr "暫停"
+
+#: autoload/pad.gd
+msgid "Right click"
+msgstr "右鍵"
+
+#: autoload/pad.gd
+msgid "Right stick"
+msgstr "右搖桿"
+
+#: autoload/pad.gd
+msgid "Show or hide this"
+msgstr "顯示或隱藏本頁"
+
+#: autoload/pad.gd
+msgid "Start"
+msgstr "開始"
+
+#: autoload/progress.gd
+msgid "A back room with proper benches. In a rush the queue gets impatient half as fast while you test."
+msgstr "帶像樣工作台的後屋。高峯時，你檢測期間排隊顧客的耐心消耗減半。"
+
+#: autoload/progress.gd
+msgid "A conductivity probe for the coin bench (key 6). It reads through plating and finds a tungsten core."
+msgstr "錢幣工作台用的電導探頭（6鍵）。能穿透鍍層，查出鎢芯。"
+
+#: autoload/progress.gd
+msgid "A dealing room with live screens. Each morning, trade metals, stocks and crypto and hedge your vault. Investors bring 25% more."
+msgstr "配有實時螢幕的交易室。每天早上交易金屬、股票和加密幣，為金庫對沖風險。投資客多帶25%的錢。"
+
+#: autoload/progress.gd
+msgid "A second service window. The clerk rings up 40% faster, the till holds 50% more before thieves notice, and 1 more customer can wait."
+msgstr "第二個服務窗口。店員收銀快40%，收銀機多裝50%才會被賊盯上，還能多一位顧客排隊。"
+
+#: autoload/progress.gd
+msgid "Adds a shelf to the wall safe for the nightly lock-up."
+msgstr "為每晚鎖庫的牆內保險櫃加一層架子。"
+
+#: autoload/progress.gd
+msgid "Alarm system"
+msgstr "報警系統"
+
+#: autoload/progress.gd
+msgid "Brass queue ropes"
+msgstr "黃銅排隊圍欄"
+
+#: autoload/progress.gd
+msgid "Bullion house"
+msgstr "貴金屬商行"
+
+#: autoload/progress.gd
+msgid "Bullion trading desk"
+msgstr "貴金屬交易台"
+
+#: autoload/progress.gd
+msgid "Coins sparkle. Buyers accept 2% more premium."
+msgstr "錢幣閃閃發光。買家願多付2%溢價。"
+
+#: autoload/progress.gd
+msgid "Collector's lounge"
+msgstr "收藏家休息室"
+
+#: autoload/progress.gd
+msgid "Comfy chairs and coffee. Buyers accept 3% more premium and wait 20% longer."
+msgstr "舒適的椅子和咖啡。買家願多付3%溢價，多等20%的時間。"
+
+#: autoload/progress.gd
+msgid "Corner counter"
+msgstr "街角櫃枱"
+
+#: autoload/progress.gd
+msgid "Customers wait 25% longer before they give up."
+msgstr "顧客放棄前多等25%的時間。"
+
+#: autoload/progress.gd
+msgid "Digital gauges"
+msgstr "數字儀表"
+
+#: autoload/progress.gd
+msgid "Display case lights"
+msgstr "展櫃燈光"
+
+#: autoload/progress.gd
+msgid "Fraud insurance"
+msgstr "欺詐保險"
+
+#: autoload/progress.gd
+msgid "Full game only"
+msgstr "僅限完整版"
+
+#: autoload/progress.gd
+msgid "Highway billboard"
+msgstr "公路廣告牌"
+
+#: autoload/progress.gd
+msgid "Insurance costs 30% less and robbers think twice."
+msgstr "保險費便宜30%，劫匪也會三思。"
+
+#: autoload/progress.gd
+msgid "Long counter"
+msgstr "長櫃枱"
+
+#: autoload/progress.gd
+msgid "Main Street shop"
+msgstr "主街店鋪"
+
+#: autoload/progress.gd
+msgid "Marble showroom counter"
+msgstr "大理石展廳櫃枱"
+
+#: autoload/progress.gd
+msgid "Marble, brass and glass. Buyers accept 2% more premium, wait 15% longer, and 1 more customer can wait."
+msgstr "大理石、黃銅和玻璃。買家願多付2%溢價，多等15%的時間，還能多一位顧客排隊。"
+
+#: autoload/progress.gd
+msgid "Melt scrap in-house: the refiner pays 6% more for the jewellery you buy, and with a melting furnace the scrap dealer brings lots twice the size."
+msgstr "自己熔鍊廢料：精煉廠為你收購的首飾多付6%；有了熔爐，廢料商帶來的貨量翻倍。"
+
+#: autoload/progress.gd
+msgid "More passers-by notice you: customers arrive 15% faster."
+msgstr "更多路人注意到你：顧客來得快15%。"
+
+#: autoload/progress.gd
+msgid "Moving to %s"
+msgstr "搬到%s"
+
+#: autoload/progress.gd
+msgid "Needs %.1f stars"
+msgstr "需要%.1f星"
+
+#: autoload/progress.gd
+msgid "Needs %s cash"
+msgstr "需要現金%s"
+
+#: autoload/progress.gd
+msgid "Needs net worth %s"
+msgstr "需要淨資產%s"
+
+#: autoload/progress.gd
+msgid "Neon window sign"
+msgstr "霓虹櫥窗招牌"
+
+#: autoload/progress.gd
+msgid "Pays back half of what you lose on fakes the assay lab catches."
+msgstr "化驗室查出的假幣損失，賠付一半。"
+
+#: autoload/progress.gd
+msgid "People drive in from the next town: customers arrive 30% faster."
+msgstr "鄰鎮的人開車過來：顧客來得快30%。"
+
+#: autoload/progress.gd
+msgid "Posts and a velvet rope snake the queue: 2 more customers can wait inside."
+msgstr "立柱和天鵝絨繩讓隊伍蜿蜒排開：店內可多排兩位顧客。"
+
+#: autoload/progress.gd
+msgid "Radio ads"
+msgstr "電台廣告"
+
+#: autoload/progress.gd
+msgid "Refining workshop"
+msgstr "精煉作坊"
+
+#: autoload/progress.gd
+msgid "Robberies become very rare and insurance drops another 30%."
+msgstr "搶劫變得非常罕見，保險費再降30%。"
+
+#: autoload/progress.gd
+msgid "Second safe"
+msgstr "第二個保險櫃"
+
+#: autoload/progress.gd
+msgid "Sigma metal verifier"
+msgstr "Sigma金屬檢測儀"
+
+#: autoload/progress.gd
+msgid "Testing lab"
+msgstr "檢測實驗室"
+
+#: autoload/progress.gd
+msgid "The coin and bar benches compare each reading with the spec: green inside it, red outside."
+msgstr "錢幣和金條工作台會把每個讀數與規格對比：符合為綠色，不符為紅色。"
+
+#: autoload/progress.gd
+msgid "The whole town hears about you: customers arrive 20% faster."
+msgstr "全鎮都聽說了你：顧客來得快20%。"
+
+#: autoload/progress.gd
+msgid "Time-lock vault"
+msgstr "定時鎖金庫"
+
+#: autoload/progress.gd
+msgid "Town landmark"
+msgstr "小鎮地標"
+
+#: autoload/progress.gd
+msgid "Waiting bench"
+msgstr "候客長椅"
+
+#: autoload/progress.gd
+msgid "Welcome to your %s!"
+msgstr "歡迎來到你的%s！"
+
+#: autoload/progress.gd
+msgid "You run the biggest store in town."
+msgstr "你經營着鎮上最大的商店。"
+
+#: autoload/records.gd
+msgid "Achievement earned: %s. %s"
+msgstr "獲得成就：%s。%s"
+
+#: autoload/records.gd
+msgid "Achievement: %s!"
+msgstr "成就：%s！"
+
+#: autoload/records.gd
+msgid "Apprentice no more"
+msgstr "出師了"
+
+#: autoload/records.gd
+msgid "Bigger than Lucky's"
+msgstr "比Lucky's大"
+
+#: autoload/records.gd
+msgid "Biggest in town"
+msgstr "全鎮最大"
+
+#: autoload/records.gd
+msgid "Book a booth at the town coin show."
+msgstr "在小鎮錢幣展訂一個展位。"
+
+#: autoload/records.gd
+msgid "Busy counter"
+msgstr "生意興隆"
+
+#: autoload/records.gd
+msgid "Cast 10 bars at the smelter."
+msgstr "在熔爐鑄造10根金條。"
+
+#: autoload/records.gd
+msgid "Cat person"
+msgstr "貓奴"
+
+#: autoload/records.gd
+msgid "Catch 100 fakes."
+msgstr "識破100次假貨。"
+
+#: autoload/records.gd
+msgid "Catch 25 fakes."
+msgstr "識破25次假貨。"
+
+#: autoload/records.gd
+msgid "Catch your first fake."
+msgstr "識破你的第一件假貨。"
+
+#: autoload/records.gd
+msgid "Clean books"
+msgstr "賬目清白"
+
+#: autoload/records.gd
+msgid "Clean slate"
+msgstr "一筆勾銷"
+
+#: autoload/records.gd
+msgid "Close 100 deals, buying or selling."
+msgstr "完成100筆交易，買賣都算。"
+
+#: autoload/records.gd
+msgid "Close 500 deals, buying or selling."
+msgstr "完成500筆交易，買賣都算。"
+
+#: autoload/records.gd
+msgid "Collector's friend"
+msgstr "收藏家之友"
+
+#: autoload/records.gd
+msgid "Decorate the shop up to 50 appeal."
+msgstr "把店鋪裝飾到50點吸引力。"
+
+#: autoload/records.gd
+msgid "Eagle eye"
+msgstr "鷹眼"
+
+#: autoload/records.gd
+msgid "Earn an A credit rating at the bank."
+msgstr "在銀行獲得A級信用評級。"
+
+#: autoload/records.gd
+msgid "End a day worth more than Lucky's Pawn & Loan."
+msgstr "一天結束時身價超過Lucky's。"
+
+#: autoload/records.gd
+msgid "End a day worth more than Sterling Bullion Co."
+msgstr "一天結束時身價超過Sterling Bullion Co.。"
+
+#: autoload/records.gd
+msgid "Fake finder"
+msgstr "假貨獵手"
+
+#: autoload/records.gd
+msgid "Fill 5 special orders for collectors."
+msgstr "為收藏家完成5個特殊訂單。"
+
+#: autoload/records.gd
+msgid "Find a rare coin in a sealed pouch you won at auction."
+msgstr "在拍賣贏來的密封袋裏發現一枚稀有錢幣。"
+
+#: autoload/records.gd
+msgid "Finish the story: Mags cuts the ribbon on your landmark."
+msgstr "完成故事：Mags為你的地標店剪綵。"
+
+#: autoload/records.gd
+msgid "Finish your first week of trading."
+msgstr "完成你第一週的生意。"
+
+#: autoload/records.gd
+msgid "First week"
+msgstr "第一週"
+
+#: autoload/records.gd
+msgid "Five-star dealer"
+msgstr "五星商家"
+
+#: autoload/records.gd
+msgid "Forger's nightmare"
+msgstr "造假者的噩夢"
+
+#: autoload/records.gd
+msgid "Four seasons"
+msgstr "四季輪迴"
+
+#: autoload/records.gd
+msgid "Go 7 days in a row without buying a fake."
+msgstr "連續7天沒有收到假貨。"
+
+#: autoload/records.gd
+msgid "Good citizen"
+msgstr "好市民"
+
+#: autoload/records.gd
+msgid "Good day"
+msgstr "好日子"
+
+#: autoload/records.gd
+msgid "Good for it"
+msgstr "言而有信"
+
+#: autoload/records.gd
+msgid "Grade 10 coins spot on for collectors."
+msgstr "為收藏家準確評級10枚錢幣。"
+
+#: autoload/records.gd
+msgid "Hot metal"
+msgstr "熔金熱"
+
+#: autoload/records.gd
+msgid "Hot streak"
+msgstr "連勝"
+
+#: autoload/records.gd
+msgid "Keep someone on staff until they are a veteran (level 5)."
+msgstr "留住一名員工直到成為老手（5級）。"
+
+#: autoload/records.gd
+msgid "Make $1,000,000 profit in total."
+msgstr "累計利潤達到$1,000,000。"
+
+#: autoload/records.gd
+msgid "Make $100,000 profit in total."
+msgstr "累計利潤達到$100,000。"
+
+#: autoload/records.gd
+msgid "Make $25,000 profit in one day."
+msgstr "單日利潤達到$25,000。"
+
+#: autoload/records.gd
+msgid "Make $5,000 profit in one day."
+msgstr "單日利潤達到$5,000。"
+
+#: autoload/records.gd
+msgid "Make a profit 7 days in a row."
+msgstr "連續7天盈利。"
+
+#: autoload/records.gd
+msgid "Million in the till"
+msgstr "百萬進賬"
+
+#: autoload/records.gd
+msgid "Millionaire"
+msgstr "百萬富翁"
+
+#: autoload/records.gd
+msgid "Move the shop to Main Street."
+msgstr "把店搬到主街。"
+
+#: autoload/records.gd
+msgid "Moving up"
+msgstr "步步高昇"
+
+#: autoload/records.gd
+msgid "Not today"
+msgstr "今天不行"
+
+#: autoload/records.gd
+msgid "Old hand"
+msgstr "老手"
+
+#: autoload/records.gd
+msgid "Open for business"
+msgstr "開張大吉"
+
+#: autoload/records.gd
+msgid "Open the town landmark store."
+msgstr "開設小鎮地標店。"
+
+#: autoload/records.gd
+msgid "Own it outright"
+msgstr "完全自主"
+
+#: autoload/records.gd
+msgid "Part of the family"
+msgstr "一家人"
+
+#: autoload/records.gd
+msgid "Pay off a bank loan."
+msgstr "還清一筆銀行貸款。"
+
+#: autoload/records.gd
+msgid "Pay off an angel investor, or buy out their stake."
+msgstr "還清天使投資人，或買斷其股份。"
+
+#: autoload/records.gd
+msgid "Pet the shop cat 30 times."
+msgstr "擼店貓30次。"
+
+#: autoload/records.gd
+msgid "Reach 4 stars of reputation."
+msgstr "聲譽達到4星。"
+
+#: autoload/records.gd
+msgid "Reach a full 5 stars."
+msgstr "聲譽達到滿5星。"
+
+#: autoload/records.gd
+msgid "Reach a net worth of $1,000,000."
+msgstr "淨資產達到$1,000,000。"
+
+#: autoload/records.gd
+msgid "Reach a net worth of $100,000."
+msgstr "淨資產達到$100,000。"
+
+#: autoload/records.gd
+msgid "Record day"
+msgstr "破紀錄的一天"
+
+#: autoload/records.gd
+msgid "Season's greetings"
+msgstr "節日問候"
+
+#: autoload/records.gd
+msgid "Sell coins to your first customer."
+msgstr "把錢幣賣給你的第一位顧客。"
+
+#: autoload/records.gd
+msgid "Serve 40 gift shoppers in one holiday rush."
+msgstr "在一次節日搶購中接待40位買禮物的顧客。"
+
+#: autoload/records.gd
+msgid "Sharp eye"
+msgstr "火眼金睛"
+
+#: autoload/records.gd
+msgid "Show table"
+msgstr "展位"
+
+#: autoload/records.gd
+msgid "Showroom"
+msgstr "展廳"
+
+#: autoload/records.gd
+msgid "Six figures"
+msgstr "六位數"
+
+#: autoload/records.gd
+msgid "Sleeper"
+msgstr "沉睡的寶貝"
+
+#: autoload/records.gd
+msgid "Stop a robber, with the guard or the panic button."
+msgstr "用保安或緊急按鈕制止一個劫匪。"
+
+#: autoload/records.gd
+msgid "Tip off the police about Lucky's stolen goods."
+msgstr "向警方舉報Lucky's的贓物。"
+
+#: autoload/records.gd
+msgid "Top of the street"
+msgstr "整條街第一"
+
+#: autoload/records.gd
+msgid "Town institution"
+msgstr "小鎮名店"
+
+#: autoload/records.gd
+msgid "Trade for 100 days."
+msgstr "經營100天。"
+
+#: autoload/records.gd
+msgid "Trade through a whole year, spring to winter."
+msgstr "經營整整一年，從春到冬。"
+
+#: autoload/records.gd
+msgid "Trusted name"
+msgstr "信得過的招牌"
+
+#: autoload/records.gd
+msgid "Well stocked"
+msgstr "貨源充足"
+
+#: autoload/records.gd
+msgid "Win 10 lots at the Ashworth & Finch auction."
+msgstr "在Ashworth & Finch拍賣行拍下10件拍品。"
+
+#: autoload/records.gd
+msgid "Your best day yet: %s profit."
+msgstr "迄今最好的一天：利潤%s。"
+
+#: autoload/rivals.gd
+msgid "%d customer went to the competition (%s). See the town map."
+msgid_plural "%d customers went to the competition (%s). See the town map."
+msgstr[0] "%d位顧客去了競爭對手那裏（%s）。查看小鎮地圖。"
+
+#: autoload/rivals.gd
+msgid "%d to %s"
+msgstr "%d位去了%s"
+
+#: autoload/rivals.gd scenes/shop/day_panels.gd
+msgid "%s (%d day left)"
+msgid_plural "%s (%d days left)"
+msgstr[0] "%s（剩%d天）"
+
+#: autoload/rivals.gd
+msgid "%s (%d days)"
+msgstr "%s（%d天）"
+
+#: autoload/rivals.gd
+msgid "%s went to %s instead (%s)."
+msgstr "%s轉而去了%s（%s）。"
+
+#: autoload/rivals.gd
+msgid "A nasty review of your shop went up overnight. With your name, nobody believed it."
+msgstr "昨晚有人發了一篇差評罵你的店。憑你的名聲，沒人相信。"
+
+#: autoload/rivals.gd
+msgid "A one-star review of your shop went up overnight. It reads a lot like Sterling's ad copy."
+msgstr "昨晚有人給你的店發了一篇一星差評。讀起來很像Sterling的廣告文案。"
+
+#: autoload/rivals.gd
+msgid "Lucky Lou"
+msgstr "Lucky Lou"
+
+#: autoload/rivals.gd
+msgid "Lucky's"
+msgstr "Lucky's"
+
+#: autoload/rivals.gd
+msgid "Lucky's Pawn & Loan"
+msgstr "Lucky's Pawn & Loan"
+
+#: autoload/rivals.gd
+msgid "Lucky's Pawn has reopened after the raid."
+msgstr "Lucky's在被搜查後重新開張了。"
+
+#: autoload/rivals.gd
+msgid "Lucky's is clearing out coins at spot +2%. Bargain hunters are lining up next door."
+msgstr "Lucky's正以現貨價+2%清倉錢幣。隔壁排起了撿便宜的長隊。"
+
+#: autoload/rivals.gd
+msgid "Newspaper ad"
+msgstr "報紙廣告"
+
+#: autoload/rivals.gd
+msgid "Police raided Lucky's Pawn on your tip. It's shut for %d days."
+msgstr "警方根據你的舉報搜查了Lucky's。它將關門%d天。"
+
+#: autoload/rivals.gd
+msgid "Sterling"
+msgstr "Sterling"
+
+#: autoload/rivals.gd
+msgid "Sterling Bullion Co."
+msgstr "Sterling Bullion Co."
+
+#: autoload/rivals.gd
+msgid "Sterling Bullion slashed prices: it pays 92% of melt and sells at spot +3%."
+msgstr "Sterling Bullion大幅降價：按熔化價的92%收購，以現貨價+3%出售。"
+
+#: autoload/rivals.gd
+msgid "Sterling's ads are all over the radio. Expect fewer walk-ins."
+msgstr "Sterling的廣告在電台鋪天蓋地。上門的顧客會變少。"
+
+#: autoload/rivals.gd
+msgid "Sterling's price war is over."
+msgstr "Sterling的價格戰結束了。"
+
+#: autoload/rivals.gd autoload/story.gd
+msgid "Victor Sterling"
+msgstr "Victor Sterling"
+
+#: autoload/rivals.gd
+msgid "Word is Lucky's is buying stolen goods. Shady sellers are going there. You could tip off the police."
+msgstr "聽說Lucky's在收贓物。可疑的賣家都去那兒了。你可以向警方舉報。"
+
+#: autoload/rivals.gd
+msgid "You passed %s in net worth."
+msgstr "你的淨資產超過了%s。"
+
+#: autoload/rivals.gd
+msgid "Your ad runs in the paper for %d days."
+msgstr "你的廣告將在報紙上刊登%d天。"
+
+#: autoload/rivals.gd
+msgid "Your board now pays %d%% and sells at +%d%%."
+msgstr "你的牌價現在按%d%%收購，以+%d%%出售。"
+
+#: autoload/rivals.gd scenes/shop/day_panels.gd
+msgid "Your shop"
+msgstr "你的店"
+
+#: autoload/rivals.gd
+msgid "Your shop is now bigger than %s!"
+msgstr "你的店現在比%s更大了！"
+
+#: autoload/rivals.gd
+msgid "a better name"
+msgstr "名聲更好"
+
+#: autoload/rivals.gd
+msgid "better prices"
+msgstr "價格更好"
+
+#: autoload/rivals.gd
+msgid "no questions asked"
+msgstr "不問來路"
+
+#: autoload/save_game.gd
+msgid "%s %d, %02d:%02d"
+msgstr "%s%d日 %02d:%02d"
+
+#: autoload/save_game.gd
+msgid "Apr"
+msgstr "4月"
+
+#: autoload/save_game.gd
+msgid "Aug"
+msgstr "8月"
+
+#: autoload/save_game.gd
+msgid "Could not save to %s"
+msgstr "無法儲存到%s"
+
+#: autoload/save_game.gd
+msgid "Dec"
+msgstr "12月"
+
+#: autoload/save_game.gd
+msgid "Feb"
+msgstr "2月"
+
+#: autoload/save_game.gd
+msgid "Ignoring unreadable save at %s"
+msgstr "忽略無法讀取的存檔：%s"
+
+#: autoload/save_game.gd
+msgid "Jan"
+msgstr "1月"
+
+#: autoload/save_game.gd
+msgid "Jul"
+msgstr "7月"
+
+#: autoload/save_game.gd
+msgid "Jun"
+msgstr "6月"
+
+#: autoload/save_game.gd
+msgid "Mar"
+msgstr "3月"
+
+#: autoload/save_game.gd
+msgid "May"
+msgstr "5月"
+
+#: autoload/save_game.gd
+msgid "Nov"
+msgstr "11月"
+
+#: autoload/save_game.gd
+msgid "Oct"
+msgstr "10月"
+
+#: autoload/save_game.gd
+msgid "Sep"
+msgstr "9月"
+
+#: autoload/settings.gd
+msgid "Auto"
+msgstr "自動"
+
+#: autoload/settings.gd
+msgid "Fill screen"
+msgstr "填滿螢幕"
+
+#: autoload/settings.gd ui/settings_panel.gd
+msgid "Music"
+msgstr "音樂"
+
+#: autoload/settings.gd
+msgid "Pixel perfect"
+msgstr "像素完美"
+
+#: autoload/staff.gd
+msgid "%s called in sick"
+msgstr "%s請了病假"
+
+#: autoload/staff.gd
+msgid "%s didn't get the raise and isn't happy about it."
+msgstr "%s沒拿到加薪，很不高興。"
+
+#: autoload/staff.gd
+msgid "%s has had enough and quit. Pay staff what they're worth."
+msgstr "%s受夠了，辭職了。給員工應得的報酬吧。"
+
+#: autoload/staff.gd
+msgid "%s is in a foul mood"
+msgstr "%s心情很糟"
+
+#: autoload/staff.gd
+msgid "%s reached level %d: %s."
+msgstr "%s升到了%d級：%s。"
+
+#: autoload/staff.gd
+msgid "%s starts today."
+msgstr "%s今天開始上班。"
+
+#: autoload/staff.gd
+msgid "%s the %s"
+msgstr "%s（%s）"
+
+#: autoload/staff.gd
+msgid "%s wants a raise"
+msgstr "%s想要加薪"
+
+#: autoload/staff.gd
+msgid "%s's wage is now %s a day."
+msgstr "%s的日薪現在是%s。"
+
+#: autoload/staff.gd
+msgid "About to quit"
+msgstr "快要辭職"
+
+#: autoload/staff.gd
+msgid "Benny"
+msgstr "Benny"
+
+#: autoload/staff.gd
+msgid "Clerk"
+msgstr "店員"
+
+#: autoload/staff.gd
+msgid "Content"
+msgstr "滿意"
+
+#: autoload/staff.gd
+msgid "Expert"
+msgstr "專家"
+
+#: autoload/staff.gd
+msgid "Fed up"
+msgstr "受夠了"
+
+#: autoload/staff.gd
+msgid "Guard"
+msgstr "保安"
+
+#: autoload/staff.gd
+msgid "Happy"
+msgstr "開心"
+
+#: autoload/staff.gd
+msgid "Hired %s"
+msgstr "僱用了%s"
+
+#: autoload/staff.gd ui/save_slots_panel.gd
+msgid "New"
+msgstr "新"
+
+#: autoload/staff.gd
+msgid "Rhonda"
+msgstr "Rhonda"
+
+#: autoload/staff.gd
+msgid "Skilled"
+msgstr "熟練"
+
+#: autoload/staff.gd
+msgid "Staff: %s."
+msgstr "員工：%s。"
+
+#: autoload/staff.gd
+msgid "Stands by the door. Break-ins drop by a third and nobody dares grab the till in a rush."
+msgstr "守在門口。入室盜竊減少三分之一，高峯時也沒人敢搶收銀機。"
+
+#: autoload/staff.gd
+msgid "Steady"
+msgstr "穩定"
+
+#: autoload/staff.gd
+msgid "Veteran"
+msgstr "老手"
+
+#: autoload/staff.gd
+msgid "Works the second till. Sells coins to buyers at your price while you test, so the queue keeps moving."
+msgstr "負責第二個收銀台。你檢測時，他按你的價格把錢幣賣給買家，隊伍不會停。"
+
+#: autoload/staff.gd
+msgid "You let %s go."
+msgstr "你解僱了%s。"
+
+#: autoload/story.gd
+msgid "%s is done! %s will drop by."
+msgstr "%s完成了！%s會過來看看。"
+
+#: autoload/story.gd
+msgid "+%.1f stars"
+msgstr "+%.1f星"
+
+#: autoload/story.gd
+msgid "A bullion house. Victor's worried, I can tell. Beat him fair and square."
+msgstr "一間貴金屬行。睇得出Victor驚咗。堂堂正正贏佢。"
+
+#: autoload/story.gd
+msgid "Across the street"
+msgstr "街對面"
+
+#: autoload/story.gd
+msgid "All right. You win the street. If you ever need a buyer for scrap, I'm across the road."
+msgstr "好啦。條街係你嘅。如果你要搵人收廢料，我就喺對面馬路。"
+
+#: autoload/story.gd
+msgid "Catch 3 fakes"
+msgstr "識破3次假貨"
+
+#: autoload/story.gd
+msgid "Celeste Wren dropped by to see what she bought into."
+msgstr "Celeste Wren過來看看她投資的生意。"
+
+#: autoload/story.gd
+msgid "Celeste Wren shook your hand on her way out of the business."
+msgstr "Celeste Wren退出時和你握了握手。"
+
+#: autoload/story.gd
+msgid "Chapter %d: %s"
+msgstr "第%d章：%s"
+
+#: autoload/story.gd
+msgid "Close 15 deals"
+msgstr "完成15筆交易"
+
+#: autoload/story.gd
+msgid "Don't thank me. Buy low, sell high, and send me my share every night."
+msgstr "唔使多謝我。低買高賣，每晚將我嗰份寄俾我。"
+
+#: autoload/story.gd
+msgid "Fill 3 special orders"
+msgstr "完成3個特殊訂單"
+
+#: autoload/story.gd
+msgid "Finish your first week"
+msgstr "完成你的第一週"
+
+#: autoload/story.gd
+msgid "Forty years I ran this counter. Lesson one: test everything. I left you a list."
+msgstr "呢個櫃枱我睇咗四十年。第一課：乜都要驗。我留咗張清單俾你。"
+
+#: autoload/story.gd
+msgid "Forty years at a corner counter, and look what my apprentice built. Cut the ribbon!"
+msgstr "喺街角櫃枱做咗四十年，睇吓我個徒弟起咗啲咩出嚟。剪綵啦！"
+
+#: autoload/story.gd
+msgid "Get bigger than Lucky's Pawn"
+msgstr "比Lucky's更大"
+
+#: autoload/story.gd
+msgid "Get bigger than Sterling Bullion"
+msgstr "比Sterling Bullion更大"
+
+#: autoload/story.gd
+msgid "Gift from Mags"
+msgstr "Mags的禮物"
+
+#: autoload/story.gd
+msgid "Goal met: %s."
+msgstr "目標達成：%s。"
+
+#: autoload/story.gd
+msgid "Hire your first staff"
+msgstr "僱用你的第一名員工"
+
+#: autoload/story.gd
+msgid "I sold you this counter because you've got good eyes. Use them. Test every coin, keep the regulars happy, and get through your first week in one piece."
+msgstr "我將呢個櫃枱賣俾你，係因為你有眼光。好好用佢。每個錢幣都要驗，氹啲熟客開心，平平安安捱過第一個禮拜。"
+
+#: autoload/story.gd
+msgid "Mags Holloway"
+msgstr "Mags Holloway"
+
+#: autoload/story.gd
+msgid "Mags Holloway cut the ribbon on your Town landmark."
+msgstr "Mags Holloway為你的小鎮地標店剪了彩。"
+
+#: autoload/story.gd
+msgid "Mags Holloway left you her list of goals. See Story on the morning panel."
+msgstr "Mags Holloway給你留下了她的目標清單。在早晨面板上查看\"故事\"。"
+
+#: autoload/story.gd
+msgid "Mags is pleased. Next: make a name for the shop."
+msgstr "Mags很滿意。下一步：為店鋪打響名號。"
+
+#: autoload/story.gd
+msgid "Mags is proud of the move to Main Street."
+msgstr "Mags為你搬到主街感到驕傲。"
+
+#: autoload/story.gd
+msgid "Mags says it's time to take on Sterling Bullion."
+msgstr "Mags說，是時候挑戰Sterling Bullion了。"
+
+#: autoload/story.gd
+msgid "Mags showed you the old bank building on the square."
+msgstr "Mags帶你看了廣場上的老銀行大樓。"
+
+#: autoload/story.gd
+msgid "Mags sold to you? Cute. Enjoy the corner while it lasts."
+msgstr "Mags賣咗俾你？幾得意。趁仲坐得住，好好享受個街角啦。"
+
+#: autoload/story.gd
+msgid "Main Street"
+msgstr "主街"
+
+#: autoload/story.gd
+msgid "Main Street is my street. Let's see how you like a price war."
+msgstr "主街係我嘅地盤。睇吓你點應付價格戰。"
+
+#: autoload/story.gd
+msgid "Main Street means collectors, and collectors remember who found them the coin. Fill their orders, take on staff, and work your way up to a proper bullion house."
+msgstr "主街即係收藏家，而收藏家會記得邊個幫佢哋搵到錢幣。做好佢哋啲訂單，請啲人手，一步步做成一間像樣嘅貴金屬行。"
+
+#: autoload/story.gd
+msgid "Main Street! Now give people a reason to come back. And hire some help."
+msgstr "搬到主街喇！而家要俾啲理由人哋返嚟幫襯。再請多啲人手。"
+
+#: autoload/story.gd
+msgid "Making a name"
+msgstr "打響名號"
+
+#: autoload/story.gd
+msgid "Move to Main Street"
+msgstr "搬到主街"
+
+#: autoload/story.gd
+msgid "Move to the Bullion house"
+msgstr "搬到貴金屬商行"
+
+#: autoload/story.gd
+msgid "Not bad, kid. Here's a little float. Now let's make the town know your name."
+msgstr "唔錯喎，後生仔。俾少少周轉金你。而家要成個鎮都識你個名。"
+
+#: autoload/story.gd
+msgid "Open the Town landmark"
+msgstr "開設小鎮地標店"
+
+#: autoload/story.gd
+msgid "Paid in full. You don't need me any more, and that's the best kind of deal."
+msgstr "全部還清。你唔再需要我喇，呢種係最好嘅交易。"
+
+#: autoload/story.gd
+msgid "Reach 3 stars"
+msgstr "達到3星"
+
+#: autoload/story.gd
+msgid "Reach 4.5 stars"
+msgstr "達到4.5星"
+
+#: autoload/story.gd
+msgid "Reach a net worth of $400,000"
+msgstr "淨資產達到$400,000"
+
+#: autoload/story.gd
+msgid "Sixty years my family's been on this street. You won't outgrow us."
+msgstr "我屋企喺呢條街六十年喇。你大唔過我哋。"
+
+#: autoload/story.gd
+msgid "Sterling Bullion has been the biggest shop in town since before you were born. Beat Victor on worth and on name, and build the vault the landmark will need."
+msgstr "Sterling Bullion喺你出世之前已經係鎮上最大嘅舖頭。身家同名聲都要贏Victor，再起好地標店需要嘅金庫。"
+
+#: autoload/story.gd
+msgid "The corner counter"
+msgstr "街角櫃枱"
+
+#: autoload/story.gd scenes/shop/day_panels.gd
+msgid "The end"
+msgstr "完"
+
+#: autoload/story.gd
+msgid "The landmark"
+msgstr "地標"
+
+#: autoload/story.gd
+msgid "The old bank on the square has marble floors and a vault door the size of a car. It's been empty for years, waiting for the biggest precious metal store in town."
+msgstr "廣場上的老銀行有大理石地板和一扇汽車那麼大的金庫門。它空了好多年，一直在等鎮上最大的貴金屬商店。"
+
+#: autoload/story.gd
+msgid "Victor Sterling came over to size you up."
+msgstr "Victor Sterling過來打量你。"
+
+#: autoload/story.gd
+msgid "Victor Sterling declared a price war. Beat Sterling on the town map answers it."
+msgstr "Victor Sterling發起了價格戰。在小鎮地圖上點\"打敗Sterling\"來應戰。"
+
+#: autoload/story.gd
+msgid "Victor Sterling is rattled."
+msgstr "Victor Sterling慌了。"
+
+#: autoload/story.gd
+msgid "Victor Sterling offered me twice what you paid, just to shut this counter down. Show him it's no pushover. Earn your stars, get bigger than Lucky's, and move to Main Street."
+msgstr "Victor Sterling出你兩倍價錢，就係想呢個櫃枱執笠。俾佢睇吓你唔係好蝦嘅。贏星級，大過Lucky's，搬去主街。"
+
+#: autoload/story.gd
+msgid "Victor Sterling shook your hand. He meant it, mostly."
+msgstr "Victor Sterling和你握了手。他基本上是真心的。"
+
+#: autoload/story.gd
+msgid "You've the name and the money. The old bank on the square is for sale. Buy it."
+msgstr "你有名氣，又有錢。廣場嗰間舊銀行放緊盤。買咗佢。"
+
+#: autoload/story.gd
+msgid "investor"
+msgstr "投資人"
+
+#: autoload/story.gd
+msgid "mentor"
+msgstr "導師"
+
+#: autoload/story.gd
+msgid "rival"
+msgstr "對手"
+
+#: autoload/wholesaler.gd
+msgid "Wholesaler: %d x %s for %s."
+msgstr "批發商：%d x %s，價格%s。"
+
+#: data/coins/britannia_proof_1997.tres
+msgid "1997 Britannia Proof"
+msgstr "1997年不列顛尼亞精製幣"
+
+#: data/coins/double_eagle_1924.tres
+msgid "1924 Double Eagle"
+msgstr "1924年雙鷹金幣"
+
+#: data/coins/gold_eagle.tres
+msgid "American Gold Eagle"
+msgstr "美國金鷹幣"
+
+#: data/coins/gold_maple.tres
+msgid "Gold Maple Leaf"
+msgstr "楓葉金幣"
+
+#: data/coins/krugerrand.tres
+msgid "Krugerrand"
+msgstr "克魯格金幣"
+
+#: data/coins/krugerrand_1967.tres
+msgid "1967 Krugerrand"
+msgstr "1967年克魯格金幣"
+
+#: data/coins/morgan_dollar_1881.tres
+msgid "1881 Morgan Dollar"
+msgstr "1881年摩根銀元"
+
+#: data/coins/platinum_eagle.tres
+msgid "Platinum Eagle"
+msgstr "鉑金鷹幣"
+
+#: data/coins/silver_britannia.tres
+msgid "Silver Britannia"
+msgstr "不列顛尼亞銀幣"
+
+#: data/coins/silver_eagle.tres
+msgid "American Silver Eagle"
+msgstr "美國銀鷹幣"
+
+#: data/coins/silver_maple.tres
+msgid "Silver Maple Leaf"
+msgstr "楓葉銀幣"
+
+#: data/coins/sovereign_1911.tres
+msgid "1911 Sovereign"
+msgstr "1911年索維林金幣"
+
+#: items/bullion_bar.gd
+msgid "1 kilo gold bar"
+msgstr "1公斤金條"
+
+#: items/bullion_bar.gd
+msgid "1 kilo silver bar"
+msgstr "1公斤銀條"
+
+#: items/bullion_bar.gd
+msgid "1 oz gold bar"
+msgstr "1盎司金條"
+
+#: items/bullion_bar.gd
+msgid "1 oz platinum bar"
+msgstr "1盎司鉑金條"
+
+#: items/bullion_bar.gd
+msgid "10 oz gold bar"
+msgstr "10盎司金條"
+
+#: items/bullion_bar.gd
+msgid "10 oz silver bar"
+msgstr "10盎司銀條"
+
+#: items/bullion_bar.gd
+msgid "100 g gold bar"
+msgstr "100克金條"
+
+#: items/bullion_bar.gd
+msgid "22 karat recast"
+msgstr "22K重鑄"
+
+#: items/bullion_bar.gd
+msgid "A handheld X-ray gun for the bar bench. It reads what a bar's surface is made of."
+msgstr "金條工作台用的手持X射線槍。能讀出金條表面的成分。"
+
+#: items/bullion_bar.gd
+msgid "Bullion dealer account"
+msgstr "貴金屬經銷商賬户"
+
+#: items/bullion_bar.gd
+msgid "ROYAL ASSAY"
+msgstr "ROYAL ASSAY"
+
+#: items/bullion_bar.gd
+msgid "The bullion dealer pays 99.5% of melt for genuine bars instead of 98%."
+msgstr "對真金條，貴金屬經銷商按熔化價的99.5%收購，而不是98%。"
+
+#: items/bullion_bar.gd
+msgid "XRF analyzer"
+msgstr "XRF分析儀"
+
+#: items/bullion_bar.gd
+msgid "gold-plated brass"
+msgstr "鍍金黃銅"
+
+#: items/bullion_bar.gd
+msgid "gold-plated tungsten"
+msgstr "鍍金鎢"
+
+#: items/bullion_bar.gd
+msgid "lead-core silver"
+msgstr "鉛芯銀"
+
+#: items/bullion_bar.gd
+msgid "silver-plated copper"
+msgstr "鍍銀銅"
+
+#: items/bullion_bar.gd
+msgid "tungsten-core gold"
+msgstr "鎢芯金"
+
+#: items/counterfeit.gd
+msgid "brass copy"
+msgstr "黃銅仿品"
+
+#: items/counterfeit.gd
+msgid "copper-nickel clad"
+msgstr "銅鎳包覆"
+
+#: items/counterfeit.gd
+msgid "gold-plated steel"
+msgstr "鍍金鋼"
+
+#: items/counterfeit.gd
+msgid "tungsten core"
+msgstr "鎢芯"
+
+#: items/jewellery_piece.gd
+msgid " with a %.2f ct diamond"
+msgstr "，鑲%.2f克拉鑽石"
+
+#: items/jewellery_piece.gd
+msgid "10K gold"
+msgstr "10K金"
+
+#: items/jewellery_piece.gd
+msgid "14K gold"
+msgstr "14K金"
+
+#: items/jewellery_piece.gd
+msgid "18K gold"
+msgstr "18K金"
+
+#: items/jewellery_piece.gd
+msgid "22K gold"
+msgstr "22K金"
+
+#: items/jewellery_piece.gd
+msgid "RH PL"
+msgstr "RH PL"
+
+#: items/jewellery_piece.gd
+msgid "STER"
+msgstr "STER"
+
+#: items/jewellery_piece.gd
+msgid "bracelet"
+msgstr "手鍊"
+
+#: items/jewellery_piece.gd
+msgid "chain"
+msgstr "項鍊"
+
+#: items/jewellery_piece.gd
+msgid "pendant"
+msgstr "吊墜"
+
+#: items/jewellery_piece.gd scenes/jewellery_test/jewellery_test.gd
+msgid "plated"
+msgstr "鍍層"
+
+#: items/jewellery_piece.gd scenes/shop/hud.gd
+msgid "platinum"
+msgstr "鉑金"
+
+#: items/jewellery_piece.gd
+msgid "ring"
+msgstr "戒指"
+
+#: items/jewellery_piece.gd
+msgid "sterling silver"
+msgstr "純銀"
+
+#: items/jewellery_piece.gd
+msgid "{grade} {kind}"
+msgstr "{grade}{kind}"
+
+#: scenes/auction/auction_house.gd
+msgid "%d brass copy"
+msgid_plural "%d brass copies"
+msgstr[0] "%d件黃銅仿品"
+
+#: scenes/auction/auction_house.gd
+msgid "A pouch held %d brass copy. Worthless."
+msgid_plural "A pouch held %d brass copies. Worthless."
+msgstr[0] "一個袋子裏裝着%d件黃銅仿品。一文不值。"
+
+#: scenes/auction/auction_house.gd
+msgid "A sealed pouch held a %s! A sleeper."
+msgstr "一個密封袋裏裝着一枚%s！撿漏了。"
+
+#: scenes/auction/auction_house.gd
+msgid "Agatha Crane"
+msgstr "Agatha Crane"
+
+#: scenes/auction/auction_house.gd
+msgid "Ashworth & Finch's expert says your %s is a fake. They won't sell it."
+msgstr "Ashworth & Finch的專家說你的%s是假貨。他們不賣。"
+
+#: scenes/auction/auction_house.gd
+msgid "Auction house"
+msgstr "拍賣行"
+
+#: scenes/auction/auction_house.gd
+msgid "Auction house (your lots)"
+msgstr "拍賣行（你的拍品）"
+
+#: scenes/auction/auction_house.gd
+msgid "Consigned your %s to today's sale."
+msgstr "把你的%s委託給今天的拍賣。"
+
+#: scenes/auction/auction_house.gd
+msgid "Dealer stock from %s"
+msgstr "%s的經銷商庫存"
+
+#: scenes/auction/auction_house.gd
+msgid "Ellen Marsh"
+msgstr "Ellen Marsh"
+
+#: scenes/auction/auction_house.gd
+msgid "Estate of the late %s"
+msgstr "已故%s的遺產"
+
+#: scenes/auction/auction_house.gd
+msgid "Felix Durand"
+msgstr "Felix Durand"
+
+#: scenes/auction/auction_house.gd
+msgid "Harold Voss"
+msgstr "Harold Voss"
+
+#: scenes/auction/auction_house.gd
+msgid "Ivy Lambert"
+msgstr "Ivy Lambert"
+
+#: scenes/auction/auction_house.gd
+msgid "Nora Quill"
+msgstr "Nora Quill"
+
+#: scenes/auction/auction_house.gd
+msgid "Otto Brandt"
+msgstr "Otto Brandt"
+
+#: scenes/auction/auction_house.gd
+msgid "Rosa Bell"
+msgstr "Rosa Bell"
+
+#: scenes/auction/auction_house.gd
+msgid "Rupert Hay"
+msgstr "Rupert Hay"
+
+#: scenes/auction/auction_house.gd scenes/auction/auction_room.gd
+msgid "Sealed pouch"
+msgstr "密封袋"
+
+#: scenes/auction/auction_house.gd
+msgid "Walter Pike"
+msgstr "Walter Pike"
+
+#: scenes/auction/auction_house.gd
+msgid "Won lot %d for %s with the buyer's premium."
+msgstr "拍下第%d號拍品，含買家傭金共%s。"
+
+#: scenes/auction/auction_house.gd
+msgid "Your %s"
+msgstr "你的%s"
+
+#: scenes/auction/auction_house.gd
+msgid "Your %s didn't reach its reserve. It's back in the vault."
+msgstr "你的%s沒有達到底價。已放回金庫。"
+
+#: scenes/auction/auction_house.gd
+msgid "Your %s sold for %s after the fee."
+msgstr "你的%s扣除費用後賣了%s。"
+
+#: scenes/auction/auction_room.gd
+msgid "%d LOTS"
+msgstr "%d件拍品"
+
+#: scenes/auction/auction_room.gd
+msgid "%s (paddle %d)"
+msgstr "%s（%d號牌）"
+
+#: scenes/auction/auction_room.gd
+msgid "%s folds"
+msgstr "%s放棄了"
+
+#: scenes/auction/auction_room.gd
+msgid "%s hesitates..."
+msgstr "%s猶豫了……"
+
+#: scenes/auction/auction_room.gd
+msgid "%s, thank you!"
+msgstr "%s，謝謝！"
+
+#: scenes/auction/auction_room.gd
+msgid "A collector's order wants this %s."
+msgstr "有收藏家訂單想要這枚%s。"
+
+#: scenes/auction/auction_room.gd
+msgid "A on a pouch"
+msgstr "袋子上的A"
+
+#: scenes/auction/auction_room.gd
+msgid "ASK %s"
+msgstr "要價%s"
+
+#: scenes/auction/auction_room.gd
+msgid "ASKING"
+msgstr "要價"
+
+#: scenes/auction/auction_room.gd
+msgid "An order wants this coin."
+msgstr "有訂單想要這枚錢幣。"
+
+#: scenes/auction/auction_room.gd
+msgid "Ashworth & Finch sell it last today and keep %d%%. It won't go under melt."
+msgstr "Ashworth & Finch把它放在今天最後拍賣，抽成%d%%。不會低於熔化價。"
+
+#: scenes/auction/auction_room.gd
+msgid "At %s you'd pay %s."
+msgstr "叫到%s時你要付%s。"
+
+#: scenes/auction/auction_room.gd scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
+msgid "Back to the morning"
+msgstr "回到早晨"
+
+#: scenes/auction/auction_room.gd
+msgid "Bid"
+msgstr "出價"
+
+#: scenes/auction/auction_room.gd
+msgid "Bid %s"
+msgstr "出價%s"
+
+#: scenes/auction/auction_room.gd
+msgid "Bought in."
+msgstr "流拍收回。"
+
+#: scenes/auction/auction_room.gd
+msgid "Cash %s"
+msgstr "現金%s"
+
+#: scenes/auction/auction_room.gd
+msgid "Click a pouch to look inside: %d look left."
+msgid_plural "Click a pouch to look inside: %d looks left."
+msgstr[0] "點擊袋子查看裏面：還能看%d次。"
+
+#: scenes/auction/auction_room.gd
+msgid "Consign %s"
+msgstr "委託拍賣%s"
+
+#: scenes/auction/auction_room.gd scenes/smelter/smelter.gd
+msgid "Esc: back"
+msgstr "Esc：返回"
+
+#: scenes/auction/auction_room.gd
+msgid "Esc: leave"
+msgstr "Esc：離開"
+
+#: scenes/auction/auction_room.gd
+msgid "Estimate %s-%s"
+msgstr "估價%s-%s"
+
+#: scenes/auction/auction_room.gd
+msgid "Going once..."
+msgstr "一次……"
+
+#: scenes/auction/auction_room.gd
+msgid "Going twice..."
+msgstr "兩次……"
+
+#: scenes/auction/auction_room.gd
+msgid "Guess %s"
+msgstr "猜%s"
+
+#: scenes/auction/auction_room.gd
+msgid "HIGH BID"
+msgstr "最高出價"
+
+#: scenes/auction/auction_room.gd
+msgid "Jump bid"
+msgstr "跳價"
+
+#: scenes/auction/auction_room.gd
+msgid "Jump to %s"
+msgstr "跳到%s"
+
+#: scenes/auction/auction_room.gd scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/grading/grading_bench.gd scenes/jewellery_test/jewellery_test.gd scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
+msgid "LB / RB"
+msgstr "LB / RB"
+
+#: scenes/auction/auction_room.gd
+msgid "LOT %d"
+msgstr "第%d號拍品"
+
+#: scenes/auction/auction_room.gd
+msgid "LOT %d OF %d"
+msgstr "第%d號拍品，共%d件"
+
+#: scenes/auction/auction_room.gd
+msgid "Leave the sale"
+msgstr "離開拍賣會"
+
+#: scenes/auction/auction_room.gd
+msgid "Let it go"
+msgstr "放棄"
+
+#: scenes/auction/auction_room.gd
+msgid "Look inside"
+msgstr "看看裏面"
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d of %d"
+msgstr "第%d件，共%d件"
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d."
+msgstr "第%d號拍品。"
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d: %s, %s"
+msgstr "第%d號拍品：%s，%s"
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d: no sale"
+msgstr "第%d號拍品：流拍"
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d: your coin came back"
+msgstr "第%d號拍品：你的錢幣退回了"
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d: your coin sold, %s"
+msgstr "第%d號拍品：你的錢幣賣了%s"
+
+#: scenes/auction/auction_room.gd
+msgid "Lot %d: yours, %s"
+msgstr "第%d號拍品：歸你，%s"
+
+#: scenes/auction/auction_room.gd
+msgid "Melt you can see: %s"
+msgstr "看得到的熔化價：%s"
+
+#: scenes/auction/auction_room.gd
+msgid "NO SALE"
+msgstr "流拍"
+
+#: scenes/auction/auction_room.gd
+msgid "Next sale: %s."
+msgstr "下一場拍賣：%s。"
+
+#: scenes/auction/auction_room.gd
+msgid "No more looks inside the pouches."
+msgstr "不能再查看袋子了。"
+
+#: scenes/auction/auction_room.gd
+msgid "No sale today."
+msgstr "今天沒有拍賣。"
+
+#: scenes/auction/auction_room.gd
+msgid "No sale."
+msgstr "流拍。"
+
+#: scenes/auction/auction_room.gd
+msgid "PADDLE %d"
+msgstr "%d號牌"
+
+#: scenes/auction/auction_room.gd
+msgid "Plus %d sealed pouch."
+msgid_plural "Plus %d sealed pouches."
+msgstr[0] "另有%d個密封袋。"
+
+#: scenes/auction/auction_room.gd
+msgid "Pouch: %s"
+msgstr "袋子：%s"
+
+#: scenes/auction/auction_room.gd
+msgid "Previous / next lot"
+msgstr "上一件/下一件拍品"
+
+#: scenes/auction/auction_room.gd
+msgid "SALE OVER"
+msgstr "拍賣結束"
+
+#: scenes/auction/auction_room.gd
+msgid "SELL YOUR RARE COINS"
+msgstr "出售你的稀有錢幣"
+
+#: scenes/auction/auction_room.gd
+msgid "SOLD %s"
+msgstr "成交%s"
+
+#: scenes/auction/auction_room.gd
+msgid "Skip ahead a few steps. Someone near their limit may give up."
+msgstr "快進幾步。接近上限的人可能會放棄。"
+
+#: scenes/auction/auction_room.gd
+msgid "Sold, to %s!"
+msgstr "成交，歸%s！"
+
+#: scenes/auction/auction_room.gd
+msgid "Sold, to paddle %d!"
+msgstr "成交，歸%d號牌！"
+
+#: scenes/auction/auction_room.gd
+msgid "Space: bid   J: jump"
+msgstr "空格：出價   J：跳價"
+
+#: scenes/auction/auction_room.gd
+msgid "Spent %s. The coins are in your vault."
+msgstr "花了%s。錢幣已放進你的金庫。"
+
+#: scenes/auction/auction_room.gd
+msgid "Start me at %s?"
+msgstr "從%s起拍？"
+
+#: scenes/auction/auction_room.gd
+msgid "THE SALE IS OVER"
+msgstr "拍賣已結束"
+
+#: scenes/auction/auction_room.gd
+msgid "Take your seat"
+msgstr "入座"
+
+#: scenes/auction/auction_room.gd
+msgid "The winner pays %d%% on top of the hammer price."
+msgstr "成交者需在落槌價基礎上另付%d%%。"
+
+#: scenes/auction/auction_room.gd
+msgid "VIEWING"
+msgstr "預展"
+
+#: scenes/auction/auction_room.gd
+msgid "Viewing"
+msgstr "預展"
+
+#: scenes/auction/auction_room.gd
+msgid "Worthless"
+msgstr "一文不值"
+
+#: scenes/auction/auction_room.gd
+msgid "YOURS! %s"
+msgstr "歸你了！%s"
+
+#: scenes/auction/auction_room.gd
+msgid "You hold the bid."
+msgstr "你是最高出價者。"
+
+#: scenes/auction/auction_room.gd
+msgid "You went home with nothing this time."
+msgstr "這次你空手而歸。"
+
+#: scenes/auction/auction_room.gd
+msgid "You'd pay %s with the premium."
+msgstr "含佣金你要付%s。"
+
+#: scenes/auction/auction_room.gd
+msgid "Your lot. Reserve %s."
+msgstr "你的拍品。底價%s。"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%.1f mm"
+msgstr "%.1f mm"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%.2f US"
+msgstr "%.2f US"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "%.2f mm"
+msgstr "%.2f mm"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%.2f us"
+msgstr "%.2f us"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%d off gate"
+msgstr "%d處超限"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%d spots ok"
+msgstr "%d個點正常"
+
+#: scenes/bar_test/bar_test.gd
+msgid "%s, from %s"
+msgstr "%s，來自%s"
+
+#: scenes/bar_test/bar_test.gd
+msgid "AURUM 2000"
+msgstr "AURUM 2000"
+
+#: scenes/bar_test/bar_test.gd
+msgid "BAR TEST"
+msgstr "金條檢測"
+
+#: scenes/bar_test/bar_test.gd
+msgid "BUY ONE IN THE"
+msgstr "早晨升級中"
+
+#: scenes/bar_test/bar_test.gd
+msgid "BW %.2f"
+msgstr "BW %.2f"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Buy the XRF analyzer in the morning upgrades."
+msgstr "在早晨升級中購買XRF分析儀。"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Calipers"
+msgstr "卡尺"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Echo"
+msgstr "回波"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/grading/grading_bench.gd
+msgid "Esc: back to the counter"
+msgstr "Esc：回到櫃枱"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Fake"
+msgstr "假貨"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Genuine"
+msgstr "真貨"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Length"
+msgstr "長度"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/grading/grading_bench.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Loupe"
+msgstr "放大鏡"
+
+#: scenes/bar_test/bar_test.gd
+msgid "MAX 2KG"
+msgstr "MAX 2KG"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Melt today"
+msgstr "今日熔化價"
+
+#: scenes/bar_test/bar_test.gd
+msgid "NO XRF GUN"
+msgstr "沒有XRF槍"
+
+#: scenes/bar_test/bar_test.gd
+msgid "PROBE OFF"
+msgstr "探頭關閉"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/grading/grading_bench.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Previous / next tool"
+msgstr "上一個/下一個工具"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "READING"
+msgstr "讀數"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Real bars weigh their stated weight to +0.1%, size within 0.2 mm. Sweep the probe all over: the echo must stay in the gate. Tungsten hides in the middle."
+msgstr "真金條的重量與標稱值相差不超過+0.1%，尺寸誤差在0.2 mm以內。用探頭掃遍整根金條：回波必須保持在閘門內。鎢藏在中間。"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "SPEC"
+msgstr "規格"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Scale"
+msgstr "秤"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Scan"
+msgstr "掃描"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Serial"
+msgstr "序列號"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd
+msgid "Thick"
+msgstr "厚度"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Ultrasound"
+msgstr "超聲波"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Weight"
+msgstr "重量"
+
+#: scenes/bar_test/bar_test.gd
+msgid "Width"
+msgstr "寬度"
+
+#: scenes/bar_test/bar_test.gd
+msgid "XRF"
+msgstr "XRF"
+
+#: scenes/bar_test/bar_test.gd scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Your offer"
+msgstr "你的出價"
+
+#: scenes/bar_test/bar_test.gd
+msgid "all in gate"
+msgstr "全部在閘門內"
+
+#: scenes/bar_test/bar_test.gd
+msgid "seen day %d"
+msgstr "第%d天見過"
+
+#: scenes/coin_test/coin_test.gd
+msgid "%d coins from %s"
+msgstr "%d枚錢幣，來自%s"
+
+#: scenes/coin_test/coin_test.gd
+msgid "AURUM 200"
+msgstr "AURUM 200"
+
+#: scenes/coin_test/coin_test.gd
+msgid "COIN TEST"
+msgstr "錢幣檢測"
+
+#: scenes/coin_test/coin_test.gd
+msgid "Diameter"
+msgstr "直徑"
+
+#: scenes/coin_test/coin_test.gd
+msgid "Genuine coins match the spec within 0.05 g and 0.1 mm, ring for over a second and ignore magnets. Silver drags a little. Look for a soft strike or typos under the loupe."
+msgstr "真幣與規格相差不超過0.05 g和0.1 mm，能響一秒以上，不被磁鐵吸引。銀幣會被輕微拖動。在放大鏡下找壓印模糊或拼寫錯誤。"
+
+#: scenes/coin_test/coin_test.gd
+msgid "MAX 200G"
+msgstr "MAX 200G"
+
+#: scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "Magnet"
+msgstr "磁鐵"
+
+#: scenes/coin_test/coin_test.gd
+msgid "Ping"
+msgstr "敲擊"
+
+#: scenes/coin_test/coin_test.gd
+msgid "Ring"
+msgstr "響聲"
+
+#: scenes/coin_test/coin_test.gd
+msgid "Sigma"
+msgstr "Sigma"
+
+#: scenes/coin_test/coin_test.gd
+msgid "ferrous"
+msgstr "含鐵"
+
+#: scenes/coin_test/coin_test.gd
+msgid "in band"
+msgstr "在範圍內"
+
+#: scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "no pull"
+msgstr "不吸"
+
+#: scenes/coin_test/coin_test.gd
+msgid "slight drag"
+msgstr "輕微拖動"
+
+#: scenes/coin_test/coin_test.gd scenes/jewellery_test/jewellery_test.gd
+msgid "snaps hard"
+msgstr "猛地吸住"
+
+#: scenes/coin_test/coin_test.gd
+msgid "too low"
+msgstr "太低"
+
+#: scenes/grading/coin_grade.gd
+msgid "%s (cleaned)"
+msgstr "%s（清洗過）"
+
+#: scenes/grading/coin_grade.gd
+msgid "%s's coin had been cleaned and you missed it. It's %s."
+msgstr "%s的錢幣被清洗過，你沒看出來。它是%s。"
+
+#: scenes/grading/coin_grade.gd
+msgid "%s? Really? I don't think you know coins."
+msgstr "%s？真係？我睇你唔識錢幣。"
+
+#: scenes/grading/coin_grade.gd
+msgid "A rub on the high points. Half the lustre left: the cartwheel is broken."
+msgstr "高點有磨損。光澤只剩一半：車輪光斷了。"
+
+#: scenes/grading/coin_grade.gd
+msgid "About Uncirculated"
+msgstr "近未流通"
+
+#: scenes/grading/coin_grade.gd
+msgid "About half the detail left. Wide smooth plateaus on the design."
+msgstr "細節只剩一半左右。圖案上有大片光滑的平面。"
+
+#: scenes/grading/coin_grade.gd
+msgid "All the detail, light wear on the very top. A little lustre near the letters."
+msgstr "細節齊全，最高處有輕微磨損。字母附近還有少許光澤。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Arthur Bell"
+msgstr "Arthur Bell"
+
+#: scenes/grading/coin_grade.gd
+msgid "Before I send it off to be slabbed, what's your grade?"
+msgstr "攞去封裝評級之前，你評佢幾級？"
+
+#: scenes/grading/coin_grade.gd
+msgid "Bought it at an estate sale. I think it's a beauty."
+msgstr "喺遺產拍賣度買嘅。我覺得好靚。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Choice About Unc."
+msgstr "精選近未流通"
+
+#: scenes/grading/coin_grade.gd
+msgid "Cleaned? It has never touched a cloth. I'll take it elsewhere."
+msgstr "洗過？佢從來未掂過布。我去第二間。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Close enough for me. Thank you."
+msgstr "差唔多啦。多謝。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Collectors start bringing old coins to be graded. Read the wear, the lustre and the bag marks: a right grade earns a fee and a good word."
+msgstr "收藏家開始帶老錢幣來評級。觀察磨損、光澤和袋痕：評對了能賺手續費和好口碑。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Extremely Fine"
+msgstr "極美品"
+
+#: scenes/grading/coin_grade.gd
+msgid "Fine"
+msgstr "美品"
+
+#: scenes/grading/coin_grade.gd
+msgid "Gem Mint State"
+msgstr "精品未流通"
+
+#: scenes/grading/coin_grade.gd
+msgid "Good"
+msgstr "好品"
+
+#: scenes/grading/coin_grade.gd
+msgid "Graded %s's coin %s, but it's %s. No fee."
+msgstr "把%s的錢幣評為%s，但它是%s。沒有手續費。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Graded %s's coin %s, but it's %s. They left grumbling."
+msgstr "把%s的錢幣評為%s，但它是%s。對方嘟囔着走了。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Graded %s's coin %s, spot on. Fee and tip %s."
+msgstr "把%s的錢幣評為%s，完全正確。手續費加小費%s。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Graded %s's coin %s; it's %s. Fee %s."
+msgstr "把%s的錢幣評為%s；它是%s。手續費%s。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Grading lamp and loupe"
+msgstr "評級燈和放大鏡"
+
+#: scenes/grading/coin_grade.gd
+msgid "Hm. That's not what I'd have said."
+msgstr "嗯。我唔會咁評。"
+
+#: scenes/grading/coin_grade.gd
+msgid "I've had this since I was a boy. What grade is it?"
+msgstr "呢個我細細個已經有。係咩品級？"
+
+#: scenes/grading/coin_grade.gd
+msgid "Lena Fox"
+msgstr "Lena Fox"
+
+#: scenes/grading/coin_grade.gd
+msgid "Letters and rim all there. The design is worn flat, no detail inside it."
+msgstr "字母和邊緣都在。圖案磨平了，裏面沒有細節。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Mint State"
+msgstr "未流通"
+
+#: scenes/grading/coin_grade.gd
+msgid "Most of the detail left. The high points are flat and dull."
+msgstr "大部分細節還在。高點平了，沒有光澤。"
+
+#: scenes/grading/coin_grade.gd
+msgid "No wear at all. Lots of bag marks: count 9 or more."
+msgstr "完全沒有磨損。袋痕很多：9個或以上。"
+
+#: scenes/grading/coin_grade.gd
+msgid "No wear, full lustre, a few bag marks: 4 to 6."
+msgstr "沒有磨損，光澤飽滿，有幾處袋痕：4到6個。"
+
+#: scenes/grading/coin_grade.gd
+msgid "No wear, full lustre, a mark at most. A gem."
+msgstr "沒有磨損，光澤飽滿，最多一處痕跡。精品。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Rim worn into the letters. The design is a flat outline."
+msgstr "邊緣磨進了字母。圖案只剩平平的輪廓。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Settle an argument with my brother: what grade?"
+msgstr "幫我同我阿哥評吓理：咩品級？"
+
+#: scenes/grading/coin_grade.gd
+msgid "Spot on. You've got the eye. Here, keep the change."
+msgstr "完全正確。你好有眼光。拎住，唔使找。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Superb Gem"
+msgstr "極品"
+
+#: scenes/grading/coin_grade.gd
+msgid "The grading service says it's been cleaned. You didn't see the hairlines?"
+msgstr "評級公司話佢洗過。你睇唔到啲幼紋咩？"
+
+#: scenes/grading/coin_grade.gd
+msgid "The slightest rub on the very top. The cartwheel only breaks there."
+msgstr "最高處有極輕微的磨損。車輪光只在那裏斷開。"
+
+#: scenes/grading/coin_grade.gd
+msgid "Very Fine"
+msgstr "上美品"
+
+#: scenes/grading/coin_grade.gd
+msgid "Very Good"
+msgstr "中好品"
+
+#: scenes/grading/coin_grade.gd
+msgid "What would you call this one? Be honest."
+msgstr "你會點評呢個？講真話。"
+
+#: scenes/grading/coin_grade.gd
+msgid "You called %s's original %s coin cleaned. It wasn't."
+msgstr "你說%s的原光%s錢幣被清洗過。其實沒有。"
+
+#: scenes/grading/grading_bench.gd
+msgid "%d tagged"
+msgstr "已標記%d處"
+
+#: scenes/grading/grading_bench.gd
+msgid "Bag marks"
+msgstr "袋痕"
+
+#: scenes/grading/grading_bench.gd
+msgid "C: the coin has been cleaned (hairlines, no real lustre)"
+msgstr "C：錢幣被清洗過（細紋，沒有真正的光澤）"
+
+#: scenes/grading/grading_bench.gd
+msgid "CLEANED: fine hairlines all one way, seen under the loupe with the lamp low. Dull, no cartwheel."
+msgstr "清洗過：在放大鏡下把燈壓低，能看到朝同一方向的細紋。暗淡，沒有車輪光。"
+
+#: scenes/grading/grading_bench.gd
+msgid "COIN GRADING"
+msgstr "錢幣評級"
+
+#: scenes/grading/grading_bench.gd
+msgid "Cleaned (C)"
+msgstr "清洗過（C）"
+
+#: scenes/grading/grading_bench.gd
+msgid "Fee %s, more if you're spot on"
+msgstr "手續費%s，評得準還有更多"
+
+#: scenes/grading/grading_bench.gd
+msgid "GRADE"
+msgstr "品級"
+
+#: scenes/grading/grading_bench.gd
+msgid "GRADING GUIDE"
+msgstr "評級指南"
+
+#: scenes/grading/grading_bench.gd scenes/shop/hud.gd
+msgid "Grade it"
+msgstr "評級"
+
+#: scenes/grading/grading_bench.gd
+msgid "Grade it %s"
+msgstr "評為%s"
+
+#: scenes/grading/grading_bench.gd
+msgid "Grade it %s cleaned"
+msgstr "評為%s（清洗過）"
+
+#: scenes/grading/grading_bench.gd
+msgid "Guide"
+msgstr "指南"
+
+#: scenes/grading/grading_bench.gd
+msgid "LT / RT"
+msgstr "LT / RT"
+
+#: scenes/grading/grading_bench.gd
+msgid "Lamp"
+msgstr "燈"
+
+#: scenes/grading/grading_bench.gd
+msgid "Lower / higher grade"
+msgstr "降低/提高品級"
+
+#: scenes/grading/grading_bench.gd
+msgid "NO MARK"
+msgstr "無痕跡"
+
+#: scenes/grading/grading_bench.gd
+msgid "Pick a grade: Left/Right or click. 3 opens the guide."
+msgstr "選擇品級：左/右或點擊。按3打開指南。"
+
+#: scenes/grading/grading_bench.gd
+msgid "The owner hopes for %s"
+msgstr "主人希望是%s"
+
+#: scenes/grading/grading_bench.gd
+msgid "click or Esc to close"
+msgstr "點擊或按Esc關閉"
+
+#: scenes/grading/grading_bench.gd
+msgid "from lower left"
+msgstr "從左下方"
+
+#: scenes/grading/grading_bench.gd
+msgid "from lower right"
+msgstr "從右下方"
+
+#: scenes/grading/grading_bench.gd
+msgid "from the bottom"
+msgstr "從下方"
+
+#: scenes/grading/grading_bench.gd
+msgid "from the left"
+msgstr "從左邊"
+
+#: scenes/grading/grading_bench.gd
+msgid "from the right"
+msgstr "從右邊"
+
+#: scenes/grading/grading_bench.gd
+msgid "from the top"
+msgstr "從上方"
+
+#: scenes/grading/grading_bench.gd
+msgid "from upper left"
+msgstr "從左上方"
+
+#: scenes/grading/grading_bench.gd
+msgid "from upper right"
+msgstr "從右上方"
+
+#: scenes/grading/grading_bench.gd
+msgid "high"
+msgstr "高"
+
+#: scenes/grading/grading_bench.gd
+msgid "low"
+msgstr "低"
+
+#: scenes/grading/grading_bench.gd
+msgid "raking"
+msgstr "斜照"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "(claimed weight)"
+msgstr "（標稱重量）"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "AG %s"
+msgstr "AG %s"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "AG red"
+msgstr "AG變紅"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Acid"
+msgstr "酸液"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "CLAIM"
+msgstr "標稱"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Click (or D) to pay for the stone or not"
+msgstr "點擊（或按D）選擇是否為寶石付錢"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Click (or G) to change the grade you pay for"
+msgstr "點擊（或按G）更改你付錢的成色"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "DIAMOND"
+msgstr "鑽石"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Diamond or not"
+msgstr "是不是鑽石"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Esc: back   G/D: grade   Q-Y: acids"
+msgstr "Esc：返回   G/D：成色/鑽石   Q-Y：酸液"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Finish appraisal"
+msgstr "完成鑑定"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "JEWELLERY APPRAISAL"
+msgstr "珠寶鑑定"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Metal %s"
+msgstr "金屬%s"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Metal: %s"
+msgstr "金屬：%s"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Next grade"
+msgstr "下一檔成色"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "No stone to test"
+msgstr "沒有寶石可測"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "PT %s"
+msgstr "PT %s"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "PT holds"
+msgstr "PT不變"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Read the stamp under the loupe. A streak survives acids up to its karat; base metal fizzes. Moissanite fools the tester: look for doubled facet edges."
+msgstr "在放大鏡下讀印記。劃痕在不高於其K數的酸液中不會消失；賤金屬會冒泡。莫桑石能騙過測試儀：找重影的刻面邊緣。"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "SIMULANT"
+msgstr "仿鑽"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Stamp"
+msgstr "印記"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Stone"
+msgstr "寶石"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Stone: %s"
+msgstr "寶石：%s"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "THERMAL TESTER"
+msgstr "熱導測試儀"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "Tester"
+msgstr "測試儀"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "about %s g"
+msgstr "約%s g"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "clasp only"
+msgstr "僅扣頭"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "diamond"
+msgstr "鑽石"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "fake"
+msgstr "假的"
+
+#: scenes/jewellery_test/jewellery_test.gd
+msgid "from %s"
+msgstr "來自%s"
+
+#: scenes/menu/demo_end.gd
+msgid "%d day at your %s"
+msgid_plural "%d days at your %s"
+msgstr[0] "%d天 · 你的%s"
+
+#: scenes/menu/demo_end.gd scenes/shop/day_panels.gd
+msgid "Achievements"
+msgstr "成就"
+
+#: scenes/menu/demo_end.gd
+msgid "Deals closed"
+msgstr "完成交易"
+
+#: scenes/menu/demo_end.gd
+msgid "Fakes caught"
+msgstr "識破假貨"
+
+#: scenes/menu/demo_end.gd
+msgid "Grow past Main Street into the bullion house and the town landmark."
+msgstr "從主街一路發展到貴金屬商行和小鎮地標店。"
+
+#: scenes/menu/demo_end.gd
+msgid "IN THE FULL GAME"
+msgstr "完整版內容"
+
+#: scenes/menu/demo_end.gd
+msgid "Mags's whole story, to the ribbon cutting at your landmark."
+msgstr "Mags的完整故事，直到為你的地標店剪綵。"
+
+#: scenes/menu/demo_end.gd scenes/shop/day_panels.gd scenes/shop/hud.gd
+msgid "Net worth"
+msgstr "淨資產"
+
+#: scenes/menu/demo_end.gd
+msgid "Play again"
+msgstr "再玩一次"
+
+#: scenes/menu/demo_end.gd scenes/shop/day_panels.gd
+msgid "Profit on sales"
+msgstr "銷售利潤"
+
+#: scenes/menu/demo_end.gd scenes/menu/title_screen.gd
+msgid "Quit"
+msgstr "退出"
+
+#: scenes/menu/demo_end.gd scenes/shop/day_panels.gd
+msgid "Reputation"
+msgstr "聲譽"
+
+#: scenes/menu/demo_end.gd
+msgid "Rival shops, burglar crews, staff who grow with you, and all four seasons."
+msgstr "競爭對手、盜竊團伙、與你一同成長的員工，還有完整的四季。"
+
+#: scenes/menu/demo_end.gd
+msgid "Thanks for playing the demo!"
+msgstr "感謝試玩！"
+
+#: scenes/menu/demo_end.gd
+msgid "The trading desk, the smelter and coin grading for collectors."
+msgstr "交易台、熔爐，以及為收藏家評級錢幣。"
+
+#: scenes/menu/demo_end.gd
+msgid "Title"
+msgstr "標題畫面"
+
+#: scenes/menu/demo_end.gd
+msgid "Wishlist Vault Manager to hear when it comes out."
+msgstr "把Vault Manager加入願望單，發售時第一時間知道。"
+
+#: scenes/menu/demo_end.gd
+msgid "Wishlist on Steam"
+msgstr "在Steam上加入願望單"
+
+#: scenes/menu/pause_menu.gd scenes/shop/day_panels.gd
+msgid "%s, day %d"
+msgstr "%s，第%d天"
+
+#: scenes/menu/pause_menu.gd
+msgid "Paused"
+msgstr "已暫停"
+
+#: scenes/menu/pause_menu.gd
+msgid "Quit game"
+msgstr "退出遊戲"
+
+#: scenes/menu/pause_menu.gd
+msgid "Quit to title"
+msgstr "返回標題畫面"
+
+#: scenes/menu/pause_menu.gd
+msgid "Resume"
+msgstr "繼續"
+
+#: scenes/menu/pause_menu.gd scenes/menu/title_screen.gd ui/settings_panel.gd
+msgid "Settings"
+msgstr "設定"
+
+#: scenes/menu/pause_menu.gd
+msgid "Slot %d · saved morning and night"
+msgstr "存檔位%d · 早晚自動儲存"
+
+#: scenes/menu/title_screen.gd
+msgid "Continue"
+msgstr "繼續"
+
+#: scenes/menu/title_screen.gd
+msgid "DEMO · your first %d days"
+msgstr "試玩版 · 你的前%d天"
+
+#: scenes/menu/title_screen.gd
+msgid "Day %d · %s"
+msgstr "第%d天 · %s"
+
+#: scenes/menu/title_screen.gd
+msgid "Demo finished"
+msgstr "試玩結束"
+
+#: scenes/menu/title_screen.gd
+msgid "Every slot is full. Delete one to start a new shop."
+msgstr "所有存檔位都滿了。刪除一個才能開新店。"
+
+#: scenes/menu/title_screen.gd
+msgid "Fetching prices...      "
+msgstr "正在獲取價格……      "
+
+#: scenes/menu/title_screen.gd
+msgid "GOLD"
+msgstr "黃金"
+
+#: scenes/menu/title_screen.gd scenes/shop/day_panels.gd
+msgid "New game"
+msgstr "新遊戲"
+
+#: scenes/menu/title_screen.gd
+msgid "No saved shop yet"
+msgstr "還沒有存檔"
+
+#: scenes/menu/title_screen.gd
+msgid "PALLADIUM"
+msgstr "鈀金"
+
+#: scenes/menu/title_screen.gd
+msgid "PLATINUM"
+msgstr "鉑金"
+
+#: scenes/menu/title_screen.gd
+msgid "Run the biggest gold shop in town"
+msgstr "經營鎮上最大的黃金店"
+
+#: scenes/menu/title_screen.gd
+msgid "SILVER"
+msgstr "白銀"
+
+#: scenes/menu/title_screen.gd ui/save_slots_panel.gd
+msgid "Save slots"
+msgstr "存檔位"
+
+#: scenes/menu/title_screen.gd scenes/shop/hud.gd
+msgid "● CACHED"
+msgstr "● 快取"
+
+#: scenes/menu/title_screen.gd scenes/shop/hud.gd
+msgid "● LIVE"
+msgstr "● 實時"
+
+#: scenes/menu/title_screen.gd scenes/shop/hud.gd
+msgid "● OFFLINE"
+msgstr "● 離線"
+
+#: scenes/shop/customer.gd
+msgid "%d%%. That's my floor, take it or I walk."
+msgstr "%d%%。呢個係我底線，唔賣就走。"
+
+#: scenes/shop/customer.gd
+msgid "A gift for my granddaughter."
+msgstr "送俾我孫女嘅禮物。"
+
+#: scenes/shop/customer.gd
+msgid "Adding to my stack."
+msgstr "幫我啲貨加啲料。"
+
+#: scenes/shop/customer.gd
+msgid "Big Earl"
+msgstr "Big Earl"
+
+#: scenes/shop/customer.gd
+msgid "Bought it years ago. Time to sell."
+msgstr "幾年前買嘅。係時候賣喇。"
+
+#: scenes/shop/customer.gd
+msgid "Bought them online, need cash fast."
+msgstr "網上買嘅，急住要現金。"
+
+#: scenes/shop/customer.gd
+msgid "Bro. %d%%. I'm literally losing money here."
+msgstr "兄弟。%d%%。我真係蝕緊錢。"
+
+#: scenes/shop/customer.gd
+msgid "Cleaning out the jewellery box."
+msgstr "執吓首飾盒。"
+
+#: scenes/shop/customer.gd
+msgid "Clearing out my late husband's collection."
+msgstr "清走我先夫啲收藏。"
+
+#: scenes/shop/customer.gd
+msgid "Come on. %d%% and we shake on it."
+msgstr "嚟啦。%d%%，握手成交。"
+
+#: scenes/shop/customer.gd
+msgid "Comes with the card, but I lost it."
+msgstr "本來有證書，不過我整唔見咗。"
+
+#: scenes/shop/customer.gd
+msgid "Crypto burned me. I want something real."
+msgstr "加密幣搞到我好慘。我想要啲實在嘅嘢。"
+
+#: scenes/shop/customer.gd
+msgid "Dale"
+msgstr "Dale"
+
+#: scenes/shop/customer.gd
+msgid "Divorce. Don't ask."
+msgstr "離咗婚。唔好問。"
+
+#: scenes/shop/customer.gd
+msgid "Fine, fine. Ring it up."
+msgstr "得啦得啦。埋單啦。"
+
+#: scenes/shop/customer.gd
+msgid "Found it at an estate sale. It's stamped."
+msgstr "喺遺產拍賣度搵到。有印記架。"
+
+#: scenes/shop/customer.gd
+msgid "Found these in a drawer. Real deal, trust me."
+msgstr "喺櫃桶度搵到。貨真價實，信我。"
+
+#: scenes/shop/customer.gd
+msgid "Got it cheap from a guy. Real, I promise."
+msgstr "平價喺個人度買返嚟。真嘅，我保證。"
+
+#: scenes/shop/customer.gd
+msgid "Grandpa Joe"
+msgstr "Grandpa Joe"
+
+#: scenes/shop/customer.gd
+msgid "Had it appraised for twice that, honest."
+msgstr "估價係呢個兩倍，真架。"
+
+#: scenes/shop/customer.gd
+msgid "How about %d%%? Meet me halfway."
+msgstr "%d%%點呀？大家讓一步。"
+
+#: scenes/shop/customer.gd
+msgid "I could stretch to %d%% over. Deal?"
+msgstr "我最多俾多%d%%。成交？"
+
+#: scenes/shop/customer.gd
+msgid "I pay well for quality, but not that well. %d%% over."
+msgstr "我肯為品質俾多啲，但唔係咁多。溢價%d%%。"
+
+#: scenes/shop/customer.gd
+msgid "Inherited this bar. I'd rather have cash."
+msgstr "繼承咗呢條金條。我寧願要現金。"
+
+#: scenes/shop/customer.gd
+msgid "It's been sitting in my safe deposit box."
+msgstr "一直放喺我個保險箱度。"
+
+#: scenes/shop/customer.gd
+msgid "June"
+msgstr "June"
+
+#: scenes/shop/customer.gd
+msgid "Kevin"
+msgstr "Kevin"
+
+#: scenes/shop/customer.gd
+msgid "Look, I'd take %d%% of what it's worth. That's fair."
+msgstr "聽住，按價值%d%%我就賣。好公道喇。"
+
+#: scenes/shop/customer.gd
+msgid "Marco"
+msgstr "Marco"
+
+#: scenes/shop/customer.gd
+msgid "Melt it down if you don't believe me."
+msgstr "你唔信就熔咗佢。"
+
+#: scenes/shop/customer.gd
+msgid "My cousin says these are worth a fortune."
+msgstr "我表哥話呢啲好值錢。"
+
+#: scenes/shop/customer.gd
+msgid "My uncle's a jeweller, he says it's the real thing."
+msgstr "我阿叔做珠寶架，佢話係真貨。"
+
+#: scenes/shop/customer.gd
+msgid "Need a bit of cash for the car."
+msgstr "要啲現金整架車。"
+
+#: scenes/shop/customer.gd
+msgid "Need the money for a down payment."
+msgstr "要錢俾首期。"
+
+#: scenes/shop/customer.gd
+msgid "No receipt, but they're solid. Swear."
+msgstr "冇收據，不過係實心架。我發誓。"
+
+#: scenes/shop/customer.gd
+msgid "No. I know what this is worth."
+msgstr "唔得。我知呢樣嘢值幾多。"
+
+#: scenes/shop/customer.gd
+msgid "Okay, %d%%, but that's as low as I go."
+msgstr "好啦，%d%%，不過呢個係我底線。"
+
+#: scenes/shop/customer.gd
+msgid "Old Sal"
+msgstr "Old Sal"
+
+#: scenes/shop/customer.gd
+msgid "Only %d? I'll take what you have."
+msgstr "淨係得%d個？有幾多我要幾多。"
+
+#: scenes/shop/customer.gd
+msgid "Price is up, time to cash in."
+msgstr "價錢升咗，係時候套現。"
+
+#: scenes/shop/customer.gd
+msgid "Prices dipped, I'm buying."
+msgstr "價錢跌咗，我嚟買。"
+
+#: scenes/shop/customer.gd
+msgid "Priya"
+msgstr "Priya"
+
+#: scenes/shop/customer.gd
+msgid "Quick deal? I've got another buyer waiting."
+msgstr "快啲成交？仲有其他買家等緊。"
+
+#: scenes/shop/customer.gd
+msgid "Quick sale. No questions, right?"
+msgstr "快手賣。唔好問咁多，係咪？"
+
+#: scenes/shop/customer.gd
+msgid "Selling part of my stack."
+msgstr "賣咗我啲囤貨嘅一部分。"
+
+#: scenes/shop/customer.gd
+msgid "Solid gold, real stone. Need cash today."
+msgstr "純金，真石。今日就要現金。"
+
+#: scenes/shop/customer.gd
+msgid "Spot plus %d%%, final offer."
+msgstr "現貨價加%d%%，最後出價。"
+
+#: scenes/shop/customer.gd
+msgid "Spot plus %d%%? I'd pay maybe %d%% over."
+msgstr "現貨價加%d%%？我最多俾溢價%d%%。"
+
+#: scenes/shop/customer.gd
+msgid "Sterling across the street is cheaper."
+msgstr "對面Sterling平啲。"
+
+#: scenes/shop/customer.gd
+msgid "Still too low. I know what spot is today."
+msgstr "都係太低。我知今日現貨價幾多。"
+
+#: scenes/shop/customer.gd
+msgid "Stocks are a casino. I want metal."
+msgstr "股市即係賭場。我要金屬。"
+
+#: scenes/shop/customer.gd
+msgid "That's a lowball for a piece like this. Look again."
+msgstr "咁嘅貨出呢個價太低喇。再睇清楚啲。"
+
+#: scenes/shop/customer.gd
+msgid "That's a lowball. I was hoping for closer to %d%%."
+msgstr "出價太低喇。我想接近%d%%。"
+
+#: scenes/shop/customer.gd
+msgid "This was my grandmother's. Never wear it."
+msgstr "呢個係我阿嫲嘅。從來冇戴過。"
+
+#: scenes/shop/customer.gd
+msgid "Ugh. Fine. You drive a hard bargain."
+msgstr "唉。好啦。你真係好識講價。"
+
+#: scenes/shop/day_panels.gd
+msgid " %d%% there."
+msgstr " 已完成%d%%。"
+
+#: scenes/shop/day_panels.gd
+msgid " (%d to build)"
+msgstr " （還需建造%d）"
+
+#: scenes/shop/day_panels.gd
+msgid " (fair: %s)"
+msgstr " （公允價：%s）"
+
+#: scenes/shop/day_panels.gd
+msgid " Earned on day %d."
+msgstr " 第%d天獲得。"
+
+#: scenes/shop/day_panels.gd
+msgid " Talks %d%% of fussy buyers round."
+msgstr " 能說服%d%%挑剔的買家。"
+
+#: scenes/shop/day_panels.gd
+msgid "%.1f stars"
+msgstr "%.1f星"
+
+#: scenes/shop/day_panels.gd
+msgid "%.1f★  pays %d%%  +%d%%"
+msgstr "%.1f★  收購%d%%  +%d%%"
+
+#: scenes/shop/day_panels.gd
+msgid "%d day (best %d)"
+msgid_plural "%d days (best %d)"
+msgstr[0] "%d天（最佳%d）"
+
+#: scenes/shop/day_panels.gd
+msgid "%d day of trading. %d of %d achievements earned."
+msgid_plural "%d days of trading. %d of %d achievements earned."
+msgstr[0] "已經營%d天。獲得%d/%d項成就。"
+
+#: scenes/shop/day_panels.gd
+msgid "%d more upgrade unlocks as the shop grows."
+msgid_plural "%d more upgrades unlock as the shop grows."
+msgstr[0] "店鋪發展後還會解鎖%d項升級。"
+
+#: scenes/shop/day_panels.gd
+msgid "%d of %d earned. Hover one to see how to earn it."
+msgstr "已獲得%d/%d項。把滑鼠懸停在成就上查看獲得方法。"
+
+#: scenes/shop/day_panels.gd
+msgid "%d xp to go"
+msgstr "還差%d經驗"
+
+#: scenes/shop/day_panels.gd
+msgid "%s (in %d day)"
+msgid_plural "%s (in %d days)"
+msgstr[0] "%s（%d天后）"
+
+#: scenes/shop/day_panels.gd
+msgid "%s Wage %s a day."
+msgstr "%s 日薪%s。"
+
+#: scenes/shop/day_panels.gd
+msgid "%s a day%s"
+msgstr "每天%s%s"
+
+#: scenes/shop/day_panels.gd
+msgid "%s a night"
+msgstr "每晚%s"
+
+#: scenes/shop/day_panels.gd
+msgid "%s asks for a raise of %s a day."
+msgstr "%s要求日薪漲%s。"
+
+#: scenes/shop/day_panels.gd
+msgid "%s heard the bank is calling. She backs small shops she believes in, and she believes in yours."
+msgstr "%s聽說銀行在催債。她支持她看好的小店，而她看好你的店。"
+
+#: scenes/shop/day_panels.gd
+msgid "%s is down %.1f%%. Bargain hunters will be out."
+msgstr "%s下跌了%.1f%%。撿便宜的人要出動了。"
+
+#: scenes/shop/day_panels.gd
+msgid "%s is up %.1f%%. Expect more sellers cashing in."
+msgstr "%s上漲了%.1f%%。預計會有更多賣家來套現。"
+
+#: scenes/shop/day_panels.gd
+msgid "%s of %s"
+msgstr "%s / %s"
+
+#: scenes/shop/day_panels.gd
+msgid "%s over %d days"
+msgstr "%s，分%d天"
+
+#: scenes/shop/day_panels.gd
+msgid "%s to move up."
+msgstr "還需%s才能升級。"
+
+#: scenes/shop/day_panels.gd
+msgid "%s wants %d × %s %s. You hold %d."
+msgstr "%s要%d × %s，%s交貨。你有%d枚。"
+
+#: scenes/shop/day_panels.gd
+msgid "%s · %d/%d goals"
+msgstr "%s · %d/%d個目標"
+
+#: scenes/shop/day_panels.gd
+msgid "%s · %s. Set your prices, then open up."
+msgstr "%s · %s。定好價格，然後開門。"
+
+#: scenes/shop/day_panels.gd
+msgid "%s's next sale: %s."
+msgstr "%s的下一場拍賣：%s。"
+
+#: scenes/shop/day_panels.gd
+msgid "%s's sale is this morning: estates, rare coins and dealer stock. Bid against Sterling and the collectors."
+msgstr "%s的拍賣就在今天上午：遺產、稀有錢幣和經銷商庫存。和Sterling及收藏家們競價。"
+
+#: scenes/shop/day_panels.gd
+msgid "%s's stake"
+msgstr "%s的股份"
+
+#: scenes/shop/day_panels.gd
+msgid "%s, %s"
+msgstr "%s，%s"
+
+#: scenes/shop/day_panels.gd
+msgid "%s, %s (level %d)"
+msgstr "%s，%s（%d級）"
+
+#: scenes/shop/day_panels.gd
+msgid "%s: the plot next door opens when you move to the %s. %s"
+msgstr "%s：搬到%s時隔壁的地塊會開放。%s"
+
+#: scenes/shop/day_panels.gd
+msgid ", when Mags drops by."
+msgstr "，在Mags來訪時。"
+
+#: scenes/shop/day_panels.gd
+msgid "A NOTE FROM MAGS HOLLOWAY"
+msgstr "Mags Holloway的留言"
+
+#: scenes/shop/day_panels.gd
+msgid "A day without profit costs you nothing. Buy her out any morning for what she is still owed."
+msgstr "沒有利潤的日子不用付她錢。任何一個早上都可以按尚欠金額買斷她的股份。"
+
+#: scenes/shop/day_panels.gd
+msgid "A quiet morning on Main Street. Your share of the town's customers: %d%%."
+msgstr "主街上一個平靜的早晨。你在全鎮顧客中的份額：%d%%。"
+
+#: scenes/shop/day_panels.gd
+msgid "Achievements (%d/%d)"
+msgstr "成就（%d/%d）"
+
+#: scenes/shop/day_panels.gd
+msgid "Ad runs %d more day"
+msgid_plural "Ad runs %d more days"
+msgstr[0] "廣告還剩%d天"
+
+#: scenes/shop/day_panels.gd
+msgid "An ad in the town paper: for %d days more customers pick your shop over the others."
+msgstr "在鎮報上登廣告：接下來%d天，更多顧客會選你的店。"
+
+#: scenes/shop/day_panels.gd
+msgid "An angel investor"
+msgstr "一位天使投資人"
+
+#: scenes/shop/day_panels.gd
+msgid "At night the line clears an overdraft, at the line's rate instead of the overdraft's."
+msgstr "晚上信用額度會補上透支，按額度利率而不是透支利率計息。"
+
+#: scenes/shop/day_panels.gd
+msgid "At work"
+msgstr "在崗"
+
+#: scenes/shop/day_panels.gd
+msgid "Auction day at %s: %d lots. Go from the Town map."
+msgstr "%s今天有拍賣：%d件拍品。從小鎮地圖前往。"
+
+#: scenes/shop/day_panels.gd
+msgid "Auction: %d lots"
+msgstr "拍賣：%d件拍品"
+
+#: scenes/shop/day_panels.gd
+msgid "BEST DAYS"
+msgstr "最佳日子"
+
+#: scenes/shop/day_panels.gd
+msgid "BILLS"
+msgstr "賬單"
+
+#: scenes/shop/day_panels.gd
+msgid "Bank"
+msgstr "銀行"
+
+#: scenes/shop/day_panels.gd
+msgid "Beat Sterling"
+msgstr "打敗Sterling"
+
+#: scenes/shop/day_panels.gd
+msgid "Best reputation"
+msgstr "最佳聲譽"
+
+#: scenes/shop/day_panels.gd
+msgid "Book a table at the coin show: more collectors come, and they pay more."
+msgstr "在錢幣展訂一張桌子：來的收藏家更多，出價也更高。"
+
+#: scenes/shop/day_panels.gd
+msgid "Booth "
+msgstr "展位 "
+
+#: scenes/shop/day_panels.gd
+msgid "Booth booked"
+msgstr "已訂展位"
+
+#: scenes/shop/day_panels.gd
+msgid "Borrow"
+msgstr "借款"
+
+#: scenes/shop/day_panels.gd
+msgid "Bought from customers"
+msgstr "從顧客處收購"
+
+#: scenes/shop/day_panels.gd
+msgid "Bought this morning: %s."
+msgstr "今早買入：%s。"
+
+#: scenes/shop/day_panels.gd
+msgid "Build"
+msgstr "建造"
+
+#: scenes/shop/day_panels.gd
+msgid "Built"
+msgstr "已建造"
+
+#: scenes/shop/day_panels.gd scenes/shop/decor_panel.gd scenes/smelter/smelter.gd scenes/trading_desk/trading_desk.gd
+msgid "Buy"
+msgstr "買入"
+
+#: scenes/shop/day_panels.gd
+msgid "Buy %d for %s."
+msgstr "買%d個，共%s。"
+
+#: scenes/shop/day_panels.gd
+msgid "Buy coins from the wholesaler before you open."
+msgstr "開門前從批發商那裏進錢幣。"
+
+#: scenes/shop/day_panels.gd
+msgid "Buy out for %s"
+msgstr "以%s買斷"
+
+#: scenes/shop/day_panels.gd
+msgid "Buy the scrap dealer's lots and melt scrap into bars."
+msgstr "收購廢料商的貨，把廢料熔成金條。"
+
+#: scenes/shop/day_panels.gd
+msgid "CHAPTERS"
+msgstr "章節"
+
+#: scenes/shop/day_panels.gd
+msgid "CREDIT LINE"
+msgstr "信用額度"
+
+#: scenes/shop/day_panels.gd
+msgid "Cash %s. Hover an upgrade to see what it does."
+msgstr "現金%s。把滑鼠懸停在升級上查看效果。"
+
+#: scenes/shop/day_panels.gd
+msgid "Cash change today"
+msgstr "今日現金變動"
+
+#: scenes/shop/day_panels.gd
+msgid "Cash now"
+msgstr "當前現金"
+
+#: scenes/shop/day_panels.gd
+msgid "Cash to move"
+msgstr "搬遷所需現金"
+
+#: scenes/shop/day_panels.gd
+msgid "Celeste Wren, the angel investor: her offer, or her stake in the shop."
+msgstr "天使投資人Celeste Wren：她的報價，或她在店裏的股份。"
+
+#: scenes/shop/day_panels.gd
+msgid "Close a day in profit to start the list."
+msgstr "有一天盈利收工，就會開始記錄。"
+
+#: scenes/shop/day_panels.gd
+msgid "Coin"
+msgstr "錢幣"
+
+#: scenes/shop/day_panels.gd
+msgid "Coins at spot plus %d%%, delivered before you open. Cash %s."
+msgstr "按現貨價加%d%%進錢幣，開門前送到。現金%s。"
+
+#: scenes/shop/day_panels.gd
+msgid "Collector"
+msgstr "收藏家"
+
+#: scenes/shop/day_panels.gd
+msgid "Collectors' special orders and the dealer network."
+msgstr "收藏家的特殊訂單和同行網絡。"
+
+#: scenes/shop/day_panels.gd
+msgid "Cover overdrafts: off"
+msgstr "補上透支：關"
+
+#: scenes/shop/day_panels.gd
+msgid "Cover overdrafts: on"
+msgstr "補上透支：開"
+
+#: scenes/shop/day_panels.gd
+msgid "Credit rating %s. Pay on time and the bank lends more, for less."
+msgstr "信用評級%s。按時還款，銀行就會借你更多、利息更低。"
+
+#: scenes/shop/day_panels.gd
+msgid "DEALER NETWORK"
+msgstr "同行網絡"
+
+#: scenes/shop/day_panels.gd
+msgid "Day %d closed"
+msgstr "第%d天結束"
+
+#: scenes/shop/day_panels.gd
+msgid "Day %d, %s · %d fake caught"
+msgid_plural "Day %d, %s · %d fakes caught"
+msgstr[0] "第%d天，%s · 識破%d件假貨"
+
+#: scenes/shop/day_panels.gd
+msgid "Dealers charge most of the collector's premium. Sellers bring old coins too."
+msgstr "同行會收走收藏家溢價的大部分。賣家也會帶來老錢幣。"
+
+#: scenes/shop/day_panels.gd
+msgid "Deals closed (buys / sales)"
+msgstr "完成交易（買入/賣出）"
+
+#: scenes/shop/day_panels.gd scenes/shop/decor_panel.gd
+msgid "Decorate"
+msgstr "裝飾"
+
+#: scenes/shop/day_panels.gd
+msgid "Draw %s"
+msgstr "動用%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Drawn"
+msgstr "已動用"
+
+#: scenes/shop/day_panels.gd
+msgid "Due"
+msgstr "應還"
+
+#: scenes/shop/day_panels.gd
+msgid "Each"
+msgstr "單價"
+
+#: scenes/shop/day_panels.gd
+msgid "Each move up opens a plot next door. Build a room there to add it to your shop."
+msgstr "每次升級都會開放隔壁的一塊地。在那裏建個房間，就能擴大你的店。"
+
+#: scenes/shop/day_panels.gd
+msgid "Fakes caught / missed"
+msgstr "識破/漏掉的假貨"
+
+#: scenes/shop/day_panels.gd
+msgid "Find the coins by the day agreed. Coins for an order are set aside."
+msgstr "在約定的日子前找到錢幣。訂單所需的錢幣會被預留。"
+
+#: scenes/shop/day_panels.gd
+msgid "Floor plan"
+msgstr "平面圖"
+
+#: scenes/shop/day_panels.gd
+msgid "Floor plan%s"
+msgstr "平面圖%s"
+
+#: scenes/shop/day_panels.gd
+msgid "GOALS"
+msgstr "目標"
+
+#: scenes/shop/day_panels.gd
+msgid "Give the raise"
+msgstr "同意加薪"
+
+#: scenes/shop/day_panels.gd
+msgid "Gold"
+msgstr "黃金"
+
+#: scenes/shop/day_panels.gd
+msgid "Have"
+msgstr "持有"
+
+#: scenes/shop/day_panels.gd
+msgid "Her share"
+msgstr "她的分成"
+
+#: scenes/shop/day_panels.gd
+msgid "Highest net worth"
+msgstr "最高淨資產"
+
+#: scenes/shop/day_panels.gd
+msgid "Hire"
+msgstr "僱用"
+
+#: scenes/shop/day_panels.gd
+msgid "Hire a %s"
+msgstr "僱一名%s"
+
+#: scenes/shop/day_panels.gd
+msgid "How your staff are getting on: levels, mood and pay."
+msgstr "員工的情況：等級、心情和工資。"
+
+#: scenes/shop/day_panels.gd
+msgid "In a foul mood"
+msgstr "心情很糟"
+
+#: scenes/shop/day_panels.gd
+msgid "In return"
+msgstr "作為回報"
+
+#: scenes/shop/day_panels.gd
+msgid "Interest"
+msgstr "利息"
+
+#: scenes/shop/day_panels.gd
+msgid "Interest paid to the bank"
+msgstr "付給銀行的利息"
+
+#: scenes/shop/day_panels.gd
+msgid "Investor"
+msgstr "投資人"
+
+#: scenes/shop/day_panels.gd
+msgid "Keep growing your vault and reputation."
+msgstr "繼續擴大你的金庫和聲譽。"
+
+#: scenes/shop/day_panels.gd
+msgid "Keep trading: the town is yours."
+msgstr "繼續經營：整個小鎮都是你的。"
+
+#: scenes/shop/day_panels.gd
+msgid "LOAN"
+msgstr "貸款"
+
+#: scenes/shop/day_panels.gd
+msgid "Ledger"
+msgstr "賬本"
+
+#: scenes/shop/day_panels.gd
+msgid "Left"
+msgstr "剩餘"
+
+#: scenes/shop/day_panels.gd
+msgid "Left to pay"
+msgstr "待還"
+
+#: scenes/shop/day_panels.gd
+msgid "Let go"
+msgstr "解僱"
+
+#: scenes/shop/day_panels.gd
+msgid "Level %d"
+msgstr "%d級"
+
+#: scenes/shop/day_panels.gd
+msgid "Lifetime profit"
+msgstr "累計利潤"
+
+#: scenes/shop/day_panels.gd
+msgid "Lock up and go home"
+msgstr "鎖門回家"
+
+#: scenes/shop/day_panels.gd
+msgid "Locked"
+msgstr "未解鎖"
+
+#: scenes/shop/day_panels.gd
+msgid "Lost to thieves"
+msgstr "被盜損失"
+
+#: scenes/shop/day_panels.gd
+msgid "Mags's goals for this chapter of the story."
+msgstr "Mags為故事這一章定下的目標。"
+
+#: scenes/shop/day_panels.gd
+msgid "Metals are calm this morning. Expect a normal day."
+msgstr "今早金屬行情平穩。預計是普通的一天。"
+
+#: scenes/shop/day_panels.gd
+msgid "Mood"
+msgstr "心情"
+
+#: scenes/shop/day_panels.gd
+msgid "Morning wholesaler"
+msgstr "早晨批發商"
+
+#: scenes/shop/day_panels.gd
+msgid "Move"
+msgstr "搬遷"
+
+#: scenes/shop/day_panels.gd
+msgid "Move to %s"
+msgstr "搬到%s"
+
+#: scenes/shop/day_panels.gd
+msgid "NEXT: %s"
+msgstr "下一步：%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Net worth at today's prices"
+msgstr "按今日價格計算的淨資產"
+
+#: scenes/shop/day_panels.gd
+msgid "Newspaper ad %s"
+msgstr "報紙廣告%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Next rent and insurance in %d day."
+msgid_plural "Next rent and insurance in %d days."
+msgstr[0] "%d天后付下一次房租和保險。"
+
+#: scenes/shop/day_panels.gd
+msgid "Nightly payment"
+msgstr "每晚還款"
+
+#: scenes/shop/day_panels.gd
+msgid "Nobody holds a stake in your shop."
+msgstr "沒有人持有你店的股份。"
+
+#: scenes/shop/day_panels.gd scenes/shop/hud.gd
+msgid "Not now"
+msgstr "以後再說"
+
+#: scenes/shop/day_panels.gd
+msgid "Off sick (unpaid)"
+msgstr "病假（無薪）"
+
+#: scenes/shop/day_panels.gd
+msgid "Open the shop"
+msgstr "開門營業"
+
+#: scenes/shop/day_panels.gd
+msgid "Open the shop without shaking on it and she walks away."
+msgstr "不握手就開門，她就會走。"
+
+#: scenes/shop/day_panels.gd
+msgid "Orders (%d)"
+msgstr "訂單（%d）"
+
+#: scenes/shop/day_panels.gd
+msgid "Owned"
+msgstr "已擁有"
+
+#: scenes/shop/day_panels.gd
+msgid "Paid so far"
+msgstr "已付"
+
+#: scenes/shop/day_panels.gd
+msgid "Paid to investors"
+msgstr "付給投資人"
+
+#: scenes/shop/day_panels.gd
+msgid "Palladium"
+msgstr "鈀金"
+
+#: scenes/shop/day_panels.gd
+msgid "Pay her what she is still owed and keep all your profit from now on."
+msgstr "把尚欠她的錢付清，從此利潤全歸你。"
+
+#: scenes/shop/day_panels.gd
+msgid "Pay off %s"
+msgstr "還清%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Pays %s in all on delivery."
+msgstr "交貨時共付%s。"
+
+#: scenes/shop/day_panels.gd
+msgid "Place plants, display cases and signs on the shop floor. A handsome shop earns more stars."
+msgstr "在店裏擺放植物、展示櫃和招牌。漂亮的店能贏得更多星級。"
+
+#: scenes/shop/day_panels.gd
+msgid "Platinum"
+msgstr "鉑金"
+
+#: scenes/shop/day_panels.gd
+msgid "Profit streak"
+msgstr "連續盈利"
+
+#: scenes/shop/day_panels.gd
+msgid "Raided: shut %d day"
+msgid_plural "Raided: shut %d days"
+msgstr[0] "被搜查：關門%d天"
+
+#: scenes/shop/day_panels.gd
+msgid "Rent %s a week. More customers, bigger deals and more upgrades. %s"
+msgstr "每週房租%s。更多顧客、更大的交易和更多升級。%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Rent and insurance"
+msgstr "房租和保險"
+
+#: scenes/shop/day_panels.gd
+msgid "Repay %s"
+msgstr "償還%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Restock"
+msgstr "進貨"
+
+#: scenes/shop/day_panels.gd
+msgid "Rings up a buyer in %.1f s."
+msgstr "%.1f秒結賬一位買家。"
+
+#: scenes/shop/day_panels.gd
+msgid "Say no"
+msgstr "拒絕"
+
+#: scenes/shop/day_panels.gd
+msgid "See how you did"
+msgstr "看看成績"
+
+#: scenes/shop/day_panels.gd
+msgid "Set your board a point better than Sterling's: pay %d%% of melt, sell at spot +%d%%."
+msgstr "把你的牌價定得比Sterling好一點：按熔化價的%d%%收購，以現貨價+%d%%出售。"
+
+#: scenes/shop/day_panels.gd
+msgid "She bought in on day %d. Her share comes off each day's profit when you lock up."
+msgstr "她在第%d天入股。每天鎖門時，她的分成會從當天利潤中扣除。"
+
+#: scenes/shop/day_panels.gd
+msgid "She is out once she has had %s. Or buy her out now for what she is still owed."
+msgstr "她拿到%s後就會退出。或者現在按尚欠金額買斷她。"
+
+#: scenes/shop/day_panels.gd
+msgid "She put in"
+msgstr "她投入了"
+
+#: scenes/shop/day_panels.gd
+msgid "She puts in"
+msgstr "她投入"
+
+#: scenes/shop/day_panels.gd
+msgid "Silver"
+msgstr "白銀"
+
+#: scenes/shop/day_panels.gd
+msgid "Smelter"
+msgstr "熔爐"
+
+#: scenes/shop/day_panels.gd
+msgid "Sold to customers"
+msgstr "賣給顧客"
+
+#: scenes/shop/day_panels.gd
+msgid "Special orders"
+msgstr "特殊訂單"
+
+#: scenes/shop/day_panels.gd
+msgid "Staff"
+msgstr "員工"
+
+#: scenes/shop/day_panels.gd
+msgid "Staff wages tonight"
+msgstr "今晚員工工資"
+
+#: scenes/shop/day_panels.gd
+msgid "Staff%s"
+msgstr "員工%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Still owed"
+msgstr "尚欠"
+
+#: scenes/shop/day_panels.gd
+msgid "Stops %d%% of robbers at the door."
+msgstr "在門口攔下%d%%的劫匪。"
+
+#: scenes/shop/day_panels.gd
+msgid "Story"
+msgstr "故事"
+
+#: scenes/shop/day_panels.gd
+msgid "Sure? Click again"
+msgstr "確定？再點一次"
+
+#: scenes/shop/day_panels.gd
+msgid "Take the money"
+msgstr "接受投資"
+
+#: scenes/shop/day_panels.gd
+msgid "Tell Detective Ruiz about Lucky's stolen goods. A raid shuts the pawn shop for %d days."
+msgstr "向Detective Ruiz舉報Lucky's的贓物。搜查會讓當鋪關門%d天。"
+
+#: scenes/shop/day_panels.gd
+msgid "That was the last day of the demo. Thanks for playing!"
+msgstr "這是試玩版的最後一天。感謝遊玩！"
+
+#: scenes/shop/day_panels.gd
+msgid "The %s opens in the full game. Wishlist it on Steam!"
+msgstr "%s在完整版中開放。去Steam加入願望單吧！"
+
+#: scenes/shop/day_panels.gd
+msgid "The bank"
+msgstr "銀行"
+
+#: scenes/shop/day_panels.gd
+msgid "The bank won't lend at a D rating. Stay out of the red to win back its trust."
+msgstr "信用評級為D時銀行不放貸。保持不透支來贏回它的信任。"
+
+#: scenes/shop/day_panels.gd
+msgid "The desk has traded today. Back tomorrow morning."
+msgstr "交易台今天已經交易過了。明天早上再來。"
+
+#: scenes/shop/day_panels.gd
+msgid "The ledger"
+msgstr "賬本"
+
+#: scenes/shop/day_panels.gd
+msgid "The rival shops, their prices and what they are up to."
+msgstr "競爭對手、他們的價格和他們在搞什麼名堂。"
+
+#: scenes/shop/day_panels.gd
+msgid "They leave today. The signing fee is not refunded."
+msgstr "他們今天離職。簽約費不退還。"
+
+#: scenes/shop/day_panels.gd
+msgid "Tip off police"
+msgstr "向警方舉報"
+
+#: scenes/shop/day_panels.gd
+msgid "Today"
+msgstr "今天"
+
+#: scenes/shop/day_panels.gd
+msgid "Tonight's bills"
+msgstr "今晚的賬單"
+
+#: scenes/shop/day_panels.gd
+msgid "Town map"
+msgstr "小鎮地圖"
+
+#: scenes/shop/day_panels.gd
+msgid "Town map%s"
+msgstr "小鎮地圖%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Town: "
+msgstr "小鎮："
+
+#: scenes/shop/day_panels.gd
+msgid "Trade at the desk this morning."
+msgstr "今天上午在交易台交易。"
+
+#: scenes/shop/day_panels.gd scenes/trading_desk/desk_session.gd
+msgid "Trading desk"
+msgstr "交易台"
+
+#: scenes/shop/day_panels.gd
+msgid "Until she has had"
+msgstr "直到她拿到"
+
+#: scenes/shop/day_panels.gd
+msgid "Upgrades"
+msgstr "升級"
+
+#: scenes/shop/day_panels.gd
+msgid "Upgrades (%d)%s"
+msgstr "升級（%d）%s"
+
+#: scenes/shop/day_panels.gd
+msgid "Upgrades and staff"
+msgstr "升級和員工"
+
+#: scenes/shop/day_panels.gd
+msgid "Upkeep and bank payments tonight"
+msgstr "今晚的維護費和銀行還款"
+
+#: scenes/shop/day_panels.gd
+msgid "Upkeep tonight"
+msgstr "今晚的維護費"
+
+#: scenes/shop/day_panels.gd
+msgid "Wage"
+msgstr "工資"
+
+#: scenes/shop/day_panels.gd
+msgid "Wages tonight %s. Pay staff what their level is worth."
+msgstr "今晚工資%s。按員工等級付應得的報酬。"
+
+#: scenes/shop/day_panels.gd
+msgid "Walk-in sellers are cheaper. Restock what buyers ask for."
+msgstr "上門的賣家更便宜。補進買家想要的貨。"
+
+#: scenes/shop/day_panels.gd
+msgid "Wants"
+msgstr "想要"
+
+#: scenes/shop/day_panels.gd
+msgid "Worth %s"
+msgstr "價值%s"
+
+#: scenes/shop/day_panels.gd
+msgid "YOU RUN THE BIGGEST STORE IN TOWN"
+msgstr "你經營着鎮上最大的商店"
+
+#: scenes/shop/day_panels.gd
+msgid "You run the biggest precious metal store in town. Mags tells everyone she taught you all you know, and Victor Sterling buys his scrap from you now."
+msgstr "你經營着鎮上最大的貴金屬商店。Mags逢人就說你的本事都是她教的，Victor Sterling現在也從你這兒買廢料了。"
+
+#: scenes/shop/day_panels.gd
+msgid "Your credit line, bank loans and credit rating."
+msgstr "你的信用額度、銀行貸款和信用評級。"
+
+#: scenes/shop/day_panels.gd
+msgid "Your table at the coin show %s."
+msgstr "你在錢幣展的展位%s。"
+
+#: scenes/shop/day_panels.gd
+msgid "done"
+msgstr "已完成"
+
+#: scenes/shop/day_panels.gd
+msgid "none today"
+msgstr "今天沒有"
+
+#: scenes/shop/day_panels.gd
+msgid "top level"
+msgstr "最高等級"
+
+#: scenes/shop/decor_panel.gd
+msgid "%d more piece in bigger shops."
+msgid_plural "%d more pieces in bigger shops."
+msgstr[0] "更大的店裏還有%d件擺件。"
+
+#: scenes/shop/decor_panel.gd
+msgid "%d of %d spots used"
+msgstr "已用%d/%d個位置"
+
+#: scenes/shop/decor_panel.gd
+msgid "+%d appeal (%s). %s"
+msgstr "+%d吸引力（%s）。%s"
+
+#: scenes/shop/decor_panel.gd
+msgid "An empty spot."
+msgstr "一個空位。"
+
+#: scenes/shop/decor_panel.gd
+msgid "Buy a piece, then click a gold spot on the floor to place it."
+msgstr "買下擺件，然後點擊地上的金色位置擺放。"
+
+#: scenes/shop/decor_panel.gd
+msgid "Cancel"
+msgstr "取消"
+
+#: scenes/shop/decor_panel.gd
+msgid "Click a piece on the floor to move it."
+msgstr "點擊地上的擺件來移動它。"
+
+#: scenes/shop/decor_panel.gd scenes/smelter/smelter.gd
+msgid "Done"
+msgstr "完成"
+
+#: scenes/shop/decor_panel.gd
+msgid "In your storeroom. Sells back for %s."
+msgstr "在你的儲藏室裏。賣回可得%s。"
+
+#: scenes/shop/decor_panel.gd
+msgid "Moving the %s: click a spot, or put it away."
+msgstr "正在移動%s：點擊一個位置，或把它收起來。"
+
+#: scenes/shop/decor_panel.gd
+msgid "Pick up the %s."
+msgstr "拿起%s。"
+
+#: scenes/shop/decor_panel.gd
+msgid "Place"
+msgstr "擺放"
+
+#: scenes/shop/decor_panel.gd
+msgid "Placing the %s: click a gold spot on the floor."
+msgstr "正在擺放%s：點擊地上的金色位置。"
+
+#: scenes/shop/decor_panel.gd
+msgid "Put away"
+msgstr "收起"
+
+#: scenes/shop/decor_panel.gd
+msgid "Put the %s here."
+msgstr "把%s放在這裏。"
+
+#: scenes/shop/decor_panel.gd scenes/shop/hud.gd scenes/trading_desk/trading_desk.gd
+msgid "Sell"
+msgstr "賣出"
+
+#: scenes/shop/decor_panel.gd
+msgid "Swap it with the %s."
+msgstr "和%s交換位置。"
+
+#: scenes/shop/hud.gd
+msgid "  tested"
+msgstr "  已檢測"
+
+#: scenes/shop/hud.gd
+msgid " with stone"
+msgstr "，帶寶石"
+
+#: scenes/shop/hud.gd
+msgid "%d × %s coins"
+msgstr "%d × %s錢幣"
+
+#: scenes/shop/hud.gd
+msgid "Agreed"
+msgstr "已同意"
+
+#: scenes/shop/hud.gd
+msgid "Appraised"
+msgstr "已鑑定"
+
+#: scenes/shop/hud.gd
+msgid "As claimed"
+msgstr "與聲稱一致"
+
+#: scenes/shop/hud.gd
+msgid "Buy as is"
+msgstr "按原樣買"
+
+#: scenes/shop/hud.gd
+msgid "By %s (%d day)  You hold %d"
+msgid_plural "By %s (%d days)  You hold %d"
+msgstr[0] "%s前（%d天）  你有%d枚"
+
+#: scenes/shop/hud.gd
+msgid "Cash"
+msgstr "現金"
+
+#: scenes/shop/hud.gd
+msgid "Charge buyers +%d%%"
+msgstr "向買家收+%d%%"
+
+#: scenes/shop/hud.gd
+msgid "Day %d"
+msgstr "第%d天"
+
+#: scenes/shop/hud.gd
+msgid "Day %d/%d"
+msgstr "第%d/%d天"
+
+#: scenes/shop/hud.gd
+msgid "Decline"
+msgstr "謝絕"
+
+#: scenes/shop/hud.gd
+msgid "Empty vault."
+msgstr "金庫空了。"
+
+#: scenes/shop/hud.gd
+msgid "Examine"
+msgstr "檢查"
+
+#: scenes/shop/hud.gd
+msgid "Fee %s if you grade it right"
+msgstr "評級正確可得手續費%s"
+
+#: scenes/shop/hud.gd
+msgid "Full game"
+msgstr "完整版"
+
+#: scenes/shop/hud.gd
+msgid "Goodbye"
+msgstr "再見"
+
+#: scenes/shop/hud.gd
+msgid "HOLD-UP"
+msgstr "搶劫"
+
+#: scenes/shop/hud.gd
+msgid "Hand over till"
+msgstr "交出收銀機"
+
+#: scenes/shop/hud.gd
+msgid "He won't wait long."
+msgstr "他等不了多久。"
+
+#: scenes/shop/hud.gd
+msgid "Hopes for %s"
+msgstr "希望是%s"
+
+#: scenes/shop/hud.gd
+msgid "IN THE VAULT"
+msgstr "金庫庫存"
+
+#: scenes/shop/hud.gd
+msgid "Make offer"
+msgstr "出價"
+
+#: scenes/shop/hud.gd
+msgid "Melt today  %s"
+msgstr "今日熔化價  %s"
+
+#: scenes/shop/hud.gd
+msgid "Menu"
+msgstr "選單"
+
+#: scenes/shop/hud.gd
+msgid "Next %s"
+msgstr "下一個%s"
+
+#: scenes/shop/hud.gd
+msgid "No thanks"
+msgstr "不用了"
+
+#: scenes/shop/hud.gd
+msgid "Not enough cash: %s"
+msgstr "現金不足：%s"
+
+#: scenes/shop/hud.gd
+msgid "Off to the vault..."
+msgstr "去金庫……"
+
+#: scenes/shop/hud.gd
+msgid "Out of stock"
+msgstr "缺貨"
+
+#: scenes/shop/hud.gd
+msgid "Panic button"
+msgstr "緊急按鈕"
+
+#: scenes/shop/hud.gd
+msgid "Panic button works %d%%"
+msgstr "緊急按鈕成功率%d%%"
+
+#: scenes/shop/hud.gd
+msgid "Pause, settings and quit (Esc)"
+msgstr "暫停、設定和退出（Esc）"
+
+#: scenes/shop/hud.gd
+msgid "Pay sellers %d%% of melt"
+msgstr "按熔化價的%d%%付給賣家"
+
+#: scenes/shop/hud.gd
+msgid "Pays"
+msgstr "支付"
+
+#: scenes/shop/hud.gd
+msgid "Pays %s  (+%d%%)"
+msgstr "支付%s  （+%d%%）"
+
+#: scenes/shop/hud.gd
+msgid "Price"
+msgstr "價格"
+
+#: scenes/shop/hud.gd scenes/shop/shop.gd
+msgid "Quiet for now. Customers arrive every few seconds."
+msgstr "暫時很安靜。顧客每隔幾秒就會來。"
+
+#: scenes/shop/hud.gd
+msgid "RUSH"
+msgstr "高峯"
+
+#: scenes/shop/hud.gd
+msgid "Refuse"
+msgstr "拒絕"
+
+#: scenes/shop/hud.gd
+msgid "Sell %d"
+msgstr "賣出%d枚"
+
+#: scenes/shop/hud.gd
+msgid "Stock at spot"
+msgstr "按現貨價的庫存"
+
+#: scenes/shop/hud.gd
+msgid "Take order"
+msgstr "接單"
+
+#: scenes/shop/hud.gd
+msgid "Take the till's cash to the vault (3 seconds away from the counter)"
+msgstr "把收銀機裏的現金送進金庫（離開櫃枱3秒）"
+
+#: scenes/shop/hud.gd
+msgid "Test bar"
+msgstr "檢測金條"
+
+#: scenes/shop/hud.gd
+msgid "Test coin"
+msgstr "檢測錢幣"
+
+#: scenes/shop/hud.gd
+msgid "The shop opens when you press Open the shop."
+msgstr "按下\"開門營業\"後店鋪開門。"
+
+#: scenes/shop/hud.gd
+msgid "Till %s"
+msgstr "收銀機%s"
+
+#: scenes/shop/hud.gd
+msgid "To vault"
+msgstr "送進金庫"
+
+#: scenes/shop/hud.gd
+msgid "Top of the town"
+msgstr "全鎮之巔"
+
+#: scenes/shop/hud.gd
+msgid "Wants the till and the case"
+msgstr "想要收銀機和櫃枱裏的東西"
+
+#: scenes/shop/hud.gd
+msgid "You hold %d"
+msgstr "你有%d枚"
+
+#: scenes/shop/hud.gd
+msgid "You hold only %d"
+msgstr "你只有%d枚"
+
+#: scenes/shop/hud.gd
+msgid "Your offer  %s%s"
+msgstr "你的出價  %s%s"
+
+#: scenes/shop/hud.gd
+msgid "closing"
+msgstr "即將打烊"
+
+#: scenes/shop/hud.gd
+msgid "gold"
+msgstr "黃金"
+
+#: scenes/shop/hud.gd
+msgid "silver"
+msgstr "白銀"
+
+#: scenes/shop/hud.gd
+msgid "special order"
+msgstr "特殊訂單"
+
+#: scenes/shop/hud.gd
+msgid "stopped by to talk"
+msgstr "過來聊天"
+
+#: scenes/shop/hud.gd
+msgid "wants a coin graded"
+msgstr "想給錢幣評級"
+
+#: scenes/shop/hud.gd
+msgid "wants to buy"
+msgstr "想買"
+
+#: scenes/shop/hud.gd
+msgid "wants to sell"
+msgstr "想賣"
+
+#: scenes/shop/news_banner.gd
+msgid "NEWS"
+msgstr "新聞"
+
+#: scenes/shop/news_banner.gd
+msgid "TOWN"
+msgstr "小鎮"
+
+#: scenes/shop/rush_hours.gd
+msgid "After-work rush"
+msgstr "下班高峯"
+
+#: scenes/shop/rush_hours.gd
+msgid "Lunch rush"
+msgstr "午餐高峯"
+
+#: scenes/shop/rush_hours.gd
+msgid "Rush hours: %s."
+msgstr "高峯時段：%s。"
+
+#: scenes/shop/rush_hours.gd
+msgid "Saturday crowd"
+msgstr "週六人潮"
+
+#: scenes/shop/rush_hours.gd
+msgid "after-work"
+msgstr "下班"
+
+#: scenes/shop/rush_hours.gd
+msgid "lunch"
+msgstr "午餐"
+
+#: scenes/shop/rush_strip.gd
+msgid " · TILL!"
+msgstr " · 收銀機！"
+
+#: scenes/shop/rush_strip.gd
+msgid "%s · %d waiting%s"
+msgstr "%s · %d人在等%s"
+
+#: scenes/shop/security.gd
+msgid "A crew forced the back door at 3 a.m. and went to work on the safes."
+msgstr "一夥人凌晨3點撬開後門，對保險櫃下了手。"
+
+#: scenes/shop/security.gd
+msgid "A safecracking crew"
+msgstr "一夥撬保險櫃的賊"
+
+#: scenes/shop/security.gd
+msgid "Fill the bag. No alarms, no heroes."
+msgstr "裝滿個袋。唔准報警，唔好扮英雄。"
+
+#: scenes/shop/security.gd
+msgid "Hands where I can see them. The cash, now."
+msgstr "隻手放喺我睇到嘅地方。現金，即刻。"
+
+#: scenes/shop/security.gd
+msgid "Hold-ups drop by 40%, and the police get back a third of what robbers and burglars take."
+msgstr "搶劫減少40%，警方還能追回劫匪和竊賊拿走的三分之一。"
+
+#: scenes/shop/security.gd
+msgid "Kids smashed the back window and ran with what they could carry."
+msgstr "幾個小孩砸了後窗，能拿多少就拿多少跑了。"
+
+#: scenes/shop/security.gd
+msgid "Man in a cap"
+msgstr "戴帽子的男人"
+
+#: scenes/shop/security.gd
+msgid "Nobody move. Empty the till, slowly."
+msgstr "唔准郁。清空個收銀機，慢慢嚟。"
+
+#: scenes/shop/security.gd
+msgid "Professionals"
+msgstr "職業大盜"
+
+#: scenes/shop/security.gd
+msgid "Professionals cut the phone line and drilled straight for the wall safe."
+msgstr "職業大盜剪斷了電話線，直接鑽開了牆內保險櫃。"
+
+#: scenes/shop/security.gd
+msgid "Security cameras"
+msgstr "監控攝像頭"
+
+#: scenes/shop/security.gd
+msgid "Smash-and-grab kids"
+msgstr "砸窗搶劫的小孩"
+
+#: scenes/shop/security.gd
+msgid "This is a robbery. Don't touch anything under the counter."
+msgstr "打劫。唔好掂櫃枱下面啲嘢。"
+
+#: scenes/shop/shop.gd
+msgid " A clerk would help."
+msgstr " 僱個店員會有幫助。"
+
+#: scenes/shop/shop.gd
+msgid " A clerk would keep the line moving."
+msgstr " 僱個店員能讓隊伍保持流動。"
+
+#: scenes/shop/shop.gd
+msgid " A guard stops most of them at the door."
+msgstr " 保安能把大多數人攔在門口。"
+
+#: scenes/shop/shop.gd
+msgid " Its serial was cloned."
+msgstr " 它的序列號是克隆的。"
+
+#: scenes/shop/shop.gd
+msgid "%d customer ran for the door."
+msgid_plural "%d customers ran for the door."
+msgstr[0] "%d位顧客衝向了門口。"
+
+#: scenes/shop/shop.gd
+msgid "%d customer saw the queue in the rush and walked on.%s"
+msgid_plural "%d customers saw the queue in the rush and walked on.%s"
+msgstr[0] "%d位顧客看到高峯時的長隊，走掉了。%s"
+
+#: scenes/shop/shop.gd
+msgid "%d robbers"
+msgstr "%d個劫匪"
+
+#: scenes/shop/shop.gd
+msgid "%s came back: %d of the coins you sold were fake! Refunded %s."
+msgstr "%s回來了：你賣的錢幣裏有%d枚是假的！退款%s。"
+
+#: scenes/shop/shop.gd
+msgid "%s got tired of waiting and left."
+msgstr "%s等得不耐煩，走了。"
+
+#: scenes/shop/shop.gd
+msgid "%s held up the counter today.%s"
+msgstr "%s今天搶劫了櫃枱。%s"
+
+#: scenes/shop/shop.gd
+msgid "%s left without buying."
+msgstr "%s什麼都沒買就走了。"
+
+#: scenes/shop/shop.gd
+msgid "%s left: the coins sold out before %s could ring them up."
+msgstr "%s走了：錢幣賣光了，%s沒來得及結賬。"
+
+#: scenes/shop/shop.gd
+msgid "%s said goodbye."
+msgstr "%s道了再見。"
+
+#: scenes/shop/shop.gd
+msgid "%s stopped a man with a gun at the door. The police took him away."
+msgstr "%s在門口攔下了一個持槍男子。警察把他帶走了。"
+
+#: scenes/shop/shop.gd
+msgid "%s talked them round. %s"
+msgstr "%s說服了他們。%s"
+
+#: scenes/shop/shop.gd
+msgid "%s wants a better price. %s sent them to you."
+msgstr "%s想要更好的價格。%s把他們帶到了你這裏。"
+
+#: scenes/shop/shop.gd
+msgid "%s will ask another dealer."
+msgstr "%s會去問別的商家。"
+
+#: scenes/shop/shop.gd
+msgid "%s will find another grader."
+msgstr "%s會去找別的評級師。"
+
+#: scenes/shop/shop.gd
+msgid "%s wouldn't pay your price and left."
+msgstr "%s不願付你的價格，走了。"
+
+#: scenes/shop/shop.gd
+msgid "%s! The queue keeps waiting while you test.%s"
+msgstr "%s！你檢測時隊伍會一直等着。%s"
+
+#: scenes/shop/shop.gd
+msgid "%s's %s"
+msgstr "%s的%s"
+
+#: scenes/shop/shop.gd
+msgid "%s, day %d. Shop open."
+msgstr "%s，第%d天。開門營業。"
+
+#: scenes/shop/shop.gd
+msgid "%s: %s gone"
+msgstr "%s：%s被拿走"
+
+#: scenes/shop/shop.gd
+msgid "%s? Huh. My mother always said %s."
+msgstr "%s？咦。我阿媽成日話係%s。"
+
+#: scenes/shop/shop.gd
+msgid ", plus %s in coins from the case"
+msgstr "，外加櫃枱裏價值%s的錢幣"
+
+#: scenes/shop/shop.gd
+msgid "A customer is walking up to the counter."
+msgstr "一位顧客正走向櫃枱。"
+
+#: scenes/shop/shop.gd
+msgid "A fresh start at the corner counter."
+msgstr "在街角櫃枱重新開始。"
+
+#: scenes/shop/shop.gd
+msgid "A man in a cap walked in and kept his head down."
+msgstr "一個戴帽子的男人走進來，一直低着頭。"
+
+#: scenes/shop/shop.gd
+msgid "A robber"
+msgstr "一個劫匪"
+
+#: scenes/shop/shop.gd
+msgid "A thief grabbed %s from the till and ran! Take cash to the vault."
+msgstr "一個小偷從收銀機裏搶走%s跑了！把現金送進金庫。"
+
+#: scenes/shop/shop.gd
+msgid "Assay lab: the %d × %s were %s. Lost %s."
+msgstr "化驗室：那%d × %s是%s。損失%s。"
+
+#: scenes/shop/shop.gd
+msgid "Back in a moment: taking the till to the vault."
+msgstr "馬上回來：把收銀機裏的錢送進金庫。"
+
+#: scenes/shop/shop.gd
+msgid "Bought %d × %s for %s."
+msgstr "買入%d × %s，花了%s。"
+
+#: scenes/shop/shop.gd
+msgid "Bought %s's %s for %s. Off to the bullion dealer."
+msgstr "買下%s的%s，花了%s。送去貴金屬經銷商。"
+
+#: scenes/shop/shop.gd
+msgid "Bought %s's %s for %s. Off to the refiner."
+msgstr "買下%s的%s，花了%s。送去精煉廠。"
+
+#: scenes/shop/shop.gd
+msgid "Break-in overnight: lost %s."
+msgstr "昨晚有人入室盜竊：損失%s。"
+
+#: scenes/shop/shop.gd
+msgid "Bullion dealer"
+msgstr "貴金屬經銷商"
+
+#: scenes/shop/shop.gd
+msgid "Bullion dealer paid %s for %s's %s (profit %s)."
+msgstr "貴金屬經銷商為%s的%s付了%s（利潤%s）。"
+
+#: scenes/shop/shop.gd
+msgid "Bullion dealer: %s's %s was %s. Lost %s."
+msgstr "貴金屬經銷商：%s的%s是%s。損失%s。"
+
+#: scenes/shop/shop.gd
+msgid "Caught %s's %s bar!%s"
+msgstr "識破了%s的%s金條！%s"
+
+#: scenes/shop/shop.gd
+msgid "Caught %s's plated %s! Acid doesn't lie."
+msgstr "識破了%s的鍍層%s！酸液不會說謊。"
+
+#: scenes/shop/shop.gd
+msgid "Caught a %s fake from %s!"
+msgstr "識破了一件%s假貨，來自%s！"
+
+#: scenes/shop/shop.gd
+msgid "Closing time. Serving the last customers."
+msgstr "打烊時間。接待最後幾位顧客。"
+
+#: scenes/shop/shop.gd
+msgid "Closing up for the day."
+msgstr "今天收工了。"
+
+#: scenes/shop/shop.gd
+msgid "Couldn't afford %s's %s today."
+msgstr "今天買不起%s的%s。"
+
+#: scenes/shop/shop.gd
+msgid "Demo: %d day left to play."
+msgid_plural "Demo: %d days left to play."
+msgstr[0] "試玩版：還能玩%d天。"
+
+#: scenes/shop/shop.gd
+msgid "Fine. Pay me for the metal then."
+msgstr "好啦。咁就照金屬價俾我。"
+
+#: scenes/shop/shop.gd
+msgid "Fraud insurance payout"
+msgstr "欺詐保險賠付"
+
+#: scenes/shop/shop.gd
+msgid "Grading fees"
+msgstr "評級手續費"
+
+#: scenes/shop/shop.gd
+msgid "Handed over in a hold-up"
+msgstr "搶劫中被交出"
+
+#: scenes/shop/shop.gd
+msgid "Hold-up! The man in the cap pulled a gun at the counter."
+msgstr "搶劫！戴帽子的男人在櫃枱前掏出了槍。"
+
+#: scenes/shop/shop.gd
+msgid "It's %s, not %s? You could have kept quiet. Thank you."
+msgstr "係%s，唔係%s？你唔出聲都得架。多謝你。"
+
+#: scenes/shop/shop.gd
+msgid "Locked %s from the till in the safe."
+msgstr "把收銀機裏的%s鎖進了保險櫃。"
+
+#: scenes/shop/shop.gd
+msgid "Not a diamond? Well, the gold's still gold."
+msgstr "唔係鑽石？算啦，金都仲係金。"
+
+#: scenes/shop/shop.gd
+msgid "Passed on %s's %s."
+msgstr "放棄了%s的%s。"
+
+#: scenes/shop/shop.gd scenes/vault/vault_layout.gd
+msgid "Police recovered stolen goods"
+msgstr "警方追回了被盜物品"
+
+#: scenes/shop/shop.gd
+msgid "Refiner and stone dealer"
+msgstr "精煉廠和寶石商"
+
+#: scenes/shop/shop.gd
+msgid "Refiner paid %s for %s (profit %s)."
+msgstr "精煉廠為%s付了%s（利潤%s）。"
+
+#: scenes/shop/shop.gd
+msgid "Refiner: %s%s. Lost %s."
+msgstr "精煉廠：%s%s。損失%s。"
+
+#: scenes/shop/shop.gd
+msgid "Snatched from the till"
+msgstr "從收銀機被搶走"
+
+#: scenes/shop/shop.gd
+msgid "So, what's it worth to you?"
+msgstr "咁，你覺得佢值幾多？"
+
+#: scenes/shop/shop.gd
+msgid "Sold %d coins for %s (profit %s)."
+msgstr "賣出%d枚錢幣，得%s（利潤%s）。"
+
+#: scenes/shop/shop.gd
+msgid "Sold %d of the %d coins %s wanted for %s (profit %s)."
+msgstr "賣出%d枚（共要%d枚，買家%s），得%s（利潤%s）。"
+
+#: scenes/shop/shop.gd
+msgid "Spotted that %s's stone is %s."
+msgstr "看出%s的寶石是%s。"
+
+#: scenes/shop/shop.gd
+msgid "TOWN: "
+msgstr "小鎮："
+
+#: scenes/shop/shop.gd
+msgid "Taken in a hold-up"
+msgstr "在搶劫中被拿走"
+
+#: scenes/shop/shop.gd
+msgid "The acid says %s's piece is %s, not %s."
+msgstr "酸液顯示%s的首飾是%s，不是%s。"
+
+#: scenes/shop/shop.gd
+msgid "The alarm didn't scare him. He emptied the till"
+msgstr "警報沒嚇住他。他清空了收銀機"
+
+#: scenes/shop/shop.gd
+msgid "The alarm wailed and he bolted empty-handed!"
+msgstr "警報大作，他空着手逃跑了！"
+
+#: scenes/shop/shop.gd
+msgid "The cameras caught his face. Police got back %s."
+msgstr "攝像頭拍到了他的臉。警方追回了%s。"
+
+#: scenes/shop/shop.gd
+msgid "The rush is over. Catch your breath."
+msgstr "高峯結束了。喘口氣吧。"
+
+#: scenes/shop/shop.gd
+msgid "Told %s their piece is better than they thought."
+msgstr "告訴%s，他們的首飾比他們想的更好。"
+
+#: scenes/shop/shop.gd
+msgid "Told you it was real. So, what's your offer?"
+msgstr "都話係真嘅。咁，你出幾多？"
+
+#: scenes/shop/shop.gd
+msgid "Told you they were real. So, what's your offer?"
+msgstr "都話佢哋係真嘅。咁，你出幾多？"
+
+#: scenes/shop/shop.gd
+msgid "Turned %s away without testing."
+msgstr "沒檢測就打發走了%s。"
+
+#: scenes/shop/shop.gd
+msgid "Welcome back. Day %d at your %s."
+msgstr "歡迎回來。第%d天 · 你的%s。"
+
+#: scenes/shop/shop.gd
+msgid "Welcome to your shop. Test coins before you buy them."
+msgstr "歡迎來到你的店。買錢幣前先檢測。"
+
+#: scenes/shop/shop.gd
+msgid "You called %s's genuine bar fake. They stormed out."
+msgstr "你說%s的真金條是假的。對方氣沖沖地走了。"
+
+#: scenes/shop/shop.gd
+msgid "You called %s's genuine coins fake. They stormed out."
+msgstr "你說%s的真錢幣是假的。對方氣沖沖地走了。"
+
+#: scenes/shop/shop.gd
+msgid "You called %s's real %s plated. They stormed out."
+msgstr "你說%s的真%s是鍍的。對方氣沖沖地走了。"
+
+#: scenes/shop/shop.gd
+msgid "You froze. He emptied the till"
+msgstr "你嚇呆了。他清空了收銀機"
+
+#: scenes/shop/shop.gd
+msgid "You handed over %s from the till. He ran."
+msgstr "你把收銀機裏的%s交了出去。他跑了。"
+
+#: scenes/shop/shop.gd
+msgid "bar"
+msgstr "金條"
+
+#: scenes/shop/shop.gd
+msgid "coins"
+msgstr "錢幣"
+
+#: scenes/shop/shop.gd
+msgid "cubic zirconia"
+msgstr "立方氧化鋯"
+
+#: scenes/shop/shop.gd
+msgid "glass"
+msgstr "玻璃"
+
+#: scenes/shop/shop.gd
+msgid "it was %s"
+msgstr "它是%s"
+
+#: scenes/shop/shop.gd
+msgid "it was plated %s"
+msgstr "它是鍍%s"
+
+#: scenes/shop/shop.gd
+msgid "moissanite"
+msgstr "莫桑石"
+
+#: scenes/shop/shop.gd
+msgid "piece"
+msgstr "首飾"
+
+#: scenes/shop/shop.gd
+msgid "the stone was %s"
+msgstr "寶石是%s"
+
+#: scenes/shop/shop_cat.gd
+msgid "Pet the cat"
+msgstr "擼貓"
+
+#: scenes/shop/shop_room.gd
+msgid "AG"
+msgstr "AG"
+
+#: scenes/shop/shop_room.gd
+msgid "AU"
+msgstr "AU"
+
+#: scenes/shop/shop_room.gd
+msgid "PD"
+msgstr "PD"
+
+#: scenes/shop/shop_room.gd
+msgid "PT"
+msgstr "PT"
+
+#: scenes/smelter/melt.gd
+msgid "Metal left in the crucible"
+msgstr "坩堝裏剩下的金屬"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "A gas furnace in the back. Each morning the scrap dealer offers broken gold and silver: melt it into bars at the Smelter and sell them to the bullion dealer."
+msgstr "後屋裏的燃氣熔爐。每天早上廢料商會提供碎金和碎銀：在熔爐把它們熔成金條，賣給貴金屬經銷商。"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Bought scrap for %s: %s, %s g."
+msgstr "花%s買了廢料：%s，%s g。"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Broken gold chains"
+msgstr "斷了的金鍊"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Broken silver chains"
+msgstr "斷了的銀鏈"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Bullion dealer (cast bars)"
+msgstr "貴金屬經銷商（鑄造金條）"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Coin silver spoons"
+msgstr "銀幣銀勺"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Dental gold"
+msgstr "牙科用金"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Melting furnace"
+msgstr "熔爐"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Odd earrings and rings"
+msgstr "不成對的耳環和戒指"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Old class rings"
+msgstr "舊班級戒指"
+
+#: scenes/smelter/scrap_yard.gd scenes/smelter/smelter.gd
+msgid "Scrap dealer"
+msgstr "廢料商"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Sterling flatware"
+msgstr "純銀餐具"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "Tarnished candlesticks"
+msgstr "失去光澤的燭台"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "The bullion dealer paid %s for your gold bar (loss %s)."
+msgstr "貴金屬經銷商為你的金條付了%s（虧損%s）。"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "The bullion dealer paid %s for your gold bar (profit %s)."
+msgstr "貴金屬經銷商為你的金條付了%s（利潤%s）。"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "The bullion dealer paid %s for your silver bar (loss %s)."
+msgstr "貴金屬經銷商為你的銀條付了%s（虧損%s）。"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "The bullion dealer paid %s for your silver bar (profit %s)."
+msgstr "貴金屬經銷商為你的銀條付了%s（利潤%s）。"
+
+#: scenes/smelter/scrap_yard.gd
+msgid "mostly 14K"
+msgstr "大多是14K"
+
+#: scenes/smelter/smelter.gd
+msgid "%.1f g fine"
+msgstr "純金屬%.1f g"
+
+#: scenes/smelter/smelter.gd
+msgid "%d lot, %s g"
+msgid_plural "%d lots, %s g"
+msgstr[0] "%d批，%s g"
+
+#: scenes/smelter/smelter.gd
+msgid "%s g froze in the crucible. It's back in the bin."
+msgstr "%s g凝固在坩堝裏。已放回廢料箱。"
+
+#: scenes/smelter/smelter.gd
+msgid "%s g in all"
+msgstr "共%s g"
+
+#: scenes/smelter/smelter.gd
+msgid "%s g of scrap gold"
+msgstr "%s g碎金"
+
+#: scenes/smelter/smelter.gd
+msgid "%s g of scrap silver"
+msgstr "%s g碎銀"
+
+#: scenes/smelter/smelter.gd
+msgid "%s g, stamped %s"
+msgstr "%s g，印記%s"
+
+#: scenes/smelter/smelter.gd
+msgid "1 Magnet"
+msgstr "1 磁鐵"
+
+#: scenes/smelter/smelter.gd
+msgid "A on Pour"
+msgstr "A：澆注"
+
+#: scenes/smelter/smelter.gd
+msgid "A pinch of borax"
+msgstr "一撮硼砂"
+
+#: scenes/smelter/smelter.gd
+msgid "A textbook melt. The dealer asked who taught you."
+msgstr "教科書般的熔鍊。經銷商問是誰教你的。"
+
+#: scenes/smelter/smelter.gd
+msgid "ASSAY"
+msgstr "化驗"
+
+#: scenes/smelter/smelter.gd
+msgid "Bars cast: %d. Profit so far: %s"
+msgstr "已鑄金條：%d。目前利潤：%s"
+
+#: scenes/smelter/smelter.gd
+msgid "Cast gold bar"
+msgstr "鑄造金條"
+
+#: scenes/smelter/smelter.gd
+msgid "Cast silver bar"
+msgstr "鑄造銀條"
+
+#: scenes/smelter/smelter.gd
+msgid "Clasp springs, knife blades and candlestick rods are steel. Steel doesn't melt at these heats: it spoils the bar. Sweep the magnet over the tray to pull it out."
+msgstr "扣簧、刀片和燭台杆是鋼做的。這個温度下鋼不會熔化：它會毀了金條。用磁鐵掃過托盤把它們吸出來。"
+
+#: scenes/smelter/smelter.gd
+msgid "Clean bar, no flaws."
+msgstr "金條幹淨，沒有瑕疵。"
+
+#: scenes/smelter/smelter.gd
+msgid "Cold shut where the pour paused: -1%"
+msgstr "澆注中斷處出現冷隔：-1%"
+
+#: scenes/smelter/smelter.gd
+msgid "Dealer pays"
+msgstr "經銷商付"
+
+#: scenes/smelter/smelter.gd
+msgid "Esc: put it back in the bin"
+msgstr "Esc：放回廢料箱"
+
+#: scenes/smelter/smelter.gd
+msgid "Esc: stop"
+msgstr "Esc：停止"
+
+#: scenes/smelter/smelter.gd
+msgid "F  Borax"
+msgstr "F  硼砂"
+
+#: scenes/smelter/smelter.gd
+msgid "Fine gold"
+msgstr "純金"
+
+#: scenes/smelter/smelter.gd
+msgid "Fine silver"
+msgstr "純銀"
+
+#: scenes/smelter/smelter.gd
+msgid "Fineness"
+msgstr "純度"
+
+#: scenes/smelter/smelter.gd
+msgid "Fumes above"
+msgstr "上方煙氣"
+
+#: scenes/smelter/smelter.gd
+msgid "Furnace"
+msgstr "熔爐"
+
+#: scenes/smelter/smelter.gd
+msgid "GAS"
+msgstr "燃氣"
+
+#: scenes/smelter/smelter.gd
+msgid "Gas down / up"
+msgstr "調小/調大燃氣"
+
+#: scenes/smelter/smelter.gd
+msgid "Hold the button, or Space"
+msgstr "按住按鈕，或按空格"
+
+#: scenes/smelter/smelter.gd
+msgid "Hold to pour"
+msgstr "按住澆注"
+
+#: scenes/smelter/smelter.gd
+msgid "It's cooling fast. Pour!"
+msgstr "冷卻得很快。快澆！"
+
+#: scenes/smelter/smelter.gd
+msgid "Load the crucible"
+msgstr "裝填坩堝"
+
+#: scenes/smelter/smelter.gd
+msgid "Loss"
+msgstr "虧損"
+
+#: scenes/smelter/smelter.gd
+msgid "MELT"
+msgstr "熔化"
+
+#: scenes/smelter/smelter.gd
+msgid "Magnet (sorting)"
+msgstr "磁鐵（分揀）"
+
+#: scenes/smelter/smelter.gd
+msgid "Melt"
+msgstr "熔化"
+
+#: scenes/smelter/smelter.gd
+msgid "Melt value as stamped: %s"
+msgstr "按印記的熔化價值：%s"
+
+#: scenes/smelter/smelter.gd
+msgid "Melts at"
+msgstr "熔點"
+
+#: scenes/smelter/smelter.gd
+msgid "Molten"
+msgstr "熔融"
+
+#: scenes/smelter/smelter.gd
+msgid "Nothing made it into the mould. The scrap is back in the bin."
+msgstr "什麼都沒流進模具。廢料已放回廢料箱。"
+
+#: scenes/smelter/smelter.gd
+msgid "Pour at"
+msgstr "澆注温度"
+
+#: scenes/smelter/smelter.gd
+msgid "Poured"
+msgstr "已澆注"
+
+#: scenes/smelter/smelter.gd
+msgid "Poured too fast: beads splashed over the hearth."
+msgstr "澆得太快：金屬珠濺到了爐牀上。"
+
+#: scenes/smelter/smelter.gd
+msgid "Profit"
+msgstr "利潤"
+
+#: scenes/smelter/smelter.gd
+msgid "Put the scrap back in the bin."
+msgstr "把廢料放回廢料箱。"
+
+#: scenes/smelter/smelter.gd
+msgid "Recovered"
+msgstr "回收"
+
+#: scenes/smelter/smelter.gd
+msgid "SCRAP BIN"
+msgstr "廢料箱"
+
+#: scenes/smelter/smelter.gd
+msgid "SMELTER"
+msgstr "熔爐"
+
+#: scenes/smelter/smelter.gd
+msgid "SORT THE SCRAP"
+msgstr "分揀廢料"
+
+#: scenes/smelter/smelter.gd
+msgid "Scrap cost"
+msgstr "廢料成本"
+
+#: scenes/smelter/smelter.gd
+msgid "Scum left on the melt ended up in the bar. More borax next time."
+msgstr "熔液上的浮渣進了金條。下次多加點硼砂。"
+
+#: scenes/smelter/smelter.gd
+msgid "Scum trapped in the bar: -1.5%"
+msgstr "金條裏夾了浮渣：-1.5%"
+
+#: scenes/smelter/smelter.gd
+msgid "Sold out. Back tomorrow morning."
+msgstr "賣完了。明天早上再來。"
+
+#: scenes/smelter/smelter.gd
+msgid "Splashing! Ease off."
+msgstr "濺出來了！慢點。"
+
+#: scenes/smelter/smelter.gd
+msgid "Stamps said"
+msgstr "印記標示"
+
+#: scenes/smelter/smelter.gd
+msgid "Steel in the bar: -3%"
+msgstr "金條裏有鋼：-3%"
+
+#: scenes/smelter/smelter.gd
+msgid "Steel pulled out: %d"
+msgstr "吸出的鋼：%d"
+
+#: scenes/smelter/smelter.gd
+msgid "The assay came in well under the stamps: that lot was salted with plated junk."
+msgstr "化驗結果遠低於印記：這批貨摻了鍍層垃圾。"
+
+#: scenes/smelter/smelter.gd
+msgid "The bullion dealer buys your bars at %d%% of spot for the fine metal the assay finds."
+msgstr "貴金屬經銷商按化驗出的純金屬，以現貨價的%d%%收購你的金條。"
+
+#: scenes/smelter/smelter.gd
+msgid "Too hot! Metal is fuming away."
+msgstr "太燙了！金屬在揮發。"
+
+#: scenes/smelter/smelter.gd
+msgid "Too hot: metal fumed away up the hood. Keep it in the band."
+msgstr "太燙了：金屬從排煙罩揮發掉了。保持在温度帶內。"
+
+#: scenes/smelter/smelter.gd
+msgid "Too much borax: the glassy slag kept beads of metal."
+msgstr "硼砂太多：玻璃狀熔渣裹住了金屬珠。"
+
+#: scenes/smelter/smelter.gd
+msgid "Up/Down or W/S set the gas. Bring the furnace into the pour band and hold it there till all of it melts. Drop borax until the scum is gone and the melt shines; too much makes glassy slag that traps metal. Then hold Space to pour: steady, not too fast, and before it cools."
+msgstr "上/下或W/S調節燃氣。讓熔爐進入澆注温度帶並保持，直到全部熔化。加硼砂直到浮渣消失、熔液發亮；加太多會形成裹住金屬的玻璃狀熔渣。然後按住空格澆注：要穩，不要太快，並趕在冷卻之前。"
+
+#: scenes/smelter/smelter.gd
+msgid "about %d C"
+msgstr "約%d C"
+
+#: scenes/smelter/smelter.gd
+msgid "and %d more"
+msgstr "還有%d件"
+
+#: scenes/smelter/smelter.gd
+msgid "empty"
+msgstr "空"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "AAPL"
+msgstr "AAPL"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "BTC"
+msgstr "BTC"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "DOGE"
+msgstr "DOGE"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "ETH"
+msgstr "ETH"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "NVDA"
+msgstr "NVDA"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "SOL"
+msgstr "SOL"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "SPY"
+msgstr "SPY"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "TSLA"
+msgstr "TSLA"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "The trading desk lost %s this morning."
+msgstr "交易台今早虧了%s。"
+
+#: scenes/trading_desk/desk_session.gd
+msgid "The trading desk made %s this morning."
+msgstr "交易台今早賺了%s。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "1-%d pick a row. Esc closes out."
+msgstr "1-%d選擇一行。Esc平倉離開。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "At the desk's limit. Close something first."
+msgstr "已達交易台上限。先平掉一些倉位。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Buy (B)"
+msgstr "買入 (B)"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Buy if you think it rises, Sell to go short if you think it falls. At 17:00 everything closes and the result goes on today's ledger."
+msgstr "覺得會漲就買入，覺得會跌就賣出做空。17:00全部平倉，結果記入今天的賬本。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Close (C)"
+msgstr "平倉 (C)"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Close out now (Enter)"
+msgstr "立即平倉（Enter）"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Closed"
+msgstr "已平倉"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Closing bell: %s"
+msgstr "收盤：%s"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Desk limit used"
+msgstr "已用交易台額度"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Desk lost %s today, after %s in fees."
+msgstr "交易台今天虧了%s，手續費%s。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Desk made %s today, after %s in fees."
+msgstr "交易台今天賺了%s，手續費%s。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Desk profit"
+msgstr "交易台利潤"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Each tape replays a day that ends near today's live price, so the real 24h move is your edge. Hedge vault protects your stock if metals fall."
+msgstr "每段行情回放的一天都收在接近今日實時價格的位置，所以真實的24小時漲跌就是你的優勢。對沖金庫能在金屬下跌時保護你的庫存。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Esc leaves without trading."
+msgstr "按Esc不交易直接離開。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Hedge vault (H)"
+msgstr "對沖金庫（H）"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Its profit"
+msgstr "其利潤"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "LT"
+msgstr "LT"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Lifetime at the desk: %s."
+msgstr "交易台累計：%s。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Market"
+msgstr "市場"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Morning session"
+msgstr "早盤"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "No metal in the vault to hedge."
+msgstr "金庫裏沒有金屬可對沖。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Offline: the tapes are simulated."
+msgstr "離線：行情為模擬數據。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "On today's tape your vault gained %s on paper."
+msgstr "在今天的行情裏，你的金庫賬面上漲了%s。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "On today's tape your vault lost %s on paper."
+msgstr "在今天的行情裏，你的金庫賬面虧了%s。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "POSITION"
+msgstr "持倉"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "PRICE"
+msgstr "價格"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Position"
+msgstr "持倉"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Pre-market"
+msgstr "盤前"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Previous / next row"
+msgstr "上一行/下一行"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "REAL 24H"
+msgstr "真實24H"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "RT"
+msgstr "RT"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Ring the opening bell"
+msgstr "敲響開盤鍾"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Sell (S)"
+msgstr "賣出 (S)"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Short the gold, silver and platinum in your vault, ounce for ounce, with up to half the desk's limit."
+msgstr "用最多一半的交易台額度，按盎司做空你金庫裏的黃金、白銀和鉑金。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Shorted the vault's metal with up to half the desk's limit."
+msgstr "用最多一半的交易台額度做空了金庫裏的金屬。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "TODAY"
+msgstr "今天"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "TRADING DESK"
+msgstr "交易台"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Together"
+msgstr "合計"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Trade %d%% of the desk's limit per click."
+msgstr "每次點擊交易交易台額度的%d%%。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Vault on paper"
+msgstr "金庫賬面"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "You watched the tape all day without a trade."
+msgstr "你盯了一整天行情，一筆都沒交易。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Your hedge offset %d%% of the vault's move."
+msgstr "你的對沖抵消了金庫漲跌的%d%%。"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "flat"
+msgstr "無持倉"
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "long "
+msgstr "多 "
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "short "
+msgstr "空 "
+
+#: scenes/tutorial/coach.gd
+msgid "A customer"
+msgstr "一位顧客"
+
+#: scenes/tutorial/coach.gd
+msgid "Are you sure?"
+msgstr "你確定嗎？"
+
+#: scenes/tutorial/coach.gd
+msgid "Bar test"
+msgstr "金條檢測"
+
+#: scenes/tutorial/coach.gd
+msgid "Bills come out each night, and the day's numbers land here. Tomorrow morning, spend your profit on upgrades and keep an eye on the ticker. Good luck!"
+msgstr "賬單每晚結算，當天的數字會顯示在這裏。明天早上，把利潤花在升級上，並留意行情條。祝你好運！"
+
+#: scenes/tutorial/coach.gd
+msgid "Bought!"
+msgstr "買到了！"
+
+#: scenes/tutorial/coach.gd
+msgid "Burglars take whatever's left on the tray. Drag your stock into the safes: the floor safe never gets cracked, the wall safe sometimes does. Right-click turns a piece. The longer the lights stay on, the riskier it gets, so be quick."
+msgstr "竊賊會拿走托盤上剩下的一切。把庫存拖進保險櫃：地下保險櫃從不會被撬開，牆內保險櫃有時會。右鍵旋轉物品。燈開得越久越危險，所以動作要快。"
+
+#: scenes/tutorial/coach.gd
+msgid "Catching fakes earns reputation. Fakes you buy cost you the money and your stars when the assay lab checks them."
+msgstr "識破假貨能贏得聲譽。買到的假貨被化驗室查出時，你會損失付出的錢和星級。"
+
+#: scenes/tutorial/coach.gd
+msgid "Caught in the act"
+msgstr "當場抓住"
+
+#: scenes/tutorial/coach.gd
+msgid "Caught!"
+msgstr "抓到了！"
+
+#: scenes/tutorial/coach.gd
+msgid "Coin grading"
+msgstr "錢幣評級"
+
+#: scenes/tutorial/coach.gd
+msgid "Day one done"
+msgstr "第一天結束"
+
+#: scenes/tutorial/coach.gd
+msgid "Each tool checks one thing. Press 1 for the Scale and 2 for the Calipers, then compare each READING with the SPEC next to it."
+msgstr "每個工具檢查一項。按1使用秤，按2使用卡尺，然後把每個讀數和旁邊的規格對比。"
+
+#: scenes/tutorial/coach.gd
+msgid "Five silver coins, please. A birthday present."
+msgstr "唔該五個銀幣。生日禮物嚟架。"
+
+#: scenes/tutorial/coach.gd
+msgid "Got it"
+msgstr "明白了"
+
+#: scenes/tutorial/coach.gd
+msgid "Here comes someone else. Keep an eye on this one."
+msgstr "又來了一位。留意這個人。"
+
+#: scenes/tutorial/coach.gd
+msgid "Jewellery appraisal"
+msgstr "珠寶鑑定"
+
+#: scenes/tutorial/coach.gd
+msgid "June left without selling. That's fine; there's always another customer."
+msgstr "June沒賣就走了。沒關係，總會有下一位顧客。"
+
+#: scenes/tutorial/coach.gd
+msgid "June wants to sell %d Silver Eagles. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin."
+msgstr "June想賣%d枚銀鷹幣。今日熔化價是其中白銀的價值。你的出價是你願意付的錢。絕不要買沒檢測的錢幣：按\"檢測錢幣\"。"
+
+#: scenes/tutorial/coach.gd
+msgid "June's coins are in your vault now. You can see them under IN THE VAULT."
+msgstr "June的錢幣現在在你的金庫裏了。你可以在\"金庫庫存\"下看到它們。"
+
+#: scenes/tutorial/coach.gd
+msgid "Live prices"
+msgstr "實時價格"
+
+#: scenes/tutorial/coach.gd
+msgid "Lock up"
+msgstr "鎖門"
+
+#: scenes/tutorial/coach.gd
+msgid "Make an offer"
+msgstr "出價"
+
+#: scenes/tutorial/coach.gd
+msgid "Move the lamp round the coin with the mouse: close in it shines from above, far out it rakes low. Worn high points stay flat and dull and break the lustre's spinning cartwheel. Press 2 for the loupe and click bag marks to count them; 3 opens the guide. Tick Cleaned if fine hairlines show under a low light."
+msgstr "用滑鼠讓燈繞着錢幣移動：靠近時光從上方照下，遠離時光從低處斜照。磨損的高點平而暗淡，會打斷光澤旋轉的車輪光。按2用放大鏡，點擊袋痕來計數；按3打開指南。如果低角度光下能看到細紋，就勾選\"清洗過\"。"
+
+#: scenes/tutorial/coach.gd
+msgid "My dad's old Silver Eagles. I'd like a fair price."
+msgstr "我老豆啲舊銀鷹幣。希望價錢公道。"
+
+#: scenes/tutorial/coach.gd
+msgid "Next"
+msgstr "下一步"
+
+#: scenes/tutorial/coach.gd
+msgid "No deal"
+msgstr "不成交"
+
+#: scenes/tutorial/coach.gd
+msgid "Now you're on your own. Customers keep coming until 17:00, then you lock up the vault. Jewellery and bars have their own benches; you'll get a quick intro to each the first time."
+msgstr "現在你要靠自己了。顧客會一直來到17:00，然後你要把金庫鎖好。首飾和金條有各自的工作台；第一次使用時會有簡短介紹。"
+
+#: scenes/tutorial/coach.gd
+msgid "One more. This one wants to buy."
+msgstr "再來一位。這位想買東西。"
+
+#: scenes/tutorial/coach.gd
+msgid "Open up"
+msgstr "開門"
+
+#: scenes/tutorial/coach.gd
+msgid "Played it safe"
+msgstr "謹慎行事"
+
+#: scenes/tutorial/coach.gd
+msgid "Press Open the shop when you're ready."
+msgstr "準備好了就按\"開門營業\"。"
+
+#: scenes/tutorial/coach.gd
+msgid "Priya wants 5 silver coins from your vault. She pays melt plus your premium. Press Sell."
+msgstr "Priya想從你的金庫買5枚銀幣。她付熔化價加上你的溢價。按\"賣出\"。"
+
+#: scenes/tutorial/coach.gd
+msgid "Read the bench"
+msgstr "看工作台"
+
+#: scenes/tutorial/coach.gd
+msgid "Real coins. Press Make offer to buy them at your price."
+msgstr "真幣。按\"出價\"以你的價格買下它們。"
+
+#: scenes/tutorial/coach.gd
+msgid "Real silver only drags a little. This coin snapped to the magnet: it's plated steel. Press Fake."
+msgstr "真銀只會被輕微拖動。這枚錢幣被磁鐵猛地吸住：它是鍍層鋼幣。按\"假貨\"。"
+
+#: scenes/tutorial/coach.gd
+msgid "Selling"
+msgstr "賣出"
+
+#: scenes/tutorial/coach.gd
+msgid "Show me"
+msgstr "給我看看"
+
+#: scenes/tutorial/coach.gd
+msgid "Silver Eagles, cheap. Cash only, no questions, yeah?"
+msgstr "平價銀鷹幣。淨係收現金，唔好問咁多，得唔得？"
+
+#: scenes/tutorial/coach.gd
+msgid "Skip tutorial"
+msgstr "跳過教程"
+
+#: scenes/tutorial/coach.gd
+msgid "Slick's in a hurry and won't haggle. Cheap coins from a nervous seller are often fake. Test them too."
+msgstr "Slick很急，不會砍價。神色緊張的賣家手裏的便宜錢幣常常是假的。也要檢測。"
+
+#: scenes/tutorial/coach.gd
+msgid "Sold!"
+msgstr "賣掉了！"
+
+#: scenes/tutorial/coach.gd
+msgid "Start the clock"
+msgstr "開始計時"
+
+#: scenes/tutorial/coach.gd
+msgid "Steel fakes give themselves away to a magnet. Press 4."
+msgstr "鋼製假幣一碰磁鐵就露餡。按4。"
+
+#: scenes/tutorial/coach.gd
+msgid "That's the counter"
+msgstr "這就是櫃枱"
+
+#: scenes/tutorial/coach.gd
+msgid "The coin test"
+msgstr "錢幣檢測"
+
+#: scenes/tutorial/coach.gd
+msgid "The magnet"
+msgstr "磁鐵"
+
+#: scenes/tutorial/coach.gd
+msgid "The ticker shows today's spot prices from the real market. Every coin's value follows them, so the same coin is worth more on some days than others."
+msgstr "行情條顯示的是真實市場的今日現貨價。每枚錢幣的價值都隨之變動，所以同一枚錢幣有些日子更值錢。"
+
+#: scenes/tutorial/coach.gd
+msgid "Those coins snapped to the magnet. You can still press Refuse."
+msgstr "那些錢幣被磁鐵吸住了。你仍然可以按\"拒絕\"。"
+
+#: scenes/tutorial/coach.gd
+msgid "Those were plated steel. The assay lab will catch them soon and you'll lose what you paid. Always test first."
+msgstr "那些是鍍層鋼幣。化驗室很快會查出來，你會損失付出的錢。一定要先檢測。"
+
+#: scenes/tutorial/coach.gd
+msgid "Too good to be true?"
+msgstr "好得不像真的？"
+
+#: scenes/tutorial/coach.gd
+msgid "Tungsten weighs almost the same as gold, so the scale isn't enough. Press 3 and sweep the ultrasound probe over the whole bar: the echo must stay inside the gate, and an early echo means tungsten inside. Read the serial under the loupe; a copied serial gets flagged. The XRF gun comes as an upgrade."
+msgstr "鎢的重量幾乎和金一樣，所以光靠秤不夠。按3，用超聲波探頭掃遍整根金條：回波必須保持在閘門內，回波提前出現說明裏面有鎢。在放大鏡下讀序列號；複製的序列號會被標記。XRF槍可以通過升級獲得。"
+
+#: scenes/tutorial/coach.gd
+msgid "Turning away untested coins is safe. Testing them proves it, and catching a fake earns reputation."
+msgstr "拒收沒檢測的錢幣是安全的。檢測能證明真假，識破假貨還能贏得聲譽。"
+
+#: scenes/tutorial/coach.gd
+msgid "Tutorial skipped. Good luck!"
+msgstr "已跳過教程。祝你好運！"
+
+#: scenes/tutorial/coach.gd
+msgid "Uh oh"
+msgstr "糟糕"
+
+#: scenes/tutorial/coach.gd
+msgid "Weigh the piece. Then press 2 to rub a streak on the touchstone and drop acids on it (Q-Y): the streak survives acids up to its karat, and base metal fizzes. The Tester checks a stone; moissanite fools it, so look for doubled facet edges under the loupe. Set the grade (G) and the stone (D), then Finish appraisal."
+msgstr "稱一下首飾。然後按2在試金石上劃出痕跡，再滴上酸液（Q-Y）：劃痕在不高於其K數的酸液中不會消失，賤金屬會冒泡。測試儀檢測寶石；莫桑石能騙過它，所以要在放大鏡下找重影的刻面邊緣。設定成色（G）和寶石（D），然後點\"完成鑑定\"。"
+
+#: scenes/tutorial/coach.gd
+msgid "Weight, diameter and thickness all match the spec. This is a real Silver Eagle. Press Genuine."
+msgstr "重量、直徑和厚度都與規格一致。這是一枚真銀鷹幣。按\"真貨\"。"
+
+#: scenes/tutorial/coach.gd
+msgid "Welcome to your shop"
+msgstr "歡迎來到你的店"
+
+#: scenes/tutorial/coach.gd
+msgid "You buy and sell gold, silver and platinum at real market prices. Your goal: the biggest store in town. Let's serve your first customers together."
+msgstr "你按真實市場價格買賣黃金、白銀和鉑金。你的目標：鎮上最大的商店。我們一起來接待你的第一批顧客吧。"
+
+#: scenes/tutorial/coach.gd
+msgid "You pay sellers a little under melt and charge buyers a little over it. That gap is your profit. The -/+ buttons change both, but push too far and customers walk."
+msgstr "你付給賣家的價格略低於熔化價，向買家收的略高於熔化價。這個差價就是你的利潤。-/+按鈕會同時調整兩者，但調得太過，顧客就會走。"
+
+#: scenes/tutorial/coach.gd
+msgid "Your first customer"
+msgstr "你的第一位顧客"
+
+#: scenes/tutorial/coach.gd
+msgid "Your first customer is walking up to the counter."
+msgstr "你的第一位顧客正走向櫃枱。"
+
+#: scenes/tutorial/coach.gd
+msgid "Your margins"
+msgstr "你的利潤率"
+
+#: scenes/vault/vault.gd
+msgid "Alarm: -%d%% risk"
+msgstr "警報：風險-%d%%"
+
+#: scenes/vault/vault.gd
+msgid "Break-in overnight! Lost %s."
+msgstr "昨晚有人入室盜竊！損失%s。"
+
+#: scenes/vault/vault.gd
+msgid "Break-in risk"
+msgstr "入室盜竊風險"
+
+#: scenes/vault/vault.gd
+msgid "Break-in risk was %d%%, with %d%% of the value locked away."
+msgstr "入室盜竊風險為%d%%，有%d%%的價值被鎖起來了。"
+
+#: scenes/vault/vault.gd
+msgid "Break-in: %s!"
+msgstr "入室盜竊：%s！"
+
+#: scenes/vault/vault.gd
+msgid "Burglars can't crack it"
+msgstr "竊賊撬不開"
+
+#: scenes/vault/vault.gd
+msgid "Closing time"
+msgstr "打烊時間"
+
+#: scenes/vault/vault.gd
+msgid "Cracked the wall safe: %s."
+msgstr "撬開了牆內保險櫃：%s。"
+
+#: scenes/vault/vault.gd
+msgid "Crews crack it %d%% of the time"
+msgstr "盜竊團伙有%d%%的幾率撬開"
+
+#: scenes/vault/vault.gd
+msgid "Crews crack it %d%%, pros %d%%"
+msgstr "團伙撬開幾率%d%%，職業大盜%d%%"
+
+#: scenes/vault/vault.gd
+msgid "Drag stock into the safes. Right-click or R turns a piece. What's left on the tray is easy pickings, and the longer the lights stay on, the likelier a break-in."
+msgstr "把庫存拖進保險櫃。右鍵或按R旋轉物品。留在托盤上的東西很容易被偷，燈開得越久，越可能遭到入室盜竊。"
+
+#: scenes/vault/vault.gd
+msgid "Enter locks up. At zero it locks itself."
+msgstr "按Enter鎖門。倒數到零時會自動鎖上。"
+
+#: scenes/vault/vault.gd
+msgid "FLOOR SAFE"
+msgstr "地下保險櫃"
+
+#: scenes/vault/vault.gd
+msgid "Grabbed the best of the counter tray: %s. They left the rest."
+msgstr "搶走了櫃枱托盤上最好的東西：%s。其餘的沒拿。"
+
+#: scenes/vault/vault.gd
+msgid "Insurance pays back %s."
+msgstr "保險賠付%s。"
+
+#: scenes/vault/vault.gd
+msgid "Left on the tray"
+msgstr "留在托盤上"
+
+#: scenes/vault/vault.gd
+msgid "Lights out in"
+msgstr "熄燈倒計時"
+
+#: scenes/vault/vault.gd
+msgid "Lock up now"
+msgstr "立即鎖門"
+
+#: scenes/vault/vault.gd
+msgid "Locked away"
+msgstr "已鎖好"
+
+#: scenes/vault/vault.gd
+msgid "Nobody came, and everything was locked away."
+msgstr "沒人來，而且所有東西都鎖好了。"
+
+#: scenes/vault/vault.gd
+msgid "Nobody came. Lucky: %s sat out on the counter all night."
+msgstr "沒人來。運氣好：%s在櫃枱上放了一整夜。"
+
+#: scenes/vault/vault.gd
+msgid "Quiet night"
+msgstr "平靜的夜晚"
+
+#: scenes/vault/vault.gd
+msgid "Quiet night. The vault was untouched."
+msgstr "平靜的夜晚。金庫完好無損。"
+
+#: scenes/vault/vault.gd
+msgid "See the day's results"
+msgstr "查看當天結果"
+
+#: scenes/vault/vault.gd
+msgid "The cameras caught them. Police got back %s."
+msgstr "攝像頭拍到了他們。警方追回了%s。"
+
+#: scenes/vault/vault.gd
+msgid "The customer ledger is gone. Reputation -%.1f."
+msgstr "顧客名冊丟了。聲譽-%.1f。"
+
+#: scenes/vault/vault.gd
+msgid "The floor safe held."
+msgstr "地下保險櫃守住了。"
+
+#: scenes/vault/vault.gd
+msgid "They couldn't crack the wall safe."
+msgstr "他們撬不開牆內保險櫃。"
+
+#: scenes/vault/vault.gd
+msgid "They never touched the safes."
+msgstr "他們根本沒碰保險櫃。"
+
+#: scenes/vault/vault.gd
+msgid "Took everything on the counter tray: %s."
+msgstr "拿走了櫃枱托盤上的一切：%s。"
+
+#: scenes/vault/vault.gd
+msgid "Total lost: %s."
+msgstr "總損失：%s。"
+
+#: scenes/vault/vault.gd
+msgid "VAULT LOCK-UP"
+msgstr "金庫鎖門"
+
+#: scenes/vault/vault.gd
+msgid "WALL SAFE"
+msgstr "牆內保險櫃"
+
+#: scenes/vault/vault.gd
+msgid "Worth %s today"
+msgstr "今日價值%s"
+
+#: scenes/vault/vault.gd
+msgid "and more"
+msgstr "還有更多"
+
+#: scenes/vault/vault_layout.gd
+msgid "%s in notes"
+msgstr "%s現鈔"
+
+#: scenes/vault/vault_layout.gd
+msgid "Cash straps"
+msgstr "現金捆"
+
+#: scenes/vault/vault_layout.gd
+msgid "Counter tray"
+msgstr "櫃枱托盤"
+
+#: scenes/vault/vault_layout.gd
+msgid "Customer ledger"
+msgstr "顧客名冊"
+
+#: scenes/vault/vault_layout.gd
+msgid "Floor safe"
+msgstr "地下保險櫃"
+
+#: scenes/vault/vault_layout.gd
+msgid "Gold coin box"
+msgstr "金幣盒"
+
+#: scenes/vault/vault_layout.gd
+msgid "Insurance payout"
+msgstr "保險賠付"
+
+#: scenes/vault/vault_layout.gd
+msgid "Lose it: -%.1f reputation"
+msgstr "丟失：聲譽-%.1f"
+
+#: scenes/vault/vault_layout.gd
+msgid "Monster box"
+msgstr "大銀幣箱"
+
+#: scenes/vault/vault_layout.gd
+msgid "Names and addresses."
+msgstr "姓名和地址。"
+
+#: scenes/vault/vault_layout.gd
+msgid "Platinum box"
+msgstr "鉑金盒"
+
+#: scenes/vault/vault_layout.gd
+msgid "Silver tube"
+msgstr "銀幣管"
+
+#: scenes/vault/vault_layout.gd
+msgid "Wall safe"
+msgstr "牆內保險櫃"
+
+#: ui/save_slots_panel.gd
+msgid "%s · saved %s"
+msgstr "%s · 儲存於%s"
+
+#: ui/save_slots_panel.gd
+msgid "Delete"
+msgstr "刪除"
+
+#: ui/save_slots_panel.gd
+msgid "Each slot saves every morning and every night."
+msgstr "每個存檔位每天早晚各儲存一次。"
+
+#: ui/save_slots_panel.gd
+msgid "Play"
+msgstr "開始"
+
+#: ui/save_slots_panel.gd
+msgid "Slot %d deleted."
+msgstr "已刪除存檔位%d。"
+
+#: ui/save_slots_panel.gd
+msgid "Slot %d · Day %d · %s"
+msgstr "存檔位%d · 第%d天 · %s"
+
+#: ui/save_slots_panel.gd
+msgid "Slot %d · empty"
+msgstr "存檔位%d · 空"
+
+#: ui/save_slots_panel.gd
+msgid "Start a new shop here"
+msgstr "在這裏開一家新店"
+
+#: ui/save_slots_panel.gd
+msgid "Sure?"
+msgstr "確定？"
+
+#: ui/settings_panel.gd
+msgid "Auto (%s)"
+msgstr "自動（%s）"
+
+#: ui/settings_panel.gd
+msgid "Currency"
+msgstr "貨幣"
+
+#: ui/settings_panel.gd
+msgid "Effects"
+msgstr "音效"
+
+#: ui/settings_panel.gd
+msgid "Fullscreen"
+msgstr "全屏"
+
+#: ui/settings_panel.gd
+msgid "Language"
+msgstr "語言"
+
+#: ui/settings_panel.gd
+msgid "Off"
+msgstr "關"
+
+#: ui/settings_panel.gd
+msgid "On"
+msgstr "開"
+
+#: ui/settings_panel.gd
+msgid "Scaling"
+msgstr "縮放"
+
+#: ui/settings_panel.gd
+msgid "Volume"
+msgstr "音量"
