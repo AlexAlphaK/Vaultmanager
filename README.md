@@ -486,8 +486,8 @@ adding a screen or anything that is saved.
 | Data | Provider | Free tier (check before launch) | Refresh |
 | --- | --- | --- | --- |
 | Gold, silver, platinum, palladium | MetalCharts | ~200 calls/month, attribution link required | every 4 hours |
-| Crypto (BTC, ETH, SOL, DOGE) | CoinGecko demo plan | free key, ~30 calls/min, attribution required | every 5 minutes |
-| Stocks (SPY, AAPL, NVDA, TSLA) | Finnhub free plan | free key, ~60 calls/min | every 5 minutes |
+| Crypto (BTC, ETH, SOL, DOGE) | CoinGecko demo plan | free key, ~30 calls/min, attribution required | every 30 minutes |
+| Stocks (SPY, AAPL, NVDA, TSLA) | Finnhub free plan | free key, ~60 calls/min | every 30 minutes |
 | Exchange rates | Frankfurter (ECB reference rates) | no key | every 4 hours (ECB updates daily) |
 
 ## Currency
@@ -517,6 +517,19 @@ stutter.
 
 ## Feed states
 
-- `live`: a fresh quote arrived from the price service.
+- `live`: a real quote from the last 8 hours.
 - `cached`: the service is unreachable; the last real quote is used.
-- `simulated`: no real quote for over 24 hours (or never); prices follow a random walk with realistic volatility.
+- `simulated`: no real quote for over 24 hours (or never); each "day" walks to a random close with realistic volatility.
+
+## Daily price walk
+
+The game asks the price service for a quote only on launch (when the cached one is from an
+earlier UTC day or over 4 hours old) and every 4 hours while it runs, so a player costs a few
+requests a day instead of one every 5 minutes. Between quotes `Market` draws the moves itself:
+the first quote of a real day starts each price at the previous close and walks it to today's
+real price over 30 minutes of play (a Brownian bridge with a day's volatility), so the day's
+move plays out on the charts and the change in the tickers and news grows with it. After that,
+prices wobble gently around the real one; a later same-day quote re-aims within 3 minutes. The
+walk is saved with the price cache, so a relaunch carries on where it stopped. Tune it with
+`DAY_PATH_SECONDS`, `RETARGET_SECONDS`, `SETTLE_VOL_SHARE` and `REFRESH_SECONDS` in
+`autoload/market.gd`.
