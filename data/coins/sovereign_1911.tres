@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "sovereign_1911"
-display_name = "1911 Sovereign"
+display_name = "1911 Regent"
 metal = "XAU"
 weight_g = 7.988
 purity = 0.9167
@@ -14,7 +14,7 @@ thickness_mm = 1.52
 sell_premium = 0.0
 palette = "gold22"
 motif = "britannia"
-legend = "GEORGIVS V"
+legend = "REX ALBION"
 fineness_text = "ONE POUND"
 year = "1911"
 radial_lines = false

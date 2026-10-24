@@ -1,6 +1,6 @@
 extends Node
 ## Special orders: collectors who walk in and ask the shop to find coins for them by a
-## set day. Most want a rare coin (a 1924 Double Eagle, an 1881 Morgan Dollar...) that
+## set day. Most want a rare coin (a 1924 Double Hawk, an 1881 Frontier Dollar...) that
 ## the wholesaler doesn't stock; some want a big lot of one everyday coin.
 ##
 ## Finding the coins is the hunt:

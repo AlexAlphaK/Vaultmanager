@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "platinum_eagle"
-display_name = "Platinum Eagle"
+display_name = "Platinum Liberty Hawk"
 metal = "XPT"
 weight_g = 31.12
 purity = 0.9995

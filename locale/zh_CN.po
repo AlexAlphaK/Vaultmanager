@@ -302,6 +302,10 @@ msgid "Ada got into the science programme! Ten more for the fund."
 msgstr "Ada考上了理科班！再给基金添十枚。"
 
 #: autoload/customers.gd
+msgid "Albions next. Three, for a display on the history of coinage."
+msgstr "下一个是阿尔比恩。要三枚，用来办钱币史展览。"
+
+#: autoload/customers.gd
 msgid "Any %s coins? Nice strike, no spots, please."
 msgstr "有%s钱币吗？压印要好，不要斑点。"
 
@@ -312,10 +316,6 @@ msgstr "起死回生！钻石手。把你最亮的给我。"
 #: autoload/customers.gd
 msgid "Brayden"
 msgstr "Brayden"
-
-#: autoload/customers.gd
-msgid "Britannias next. Three, for a display on the history of coinage."
-msgstr "下一个是不列颠尼亚。要三枚，用来办钱币史展览。"
 
 #: autoload/customers.gd
 msgid "Buying the crypto dip. Need cash for it, bro."
@@ -370,8 +370,8 @@ msgid "Dr. Vance's display opens at the town museum next week."
 msgstr "Dr. Vance的展览下周在镇博物馆开幕。"
 
 #: autoload/customers.gd
-msgid "Dr. Vance, a collector, added your Krugerrand to her cabinet."
-msgstr "收藏家Dr. Vance把你的克鲁格金币收进了她的柜子。"
+msgid "Dr. Vance, a collector, added your Veldrand to her cabinet."
+msgstr "收藏家Dr. Vance把你的维尔德金币收进了她的柜子。"
 
 #: autoload/customers.gd
 msgid "Everything's negotiable, friend."
@@ -386,8 +386,8 @@ msgid "Gold's the OG blockchain, bro."
 msgstr "黄金才是元祖区块链，兄弟。"
 
 #: autoload/customers.gd
-msgid "Got liquidated. Need those eagles turned back into fiat. Don't tell anyone."
-msgstr "被强平了。得把这些鹰币换回法币。别告诉别人。"
+msgid "Got liquidated. Need those hawks turned back into fiat. Don't tell anyone."
+msgstr "被强平了。得把这些隼币换回法币。别告诉别人。"
 
 #: autoload/customers.gd
 msgid "Got margin-called. Need fiat, fast."
@@ -426,8 +426,8 @@ msgid "I collect %s coins. Nothing else will do."
 msgstr "我收藏%s钱币。别的都不要。"
 
 #: autoload/customers.gd
-msgid "I collect Krugerrands. Do you have one with a crisp springbok?"
-msgstr "我收藏克鲁格金币。有跳羚图案清晰的吗？"
+msgid "I collect Veldrands. Do you have one with a crisp springbok?"
+msgstr "我收藏维尔德金币。有跳羚图案清晰的吗？"
 
 #: autoload/customers.gd
 msgid "I never pay sticker. Let's talk."
@@ -486,8 +486,8 @@ msgid "My grandson graduates Friday. I want to buy him a gold coin, and I want i
 msgstr "我孙子周五毕业。我想送他一枚金币，而且要在你这儿买。"
 
 #: autoload/customers.gd
-msgid "My old teacher's eagles. I want them in good hands, not a fair price."
-msgstr "我老师的鹰币。我想让它们找个好主人，价格不重要。"
+msgid "My old teacher's hawks. I want them in good hands, not a fair price."
+msgstr "我老师的隼币。我想让它们找个好主人，价格不重要。"
 
 #: autoload/customers.gd
 msgid "New batch. Same uncle. Different estate."
@@ -526,8 +526,8 @@ msgid "Tanner"
 msgstr "Tanner"
 
 #: autoload/customers.gd
-msgid "The centrepiece: a platinum eagle. The museum opens next week."
-msgstr "压轴之作：一枚铂金鹰币。博物馆下周开幕。"
+msgid "The centrepiece: a Platinum Liberty Hawk. The museum opens next week."
+msgstr "压轴之作：一枚自由隼铂金币。博物馆下周开幕。"
 
 #: autoload/customers.gd
 msgid "The museum display credits your shop. People are talking."
@@ -2184,52 +2184,52 @@ msgid "Wholesaler: %d x %s for %s."
 msgstr "批发商：%d x %s，价格%s。"
 
 #: data/coins/britannia_proof_1997.tres
-msgid "1997 Britannia Proof"
-msgstr "1997年不列颠尼亚精制币"
+msgid "1997 Albion Proof"
+msgstr "1997年阿尔比恩精制币"
 
 #: data/coins/double_eagle_1924.tres
-msgid "1924 Double Eagle"
-msgstr "1924年双鹰金币"
+msgid "1924 Double Hawk"
+msgstr "1924年双隼金币"
 
 #: data/coins/gold_eagle.tres
-msgid "American Gold Eagle"
-msgstr "美国金鹰币"
+msgid "Gold Liberty Hawk"
+msgstr "自由隼金币"
 
 #: data/coins/gold_maple.tres
-msgid "Gold Maple Leaf"
-msgstr "枫叶金币"
+msgid "Gold Frostleaf"
+msgstr "霜叶金币"
 
 #: data/coins/krugerrand.tres
-msgid "Krugerrand"
-msgstr "克鲁格金币"
+msgid "Veldrand"
+msgstr "维尔德金币"
 
 #: data/coins/krugerrand_1967.tres
-msgid "1967 Krugerrand"
-msgstr "1967年克鲁格金币"
+msgid "1967 Veldrand"
+msgstr "1967年维尔德金币"
 
 #: data/coins/morgan_dollar_1881.tres
-msgid "1881 Morgan Dollar"
-msgstr "1881年摩根银元"
+msgid "1881 Frontier Dollar"
+msgstr "1881年边疆银元"
 
 #: data/coins/platinum_eagle.tres
-msgid "Platinum Eagle"
-msgstr "铂金鹰币"
+msgid "Platinum Liberty Hawk"
+msgstr "自由隼铂金币"
 
 #: data/coins/silver_britannia.tres
-msgid "Silver Britannia"
-msgstr "不列颠尼亚银币"
+msgid "Silver Albion"
+msgstr "阿尔比恩银币"
 
 #: data/coins/silver_eagle.tres
-msgid "American Silver Eagle"
-msgstr "美国银鹰币"
+msgid "Silver Liberty Hawk"
+msgstr "自由隼银币"
 
 #: data/coins/silver_maple.tres
-msgid "Silver Maple Leaf"
-msgstr "枫叶银币"
+msgid "Silver Frostleaf"
+msgstr "霜叶银币"
 
 #: data/coins/sovereign_1911.tres
-msgid "1911 Sovereign"
-msgstr "1911年索维林金币"
+msgid "1911 Regent"
+msgstr "1911年摄政金币"
 
 #: items/bullion_bar.gd
 msgid "1 kilo gold bar"
@@ -3713,6 +3713,10 @@ msgid "Old Sal"
 msgstr "Old Sal"
 
 #: scenes/shop/customer.gd
+msgid "Only %d? I'll take what you have."
+msgstr ""
+
+#: scenes/shop/customer.gd
 msgid "Price is up, time to cash in."
 msgstr "价格涨了，该套现了。"
 
@@ -4839,6 +4843,10 @@ msgid "Refuse"
 msgstr "拒绝"
 
 #: scenes/shop/hud.gd
+msgid "Sell %d"
+msgstr ""
+
+#: scenes/shop/hud.gd
 msgid "Stock at spot"
 msgstr "按现货价的库存"
 
@@ -4881,6 +4889,10 @@ msgstr "想要收银机和柜台里的东西"
 #: scenes/shop/hud.gd
 msgid "You hold %d"
 msgstr "你有%d枚"
+
+#: scenes/shop/hud.gd
+msgid "You hold only %d"
+msgstr ""
 
 #: scenes/shop/hud.gd
 msgid "Your offer  %s%s"
@@ -5260,6 +5272,10 @@ msgstr "那么，你觉得它值多少？"
 #: scenes/shop/shop.gd
 msgid "Sold %d coins for %s (profit %s)."
 msgstr "卖出%d枚钱币，得%s（利润%s）。"
+
+#: scenes/shop/shop.gd
+msgid "Sold %d of the %d coins %s wanted for %s (profit %s)."
+msgstr ""
 
 #: scenes/shop/shop.gd
 msgid "Spotted that %s's stone is %s."
@@ -6027,8 +6043,8 @@ msgid "June left without selling. That's fine; there's always another customer."
 msgstr "June没卖就走了。没关系，总会有下一位顾客。"
 
 #: scenes/tutorial/coach.gd
-msgid "June wants to sell %d Silver Eagles. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin."
-msgstr "June想卖%d枚银鹰币。今日熔化价是其中白银的价值。你的出价是你愿意付的钱。绝不要买没检测的钱币：按\"检测钱币\"。"
+msgid "June wants to sell %d Silver Hawks. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin."
+msgstr "June想卖%d枚自由隼银币。今日熔化价是其中白银的价值。你的出价是你愿意付的钱。绝不要买没检测的钱币：按\"检测钱币\"。"
 
 #: scenes/tutorial/coach.gd
 msgid "June's coins are in your vault now. You can see them under IN THE VAULT."
@@ -6051,8 +6067,8 @@ msgid "Move the lamp round the coin with the mouse: close in it shines from abov
 msgstr "用鼠标让灯绕着钱币移动：靠近时光从上方照下，远离时光从低处斜照。磨损的高点平而暗淡，会打断光泽旋转的车轮光。按2用放大镜，点击袋痕来计数；按3打开指南。如果低角度光下能看到细纹，就勾选\"清洗过\"。"
 
 #: scenes/tutorial/coach.gd
-msgid "My dad's old Silver Eagles. I'd like a fair price."
-msgstr "我爸的旧银鹰币。希望价格公道。"
+msgid "My dad's old Silver Hawks. I'd like a fair price."
+msgstr "我爸的旧自由隼银币。希望价格公道。"
 
 #: scenes/tutorial/coach.gd
 msgid "Next"
@@ -6107,8 +6123,8 @@ msgid "Show me"
 msgstr "给我看看"
 
 #: scenes/tutorial/coach.gd
-msgid "Silver Eagles, cheap. Cash only, no questions, yeah?"
-msgstr "便宜的银鹰币。只要现金，不问问题，好吧？"
+msgid "Silver Hawks, cheap. Cash only, no questions, yeah?"
+msgstr "便宜的自由隼银币。只要现金，不问问题，好吧？"
 
 #: scenes/tutorial/coach.gd
 msgid "Skip tutorial"
@@ -6179,8 +6195,8 @@ msgid "Weigh the piece. Then press 2 to rub a streak on the touchstone and drop 
 msgstr "称一下首饰。然后按2在试金石上划出痕迹，再滴上酸液（Q-Y）：划痕在不高于其K数的酸液中不会消失，贱金属会冒泡。测试仪检测宝石；莫桑石能骗过它，所以要在放大镜下找重影的刻面边缘。设置成色（G）和宝石（D），然后点\"完成鉴定\"。"
 
 #: scenes/tutorial/coach.gd
-msgid "Weight, diameter and thickness all match the spec. This is a real Silver Eagle. Press Genuine."
-msgstr "重量、直径和厚度都与规格一致。这是一枚真银鹰币。按\"真货\"。"
+msgid "Weight, diameter and thickness all match the spec. This is a real Silver Hawk. Press Genuine."
+msgstr "重量、直径和厚度都与规格一致。这是一枚真自由隼银币。按\"真货\"。"
 
 #: scenes/tutorial/coach.gd
 msgid "Welcome to your shop"

@@ -106,9 +106,9 @@ real Windows PC yet.
 
 - **Steamworks account.** Steam Direct costs $100 per game. You sign up at partner.steamgames.com
   with your own details (tax and bank info), then upload these files. I can't do that part for you.
-- **Real coin names.** The game uses real coin names (American Gold Eagle, Krugerrand, Maple Leaf).
-  Krugerrand and some others are registered trademarks. Worth a quick check, or rename them, before
-  you sell the game.
+- **Coin names.** The coins now have made-up names (Liberty Hawk, Frostleaf, Veldrand, Albion and
+  so on) instead of real mint trademarks like Krugerrand or Maple Leaf. Bar brands were already
+  fictional. Keep any new coins fictional too.
 - **Price service.** The game's live prices come from your Cloudflare Worker and the API keys
   behind it. Rotate the keys that were pasted in chat, and check the free tiers cover the players
   you expect.

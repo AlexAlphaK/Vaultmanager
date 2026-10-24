@@ -132,7 +132,7 @@ func _process(delta: float) -> void:
 			if _bench and _bench.used.has("scale") and _bench.used.has("calipers") \
 					and _bench._time - _bench._t.calipers > 1.6 and _bench._time - _bench._t.scale > 1.1:
 				step = "june_call"
-				_show("Read the bench", "Weight, diameter and thickness all match the spec. This is a real Silver Eagle. Press Genuine.",
+				_show("Read the bench", "Weight, diameter and thickness all match the spec. This is a real Silver Hawk. Press Genuine.",
 					AT_BENCH, GENUINE_BUTTON)
 		"slick_tools":
 			if _bench and _bench.used.has("magnet") and _bench._time - _bench._t.magnet > 1.4:
@@ -220,7 +220,7 @@ func _make(who: String) -> Customer:
 			c.kind = "seller"
 			c.qty = 10
 			c.reserve = minf(0.85, Shop.buy_percent - 0.01)
-			c.say = tr("My dad's old Silver Eagles. I'd like a fair price.")
+			c.say = tr("My dad's old Silver Hawks. I'd like a fair price.")
 		"slick":
 			Customers.apply_archetype(c, "shady", rng)
 			c.name = "Slick"
@@ -228,7 +228,7 @@ func _make(who: String) -> Customer:
 			c.qty = 8
 			c.fake = "steel"
 			c.reserve = 0.7
-			c.say = tr("Silver Eagles, cheap. Cash only, no questions, yeah?")
+			c.say = tr("Silver Hawks, cheap. Cash only, no questions, yeah?")
 			c.max_patience = 9999.0
 			c.patience = c.max_patience
 		"priya":
@@ -248,7 +248,7 @@ func _at_counter() -> void:
 	match _who:
 		"june":
 			step = "june_counter"
-			_show("Your first customer", tr("June wants to sell %d Silver Eagles. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin.") % c.qty,
+			_show("Your first customer", tr("June wants to sell %d Silver Hawks. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin.") % c.qty,
 				AT_ROOM, TEST_BUTTON)
 		"slick":
 			step = "slick_counter"

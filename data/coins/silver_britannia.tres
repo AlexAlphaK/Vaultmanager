@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "silver_britannia"
-display_name = "Silver Britannia"
+display_name = "Silver Albion"
 metal = "XAG"
 weight_g = 31.21
 purity = 0.999
@@ -14,7 +14,7 @@ thickness_mm = 3.00
 sell_premium = 0.10
 palette = "silver"
 motif = "britannia"
-legend = "BRITANNIA"
+legend = "ALBION"
 fineness_text = "1 OZ 999 FINE SILVER"
 year = "2025"
 radial_lines = false

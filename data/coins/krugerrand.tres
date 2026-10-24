@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "krugerrand"
-display_name = "Krugerrand"
+display_name = "Veldrand"
 metal = "XAU"
 weight_g = 33.93
 purity = 0.9167
@@ -14,7 +14,7 @@ thickness_mm = 2.84
 sell_premium = 0.04
 palette = "gold22"
 motif = "springbok"
-legend = "SOUTH AFRICA"
-fineness_text = "FYNGOUD 1 OZ"
+legend = "VELDLAND"
+fineness_text = "1 OZ FINE GOLD"
 year = "2022"
 radial_lines = false

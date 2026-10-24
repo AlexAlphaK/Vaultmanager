@@ -457,7 +457,7 @@ static func title_of(lot: Dictionary) -> String:
 	return coin_of(lot.items[0]).display_name
 
 
-## One line of a lot's contents: "12 × Silver Eagle", or a sealed pouch until it's opened.
+## One line of a lot's contents: "12 × Silver Hawk", or a sealed pouch until it's opened.
 static func label_of(it: Dictionary) -> String:
 	if it.pouch and not it.seen:
 		return Loc.t("Sealed pouch")
