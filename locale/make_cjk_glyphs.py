@@ -17,6 +17,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT = os.path.join(ROOT, "locale", "fonts", "fusion-pixel-8px-proportional-sc.woff2")
+## Characters only the Traditional translations (zh_TW, zh_HK) use come from the
+## Traditional cut, which draws them the way Taiwan and Hong Kong write them.
+FONT_TC = os.path.join(ROOT, "locale", "fonts", "fusion-pixel-8px-proportional-tc.woff2")
+TRADITIONAL = ("zh_TW.po", "zh_HK.po")
 OUT = os.path.join(ROOT, "art", "cjk_glyphs.gd")
 SKIP_DIRS = (".godot", ".git", "tests", "tools", "store", "price-service", "prototype", "build", "docs")
 TOP = 3  # Fusion Pixel's ascent is 9 px: the glyph box starts 3 rows down
@@ -28,29 +32,35 @@ def pixel_font_chars():
 	return set(m.group(1) for m in re.finditer(r'^\t"(.|\\\\|\\")": \[', src, re.M)) | {" "}
 
 
-def used_chars():
+def used_chars(traditional):
+	"""Characters in the scripts and .po files: the Traditional ones, or all the others."""
 	chars = set()
 	for root, dirs, files in os.walk(ROOT):
 		if os.path.relpath(root, ROOT).split(os.sep)[0] in SKIP_DIRS:
 			dirs[:] = []
 			continue
 		for f in files:
-			if f.endswith(".po") or (f.endswith(".gd") and f != "cjk_glyphs.gd"):
+			if (f in TRADITIONAL) if traditional else (f.endswith(".po") and f not in TRADITIONAL) or (f.endswith(".gd") and f != "cjk_glyphs.gd"):
 				chars |= set(open(os.path.join(root, f), encoding="utf8").read())
 	return chars
 
 
-def main():
-	have = pixel_font_chars()
-	want = sorted(c for c in used_chars() if ord(c) >= 0x2000 and c not in have)
-	otf = TTFont(FONT)
+def load(path):
+	otf = TTFont(path)
 	otf.flavor = None
 	buf = io.BytesIO()
 	otf.save(buf)
-	cmap = otf.getBestCmap()
-	font = ImageFont.truetype(io.BytesIO(buf.getvalue()), 8)
+	return otf.getBestCmap(), ImageFont.truetype(io.BytesIO(buf.getvalue()), 8)
+
+
+def main():
+	have = pixel_font_chars()
+	simplified = set(c for c in used_chars(False) if ord(c) >= 0x2000 and c not in have)
+	traditional = set(c for c in used_chars(True) if ord(c) >= 0x2000 and c not in have) - simplified
+	fonts = {False: load(FONT), True: load(FONT_TC)}
 	lines, missing = [], []
-	for ch in want:
+	for ch in sorted(simplified | traditional):
+		cmap, font = fonts[ch in traditional]
 		if ord(ch) not in cmap:
 			missing.append(ch)
 			continue

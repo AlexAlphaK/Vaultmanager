@@ -45,7 +45,7 @@ window/stretch/scale_mode="integer"
 [internationalization]
 
 locale/include_text_server_data=true
-locale/translations=PackedStringArray("res://locale/de.po", "res://locale/es.po", "res://locale/fr.po", "res://locale/zh_CN.po")
+locale/translations=PackedStringArray("res://locale/de.po", "res://locale/es.po", "res://locale/fr.po", "res://locale/zh_CN.po", "res://locale/zh_TW.po", "res://locale/zh_HK.po")
 
 [rendering]
 

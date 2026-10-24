@@ -24,9 +24,10 @@ const AUTO_KEEP := 0.85
 
 ## "auto" follows the device's language, falling back to English.
 var language := "auto"
-const LANGUAGES := ["auto", "en", "de", "es", "fr", "zh"]
+const LANGUAGES := ["auto", "en", "de", "es", "fr", "zh", "zh_TW", "zh_HK"]
 ## Each language under its own name, so a player can find theirs whatever is showing.
-const LANGUAGE_NAMES := {"en": "English", "de": "Deutsch", "es": "Español", "fr": "Français", "zh": "简体中文"}
+const LANGUAGE_NAMES := {"en": "English", "de": "Deutsch", "es": "Español", "fr": "Français", "zh": "简体中文", "zh_TW": "繁體中文",
+	"zh_HK": "廣東話"}
 
 
 func _ready() -> void:
@@ -78,14 +79,30 @@ func current_language() -> String:
 	return device_language() if language == "auto" else language
 
 
-## The device's language when the game has it, else English. "de_AT" -> "de".
+## The device's language when the game has it, else English. "de_AT" -> "de". Chinese
+## picks its written form: Hong Kong and Macau get Cantonese, Taiwan and other Traditional
+## Chinese get Traditional (Mandarin), the rest Simplified.
 static func device_language() -> String:
 	var code := OS.get_locale_language()
+	if code == "zh":
+		return chinese_for(OS.get_locale())
 	return code if LANGUAGE_NAMES.has(code) else "en"
 
 
+## "zh_HK" -> "zh_HK", "zh_Hant_TW" -> "zh_TW", "zh_CN" -> "zh".
+static func chinese_for(locale: String) -> String:
+	var parts := locale.replace("-", "_").split("_")
+	if "HK" in parts or "MO" in parts:
+		return "zh_HK"
+	if "TW" in parts or "Hant" in parts:
+		return "zh_TW"
+	return "zh"
+
+
 func _apply_language() -> void:
-	TranslationServer.set_locale(current_language())
+	var code := current_language()
+	# plain "zh" would match the Taiwan or Hong Kong translation as well as the mainland one
+	TranslationServer.set_locale("zh_CN" if code == "zh" else code)
 
 
 func set_fullscreen(on: bool) -> void:

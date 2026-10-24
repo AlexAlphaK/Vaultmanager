@@ -3714,7 +3714,7 @@ msgstr "Old Sal"
 
 #: scenes/shop/customer.gd
 msgid "Only %d? I'll take what you have."
-msgstr ""
+msgstr "只有%d枚？有多少我要多少。"
 
 #: scenes/shop/customer.gd
 msgid "Price is up, time to cash in."
@@ -4844,7 +4844,7 @@ msgstr "拒绝"
 
 #: scenes/shop/hud.gd
 msgid "Sell %d"
-msgstr ""
+msgstr "卖出%d枚"
 
 #: scenes/shop/hud.gd
 msgid "Stock at spot"
@@ -4892,7 +4892,7 @@ msgstr "你有%d枚"
 
 #: scenes/shop/hud.gd
 msgid "You hold only %d"
-msgstr ""
+msgstr "你只有%d枚"
 
 #: scenes/shop/hud.gd
 msgid "Your offer  %s%s"
@@ -5275,7 +5275,7 @@ msgstr "卖出%d枚钱币，得%s（利润%s）。"
 
 #: scenes/shop/shop.gd
 msgid "Sold %d of the %d coins %s wanted for %s (profit %s)."
-msgstr ""
+msgstr "卖出%d枚（共要%d枚，买家%s），得%s（利润%s）。"
 
 #: scenes/shop/shop.gd
 msgid "Spotted that %s's stone is %s."

@@ -34,7 +34,7 @@ func _ready() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--lang="):
 			lang = arg.trim_prefix("--lang=")
-	TranslationServer.set_locale(lang)
+	TranslationServer.set_locale("zh_CN" if lang == "zh" else lang)
 	SaveGame.slot_prefix = "user://store_capture_slot_"
 	SaveGame.meta_path = "user://store_capture_slots.cfg"
 	SaveGame.legacy_path = "user://store_capture_legacy.json"
