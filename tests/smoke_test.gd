@@ -31,6 +31,7 @@ func _ready() -> void:
 	_check_bars()
 	_check_vault_layout()
 	_check_market_events()
+	_check_price_smoothing()
 	_check_customers()
 	_check_shop_sounds()
 	await _check_vault_scene()
@@ -215,6 +216,55 @@ func _check_save_slots() -> void:
 	_clear_slots()
 	SaveGame.set_slot(1)
 	SaveGame.new_game()
+
+
+## One real quote a day, walked out over play time instead of polled every few minutes.
+func _check_price_smoothing() -> void:
+	var saved := {"prices": Market.prices.duplicate(), "change": Market.metals_change.duplicate(),
+		"crypto": Market.crypto.duplicate(true), "stocks": Market.stocks.duplicate(true), "paths": Market._paths.duplicate(true),
+		"day": Market.quote_day, "unix": Market.last_live_unix, "source": Market.source}
+	Market.source = "live"
+	Market.prices = {}
+	Market.metals_change = {}
+	Market.crypto = {}
+	Market._paths = {}
+	Market.quote_day = ""
+	var quote := {"prices": {"XAU": 4000.0, "XAG": 50.0}, "metals_change": {"XAU": 2.0},
+		"crypto": {"BTC": {"price": 100000.0, "change_pct": -5.0}}}
+	Market.take_quote(quote, 1000000, "2026-10-24")
+	expect(is_equal_approx(Market.prices.XAU, 4000.0 / 1.02), "a new day's gold opens at the previous close")
+	expect(absf(Market.metals_change.XAU) < 0.001 and absf(Market.crypto.BTC.change_pct) < 0.001, "the day's move starts at zero")
+	expect(is_equal_approx(Market.prices.XAG, 50.0), "without a real change, silver starts at its real price")
+	var steps := int(Market.DAY_PATH_SECONDS / Market.SIM_STEP_SECONDS)
+	var moved := false
+	for n in steps:
+		Market.step()
+		if n == steps / 2:
+			moved = absf(Market.prices.XAU - 4000.0 / 1.02) > 0.01
+	expect(moved, "gold moves between the close and today's price")
+	expect(is_equal_approx(Market.prices.XAU, 4000.0) and is_equal_approx(Market.crypto.BTC.price, 100000.0), "the walk lands on today's real prices")
+	expect(absf(Market.metals_change.XAU - 2.0) < 0.001 and absf(Market.crypto.BTC.change_pct + 5.0) < 0.001, "and on the real daily change, for the news")
+	for n in 200:
+		Market.step()
+	expect(absf(Market.prices.XAU / 4000.0 - 1.0) < 0.01, "settled prices wobble close to the real one")
+	expect(not Market.needs_refresh(1000000 + 3600, "2026-10-24"), "an hour-old quote from today needs no new request")
+	expect(Market.needs_refresh(1000000 + Market.REFRESH_SECONDS, "2026-10-24"), "a quote a few hours old is refreshed")
+	expect(Market.needs_refresh(1000000 + 60, "2026-10-25"), "a new real day asks for a new quote")
+	# a same-day update re-aims quickly, without a jump
+	var before: float = Market.prices.XAU
+	Market.take_quote({"prices": {"XAU": 4040.0}, "metals_change": {"XAU": 3.0}}, 1000000 + Market.REFRESH_SECONDS, "2026-10-24")
+	expect(Market.prices.XAU == before, "a same-day quote does not jump the price")
+	for n in int(Market.RETARGET_SECONDS / Market.SIM_STEP_SECONDS):
+		Market.step()
+	expect(is_equal_approx(Market.prices.XAU, 4040.0), "it walks to the update within a few minutes")
+	Market.prices = saved.prices
+	Market.metals_change = saved.change
+	Market.crypto = saved.crypto
+	Market.stocks = saved.stocks
+	Market._paths = saved.paths
+	Market.quote_day = saved.day
+	Market.last_live_unix = saved.unix
+	Market.source = saved.source
 
 
 func _check_market_events() -> void:

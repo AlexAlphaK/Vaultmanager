@@ -1,6 +1,7 @@
 // Vault Manager price service (Cloudflare Worker).
 // Cron triggers poll the providers and store one combined quote in KV.
 // Every game client reads GET /prices, so one set of API keys and rate limits covers all players.
+// Clients ask only every few hours and animate the moves in between themselves.
 //
 // Response:
 // {
