@@ -2,11 +2,13 @@ name = "vault-manager-prices"
 main = "worker.js"
 compatibility_date = "2026-09-01"
 
-# Fast cron: crypto and stocks every 5 minutes (CoinGecko demo plan and Finnhub free plan both fit).
+# Fast cron: crypto and stocks twice an hour, at :15 and :45 so it never races the slow one.
+# The game asks for a quote only every few hours and draws the moves in between itself,
+# so fresher data would not show; this keeps CoinGecko at about 1,500 calls a month.
 # Slow cron: metals and exchange rates every 4 hours, to stay inside the MetalCharts free tier
-# (about 200 calls a month). On a paid metals plan, move metals to the fast cron.
+# (about 200 calls a month).
 [triggers]
-crons = ["*/5 * * * *", "0 */4 * * *"]
+crons = ["15,45 * * * *", "0 */4 * * *"]
 
 [[kv_namespaces]]
 binding = "PRICES"
