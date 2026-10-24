@@ -29,7 +29,7 @@ extends Resource
 @export var legend := ""
 @export var fineness_text := ""
 @export var year := "2025"
-## Fine radial lines in the field (Royal Canadian Mint security feature).
+## Fine radial lines in the field (a modern anti-counterfeit feature).
 @export var radial_lines := false
 @export var bead_ring := true
 

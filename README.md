@@ -106,7 +106,7 @@ cash and save time, to play one, start a new shop in an empty one, or delete one
 In the shop, **Esc** or the **Menu** button pauses the game. **F11** toggles fullscreen anywhere.
 
 A new game starts with a **guided first day**. Cards walk you through the ticker and your
-margins, then three customers: June sells you genuine Silver Eagles (test them with the scale and
+margins, then three customers: June sells you genuine Silver Hawks (test them with the scale and
 calipers, then buy), Slick tries to sell you plated steel fakes (the magnet catches them), and
 Priya buys silver from your vault. The shop clock waits while the cards are up. Then the shop is
 yours until closing, with one more card for the vault lock-up and one on the summary. The first
@@ -193,8 +193,8 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   still the cheaper way to stock up, so restock what buyers keep asking for, and leave cash in
   hand for the sellers.
 - **Special orders.** From day 3, collectors sometimes walk in and ask you to find coins by a
-  set day: a rare coin (a 1924 Double Eagle, a 1911 Sovereign, a 1967 Krugerrand, an 1881
-  Morgan Dollar or a 1997 Britannia Proof) for 45-150% over melt, or a big lot of an everyday
+  set day: a rare coin (a 1924 Double Hawk, a 1911 Regent, a 1967 Veldrand, an 1881
+  Frontier Dollar or a 1997 Albion Proof) for 45-150% over melt, or a big lot of an everyday
   coin for 10-14% over. Press **Take order** or **Not now**. You can run one order at a time at
   the corner counter, up to three in bigger shops. Then hunt for the coins: while a collector
   waits, walk-in sellers now and then bring an old coin (the card says "old coin") and sell it

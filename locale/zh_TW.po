@@ -302,6 +302,10 @@ msgid "Ada got into the science programme! Ten more for the fund."
 msgstr "Ada考上了理科班！再給基金添十枚。"
 
 #: autoload/customers.gd
+msgid "Albions next. Three, for a display on the history of coinage."
+msgstr "下一個是阿爾比恩。要三枚，用來辦錢幣史展覽。"
+
+#: autoload/customers.gd
 msgid "Any %s coins? Nice strike, no spots, please."
 msgstr "有%s錢幣嗎？壓印要好，不要斑點。"
 
@@ -312,10 +316,6 @@ msgstr "起死回生！鑽石手。把你最亮的給我。"
 #: autoload/customers.gd
 msgid "Brayden"
 msgstr "Brayden"
-
-#: autoload/customers.gd
-msgid "Britannias next. Three, for a display on the history of coinage."
-msgstr "下一個是不列顛尼亞。要三枚，用來辦錢幣史展覽。"
 
 #: autoload/customers.gd
 msgid "Buying the crypto dip. Need cash for it, bro."
@@ -370,8 +370,8 @@ msgid "Dr. Vance's display opens at the town museum next week."
 msgstr "Dr. Vance的展覽下週在鎮博物館開幕。"
 
 #: autoload/customers.gd
-msgid "Dr. Vance, a collector, added your Krugerrand to her cabinet."
-msgstr "收藏家Dr. Vance把你的克魯格金幣收進了她的櫃子。"
+msgid "Dr. Vance, a collector, added your Veldrand to her cabinet."
+msgstr "收藏家Dr. Vance把你的維爾德金幣收進了她的櫃子。"
 
 #: autoload/customers.gd
 msgid "Everything's negotiable, friend."
@@ -386,8 +386,8 @@ msgid "Gold's the OG blockchain, bro."
 msgstr "黃金才是元祖區塊鏈，兄弟。"
 
 #: autoload/customers.gd
-msgid "Got liquidated. Need those eagles turned back into fiat. Don't tell anyone."
-msgstr "被強平了。得把這些鷹幣換回法幣。別告訴別人。"
+msgid "Got liquidated. Need those hawks turned back into fiat. Don't tell anyone."
+msgstr "被強平了。得把這些隼幣換回法幣。別告訴別人。"
 
 #: autoload/customers.gd
 msgid "Got margin-called. Need fiat, fast."
@@ -426,8 +426,8 @@ msgid "I collect %s coins. Nothing else will do."
 msgstr "我收藏%s錢幣。別的都不要。"
 
 #: autoload/customers.gd
-msgid "I collect Krugerrands. Do you have one with a crisp springbok?"
-msgstr "我收藏克魯格金幣。有跳羚圖案清晰的嗎？"
+msgid "I collect Veldrands. Do you have one with a crisp springbok?"
+msgstr "我收藏維爾德金幣。有跳羚圖案清晰的嗎？"
 
 #: autoload/customers.gd
 msgid "I never pay sticker. Let's talk."
@@ -486,8 +486,8 @@ msgid "My grandson graduates Friday. I want to buy him a gold coin, and I want i
 msgstr "我孫子週五畢業。我想送他一枚金幣，而且要在你這兒買。"
 
 #: autoload/customers.gd
-msgid "My old teacher's eagles. I want them in good hands, not a fair price."
-msgstr "我老師的鷹幣。我想讓它們找個好主人，價格不重要。"
+msgid "My old teacher's hawks. I want them in good hands, not a fair price."
+msgstr "我老師的隼幣。我想讓它們找個好主人，價格不重要。"
 
 #: autoload/customers.gd
 msgid "New batch. Same uncle. Different estate."
@@ -526,8 +526,8 @@ msgid "Tanner"
 msgstr "Tanner"
 
 #: autoload/customers.gd
-msgid "The centrepiece: a platinum eagle. The museum opens next week."
-msgstr "壓軸之作：一枚鉑金鷹幣。博物館下週開幕。"
+msgid "The centrepiece: a Platinum Liberty Hawk. The museum opens next week."
+msgstr "壓軸之作：一枚自由隼鉑金幣。博物館下週開幕。"
 
 #: autoload/customers.gd
 msgid "The museum display credits your shop. People are talking."
@@ -2184,52 +2184,52 @@ msgid "Wholesaler: %d x %s for %s."
 msgstr "批發商：%d x %s，價格%s。"
 
 #: data/coins/britannia_proof_1997.tres
-msgid "1997 Britannia Proof"
-msgstr "1997年不列顛尼亞精製幣"
+msgid "1997 Albion Proof"
+msgstr "1997年阿爾比恩精製幣"
 
 #: data/coins/double_eagle_1924.tres
-msgid "1924 Double Eagle"
-msgstr "1924年雙鷹金幣"
+msgid "1924 Double Hawk"
+msgstr "1924年雙隼金幣"
 
 #: data/coins/gold_eagle.tres
-msgid "American Gold Eagle"
-msgstr "美國金鷹幣"
+msgid "Gold Liberty Hawk"
+msgstr "自由隼金幣"
 
 #: data/coins/gold_maple.tres
-msgid "Gold Maple Leaf"
-msgstr "楓葉金幣"
+msgid "Gold Frostleaf"
+msgstr "霜葉金幣"
 
 #: data/coins/krugerrand.tres
-msgid "Krugerrand"
-msgstr "克魯格金幣"
+msgid "Veldrand"
+msgstr "維爾德金幣"
 
 #: data/coins/krugerrand_1967.tres
-msgid "1967 Krugerrand"
-msgstr "1967年克魯格金幣"
+msgid "1967 Veldrand"
+msgstr "1967年維爾德金幣"
 
 #: data/coins/morgan_dollar_1881.tres
-msgid "1881 Morgan Dollar"
-msgstr "1881年摩根銀元"
+msgid "1881 Frontier Dollar"
+msgstr "1881年邊疆銀元"
 
 #: data/coins/platinum_eagle.tres
-msgid "Platinum Eagle"
-msgstr "鉑金鷹幣"
+msgid "Platinum Liberty Hawk"
+msgstr "自由隼鉑金幣"
 
 #: data/coins/silver_britannia.tres
-msgid "Silver Britannia"
-msgstr "不列顛尼亞銀幣"
+msgid "Silver Albion"
+msgstr "阿爾比恩銀幣"
 
 #: data/coins/silver_eagle.tres
-msgid "American Silver Eagle"
-msgstr "美國銀鷹幣"
+msgid "Silver Liberty Hawk"
+msgstr "自由隼銀幣"
 
 #: data/coins/silver_maple.tres
-msgid "Silver Maple Leaf"
-msgstr "楓葉銀幣"
+msgid "Silver Frostleaf"
+msgstr "霜葉銀幣"
 
 #: data/coins/sovereign_1911.tres
-msgid "1911 Sovereign"
-msgstr "1911年索維林金幣"
+msgid "1911 Regent"
+msgstr "1911年攝政金幣"
 
 #: items/bullion_bar.gd
 msgid "1 kilo gold bar"
@@ -6043,8 +6043,8 @@ msgid "June left without selling. That's fine; there's always another customer."
 msgstr "June沒賣就走了。沒關係，總會有下一位顧客。"
 
 #: scenes/tutorial/coach.gd
-msgid "June wants to sell %d Silver Eagles. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin."
-msgstr "June想賣%d枚銀鷹幣。今日熔化價是其中白銀的價值。你的出價是你願意付的錢。絕不要買沒檢測的錢幣：按\"檢測錢幣\"。"
+msgid "June wants to sell %d Silver Hawks. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin."
+msgstr "June想賣%d枚自由隼銀幣。今日熔化價是其中白銀的價值。你的出價是你願意付的錢。絕不要買沒檢測的錢幣：按\"檢測錢幣\"。"
 
 #: scenes/tutorial/coach.gd
 msgid "June's coins are in your vault now. You can see them under IN THE VAULT."
@@ -6067,8 +6067,8 @@ msgid "Move the lamp round the coin with the mouse: close in it shines from abov
 msgstr "用滑鼠讓燈繞著錢幣移動：靠近時光從上方照下，遠離時光從低處斜照。磨損的高點平而暗淡，會打斷光澤旋轉的車輪光。按2用放大鏡，點選袋痕來計數；按3開啟指南。如果低角度光下能看到細紋，就勾選\"清洗過\"。"
 
 #: scenes/tutorial/coach.gd
-msgid "My dad's old Silver Eagles. I'd like a fair price."
-msgstr "我爸的舊銀鷹幣。希望價格公道。"
+msgid "My dad's old Silver Hawks. I'd like a fair price."
+msgstr "我爸的舊自由隼銀幣。希望價格公道。"
 
 #: scenes/tutorial/coach.gd
 msgid "Next"
@@ -6123,8 +6123,8 @@ msgid "Show me"
 msgstr "給我看看"
 
 #: scenes/tutorial/coach.gd
-msgid "Silver Eagles, cheap. Cash only, no questions, yeah?"
-msgstr "便宜的銀鷹幣。只要現金，不問問題，好吧？"
+msgid "Silver Hawks, cheap. Cash only, no questions, yeah?"
+msgstr "便宜的自由隼銀幣。只要現金，不問問題，好吧？"
 
 #: scenes/tutorial/coach.gd
 msgid "Skip tutorial"
@@ -6195,8 +6195,8 @@ msgid "Weigh the piece. Then press 2 to rub a streak on the touchstone and drop 
 msgstr "稱一下首飾。然後按2在試金石上劃出痕跡，再滴上酸液（Q-Y）：劃痕在不高於其K數的酸液中不會消失，賤金屬會冒泡。測試儀檢測寶石；莫桑石能騙過它，所以要在放大鏡下找重影的刻面邊緣。設定成色（G）和寶石（D），然後點\"完成鑑定\"。"
 
 #: scenes/tutorial/coach.gd
-msgid "Weight, diameter and thickness all match the spec. This is a real Silver Eagle. Press Genuine."
-msgstr "重量、直徑和厚度都與規格一致。這是一枚真銀鷹幣。按\"真貨\"。"
+msgid "Weight, diameter and thickness all match the spec. This is a real Silver Hawk. Press Genuine."
+msgstr "重量、直徑和厚度都與規格一致。這是一枚真自由隼銀幣。按\"真貨\"。"
 
 #: scenes/tutorial/coach.gd
 msgid "Welcome to your shop"

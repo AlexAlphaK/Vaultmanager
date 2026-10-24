@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "silver_eagle"
-display_name = "American Silver Eagle"
+display_name = "Silver Liberty Hawk"
 metal = "XAG"
 weight_g = 31.10
 purity = 0.999

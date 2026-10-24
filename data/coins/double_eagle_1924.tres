@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "double_eagle_1924"
-display_name = "1924 Double Eagle"
+display_name = "1924 Double Hawk"
 metal = "XAU"
 weight_g = 33.436
 purity = 0.900

@@ -303,6 +303,10 @@ msgid "Ada got into the science programme! Ten more for the fund."
 msgstr "Ada est prise en filière scientifique ! Dix de plus pour le fonds."
 
 #: autoload/customers.gd
+msgid "Albions next. Three, for a display on the history of coinage."
+msgstr "Ensuite des Albion. Trois, pour une exposition sur l'histoire de la monnaie."
+
+#: autoload/customers.gd
 msgid "Any %s coins? Nice strike, no spots, please."
 msgstr "Vous avez des pièces %s ? Belle frappe, sans taches, svp."
 
@@ -313,10 +317,6 @@ msgstr "Revenu d'entre les morts ! Mains de diamant. Donne-moi ton plus brillant
 #: autoload/customers.gd
 msgid "Brayden"
 msgstr "Brayden"
-
-#: autoload/customers.gd
-msgid "Britannias next. Three, for a display on the history of coinage."
-msgstr "Ensuite des Britannia. Trois, pour une exposition sur l'histoire de la monnaie."
 
 #: autoload/customers.gd
 msgid "Buying the crypto dip. Need cash for it, bro."
@@ -371,8 +371,8 @@ msgid "Dr. Vance's display opens at the town museum next week."
 msgstr "L'exposition du Dr Vance ouvre la semaine prochaine au musée."
 
 #: autoload/customers.gd
-msgid "Dr. Vance, a collector, added your Krugerrand to her cabinet."
-msgstr "Le Dr Vance, collectionneuse, a ajouté votre Krugerrand à sa vitrine."
+msgid "Dr. Vance, a collector, added your Veldrand to her cabinet."
+msgstr "Le Dr Vance, collectionneuse, a ajouté votre Veldrand à sa vitrine."
 
 #: autoload/customers.gd
 msgid "Everything's negotiable, friend."
@@ -387,8 +387,8 @@ msgid "Gold's the OG blockchain, bro."
 msgstr "L'or, c'est la blockchain originale, frère."
 
 #: autoload/customers.gd
-msgid "Got liquidated. Need those eagles turned back into fiat. Don't tell anyone."
-msgstr "Liquidé. Faut retransformer ces Eagles en fiat. Le dis à personne."
+msgid "Got liquidated. Need those hawks turned back into fiat. Don't tell anyone."
+msgstr "Liquidé. Faut retransformer ces Hawks en fiat. Le dis à personne."
 
 #: autoload/customers.gd
 msgid "Got margin-called. Need fiat, fast."
@@ -427,8 +427,8 @@ msgid "I collect %s coins. Nothing else will do."
 msgstr "Je collectionne les pièces %s. Rien d'autre ne fera l'affaire."
 
 #: autoload/customers.gd
-msgid "I collect Krugerrands. Do you have one with a crisp springbok?"
-msgstr "Je collectionne les Krugerrand. En avez-vous un avec un springbok bien net ?"
+msgid "I collect Veldrands. Do you have one with a crisp springbok?"
+msgstr "Je collectionne les Veldrand. En avez-vous un avec un springbok bien net ?"
 
 #: autoload/customers.gd
 msgid "I never pay sticker. Let's talk."
@@ -487,8 +487,8 @@ msgid "My grandson graduates Friday. I want to buy him a gold coin, and I want i
 msgstr "Mon petit-fils est diplômé vendredi. Je veux lui offrir une pièce d'or, et je la veux de chez vous."
 
 #: autoload/customers.gd
-msgid "My old teacher's eagles. I want them in good hands, not a fair price."
-msgstr "Les Eagles de mon vieux professeur. Je les veux en de bonnes mains, pas au meilleur prix."
+msgid "My old teacher's hawks. I want them in good hands, not a fair price."
+msgstr "Les Hawks de mon vieux professeur. Je les veux en de bonnes mains, pas au meilleur prix."
 
 #: autoload/customers.gd
 msgid "New batch. Same uncle. Different estate."
@@ -527,8 +527,8 @@ msgid "Tanner"
 msgstr "Tanner"
 
 #: autoload/customers.gd
-msgid "The centrepiece: a platinum eagle. The museum opens next week."
-msgstr "La pièce maîtresse : un Platinum Eagle. Le musée ouvre la semaine prochaine."
+msgid "The centrepiece: a Platinum Liberty Hawk. The museum opens next week."
+msgstr "La pièce maîtresse : un Platinum Liberty Hawk. Le musée ouvre la semaine prochaine."
 
 #: autoload/customers.gd
 msgid "The museum display credits your shop. People are talking."
@@ -2187,51 +2187,51 @@ msgid "Wholesaler: %d x %s for %s."
 msgstr "Grossiste : %d × %s pour %s."
 
 #: data/coins/britannia_proof_1997.tres
-msgid "1997 Britannia Proof"
-msgstr "Britannia Proof 1997"
+msgid "1997 Albion Proof"
+msgstr "Albion Proof 1997"
 
 #: data/coins/double_eagle_1924.tres
-msgid "1924 Double Eagle"
-msgstr "Double Eagle 1924"
+msgid "1924 Double Hawk"
+msgstr "Double Hawk 1924"
 
 #: data/coins/gold_eagle.tres
-msgid "American Gold Eagle"
-msgstr "American Gold Eagle"
+msgid "Gold Liberty Hawk"
+msgstr "Gold Liberty Hawk"
 
 #: data/coins/gold_maple.tres
-msgid "Gold Maple Leaf"
-msgstr "Maple Leaf en or"
+msgid "Gold Frostleaf"
+msgstr "Frostleaf en or"
 
 #: data/coins/krugerrand.tres
-msgid "Krugerrand"
-msgstr "Krugerrand"
+msgid "Veldrand"
+msgstr "Veldrand"
 
 #: data/coins/krugerrand_1967.tres
-msgid "1967 Krugerrand"
-msgstr "Krugerrand 1967"
+msgid "1967 Veldrand"
+msgstr "Veldrand 1967"
 
 #: data/coins/morgan_dollar_1881.tres
-msgid "1881 Morgan Dollar"
-msgstr "Dollar Morgan 1881"
+msgid "1881 Frontier Dollar"
+msgstr "Dollar Frontier 1881"
 
 #: data/coins/platinum_eagle.tres
-msgid "Platinum Eagle"
-msgstr "Platinum Eagle"
+msgid "Platinum Liberty Hawk"
+msgstr "Platinum Liberty Hawk"
 
 #: data/coins/silver_britannia.tres
-msgid "Silver Britannia"
-msgstr "Britannia en argent"
+msgid "Silver Albion"
+msgstr "Albion en argent"
 
 #: data/coins/silver_eagle.tres
-msgid "American Silver Eagle"
-msgstr "American Silver Eagle"
+msgid "Silver Liberty Hawk"
+msgstr "American Silver Hawk"
 
 #: data/coins/silver_maple.tres
-msgid "Silver Maple Leaf"
-msgstr "Maple Leaf en argent"
+msgid "Silver Frostleaf"
+msgstr "Frostleaf en argent"
 
 #: data/coins/sovereign_1911.tres
-msgid "1911 Sovereign"
+msgid "1911 Regent"
 msgstr "Souverain 1911"
 
 #: items/bullion_bar.gd
@@ -6065,8 +6065,8 @@ msgid "June left without selling. That's fine; there's always another customer."
 msgstr "June est partie sans vendre. Pas grave, il y a toujours un autre client."
 
 #: scenes/tutorial/coach.gd
-msgid "June wants to sell %d Silver Eagles. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin."
-msgstr "June veut vendre %d Silver Eagles. Fonte du jour, c'est ce que vaut leur argent. Votre offre, c'est ce que vous paieriez. N'achetez jamais sans tester : appuyez sur Tester."
+msgid "June wants to sell %d Silver Hawks. Melt today is what the silver in them is worth. Your offer is what you'd pay. Never buy coins untested: press Test coin."
+msgstr "June veut vendre %d Silver Hawks. Fonte du jour, c'est ce que vaut leur argent. Votre offre, c'est ce que vous paieriez. N'achetez jamais sans tester : appuyez sur Tester."
 
 #: scenes/tutorial/coach.gd
 msgid "June's coins are in your vault now. You can see them under IN THE VAULT."
@@ -6089,8 +6089,8 @@ msgid "Move the lamp round the coin with the mouse: close in it shines from abov
 msgstr "Déplacez la lampe autour de la pièce à la souris : près, elle éclaire d'en haut, loin, elle rase. Les reliefs usés restent plats et ternes et brisent la roue du brillant. Appuyez sur 2 pour la loupe et cliquez les marques de sac pour les compter ; 3 ouvre le guide. Cochez Nettoyée si de fines rayures apparaissent en lumière basse."
 
 #: scenes/tutorial/coach.gd
-msgid "My dad's old Silver Eagles. I'd like a fair price."
-msgstr "Les vieilles Silver Eagles de mon père. J'aimerais un prix juste."
+msgid "My dad's old Silver Hawks. I'd like a fair price."
+msgstr "Les vieux Silver Hawks de mon père. J'aimerais un prix juste."
 
 #: scenes/tutorial/coach.gd
 msgid "Next"
@@ -6145,8 +6145,8 @@ msgid "Show me"
 msgstr "Montrez-moi"
 
 #: scenes/tutorial/coach.gd
-msgid "Silver Eagles, cheap. Cash only, no questions, yeah?"
-msgstr "Des Silver Eagles, pas cher. Liquide, sans questions, hein ?"
+msgid "Silver Hawks, cheap. Cash only, no questions, yeah?"
+msgstr "Des Silver Hawks, pas cher. Liquide, sans questions, hein ?"
 
 #: scenes/tutorial/coach.gd
 msgid "Skip tutorial"
@@ -6217,8 +6217,8 @@ msgid "Weigh the piece. Then press 2 to rub a streak on the touchstone and drop 
 msgstr "Pesez la pièce. Puis appuyez sur 2 pour frotter une trace sur la pierre de touche et y verser des acides (Q-Y) : la trace résiste aux acides jusqu'à son carat, le métal commun mousse. Le testeur vérifie la pierre ; la moissanite le trompe, cherchez donc des arêtes doublées à la loupe. Réglez le titre (G) et la pierre (D), puis Finir l'expertise."
 
 #: scenes/tutorial/coach.gd
-msgid "Weight, diameter and thickness all match the spec. This is a real Silver Eagle. Press Genuine."
-msgstr "Poids, diamètre et épaisseur correspondent à la fiche. C'est une vraie Silver Eagle. Appuyez sur Vrai."
+msgid "Weight, diameter and thickness all match the spec. This is a real Silver Hawk. Press Genuine."
+msgstr "Poids, diamètre et épaisseur correspondent à la fiche. C'est un vrai Silver Hawk. Appuyez sur Vrai."
 
 #: scenes/tutorial/coach.gd
 msgid "Welcome to your shop"

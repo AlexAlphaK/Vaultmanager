@@ -1007,12 +1007,12 @@ func _check_wholesaler() -> void:
 	var eagle: BullionItem = Shop.coins["silver_eagle"]
 	var left := Wholesaler.left(eagle)
 	var lots := Wholesaler.lots.duplicate()
-	expect(left >= Wholesaler.LOT_RANGE.XAG.x, "the wholesaler has silver eagles this morning")
+	expect(left >= Wholesaler.LOT_RANGE.XAG.x, "the wholesaler has silver hawks this morning")
 	var each := Wholesaler.price(eagle)
 	expect(each > eagle.melt_value() and each < eagle.melt_value() * 1.1, "wholesale is a little over melt")
 	var cash := Shop.cash
 	var have := Shop.count_of_item(eagle)
-	expect(Wholesaler.buy(eagle, 10) == 10, "buy ten silver eagles")
+	expect(Wholesaler.buy(eagle, 10) == 10, "buy ten silver hawks")
 	expect(Shop.count_of_item(eagle) == have + 10 and Wholesaler.left(eagle) == left - 10, "the coins go into stock")
 	expect(is_equal_approx(Shop.cash, cash - each * 10), "the wholesaler is paid")
 	expect(Wholesaler.buy(eagle, 1000) == left - 10, "the lot runs out")
