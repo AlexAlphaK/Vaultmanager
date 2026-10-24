@@ -3713,6 +3713,10 @@ msgid "Old Sal"
 msgstr "Old Sal"
 
 #: scenes/shop/customer.gd
+msgid "Only %d? I'll take what you have."
+msgstr "只有%d枚？有多少我要多少。"
+
+#: scenes/shop/customer.gd
 msgid "Price is up, time to cash in."
 msgstr "價格漲了，該套現了。"
 
@@ -4839,6 +4843,10 @@ msgid "Refuse"
 msgstr "拒絕"
 
 #: scenes/shop/hud.gd
+msgid "Sell %d"
+msgstr "賣出%d枚"
+
+#: scenes/shop/hud.gd
 msgid "Stock at spot"
 msgstr "按現貨價的庫存"
 
@@ -4881,6 +4889,10 @@ msgstr "想要收銀機和櫃檯裡的東西"
 #: scenes/shop/hud.gd
 msgid "You hold %d"
 msgstr "你有%d枚"
+
+#: scenes/shop/hud.gd
+msgid "You hold only %d"
+msgstr "你只有%d枚"
 
 #: scenes/shop/hud.gd
 msgid "Your offer  %s%s"
@@ -5260,6 +5272,10 @@ msgstr "那麼，你覺得它值多少？"
 #: scenes/shop/shop.gd
 msgid "Sold %d coins for %s (profit %s)."
 msgstr "賣出%d枚錢幣，得%s（利潤%s）。"
+
+#: scenes/shop/shop.gd
+msgid "Sold %d of the %d coins %s wanted for %s (profit %s)."
+msgstr "賣出%d枚（共要%d枚，買家%s），得%s（利潤%s）。"
 
 #: scenes/shop/shop.gd
 msgid "Spotted that %s's stone is %s."
