@@ -12,9 +12,10 @@ English until someone fills it in); strings the code no longer uses are dropped.
 import os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LANGS = ["de", "es", "fr"]
+LANGS = ["de", "es", "fr", "zh_CN"]
 SKIP_DIRS = (".tmp", "tests", "tools", "store", ".godot", ".git", "price-service", "prototype", "art", "audio", "build", "docs", "locale")
-PLURAL = {"de": "nplurals=2; plural=(n != 1);", "es": "nplurals=2; plural=(n != 1);", "fr": "nplurals=2; plural=(n > 1);"}
+PLURAL = {"de": "nplurals=2; plural=(n != 1);", "es": "nplurals=2; plural=(n != 1);", "fr": "nplurals=2; plural=(n > 1);",
+	"zh_CN": "nplurals=1; plural=0;"}
 
 LIT = r'"((?:[^"\\\n]|\\.)*)"'
 TR_N = re.compile(r'\b(?:tr_n|Loc\.n)\(\s*' + LIT + r'\s*,\s*' + LIT)
@@ -39,7 +40,7 @@ def is_text(s, alone_ok):
 		return False
 	if re.search(r'[A-Za-z]\s+[\d.,]*\s*[A-Za-z]', bare):
 		return True
-	if alone_ok and re.match(r'^[A-Za-z][a-z]+[.!?]$|^[A-Z]+$', s.strip()):
+	if alone_ok and re.match(r'^[A-Za-z][a-z]+[.!?]$|^[A-Z]+$|^[A-Z][a-z]+ \([A-Z]\)$', s.strip()):
 		return True
 	return alone_ok and re.match(r'^[A-Z][A-Za-z\'&-]*!?$', s.strip()) is not None
 
@@ -157,9 +158,10 @@ def write_po(path, lang, found, old):
 		have = old.get(msgid, {}).get("str", {}) if lang else {}
 		if plural:
 			out.append("msgid_plural " + po_quote(plural))
-			for n in range(2):
+			forms = int(PLURAL[lang][9]) if lang else 2
+			for n in range(forms):
 				out.append("msgstr[%d] %s" % (n, po_quote(have.get(n, ""))))
-			missing += 0 if lang and all(have.get(n) for n in range(2)) else 1
+			missing += 0 if lang and all(have.get(n) for n in range(forms)) else 1
 		else:
 			out.append("msgstr " + po_quote(have.get(0, "")))
 			missing += 0 if lang and have.get(0) else 1

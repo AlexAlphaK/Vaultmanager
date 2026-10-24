@@ -24,9 +24,9 @@ const AUTO_KEEP := 0.85
 
 ## "auto" follows the device's language, falling back to English.
 var language := "auto"
-const LANGUAGES := ["auto", "en", "de", "es", "fr"]
+const LANGUAGES := ["auto", "en", "de", "es", "fr", "zh"]
 ## Each language under its own name, so a player can find theirs whatever is showing.
-const LANGUAGE_NAMES := {"en": "English", "de": "Deutsch", "es": "Español", "fr": "Français"}
+const LANGUAGE_NAMES := {"en": "English", "de": "Deutsch", "es": "Español", "fr": "Français", "zh": "简体中文"}
 
 
 func _ready() -> void:

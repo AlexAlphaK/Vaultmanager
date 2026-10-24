@@ -288,7 +288,7 @@ func _orders_hint() -> String:
 			next = o
 	var have := Orders.have_for(next)
 	var when := tr("today") if Orders.days_left(next) <= 0 else Day.weekday(int(next.due))
-	return tr("%s wants %d × %s %s. You hold %d.") % [next.name, next.qty, Orders.item_of(next).display_name, when, have]
+	return tr("%s wants %d × %s %s. You hold %d.") % [next.name, next.qty, tr(Orders.item_of(next).display_name), when, have]
 
 
 func _market_hint() -> String:

@@ -1,7 +1,8 @@
 # Translations
 
-The game ships in English, German (`de.po`), Spanish (`es.po`) and French (`fr.po`). The
-player picks a language in Settings; "Auto" follows the device. Godot loads the `.po` files
+The game ships in English, German (`de.po`), Spanish (`es.po`), French (`fr.po`) and
+Simplified Chinese (`zh_CN.po`, setting code `zh`). The player picks a language in Settings;
+"Auto" follows the device. Godot loads the `.po` files
 listed under `[internationalization]` in `project.godot`; there is no import step.
 
 ## Adding text to the game
@@ -18,7 +19,7 @@ listed under `[internationalization]` in `project.godot`; there is no import ste
 - Lower-case a word before translating it, not after: `tr(role.title.to_lower())`, since
   German capitalises nouns.
 
-Then refresh the string list and the three `.po` files:
+Then refresh the string list and the four `.po` files:
 
     python3 locale/update_po.py           # writes strings.pot, adds new strings to each .po
     python3 locale/update_po.py --check   # exits 1 while any string is untranslated
@@ -33,7 +34,21 @@ someone fills it in.
 - Buttons are narrow. Keep button words about as long as the English.
 - Only letters the pixel font draws: plain ASCII plus the accented letters in
   `art/pixel_font.gd` (`ACCENTED`). Use plain `"` for quotes.
+- Chinese uses full-width punctuation (，。：！？（）) and plain `"` for quotes. People's and
+  shops' names stay in English (the game shows most of them untranslated), and so does the
+  game's title.
+
+## Chinese characters
+
+The pixel font only has the characters the game uses. They are baked from Fusion Pixel 8px
+(`locale/fonts`, SIL Open Font License, see `OFL.txt`) into `art/cjk_glyphs.gd`. After
+changing `zh_CN.po`, or putting Chinese anywhere in a script, rebake them:
+
+    pip install fonttools brotli pillow
+    python3 locale/make_cjk_glyphs.py
+
+The smoke test fails on any character the font can't draw, so a missed rebake shows up there.
 
 `tests/smoke_test.tscn` checks that every string is translated, keeps its format slots and
 uses only letters the font has. To play a bug bot in another language:
-`tests/run_bug_bots.sh 4 5 --lang=de`.
+`tests/run_bug_bots.sh 4 5 --lang=de` (or `es`, `fr`, `zh`).

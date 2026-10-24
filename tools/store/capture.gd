@@ -5,6 +5,7 @@ extends Node
 ##   godot --path . --rendering-driver opengl3 res://tools/store/capture.tscn -- --shots
 ##   godot --path . --rendering-driver opengl3 --resolution 1920x1080 --fixed-fps 30 \
 ##       --write-movie build/store/trailer/frame.png res://tools/store/capture.tscn -- --trailer
+## Add --lang=de (or es, fr, zh) after the -- for shots in another language.
 ## Shots land in build/store/raw/ at the game's 480x270; the script scales them up.
 ## It uses its own save slot and settings file, so the player's saves are never touched.
 
@@ -28,7 +29,12 @@ func _ready() -> void:
 	trailer = "--trailer" in OS.get_cmdline_user_args()
 	rng.seed = 2026
 	seed(2026)
-	TranslationServer.set_locale("en") # the store page is in English, whatever the machine speaks
+	# the store page is in English, whatever the machine speaks; --lang=zh for a localized page
+	var lang := "en"
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--lang="):
+			lang = arg.trim_prefix("--lang=")
+	TranslationServer.set_locale(lang)
 	SaveGame.slot_prefix = "user://store_capture_slot_"
 	SaveGame.meta_path = "user://store_capture_slots.cfg"
 	SaveGame.legacy_path = "user://store_capture_legacy.json"
