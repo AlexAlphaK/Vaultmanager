@@ -3717,6 +3717,10 @@ msgid "Old Sal"
 msgstr "Old Sal"
 
 #: scenes/shop/customer.gd
+msgid "Only %d? I'll take what you have."
+msgstr "Nur %d? Dann nehme ich, was Sie haben."
+
+#: scenes/shop/customer.gd
 msgid "Price is up, time to cash in."
 msgstr "Der Preis ist hoch, Zeit zu verkaufen."
 
@@ -4853,6 +4857,10 @@ msgid "Refuse"
 msgstr "Ablehnen"
 
 #: scenes/shop/hud.gd
+msgid "Sell %d"
+msgstr "%d verkaufen"
+
+#: scenes/shop/hud.gd
 msgid "Stock at spot"
 msgstr "Bestand zu Spot"
 
@@ -4895,6 +4903,10 @@ msgstr "Will die Kasse und die Vitrine"
 #: scenes/shop/hud.gd
 msgid "You hold %d"
 msgstr "Du hast %d"
+
+#: scenes/shop/hud.gd
+msgid "You hold only %d"
+msgstr "Du hast nur %d"
 
 #: scenes/shop/hud.gd
 msgid "Your offer  %s%s"
@@ -5277,6 +5289,10 @@ msgstr "Also, was ist es Ihnen wert?"
 #: scenes/shop/shop.gd
 msgid "Sold %d coins for %s (profit %s)."
 msgstr "%d Münzen für %s verkauft (Gewinn %s)."
+
+#: scenes/shop/shop.gd
+msgid "Sold %d of the %d coins %s wanted for %s (profit %s)."
+msgstr "%d der %d Münzen, die %s wollte, für %s verkauft (Gewinn %s)."
 
 #: scenes/shop/shop.gd
 msgid "Spotted that %s's stone is %s."

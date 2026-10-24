@@ -3715,6 +3715,10 @@ msgid "Old Sal"
 msgstr ""
 
 #: scenes/shop/customer.gd
+msgid "Only %d? I'll take what you have."
+msgstr ""
+
+#: scenes/shop/customer.gd
 msgid "Price is up, time to cash in."
 msgstr ""
 
@@ -4851,6 +4855,10 @@ msgid "Refuse"
 msgstr ""
 
 #: scenes/shop/hud.gd
+msgid "Sell %d"
+msgstr ""
+
+#: scenes/shop/hud.gd
 msgid "Stock at spot"
 msgstr ""
 
@@ -4892,6 +4900,10 @@ msgstr ""
 
 #: scenes/shop/hud.gd
 msgid "You hold %d"
+msgstr ""
+
+#: scenes/shop/hud.gd
+msgid "You hold only %d"
 msgstr ""
 
 #: scenes/shop/hud.gd
@@ -5274,6 +5286,10 @@ msgstr ""
 
 #: scenes/shop/shop.gd
 msgid "Sold %d coins for %s (profit %s)."
+msgstr ""
+
+#: scenes/shop/shop.gd
+msgid "Sold %d of the %d coins %s wanted for %s (profit %s)."
 msgstr ""
 
 #: scenes/shop/shop.gd
