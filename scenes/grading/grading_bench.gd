@@ -329,18 +329,53 @@ func _draw_guide() -> void:
 		_text(cleaned_lines[k], Vector2(r.position.x + 8, y + 2 + k * 8), Color("#7a1e12"))
 
 
+## Breaks `text` into lines of about `width` letters. Chinese has no spaces: it breaks
+## between characters (never before its punctuation), each about 1.6 letters wide.
 static func _wrap(text: String, width: int) -> Array[String]:
 	var out: Array[String] = []
 	var line := ""
-	for word in text.split(" "):
-		if line != "" and (line + " " + word).length() > width:
+	for word in _wrap_words(text):
+		if line != "" and _wrap_width(line + word) > width:
 			out.append(line)
-			line = word
+			line = word.strip_edges()
 		else:
-			line = word if line == "" else line + " " + word
+			line = (line + word).strip_edges()
 	if line != "":
 		out.append(line)
 	return out
+
+
+## The words of `text`, each Chinese character a word of its own; a word that followed a
+## space keeps it in front.
+static func _wrap_words(text: String) -> Array[String]:
+	var words: Array[String] = []
+	for chunk in text.split(" ", false):
+		var latin := " " if not words.is_empty() else ""
+		for ch in chunk:
+			if _is_cjk(ch):
+				if latin.strip_edges() != "":
+					words.append(latin)
+				latin = ""
+				if "，。、：；！？）".contains(ch) and not words.is_empty():
+					words[-1] += ch
+				else:
+					words.append(ch)
+			else:
+				latin += ch
+		if latin.strip_edges() != "":
+			words.append(latin)
+	return words
+
+
+static func _is_cjk(s: String) -> bool:
+	return s != "" and s.unicode_at(0) >= 0x2E80
+
+
+static func _wrap_width(s: String) -> float:
+	var w := 0.0
+	for ch in s:
+		w += 1.6 if _is_cjk(ch) else 1.0
+	return w
 
 
 func _text(text: String, at: Vector2, col: Color) -> void:

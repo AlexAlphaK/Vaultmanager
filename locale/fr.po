@@ -1771,6 +1771,10 @@ msgid "no questions asked"
 msgstr "pas de questions"
 
 #: autoload/save_game.gd
+msgid "%s %d, %02d:%02d"
+msgstr "%s %d, %02d:%02d"
+
+#: autoload/save_game.gd
 msgid "Apr"
 msgstr "avr."
 
@@ -5805,8 +5809,16 @@ msgid "At the desk's limit. Close something first."
 msgstr "Limite atteinte. Soldez d'abord une position."
 
 #: scenes/trading_desk/trading_desk.gd
+msgid "Buy (B)"
+msgstr "Acheter (B)"
+
+#: scenes/trading_desk/trading_desk.gd
 msgid "Buy if you think it rises, Sell to go short if you think it falls. At 17:00 everything closes and the result goes on today's ledger."
 msgstr "Achetez si vous pensez que ça monte, Vendez à découvert si ça baisse. À 17:00 tout est soldé et le résultat va au registre du jour."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Close (C)"
+msgstr "Clôturer (C)"
 
 #: scenes/trading_desk/trading_desk.gd
 msgid "Close out now (Enter)"
@@ -5917,6 +5929,10 @@ msgid "Ring the opening bell"
 msgstr "Sonner l'ouverture"
 
 #: scenes/trading_desk/trading_desk.gd
+msgid "Sell (S)"
+msgstr "Vendre (S)"
+
+#: scenes/trading_desk/trading_desk.gd
 msgid "Short the gold, silver and platinum in your vault, ounce for ounce, with up to half the desk's limit."
 msgstr "Vendez à découvert l'or, l'argent et le platine du coffre, once pour once, avec jusqu'à la moitié de la limite."
 
@@ -5951,6 +5967,10 @@ msgstr "Vous avez regardé la bande toute la journée sans trader."
 #: scenes/trading_desk/trading_desk.gd
 msgid "Your hedge offset %d%% of the vault's move."
 msgstr "Votre couverture a compensé %d%% du mouvement du coffre."
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "flat"
+msgstr "aucune"
 
 #: scenes/trading_desk/trading_desk.gd
 msgid "long "

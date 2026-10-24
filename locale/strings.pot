@@ -1769,6 +1769,10 @@ msgid "no questions asked"
 msgstr ""
 
 #: autoload/save_game.gd
+msgid "%s %d, %02d:%02d"
+msgstr ""
+
+#: autoload/save_game.gd
 msgid "Apr"
 msgstr ""
 
@@ -5803,7 +5807,15 @@ msgid "At the desk's limit. Close something first."
 msgstr ""
 
 #: scenes/trading_desk/trading_desk.gd
+msgid "Buy (B)"
+msgstr ""
+
+#: scenes/trading_desk/trading_desk.gd
 msgid "Buy if you think it rises, Sell to go short if you think it falls. At 17:00 everything closes and the result goes on today's ledger."
+msgstr ""
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "Close (C)"
 msgstr ""
 
 #: scenes/trading_desk/trading_desk.gd
@@ -5915,6 +5927,10 @@ msgid "Ring the opening bell"
 msgstr ""
 
 #: scenes/trading_desk/trading_desk.gd
+msgid "Sell (S)"
+msgstr ""
+
+#: scenes/trading_desk/trading_desk.gd
 msgid "Short the gold, silver and platinum in your vault, ounce for ounce, with up to half the desk's limit."
 msgstr ""
 
@@ -5948,6 +5964,10 @@ msgstr ""
 
 #: scenes/trading_desk/trading_desk.gd
 msgid "Your hedge offset %d%% of the vault's move."
+msgstr ""
+
+#: scenes/trading_desk/trading_desk.gd
+msgid "flat"
 msgstr ""
 
 #: scenes/trading_desk/trading_desk.gd

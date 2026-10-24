@@ -1503,7 +1503,7 @@ func _check_demo() -> void:
 	expect(Progress.expand_blocker() == "Full game only" and not Progress.expand() and Progress.tier == Demo.MAX_TIER,
 		"the bullion house waits for the full game")
 	expect("store.steampowered.com" in Demo.store_url(), "the wishlist button goes to Steam")
-	for lang in ["en", "de", "fr"]:
+	for lang in ["en", "de", "fr", "zh"]:
 		TranslationServer.set_locale(lang)
 		var end: Control = load("res://scenes/menu/demo_end.tscn").instantiate()
 		add_child(end)
@@ -2379,7 +2379,7 @@ func _check_decor() -> void:
 	Progress.tier = 3
 	for id in ["fountain", "eagle", "grandfather_clock", "chandelier_lamp", "fountain"]:
 		Decor.stored.append(id)
-	for lang in ["en", "de", "es", "fr"]:
+	for lang in ["en", "de", "es", "fr", "zh"]:
 		TranslationServer.set_locale(lang)
 		panel.drop()
 		panel._hint.text = panel._desc("fountain") + " " + panel._desc("eagle")
@@ -2531,8 +2531,15 @@ func _check_localization() -> void:
 	expect(Loc.n("%d more day", "%d more days", 0) == "encore %d jour", "French counts zero as singular")
 	Settings.set_language("es")
 	expect(tr("Settings") != "Settings", "Spanish shows Spanish")
+	Settings.set_language("zh")
+	expect(tr("Settings") == "设置" and TranslationServer.get_locale().begins_with("zh"), "Chinese shows Simplified Chinese")
+	expect(Loc.n("%d more day", "%d more days", 1) == "还有%d天" and Loc.n("%d more day", "%d more days", 3) == "还有%d天", "Chinese has one plural form")
+	expect(Market.format_money(1234567.0, 0).contains("1,234,567"), "Chinese groups thousands with commas")
+	expect(PixelFont.has_glyph("金") and PixelFont.measure("金银") == 15 and PixelFont.is_tall("金"), "the pixel font draws Chinese")
+	var hanzi := PixelFont.get_font().get_glyph_size(0, Vector2i(PixelFont.SIZE, 0), "金".unicode_at(0))
+	expect(hanzi == Vector2(7, 8), "Chinese glyphs are in the font atlas (%s)" % hanzi)
 	Settings.set_language("bogus")
-	expect(Settings.language == "es", "unknown languages are ignored")
+	expect(Settings.language == "zh", "unknown languages are ignored")
 	Settings.set_language("en")
 	expect(tr("Settings") == "Settings", "English is the source text")
 
@@ -2560,7 +2567,7 @@ func _check_localization() -> void:
 			if want != got:
 				bad_slots.append(id)
 			for ch in slots.sub(text, "", true):
-				if ch != " " and ch != "\n" and not PixelFont.GLYPHS.has(ch) and not PixelFont.ACCENTED.has(ch):
+				if ch != "\n" and not PixelFont.has_glyph(ch):
 					bad_chars[ch] = true
 		expect(bad_slots.is_empty(), "%s keeps the format slots in order: %s" % [t.locale, bad_slots])
 		expect(bad_chars.is_empty(), "the pixel font draws every %s letter: %s" % [t.locale, bad_chars.keys()])
@@ -2587,7 +2594,7 @@ func _check_translated_panels() -> void:
 	Investor.offer = {"day": Shop.day, "stake": 13000.0, "share": 0.15}
 	Investor.offer_seen = true
 	Investor.total_paid = 1234.0
-	for lang in ["en", "de", "es", "fr"]:
+	for lang in ["en", "de", "es", "fr", "zh"]:
 		TranslationServer.set_locale(lang)
 		for page in ["show_morning", "show_upgrades", "show_plan", "show_wholesale", "show_town", "show_orders", "show_ledger", "show_investor", "show_bank"]:
 			panels.call(page)
@@ -2598,7 +2605,7 @@ func _check_translated_panels() -> void:
 	# and with her stake in the shop
 	Investor.offer = {}
 	Investor.deal = {"stake": 13000.0, "share": 0.15, "cap": 22750.0, "paid": 1234.0, "day": Shop.day}
-	for lang in ["en", "de", "es", "fr"]:
+	for lang in ["en", "de", "es", "fr", "zh"]:
 		TranslationServer.set_locale(lang)
 		for page in ["show_morning", "show_ledger", "show_investor"]:
 			panels.call(page)
@@ -2609,7 +2616,7 @@ func _check_translated_panels() -> void:
 	Bank.line = 12345.0
 	Bank.loan = {"amount": 20000.0, "rate": 0.0009, "term": 56, "days_left": 40, "balance": 15432.0, "payment": 380.0, "day": 1}
 	Bank.interest_paid = 999.0
-	for lang in ["en", "de", "es", "fr"]:
+	for lang in ["en", "de", "es", "fr", "zh"]:
 		TranslationServer.set_locale(lang)
 		for page in ["show_morning", "show_ledger", "show_bank"]:
 			panels.call(page)
@@ -2626,7 +2633,7 @@ func _check_translated_panels() -> void:
 	for id in ["trading_desk", "furnace"]:
 		if not id in Progress.owned:
 			Progress.owned.append(id)
-	for lang in ["en", "de", "es", "fr"]:
+	for lang in ["en", "de", "es", "fr", "zh"]:
 		TranslationServer.set_locale(lang)
 		panels.show_morning()
 		await get_tree().process_frame

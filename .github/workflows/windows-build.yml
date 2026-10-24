@@ -63,14 +63,16 @@ jobs:
           mkdir -p build/windows
           ~/godot/godot --headless --path . --export-release "Windows Desktop" build/windows/VaultManager.exe
           test -s build/windows/VaultManager.exe
-          cd build/windows && zip -q ../VaultManager-windows.zip VaultManager.exe
+          cp locale/fonts/OFL.txt build/windows/Fusion-Pixel-Font-LICENSE.txt
+          cd build/windows && zip -q ../VaultManager-windows.zip VaultManager.exe Fusion-Pixel-Font-LICENSE.txt
 
       - name: Export Windows demo
         run: |
           mkdir -p build/windows-demo
           ~/godot/godot --headless --path . --export-release "Windows Demo" build/windows-demo/VaultManagerDemo.exe
           test -s build/windows-demo/VaultManagerDemo.exe
-          cd build/windows-demo && zip -q ../VaultManagerDemo-windows.zip VaultManagerDemo.exe
+          cp locale/fonts/OFL.txt build/windows-demo/Fusion-Pixel-Font-LICENSE.txt
+          cd build/windows-demo && zip -q ../VaultManagerDemo-windows.zip VaultManagerDemo.exe Fusion-Pixel-Font-LICENSE.txt
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

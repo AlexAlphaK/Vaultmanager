@@ -163,7 +163,7 @@ static func format_time(unix: int) -> String:
 	var local := unix + int(Time.get_time_zone_from_system().get("bias", 0)) * 60
 	var d := Time.get_datetime_dict_from_unix_time(local)
 	const MONTHS := ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-	return "%s %d, %02d:%02d" % [Loc.t(MONTHS[d.month - 1]), d.day, d.hour, d.minute]
+	return Loc.t("%s %d, %02d:%02d") % [Loc.t(MONTHS[d.month - 1]), d.day, d.hour, d.minute]
 
 
 func delete_save() -> void:

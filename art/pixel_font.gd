@@ -180,6 +180,9 @@ static var _font: FontFile
 ## thread draws text; plain arrays are safe to read from both.
 static var _glyphs: Dictionary = GLYPHS.duplicate(true)
 static var _accented: Dictionary = ACCENTED.duplicate(true)
+## Chinese characters (CjkGlyphs, baked from a CJK pixel font), 7 rows from one pixel above
+## the cap line down to the row under the baseline, like the accented letters.
+static var _cjk: Dictionary = _decode(CjkGlyphs.ROWS)
 
 
 ## The shared font, built on first use.
@@ -201,9 +204,19 @@ static func glyph_width(ch: String) -> int:
 	return rows_of(ch)[0].length()
 
 
-## The glyph's rows ('#' lit), accented capitals included; '?' for a character it lacks.
+## The glyph's rows ('#' lit), accented capitals and Chinese included; '?' for a character it lacks.
 static func rows_of(ch: String) -> Array:
-	return _accented.get(ch, _glyphs.get(ch, _glyphs["?"]))
+	return _accented.get(ch, _cjk.get(ch, _glyphs.get(ch, _glyphs["?"])))
+
+
+## True when the font draws `ch` (space included).
+static func has_glyph(ch: String) -> bool:
+	return ch == " " or _glyphs.has(ch) or _accented.has(ch) or _cjk.has(ch)
+
+
+## True for glyphs whose first row sits one pixel above the cap line.
+static func is_tall(ch: String) -> bool:
+	return _accented.has(ch) or _cjk.has(ch)
 
 
 ## Like rows_of(), without the accented capitals (a bar stamp has none).
@@ -220,7 +233,7 @@ static func plot_text(text: String, plot: Callable) -> void:
 			x += SPACE_ADVANCE
 			continue
 		var rows := rows_of(ch)
-		var top := -1 if _accented.has(ch) else 0
+		var top := -1 if is_tall(ch) else 0
 		for y in rows.size():
 			var row: String = rows[y]
 			for px in row.length():
@@ -229,10 +242,27 @@ static func plot_text(text: String, plot: Callable) -> void:
 		x += rows[0].length() + 1
 
 
+## CjkGlyphs.ROWS entries ("7" then a hex byte per row) as '#'/'.' rows.
+static func _decode(packed: Dictionary) -> Dictionary:
+	var out := {}
+	for ch in packed:
+		var code: String = packed[ch]
+		var w := code.left(1).to_int()
+		var rows := []
+		for y in (code.length() - 1) / 2:
+			var bits := code.substr(1 + y * 2, 2).hex_to_int()
+			var row := ""
+			for x in w:
+				row += "#" if bits & (1 << x) else "."
+			rows.append(row)
+		out[ch] = rows
+	return out
+
+
 static func _build() -> FontFile:
-	var keys := GLYPHS.keys() + ACCENTED.keys()
-	var cell_w := 6
-	var cols := 16
+	var keys := GLYPHS.keys() + ACCENTED.keys() + _cjk.keys()
+	var cell_w := 8
+	var cols := 32
 	var atlas := Image.create(cols * cell_w, ceili(keys.size() / float(cols)) * 8, false, Image.FORMAT_RGBA8)
 	var font := FontFile.new()
 	font.fixed_size = SIZE
@@ -246,8 +276,8 @@ static func _build() -> FontFile:
 	font.set_cache_descent(0, SIZE, DESCENT)
 	for n in keys.size():
 		var ch: String = keys[n]
-		var tall := ACCENTED.has(ch)
-		var rows: Array = ACCENTED[ch] if tall else GLYPHS[ch]
+		var tall := is_tall(ch)
+		var rows: Array = rows_of(ch)
 		var w: int = rows[0].length()
 		var h := 8 if tall else 7
 		var origin := Vector2i((n % cols) * cell_w, (n / cols) * 8)

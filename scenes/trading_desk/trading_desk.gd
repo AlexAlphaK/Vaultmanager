@@ -421,7 +421,7 @@ func _refresh() -> void:
 	_set_money(_ui.net, s.pnl() + s.vault_swing())
 	_ui.pick.text = "%s · %s" % [row.name.to_upper(), row.sym]
 	var pos := s.position(selected)
-	_ui.position.text = "flat" if absf(pos) < 1.0 else "%s %s" % ["long" if pos > 0.0 else "short", Market.format_money(absf(pos))]
+	_ui.position.text = tr("flat") if absf(pos) < 1.0 else (tr("long ") if pos > 0.0 else tr("short ")) + Market.format_money(absf(pos))
 	_set_money(_ui.row_pnl, s.pnl_of(selected))
 	for n in _ui.sizes.size():
 		var b: Button = _ui.sizes[n]
