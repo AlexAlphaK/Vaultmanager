@@ -467,6 +467,11 @@ func _settle_piece(j: Dictionary) -> void:
 
 
 func _sell(c: Customer) -> void:
+	var have := c.can_sell()
+	if have <= 0:
+		hud.show_customer(c)
+		return
+	c.settle_for(have)
 	if not c.hear_price(Shop.sell_premium):
 		hud.show_customer(c)
 		return
@@ -485,7 +490,7 @@ func _ring_up(c: Customer) -> Dictionary:
 	Shop.note("sold", price)
 	Shop.note("profit", price - taken.cost)
 	Shop.note("served")
-	Shop.reputation_for("sold")
+	Shop.reputation_for("sold_short" if c.short_sale() else "sold")
 	Sfx.play(self, Sfx.register_chime(), -6.0)
 	if taken.fakes > 0:
 		var refund: float = price / c.qty * taken.fakes
@@ -494,6 +499,9 @@ func _ring_up(c: Customer) -> Dictionary:
 		Shop.reputation_for("sold_fake")
 		Shop.log_event(tr("%s came back: %d of the coins you sold were fake! Refunded %s.") % [c.name, taken.fakes, Market.format_money(refund)], "bad")
 	var profit: float = price - taken.cost
+	if c.short_sale():
+		return {"text": tr("Sold %d of the %d coins %s wanted for %s (profit %s).") % [c.qty, c.wanted, c.name, Market.format_money(price), Market.format_money(profit)],
+			"mood": "good" if profit >= 0.0 else "bad"}
 	return {"text": tr("Sold %d coins for %s (profit %s).") % [c.qty, Market.format_money(price), Market.format_money(profit)],
 		"mood": "good" if profit >= 0.0 else "bad"}
 
@@ -528,9 +536,11 @@ func _clerk_finish() -> void:
 	var c := at_clerk
 	var clerk: String = Staff.ROLES.clerk.name
 	at_clerk = null
-	if c.stock_have() < c.qty:
+	if c.can_sell() <= 0:
 		_dismiss(c, tr("%s left: the coins sold out before %s could ring them up.") % [c.name, clerk], "bad")
 		return
+	# someone else bought some first: they take what is left
+	c.settle_for(c.can_sell())
 	if c.hear_price(Shop.sell_premium):
 		var sale := _ring_up(c)
 		Staff.gain_xp("clerk", Staff.XP_PER_SALE)
