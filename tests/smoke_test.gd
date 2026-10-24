@@ -529,6 +529,33 @@ func _check_shop_day() -> void:
 	cash = Shop.cash
 	shop._on_action("sell")
 	expect(Shop.cash > cash, "selling earns cash")
+	# a buyer who wants more than you hold takes what you have
+	Shop.add_stock(Shop.coins["platinum_eagle"], 2, 900.0)
+	var held := Shop.count_of("XPT")
+	var p := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	p.kind = "buyer"
+	p.item = Shop.coins["platinum_eagle"]
+	p.wanted_exact = false
+	p.qty = held + 3
+	p.max_premium = 0.5
+	shop.queue.push_front(p)
+	p.pos = ShopArt.SLOTS[0]
+	await get_tree().process_frame
+	shop.hud.show_customer(p)
+	expect(not shop.hud._buttons.sell.disabled and shop.hud._buttons.sell.text == tr("Sell %d") % held, "a short stock offers a partial sale")
+	cash = Shop.cash
+	shop._on_action("sell")
+	expect(p.dealt and p.qty == held and p.wanted == held + 3, "the buyer settles for the coins you hold")
+	expect(Shop.cash > cash and Shop.count_of("XPT") == 0, "a partial sale empties the shelf and earns cash")
+	# a collector picking up a special order wants the whole set
+	var o := Customer.create(1, 2.5, Shop.coin_list(), rng)
+	o.kind = "buyer"
+	o.item = Shop.coins["platinum_eagle"]
+	o.qty = 2
+	o.order = {"name": "test"}
+	Shop.add_stock(Shop.coins["platinum_eagle"], 1, 900.0)
+	expect(o.can_sell() == 0, "an order pickup can't be sold short")
+	Shop.take_stock("XPT", 1)
 	# closing time ends the day
 	shop.queue.clear()
 	shop.leaving.clear()

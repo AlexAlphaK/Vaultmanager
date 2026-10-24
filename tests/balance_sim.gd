@@ -441,7 +441,7 @@ func _buy_from(c: Customer, out: Dictionary) -> void:
 
 
 func _sell_to(c: Customer, out: Dictionary) -> void:
-	if c.stock_have() < c.qty:
+	if c.can_sell() <= 0:
 		out.out_of_stock += 1
 		shop._on_action("decline")
 		return

@@ -307,15 +307,23 @@ func _refresh_deal() -> void:
 			_deal[0].text = "%d × %s" % [c.qty, c.item.display_name]
 		else:
 			_deal[0].text = tr("%d × %s coins") % [c.qty, tr({"XAU": "gold", "XAG": "silver", "XPT": "platinum"}.get(c.item.metal, ""))]
-		_deal[1].text = tr("You hold %d") % have
+		var can := c.can_sell()
+		var short := can > 0 and can < c.qty
+		_deal[1].text = tr("You hold only %d") % have if short else tr("You hold %d") % have
+		_deal[1].add_theme_color_override("font_color", Pal.INK)
+		# short of what they want, the price is for the coins you can hand over
 		_deal[2].text = "%s  %s" % [tr("Agreed") if not c.order.is_empty() else (tr("Pays") if c.fixed_price() else tr("Price")),
-			Market.format_money(c.sale_total())]
+			Market.format_money(c.sale_total() * (float(can) / c.qty if short else 1.0))]
 		_deal[2].add_theme_color_override("font_color", Pal.GOLD)
 		_buttons.sell.visible = true
-		_buttons.sell.text = "Sell"
-		_buttons.sell.disabled = have < c.qty
+		# short of what they want: offer what you have
+		if short:
+			_buttons.sell.text = tr("Sell %d") % can
+		else:
+			_buttons.sell.text = "Sell"
+		_buttons.sell.disabled = can <= 0
 		_buttons.decline.visible = true
-		_buttons.decline.text = "Out of stock" if have < c.qty else "Decline"
+		_buttons.decline.text = "Out of stock" if can <= 0 else "Decline"
 
 
 # ---------------------------------------------------------------- layout

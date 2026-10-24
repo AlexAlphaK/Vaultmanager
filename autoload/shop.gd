@@ -12,6 +12,7 @@ const COIN_DIR := "res://data/coins/"
 const REPUTATION := {
 	"bought": 0.01, # a fair purchase
 	"sold": 0.015, # a sale
+	"sold_short": 0.005, # a sale of fewer coins than the buyer wanted
 	"caught": 0.04, # spotting a fake
 	"refused_fake": 0.01, # turning away a fake without testing
 	"honest": 0.05, # telling a seller their piece is better than they thought

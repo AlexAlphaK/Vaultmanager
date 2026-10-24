@@ -76,6 +76,8 @@ var tries := 0
 var tested := false
 ## The clerk tried to serve this buyer and they wanted a better price.
 var clerk_tried := false
+## How many coins a buyer first asked for, once you sold them less (see `settle_for`).
+var wanted := 0
 var seed := 0
 var event_id := "" # the market event that brought them in, if any
 ## A piece of jewellery instead of coins (sellers only), and how the player graded it
@@ -229,6 +231,30 @@ func stock_have() -> int:
 		# a collector picking up their order gets the coins set aside for it
 		return Shop.count_of_item(item) if not order.is_empty() else Shop.spare_of(item)
 	return Shop.count_of(item.metal)
+
+
+## Coins you could hand this buyer now: all they want, or what you have left.
+## A collector picking up a special order wants the whole set or nothing.
+func can_sell() -> int:
+	var have := stock_have()
+	if have >= qty:
+		return qty
+	return 0 if not order.is_empty() else have
+
+
+## The buyer settles for the `have` coins you hold instead of the `qty` they asked for.
+## They take it, but a short sale earns less goodwill (see Shop.REPUTATION "sold_short").
+func settle_for(have: int) -> void:
+	if have <= 0 or have >= qty:
+		return
+	if wanted == 0:
+		wanted = qty
+	qty = have
+	say = tr("Only %d? I'll take what you have.") % have
+
+
+func short_sale() -> bool:
+	return wanted > qty
 
 
 ## Melt value of everything the customer brings or wants, at live prices.
