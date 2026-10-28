@@ -138,6 +138,7 @@ func _process(delta: float) -> void:
 	room.front_customer = front
 	room.customers.assign(_everyone())
 	room.day_fraction = clampf(time / DAY_SECONDS, 0.0, 1.0)
+	Market.day_fraction = room.day_fraction
 	room.keeper_away = away > 0.0
 	room.clerk_busy = at_clerk != null and not at_clerk.walking
 	hud.set_clock(Shop.day, int(minutes()), closing, not rush.is_empty())

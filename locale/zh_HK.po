@@ -2231,6 +2231,10 @@ msgstr "霜葉銀幣"
 msgid "1911 Regent"
 msgstr "1911年攝政金幣"
 
+#: data/price_history.gd
+msgid "Historical prices: World Bank Commodity Price Data (The Pink Sheet), CC BY 4.0; U.S. Geological Survey."
+msgstr "歷史價格：World Bank Commodity Price Data (The Pink Sheet)，CC BY 4.0；U.S. Geological Survey。"
+
 #: items/bullion_bar.gd
 msgid "1 kilo gold bar"
 msgstr "1公斤金條"
@@ -3549,16 +3553,12 @@ msgid "Save slots"
 msgstr "存檔位"
 
 #: scenes/menu/title_screen.gd scenes/shop/hud.gd
-msgid "● CACHED"
-msgstr "● 快取"
+msgid "● TRADING"
+msgstr "● 交易中"
 
 #: scenes/menu/title_screen.gd scenes/shop/hud.gd
-msgid "● LIVE"
-msgstr "● 實時"
-
-#: scenes/menu/title_screen.gd scenes/shop/hud.gd
-msgid "● OFFLINE"
-msgstr "● 離線"
+msgid "● WEEKEND"
+msgstr "● 休市"
 
 #: scenes/shop/customer.gd
 msgid "%d%%. That's my floor, take it or I walk."
@@ -5877,10 +5877,6 @@ msgstr "早盤"
 #: scenes/trading_desk/trading_desk.gd
 msgid "No metal in the vault to hedge."
 msgstr "金庫裏沒有金屬可對沖。"
-
-#: scenes/trading_desk/trading_desk.gd
-msgid "Offline: the tapes are simulated."
-msgstr "離線：行情為模擬數據。"
 
 #: scenes/trading_desk/trading_desk.gd
 msgid "On today's tape your vault gained %s on paper."

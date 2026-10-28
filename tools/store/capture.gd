@@ -376,14 +376,7 @@ func _bench(c: Customer) -> void:
 
 
 func _quiet_market() -> void:
-	Market.service_url = "http://127.0.0.1:9/"
-	for child in Market.get_children():
-		if child is Timer:
-			child.stop()
-		elif child is HTTPRequest:
-			child.cancel_request()
-	# the shipped game shows real prices; the capture runs offline on its own copy of them
-	Market.source = "live"
+	Market.held = true
 	_day_moves()
 
 

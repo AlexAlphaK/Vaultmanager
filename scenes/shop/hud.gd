@@ -72,7 +72,6 @@ func _ready() -> void:
 		if Day.phase == Day.MORNING:
 			_panels.show_upgrades())
 	Market.prices_changed.connect(func(_p): _refresh())
-	Market.source_changed.connect(func(_s): _refresh())
 	Market.currency_changed.connect(func(_c): _refresh())
 	Shop.changed.connect(_refresh)
 	Progress.changed.connect(_refresh)
@@ -187,8 +186,9 @@ func _refresh() -> void:
 		var change := Market.day_change_percent(metal)
 		l.text = "%s %s %s%.1f%%" % [TICKER_NAMES[metal], Market.format_money(Market.prices[metal], 2 if metal == "XAG" else 0), "▲" if change >= 0.0 else "▼", absf(change)]
 		l.add_theme_color_override("font_color", Pal.GOOD if change >= 0.0 else Pal.BAD)
-	_feed.text = {"live": tr("● LIVE"), "cached": tr("● CACHED"), "simulated": tr("● OFFLINE")}.get(Market.source, "")
-	_feed.add_theme_color_override("font_color", {"live": Pal.GOOD, "cached": Pal.WARN}.get(Market.source, Pal.INK_FAINT))
+	# game weekends are market weekends: the metals rest
+	_feed.text = tr("● TRADING") if Market.is_trading_day() else tr("● WEEKEND")
+	_feed.add_theme_color_override("font_color", Pal.GOOD if Market.is_trading_day() else Pal.INK_FAINT)
 	var full := int(Shop.reputation)
 	var half := Shop.reputation - full >= 0.5
 	_stars.text = "★".repeat(full) + ("☆" if half else "") + "  %.1f" % Shop.reputation

@@ -113,8 +113,8 @@ func _draw_ticker() -> void:
 			x += _ticker_w
 	# the feed badge sits over the scrolling text
 	draw_rect(Rect2(0, TICKER_Y + 1, 50, 11), Color("#120e0a"))
-	var badge: String = {"live": tr("● LIVE"), "cached": tr("● CACHED")}.get(Market.source, tr("● OFFLINE"))
-	draw_string(font, Vector2(4, TICKER_Y + 9), badge, HORIZONTAL_ALIGNMENT_LEFT, -1, PixelFont.SIZE, {"live": Pal.GOOD, "cached": Pal.WARN}.get(Market.source, Pal.INK_FAINT))
+	var trading := Market.is_trading_day()
+	draw_string(font, Vector2(4, TICKER_Y + 9), tr("● TRADING") if trading else tr("● WEEKEND"), HORIZONTAL_ALIGNMENT_LEFT, -1, PixelFont.SIZE, Pal.GOOD if trading else Pal.INK_FAINT)
 
 
 func _rebuild_ticker() -> void:

@@ -2234,6 +2234,10 @@ msgstr "Silver Frostleaf"
 msgid "1911 Regent"
 msgstr "Regent 1911"
 
+#: data/price_history.gd
+msgid "Historical prices: World Bank Commodity Price Data (The Pink Sheet), CC BY 4.0; U.S. Geological Survey."
+msgstr "Historische Preise: World Bank Commodity Price Data (The Pink Sheet), CC BY 4.0; U.S. Geological Survey."
+
 #: items/bullion_bar.gd
 msgid "1 kilo gold bar"
 msgstr "1-kg-Goldbarren"
@@ -3557,16 +3561,12 @@ msgid "Save slots"
 msgstr "Spielstände"
 
 #: scenes/menu/title_screen.gd scenes/shop/hud.gd
-msgid "● CACHED"
-msgstr "● CACHE"
+msgid "● TRADING"
+msgstr "● HANDEL"
 
 #: scenes/menu/title_screen.gd scenes/shop/hud.gd
-msgid "● LIVE"
-msgstr "● LIVE"
-
-#: scenes/menu/title_screen.gd scenes/shop/hud.gd
-msgid "● OFFLINE"
-msgstr "● OFFLINE"
+msgid "● WEEKEND"
+msgstr "● BÖRSE ZU"
 
 #: scenes/shop/customer.gd
 msgid "%d%%. That's my floor, take it or I walk."
@@ -5899,10 +5899,6 @@ msgstr "Morgenhandel"
 #: scenes/trading_desk/trading_desk.gd
 msgid "No metal in the vault to hedge."
 msgstr "Kein Metall im Tresor zum Absichern."
-
-#: scenes/trading_desk/trading_desk.gd
-msgid "Offline: the tapes are simulated."
-msgstr "Offline: Die Bänder sind simuliert."
 
 #: scenes/trading_desk/trading_desk.gd
 msgid "On today's tape your vault gained %s on paper."

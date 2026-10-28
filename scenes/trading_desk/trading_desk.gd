@@ -443,8 +443,6 @@ func _refresh() -> void:
 		_ui.help.text = "Each tape replays a day that ends near today's live price, so the real 24h move is your edge. Hedge vault protects your stock if metals fall."
 		_ui.main.text = "Ring the opening bell"
 		_ui.hint.text = "Esc leaves without trading."
-	if Market.source == "simulated" and not closed:
-		_ui.hint.text = "Offline: the tapes are simulated."
 
 
 func _show_result() -> void:

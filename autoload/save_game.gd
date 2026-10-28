@@ -26,6 +26,7 @@ var _sections := {}
 func _ready() -> void:
 	register("shop", Shop.to_dict, Shop.from_dict)
 	register("progress", Progress.to_dict, Progress.from_dict)
+	register("market", Market.to_dict, Market.from_dict)
 	_migrate_legacy_save()
 	var cfg := ConfigFile.new()
 	cfg.load(meta_path)
@@ -175,6 +176,7 @@ func delete_save() -> void:
 func new_game() -> void:
 	delete_save()
 	day_over = false
+	Market.new_era() # first, so the opening stock is valued at the new game's prices
 	Progress.reset()
 	Day.reset()
 	Shop.reset()

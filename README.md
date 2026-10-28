@@ -1,14 +1,15 @@
 # Vault Manager
 
 Isometric pixel art management sim of a small-town precious metal shop. Gold, silver,
-platinum and palladium prices follow the real market.
+platinum and palladium prices replay real market history, one historical day per game day.
 
 ## Layout
 
 | Path | What it is |
 | --- | --- |
 | `project.godot` | Godot 4.3 project, 480x270 pixel-perfect viewport scaled by whole numbers |
-| `autoload/market.gd` | `Market` singleton: metals, crypto, stocks and exchange rates; caches to disk, simulates when offline; formats money in the player's currency |
+| `autoload/market.gd` | `Market` singleton: replays real metal price history from a random past date (saved with the game), made-up crypto and stocks, fixed exchange rates; formats money in the player's currency |
+| `data/price_history.gd` | `PriceHistory`: monthly gold, silver, platinum and palladium prices since 1972, made by `tools/prices/build_history.py` (see Price history below) |
 | `autoload/market_events.gd` | `MarketEvents` singleton: turns real price moves into news headlines and rushes of customers |
 | `autoload/customers.gd` | `Customers` singleton: customer archetypes (haggler, crypto bro, collector, shady seller) and the regulars' stories |
 | `autoload/shop.gd` | `Shop` singleton: cash, reputation, stock and the day's results; stock is valued at live prices |
@@ -52,7 +53,7 @@ platinum and palladium prices follow the real market.
 | `tests/bug_bot.tscn` | Bug sweep: a bot clicks through the real game looking for stuck screens and save bugs (see Bug bots below) |
 | `tools/store/` | Steam store page capture: `capture.gd` plays a staged late-game day for the screenshots and the trailer, `key_art.gd` paints the capsules and the icon (see Steam store page below) |
 | `store/` | The Steam store page kit: screenshots, trailer, capsule art, icons and the store text (`store/store_page.md`) |
-| `price-service/` | Cloudflare Worker that polls the metals API and serves `GET /prices` |
+| `price-service/` | Cloudflare Worker that served live prices. The game no longer calls it (see Price history) |
 | `prototype/index.html` | Single-file browser prototype (simulated prices, coin testing minigame) |
 
 ## Play on Windows (no Godot needed)
@@ -207,7 +208,7 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   without an order sells to the next collector who walks in.
 - **Trading desk.** Build the trading desk room (Bullion house, $75,000) and a **Desk** button
   joins the morning panel. One session a morning: a minute-long trading day (09:00 to 17:00) for
-  gold, silver, platinum and two each of the live crypto and stocks. Each tape replays a day that
+  gold, silver, platinum and two each of the crypto and stocks. Each tape replays a day that
   ends near today's live price, so the board's real 24-hour move is your edge, but never a sure
   thing. Pick a row (1-7 or click), **Buy** (B) to go long, **Sell** (S) to go short, **Close**
   (C) to get out, all within the desk's limit ($20,000 times your deal size). **Hedge vault** (H)
@@ -263,8 +264,8 @@ Customers queue at the counter. Sellers bring coins, buyers want coins from your
   point, up to +50%), and each night the town talks about a handsome shop (up to +0.03 stars a
   night, until 4 stars). Reach 50 appeal for the **Showroom** achievement. The pieces are drawn
   in `art/decor_art.gd`; the numbers live in `autoload/decor.gd`.
-- Every price comes from the live market feed, so the same coin is worth more or less from one
-  day to the next. The LED board on the back wall shows today's spot prices.
+- Every price follows the market replay, so the same coin is worth more or less from one
+  day to the next. Game weekends are market weekends: the metals rest. The LED board on the back wall shows today's spot prices.
 - **The ledger.** The **Ledger** button on the morning panel shows your lifetime record: deals,
   money bought and sold, profit, fakes caught and missed, losses to thieves, your highest net
   worth and stars, your profit streak and your three best days. **Achievements** lists 34 goals
@@ -363,20 +364,15 @@ runs over the shop for about a minute, and most new customers come because of th
 | S&P 500 down or up 1.2% | Stocks tumble / Stocks rally | Safe-haven gold buyers, or sellers moving into shares |
 | NVIDIA down 5% | Chip stocks plunge | Tech money buying silver |
 
-Metals compare with the price about a day ago (the price service keeps a day and a half of
-metal quotes and sends `metals_change`). Crypto and stocks use the provider's daily change.
+Everything compares with the previous day's close, so news breaks while the day's move plays
+out with the shop open.
 A story does not repeat until its move has faded. Triggers and effects live in
 `MarketEvents.EVENTS`. In a debug build (playing from the editor), **F9** plays the next event.
 
 ## Run
 
 1. Open the folder in Godot 4.3 or later and press Play.
-2. Without the price service running, the game starts in "simulated" mode from seed prices.
-3. To use live prices, deploy `price-service/`:
-   - `npx wrangler kv namespace create PRICES` and paste the id into `wrangler.toml` (only when deploying to a new Cloudflare account)
-   - Set the API keys as secrets (never commit them; for local `wrangler dev`, put them in `price-service/.dev.vars`, which is git-ignored):
-     `npx wrangler secret put METALCHARTS_KEY`, `COINGECKO_KEY` (optional), `FINNHUB_KEY`
-   - `npx wrangler deploy`. `Market.service_url` points at the deployed worker; change it if you deploy your own.
+2. The game needs no network: prices come from the bundled price history.
 
 Design doc: https://claude.ai/artifact/VqviQgHanNwibT95FhXgLV
 
@@ -481,14 +477,43 @@ The arguments are the number of bots and real minutes each; logs go to `bug_bot_
 bots use their own save slots and settings file, so your saves are safe. Run them after
 adding a screen or anything that is saved.
 
-## Data sources
+## Price history
 
-| Data | Provider | Free tier (check before launch) | Refresh |
-| --- | --- | --- | --- |
-| Gold, silver, platinum, palladium | MetalCharts | ~200 calls/month, attribution link required | every 4 hours |
-| Crypto (BTC, ETH, SOL, DOGE) | CoinGecko demo plan | free key, ~30 calls/min, attribution required | every 30 minutes |
-| Stocks (SPY, AAPL, NVDA, TSLA) | Finnhub free plan | free key, ~60 calls/min | every 30 minutes |
-| Exchange rates | Frankfurter (ECB reference rates) | no key | every 4 hours (ECB updates daily) |
+Prices used to come live from a price service, but a player can fit weeks of game days into
+one real day, so live prices barely moved. Now every save replays real history instead:
+
+- A new game picks a random past date (from 1972, when gold started to float freely, with at
+  least `MIN_YEARS_LEFT` years of data ahead) on a Monday, like game day 1. Each game day is the
+  next calendar day of history, so game weekends are market weekends and the metals sit still.
+  The date and scales are saved with the game (`market` in the save file).
+- Prices follow the real moves but start at today's level (`Market.SEED_PRICES`), since the
+  shop's bills, wages and budgets are tuned to it. Decade-long trends are softened
+  (`TREND_DAMP` of a 3-year moving average is taken out), so a 2001 start doesn't end with gold
+  at six times the price. The year stays hidden, so players can't trade on what they know.
+- History is monthly; the days in between follow a Brownian bridge with a typical day's
+  volatility (`DAILY_VOL`), seeded by the date, so a date always has the same price.
+- In the morning prices sit at yesterday's close and the change shown is yesterday's move.
+  While the shop is open they walk to today's close on the shop clock (`Market.day_fraction`);
+  after closing they sit at today's close.
+- A save that reaches the end of the data (September 2026) carries on from another random
+  date, scaled so prices continue where they were.
+- Crypto and stocks are made up per save: a mean-reverting random walk from today's levels
+  (`SIM_START`); stocks rest at weekends, crypto trades every day.
+- Exchange rates are a fixed table of ECB reference rates (`Market.FX`), for display only.
+
+| Data | Source | Licence |
+| --- | --- | --- |
+| Gold, silver, platinum (monthly averages) | [World Bank Commodity Price Data (The Pink Sheet)](https://www.worldbank.org/en/research/commodity-markets) | CC BY 4.0: credit shown on the Settings page |
+| Palladium (yearly averages, 1991-2025) | U.S. Geological Survey, Mineral Commodity Summaries and Minerals Yearbook | Public domain. The Pink Sheet has no palladium, so its months follow platinum's moves around the yearly averages, and before 1991 it follows platinum at the 1991 ratio |
+| Exchange rates | European Central Bank reference rates | Free reuse with the source named |
+
+Daily LBMA prices are not used: they need a paid licence from ICE Benchmark Administration
+(FRED dropped them in 2022 for that reason). To refresh the data, download
+`CMO-Historical-Data-Monthly.xlsx` from the World Bank page above (and add the new USGS
+palladium year to `PALLADIUM_YEARLY`), then run:
+
+    pip install openpyxl
+    python3 tools/prices/build_history.py CMO-Historical-Data-Monthly.xlsx
 
 ## Currency
 
@@ -514,22 +539,3 @@ sparkles, and a hold-up flashes the room red and shakes it. It only listens to `
 stutter.
 
 ![Shop effects: a sale, a customer storming out, a hold-up](docs/screenshots/fx.png)
-
-## Feed states
-
-- `live`: a real quote from the last 8 hours.
-- `cached`: the service is unreachable; the last real quote is used.
-- `simulated`: no real quote for over 24 hours (or never); each "day" walks to a random close with realistic volatility.
-
-## Daily price walk
-
-The game asks the price service for a quote only on launch (when the cached one is from an
-earlier UTC day or over 4 hours old) and every 4 hours while it runs, so a player costs a few
-requests a day instead of one every 5 minutes. Between quotes `Market` draws the moves itself:
-the first quote of a real day starts each price at the previous close and walks it to today's
-real price over 30 minutes of play (a Brownian bridge with a day's volatility), so the day's
-move plays out on the charts and the change in the tickers and news grows with it. After that,
-prices wobble gently around the real one; a later same-day quote re-aims within 3 minutes. The
-walk is saved with the price cache, so a relaunch carries on where it stopped. Tune it with
-`DAY_PATH_SECONDS`, `RETARGET_SECONDS`, `SETTLE_VOL_SHARE` and `REFRESH_SECONDS` in
-`autoload/market.gd`.

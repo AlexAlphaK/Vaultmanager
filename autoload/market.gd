@@ -1,47 +1,66 @@
 extends Node
-## Live market data: precious metals (USD per troy ounce), crypto and stocks (USD),
-## and exchange rates for showing money in the player's currency.
-## Asks the price service for a real quote only a few times a day (on launch when the
-## cached one is old or from an earlier day, then every few hours), and caches it on disk.
-## Between quotes the game draws believable moves itself: when a new real day's quote
-## arrives, each price walks from the previous close to today's real price over
-## DAY_PATH_SECONDS of play (a Brownian bridge), then keeps ticking gently around it.
-## So the charts look live while one quote covers hours of play.
-## `prices`, `metals_change`, `crypto` and `stocks` hold these shown values; the real
-## quote stays in `_paths`. Offline for more than a day, each "day" walks to a random close.
+## Market prices: precious metals (USD per troy ounce), crypto and stocks (USD), and
+## exchange rates for showing money in the player's currency. No network: every save
+## replays a stretch of real metal price history, one historical day per game day, so
+## a long campaign never outruns the real world.
+##
+## A new game picks a random past date (1972 on, at least MIN_YEARS_LEFT of data ahead)
+## on the same weekday as game day 1. Each game day is the next calendar day of history,
+## so game weekends are market weekends and the metals sit still. Prices follow the real
+## moves but are scaled to start at today's level (SEED_PRICES), because the shop's bills,
+## wages and budgets are tuned to it; decade-long trends are softened by TREND_DAMP so a
+## save that starts in 2001 doesn't end with gold at six times the price. The year stays
+## hidden. If a save reaches the end of the data, it carries on from another random date,
+## scaled so the prices continue where they were.
+##
+## History is monthly (see PriceHistory); the days between months follow a Brownian
+## bridge with a typical day's volatility, seeded by the date, so a date always has the
+## same price. Crypto and stocks are made up: a mean-reverting walk per save.
+##
+## Within a game day: in the morning prices sit at yesterday's close (the change shown is
+## yesterday's move); while the shop is open they walk to today's close along a path
+## timed to the shop clock (`day_fraction`, set by the shop scene); after closing they
+## sit at today's close.
 ## All game logic works in USD; convert only for display with format_money().
 
 signal prices_changed(prices: Dictionary)
-signal source_changed(source: String) # "live", "cached" or "simulated"
 signal currency_changed(code: String)
 
 const METALS: Array[String] = ["XAU", "XAG", "XPT", "XPD"]
-## How old the real quote may get before the next request, and how often to check.
-const REFRESH_SECONDS := 4 * 3600
-const CHECK_SECONDS := 600.0
-const SIM_STEP_SECONDS := 3.0
-## Play time one real day's move is spread over, and the shorter walk to a same-day update.
-const DAY_PATH_SECONDS := 30 * 60
-const RETARGET_SECONDS := 3 * 60
-## Once a walk ends, prices wander around the real one with this share of a day's volatility.
-const SETTLE_VOL_SHARE := 0.25
-const SETTLE_PULL := 0.03
-## A shown price further than this many daily volatilities from a new quote snaps to it.
-const SNAP_VOLS := 4.0
-const SIMULATE_AFTER_OFFLINE_SECONDS := 24 * 3600
-const CACHE_PATH := "user://last_prices.json"
-const SETTINGS_PATH := "user://settings.cfg"
-const TROY_OZ_GRAMS := 31.1034768
-## Typical daily volatility, used only by the offline simulation.
-const DAILY_VOL := {"XAU": 0.012, "XAG": 0.02, "XPT": 0.018, "XPD": 0.022}
+const STEP_SECONDS := 1.5
+## Points on a day's path from yesterday's close to today's, spread over the open hours.
+const PATH_STEPS := 80
+## Typical daily volatility of a trading day. The metals use it between monthly prices.
+const DAILY_VOL := {"XAU": 0.011, "XAG": 0.019, "XPT": 0.015, "XPD": 0.02}
 const CRYPTO_DAILY_VOL := 0.04
 const STOCK_DAILY_VOL := 0.015
+## A save starts with at least this many years of history ahead of it.
+const MIN_YEARS_LEFT := 12
+## Share of the slow trend (a TREND_MONTHS moving average) taken out of the replay.
+const TREND_DAMP := 0.7
+const TREND_MONTHS := 36
+## Pull of made-up crypto and stock prices back toward their starting level, per day.
+const SIM_PULL := 0.002
+## Where the made-up crypto and stocks start.
+const SIM_START := {
+	"crypto": {"BTC": 108000.0, "ETH": 3900.0, "SOL": 190.0, "DOGE": 0.2},
+	"stocks": {"SPY": 660.0, "NVDA": 185.0, "AAPL": 250.0, "TSLA": 430.0},
+}
+const SETTINGS_PATH := "user://settings.cfg"
+const TROY_OZ_GRAMS := 31.1034768
 ## Currencies the player can pick (all covered by the ECB reference rates).
 const CURRENCY_SYMBOLS := {
 	"USD": "$", "EUR": "€", "GBP": "£", "JPY": "¥", "CAD": "C$", "AUD": "A$", "NZD": "NZ$",
 	"CHF": "CHF ", "SEK": "kr ", "NOK": "kr ", "DKK": "kr ", "PLN": "zł ", "CZK": "Kč ",
 	"HUF": "Ft ", "INR": "₹", "CNY": "¥", "HKD": "HK$", "SGD": "S$", "KRW": "₩",
 	"BRL": "R$", "MXN": "MX$", "ZAR": "R ", "TRY": "₺",
+}
+## ECB reference rates, units per 1 USD (27 October 2026). Only for display.
+const FX := {
+	"USD": 1.0, "EUR": 0.89686, "GBP": 0.7503, "JPY": 157.82, "CAD": 1.4023, "AUD": 1.4221,
+	"NZD": 1.7535, "CHF": 0.82861, "SEK": 9.9368, "NOK": 9.317, "DKK": 6.7033, "PLN": 3.948,
+	"CZK": 21.837, "HUF": 329.58, "INR": 95.12, "CNY": 6.6675, "HKD": 7.8445, "SGD": 1.2812,
+	"KRW": 1327.75, "BRL": 5.3474, "MXN": 18.6368, "ZAR": 16.6487, "TRY": 49.787,
 }
 const COUNTRY_CURRENCY := {
 	"US": "USD", "GB": "GBP", "CA": "CAD", "AU": "AUD", "NZ": "NZD", "JP": "JPY", "CH": "CHF",
@@ -51,67 +70,109 @@ const COUNTRY_CURRENCY := {
 	"AT": "EUR", "IE": "EUR", "PT": "EUR", "FI": "EUR", "GR": "EUR", "SK": "EUR", "SI": "EUR",
 	"EE": "EUR", "LV": "EUR", "LT": "EUR", "LU": "EUR", "MT": "EUR", "CY": "EUR", "HR": "EUR",
 }
-## Last-resort seed when there is no network and no cache (first launch offline).
 ## Thousands and decimal marks per language.
 const DIGIT_MARKS := {"en": [",", "."], "de": [".", ","], "es": [".", ","], "fr": [" ", ","]}
+## Today's level: a new game opens at these prices.
 const SEED_PRICES := {"XAU": 4131.55, "XAG": 57.59, "XPT": 1631.85, "XPD": 1092.36}
 
-@export var service_url := "https://vault-manager-prices.price-service.workers.dev/prices"
-
 var prices := {}
-var crypto := {} # symbol -> {"price": USD, "change_pct": 24h %}
-var stocks := {} # symbol -> {"price": USD, "change_pct": % since last close}
-var metals_change := {} # metal -> % change over the last real day, from the price service
-var fx := {"USD": 1.0} # currency -> units per 1 USD
+var crypto := {} # symbol -> {"price": USD, "change_pct": % since the previous close}
+var stocks := {} # symbol -> {"price": USD, "change_pct": % since the previous close}
+var metals_change := {} # metal -> % since the previous close
+var fx := FX.duplicate() # currency -> units per 1 USD
 var currency := "USD"
 var day_open := {}
-var source := "cached"
-var last_live_unix := 0 # when the last real quote arrived
-var quote_day := "" # UTC date of that quote, e.g. "2026-10-24"
+## How far through today's open hours the shop clock is, 0 to 1. The shop scene sets it.
+var day_fraction := 0.0
+## Tests and tools set this to keep prices where they put them.
+var held := false
 
-## "metal:XAU", "crypto:BTC" or "stock:SPY" -> {"target": real price, "ref": previous close
-## (0 when unknown), "left": walk steps to go (0 once settled), "vol": daily volatility}
-var _paths := {}
+## The save's replay: game day `era_day` is historical day `era_date` (days since
+## 1970-01-01), and each metal's replayed price is multiplied by `scale`.
+var seed := 0
+var era_day := 1
+var era_date := 0
+var scale := {}
 
-var _http: HTTPRequest
+var _anchors := PackedInt64Array() # epoch day of the 15th of each month of history
+var _logs := {} # metal -> log monthly price
+var _trend := {} # metal -> log moving average around each month
+var _bridges := {} # "metal:month" -> log prices for each calendar day between anchors
+var _sim := {} # "crypto:BTC" -> log level against SIM_START for each game day
+## Today's rows: key -> {"prev": close two days ago, "ref": yesterday's close, "path": log prices}
+var _today := {}
+var _today_day := -1
+var _stage := "morning" # "morning", "open" or "closed"
 
 
 func _ready() -> void:
-	_load_cache()
-	if prices.is_empty():
-		# first launch: play on seed prices until the first quote arrives
-		prices = SEED_PRICES.duplicate()
-		source = "simulated"
-	else:
-		source = _source_for_age()
-	start_new_day()
+	_load_history()
 	_load_currency()
-	_http = HTTPRequest.new()
-	_http.timeout = 10.0
-	add_child(_http)
-	_http.request_completed.connect(_on_response)
-	_add_timer(CHECK_SECONDS, refresh_if_stale)
-	_add_timer(SIM_STEP_SECONDS, step)
-	refresh_if_stale()
+	randomize()
+	new_era()
+	_hook_up.call_deferred()
+	var timer := Timer.new()
+	timer.wait_time = STEP_SECONDS
+	timer.autostart = true
+	timer.timeout.connect(step)
+	add_child(timer)
 
 
-## Asks for a new quote only when ours is old or from an earlier real day.
-func refresh_if_stale() -> void:
-	if needs_refresh(int(Time.get_unix_time_from_system()), Time.get_date_string_from_system(true)):
-		refresh()
-	elif source == "simulated" or source == "cached":
-		_set_source(_source_for_age())
+func _hook_up() -> void:
+	Day.day_started.connect(func(_d): _set_stage("morning"))
+	Day.shop_opened.connect(func(_d): _set_stage("open"))
+	Day.shop_closed.connect(func(_d): _set_stage("closed"))
+	Day.day_ended.connect(func(_d, _r): _set_stage("closed"))
+	_sync()
 
 
-func needs_refresh(now_unix: int, today: String) -> bool:
-	return now_unix - last_live_unix >= REFRESH_SECONDS or quote_day != today
+## Starts a fresh replay at a random past date, opening at today's prices.
+func new_era(at_seed := -1) -> void:
+	seed = at_seed if at_seed >= 0 else randi()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed
+	era_day = 1
+	era_date = _random_date(rng, 1)
+	scale = {}
+	for metal in METALS:
+		scale[metal] = SEED_PRICES[metal] / exp(_raw_log(metal, era_date - 1))
+	_sim.clear()
+	_today_day = -1
+	_stage = "morning"
+	if is_inside_tree() and get_node_or_null("/root/Shop") != null:
+		_sync()
 
 
-func refresh() -> void:
-	if _http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+## Saved with the game. The scales go as their exact bytes, since the save's JSON rounds numbers.
+func to_dict() -> Dictionary:
+	var scales := {}
+	for metal in scale:
+		scales[metal] = Marshalls.raw_to_base64(PackedFloat64Array([scale[metal]]).to_byte_array())
+	return {"seed": seed, "era_day": era_day, "era_date": era_date, "scale": scales}
+
+
+func from_dict(d: Dictionary) -> void:
+	if not d.has("era_date") or typeof(d.get("scale")) != TYPE_DICTIONARY:
 		return
-	if _http.request(service_url) != OK:
-		_go_offline()
+	seed = int(d.seed)
+	era_day = int(d.era_day)
+	era_date = int(d.era_date)
+	for metal in METALS:
+		var v = d.scale.get(metal)
+		scale[metal] = Marshalls.base64_to_raw(v).to_float64_array()[0] if v is String else scale.get(metal, 1.0)
+	_sim.clear()
+	_today_day = -1
+	_sync.call_deferred()
+
+
+## The historical date (days since 1970-01-01) a game day replays.
+func date_of(day: int) -> int:
+	return era_date + day - era_day
+
+
+## Whether the metals trade today: game weekends are market weekends.
+func is_trading_day(day := -1) -> bool:
+	return _weekday(date_of(day if day > 0 else _current_day())) < 5
 
 
 ## Value of `troy_oz` fine ounces of `metal` at the current price.
@@ -127,19 +188,21 @@ func day_change_percent(metal: String) -> float:
 	return (float(prices.get(metal, open)) / open - 1.0) * 100.0
 
 
-## Percent change over the last real day when the price service knows it, otherwise
-## since the in-game day opened. Drives market events.
+## Percent change since the previous close (in the morning: yesterday's move). Drives
+## market events.
 func metal_move_percent(metal: String) -> float:
-	if source != "simulated" and metals_change.has(metal):
-		return float(metals_change[metal])
-	return day_change_percent(metal)
+	return float(metals_change.get(metal, 0.0))
 
 
+## A new game day: prices open at yesterday's close. Shop.next_day() calls this.
 func start_new_day() -> void:
+	if not held:
+		_stage = "morning"
+		_sync()
 	day_open = prices.duplicate()
 
 
-## Picks the display currency and remembers it. Falls back to USD without a rate.
+## Picks the display currency and remembers it.
 func set_currency(code: String) -> void:
 	if not CURRENCY_SYMBOLS.has(code):
 		return
@@ -182,248 +245,204 @@ static func _group_digits(value: float, decimals: int) -> String:
 	return out + frac.replace(".", marks[1])
 
 
-func _on_response(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	if result != HTTPRequest.RESULT_SUCCESS or code != 200:
-		_go_offline()
-		return
-	var data = JSON.parse_string(body.get_string_from_utf8())
-	if typeof(data) != TYPE_DICTIONARY or typeof(data.get("prices")) != TYPE_DICTIONARY:
-		_go_offline()
-		return
-	take_quote(data, int(Time.get_unix_time_from_system()), Time.get_date_string_from_system(true))
-	_set_source("live")
-	_save_cache()
-	_emit()
-
-
-## Takes a real quote as the place prices walk to. The first quote of a real day walks
-## from the previous close over DAY_PATH_SECONDS; a later one re-aims within RETARGET_SECONDS.
-func take_quote(data: Dictionary, now_unix: int, today: String) -> void:
-	var new_day := today != quote_day
-	var real := {} # key -> [real price, real change % or null, daily volatility]
-	var changes: Dictionary = data.metals_change if typeof(data.get("metals_change")) == TYPE_DICTIONARY else {}
-	for metal in METALS:
-		if data.prices.has(metal):
-			real["metal:" + metal] = [float(data.prices[metal]), changes.get(metal), DAILY_VOL[metal]]
-	for key in ["crypto", "stocks"]:
-		if typeof(data.get(key)) != TYPE_DICTIONARY:
-			continue
-		for sym in data[key]:
-			var q = data[key][sym]
-			if typeof(q) == TYPE_DICTIONARY and q.has("price"):
-				real[("crypto:" if key == "crypto" else "stock:") + sym] = [float(q.price), q.get("change_pct"),
-					CRYPTO_DAILY_VOL if key == "crypto" else STOCK_DAILY_VOL]
-	for k in real:
-		var target: float = real[k][0]
-		if target <= 0.0:
-			continue
-		var ref := target / (1.0 + float(real[k][1]) / 100.0) if real[k][1] != null else 0.0
-		var vol: float = real[k][2]
-		var shown := _shown(k)
-		var old: Dictionary = _paths.get(k, {})
-		var steps := int(RETARGET_SECONDS / SIM_STEP_SECONDS)
-		if new_day:
-			steps = int(DAY_PATH_SECONDS / SIM_STEP_SECONDS)
-			# open the day at the previous close, unless we are already near it
-			if shown <= 0.0 or (ref > 0.0 and absf(log(shown / ref)) > SNAP_VOLS * vol):
-				shown = ref if ref > 0.0 else target
-		else:
-			steps = maxi(steps, int(old.get("left", 0)))
-		if shown <= 0.0 or absf(log(shown / target)) > SNAP_VOLS * vol * 2.0:
-			shown = ref if ref > 0.0 else target
-		_set_shown(k, shown)
-		_paths[k] = {"target": target, "ref": ref, "left": steps, "vol": vol}
-		_update_change(k)
-	if typeof(data.get("fx")) == TYPE_DICTIONARY:
-		for code in data.fx:
-			fx[code] = float(data.fx[code])
-	last_live_unix = now_unix
-	quote_day = today
-
-
-## One tick of the shown prices: walk toward the real quote, or wander around it.
+## One tick of the shown prices: where today's path stands on the shop clock.
 func step() -> void:
-	if source == "simulated":
-		_invent_days()
-	for k in _paths.keys():
-		var p: Dictionary = _paths[k]
-		var shown := _shown(k)
-		if shown <= 0.0:
-			continue
-		var x := log(shown)
-		var goal := log(float(p.target))
-		var sigma := float(p.vol) * sqrt(SIM_STEP_SECONDS / DAY_PATH_SECONDS)
-		var n := int(p.left)
-		if n > 0:
-			# exact Brownian bridge step: lands on the target when n reaches 1
-			x += (goal - x) / n + sigma * sqrt(float(n - 1) / n) * randfn(0.0, 1.0)
-			p.left = n - 1
-		else:
-			# settled: pulled back toward the real price, a stationary wobble around it
-			var wobble := float(p.vol) * SETTLE_VOL_SHARE * sqrt(2.0 * SETTLE_PULL)
-			x += SETTLE_PULL * (goal - x) + wobble * randfn(0.0, 1.0)
-		_set_shown(k, exp(x))
-		_update_change(k)
-	_emit()
-
-
-## Offline: once a walk ends, the next one heads for an invented close a day's move away.
-func _invent_days() -> void:
-	for metal in METALS:
-		if prices.has(metal) and not _paths.has("metal:" + metal):
-			_paths["metal:" + metal] = {"target": float(prices[metal]), "ref": 0.0, "left": 0, "vol": DAILY_VOL[metal]}
-	for k in _paths:
-		var p: Dictionary = _paths[k]
-		if int(p.left) == 0 and _shown(k) > 0.0:
-			var shown := _shown(k)
-			p.ref = shown
-			p.target = shown * exp(randfn(0.0, float(p.vol)))
-			p.left = int(DAY_PATH_SECONDS / SIM_STEP_SECONDS)
-
-
-func _shown(k: String) -> float:
-	var sym := k.get_slice(":", 1)
-	match k.get_slice(":", 0):
-		"metal":
-			return float(prices.get(sym, 0.0))
-		"crypto":
-			return float(crypto.get(sym, {}).get("price", 0.0))
-		"stock":
-			return float(stocks.get(sym, {}).get("price", 0.0))
-	return 0.0
-
-
-func _set_shown(k: String, value: float) -> void:
-	var sym := k.get_slice(":", 1)
-	match k.get_slice(":", 0):
-		"metal":
-			prices[sym] = value
-		"crypto", "stock":
-			var group: Dictionary = crypto if k.begins_with("crypto") else stocks
-			if not group.has(sym):
-				group[sym] = {"price": value, "change_pct": 0.0}
-			group[sym].price = value
-
-
-## The shown change since the previous close, so headlines and tickers match the chart.
-func _update_change(k: String) -> void:
-	var ref := float(_paths[k].ref)
-	if ref <= 0.0:
+	if held:
 		return
-	var pct := (_shown(k) / ref - 1.0) * 100.0
-	var sym := k.get_slice(":", 1)
-	match k.get_slice(":", 0):
-		"metal":
-			metals_change[sym] = pct
-		"crypto":
-			crypto[sym].change_pct = pct
-		"stock":
-			stocks[sym].change_pct = pct
-
-
-func _source_for_age() -> String:
-	var age := Time.get_unix_time_from_system() - last_live_unix
-	if age < REFRESH_SECONDS * 2:
-		return "live"
-	return "cached" if age < SIMULATE_AFTER_OFFLINE_SECONDS else "simulated"
-
-
-func _go_offline() -> void:
-	if prices.is_empty():
-		prices = SEED_PRICES.duplicate()
-		_set_source("simulated")
-	elif Time.get_unix_time_from_system() - last_live_unix > SIMULATE_AFTER_OFFLINE_SECONDS:
-		_set_source("simulated")
+	if _today_day != _current_day():
+		_sync()
 	else:
-		_set_source("cached")
-	_emit()
+		_show()
 
 
-func _emit() -> void:
-	if day_open.is_empty() and not prices.is_empty():
-		start_new_day()
+func _show() -> void:
+	var f := 0.0
+	match _stage:
+		"open":
+			f = clampf(day_fraction, 0.0, 1.0)
+		"closed":
+			f = 1.0
+	for k in _today:
+		var row: Dictionary = _today[k]
+		var shown := float(row.ref)
+		var ref := float(row.prev)
+		if _stage != "morning":
+			var path: PackedFloat64Array = row.path
+			var x := f * PATH_STEPS
+			var i := mini(int(x), PATH_STEPS - 1)
+			shown = exp(lerpf(path[i], path[i + 1], x - i))
+			ref = float(row.ref)
+		_set_shown(k, shown, ref)
 	prices_changed.emit(prices)
 
 
-func _set_source(value: String) -> void:
-	if value != source:
-		source = value
-		source_changed.emit(source)
-
-
-func _add_timer(seconds: float, callback: Callable) -> void:
-	var timer := Timer.new()
-	timer.wait_time = seconds
-	timer.autostart = true
-	timer.timeout.connect(callback)
-	add_child(timer)
-
-
-func _save_cache() -> void:
-	var file := FileAccess.open(CACHE_PATH, FileAccess.WRITE)
-	if file:
-		file.store_string(JSON.stringify({
-			"prices": prices, "metals_change": metals_change, "crypto": crypto, "stocks": stocks, "fx": fx,
-			"last_live_unix": last_live_unix, "quote_day": quote_day, "paths": _paths,
-		}))
-
-
-## Restores the shown prices and their walks, so a relaunch carries on where play stopped.
-## Older caches held only the real quote; it is shown as is.
-func _load_cache() -> void:
-	if not FileAccess.file_exists(CACHE_PATH):
-		return
-	var data = JSON.parse_string(FileAccess.get_file_as_string(CACHE_PATH))
-	if typeof(data) == TYPE_DICTIONARY and typeof(data.get("prices")) == TYPE_DICTIONARY:
-		_apply_quote(data)
-		last_live_unix = int(data.get("last_live_unix", 0))
-		quote_day = str(data.get("quote_day", ""))
-		if typeof(data.get("paths")) == TYPE_DICTIONARY:
-			for k in data.paths:
-				var p = data.paths[k]
-				if typeof(p) == TYPE_DICTIONARY and p.has("target") and _shown(k) > 0.0:
-					_paths[k] = {"target": float(p.target), "ref": float(p.get("ref", 0.0)),
-						"left": int(p.get("left", 0)), "vol": float(p.get("vol", STOCK_DAILY_VOL))}
-		_settle_missing()
-
-
-## Prices without a walk (an older cache) wobble around where they are.
-func _settle_missing() -> void:
-	var keys := []
+## The close of every metal, crypto and stock on a game day.
+func closes(day: int) -> Dictionary:
+	var out := {}
 	for metal in METALS:
-		if prices.has(metal):
-			keys.append(["metal:" + metal, metals_change.get(metal), DAILY_VOL[metal]])
-	for sym in crypto:
-		keys.append(["crypto:" + sym, crypto[sym].get("change_pct"), CRYPTO_DAILY_VOL])
-	for sym in stocks:
-		keys.append(["stock:" + sym, stocks[sym].get("change_pct"), STOCK_DAILY_VOL])
-	for entry in keys:
-		var shown := _shown(entry[0])
-		if _paths.has(entry[0]) or shown <= 0.0:
-			continue
-		var ref := shown / (1.0 + float(entry[1]) / 100.0) if entry[1] != null else 0.0
-		_paths[entry[0]] = {"target": shown, "ref": ref, "left": 0, "vol": entry[2]}
+		out["metal:" + metal] = float(scale[metal]) * exp(_raw_log(metal, date_of(day)))
+	for group in SIM_START:
+		for sym in SIM_START[group]:
+			var k: String = ("crypto:" if group == "crypto" else "stock:") + sym
+			out[k] = float(SIM_START[group][sym]) * exp(_sim_log(k, day))
+	return out
 
 
-func _apply_quote(data: Dictionary) -> void:
+## Builds today's paths and shows the prices for where the day stands.
+func _sync() -> void:
+	var day := _current_day()
+	if date_of(day) + 1 >= _anchors[_anchors.size() - 1]:
+		_next_era(day)
+	var prev := closes(day - 2)
+	var ref := closes(day - 1)
+	var close := closes(day)
+	_today.clear()
+	for k in close:
+		var vol: float = _vol_of(k)
+		var trading: bool = k.begins_with("crypto:") or is_trading_day(day)
+		var rng := RandomNumberGenerator.new()
+		rng.seed = hash([seed, k, day])
+		_today[k] = {"prev": prev[k], "ref": ref[k],
+			"path": _bridge(log(float(ref[k])), log(float(close[k])), PATH_STEPS, vol / sqrt(PATH_STEPS) if trading else 0.0, rng)}
+	_today_day = day
+	if not held:
+		_show()
+
+
+## The save ran out of history: carry on from another random date, the prices
+## continuing from where yesterday closed.
+func _next_era(day: int) -> void:
+	var before := {}
 	for metal in METALS:
-		if data.prices.has(metal):
-			prices[metal] = float(data.prices[metal])
-	if typeof(data.get("metals_change")) == TYPE_DICTIONARY:
-		for metal in METALS:
-			if data.metals_change.has(metal):
-				metals_change[metal] = float(data.metals_change[metal])
-	for key in ["crypto", "stocks"]:
-		if typeof(data.get(key)) != TYPE_DICTIONARY:
-			continue
-		var target: Dictionary = crypto if key == "crypto" else stocks
-		for sym in data[key]:
-			var q = data[key][sym]
-			if typeof(q) == TYPE_DICTIONARY and q.has("price"):
-				target[sym] = {"price": float(q.price), "change_pct": float(q.get("change_pct", 0.0))}
-	if typeof(data.get("fx")) == TYPE_DICTIONARY:
-		for code in data.fx:
-			fx[code] = float(data.fx[code])
+		before[metal] = float(scale[metal]) * exp(_raw_log(metal, date_of(day - 1)))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([seed, day])
+	era_day = day
+	era_date = _random_date(rng, day)
+	for metal in METALS:
+		scale[metal] = before[metal] / exp(_raw_log(metal, date_of(day - 1)))
+
+
+## A random date with MIN_YEARS_LEFT of history ahead, on the weekday of game `day`.
+func _random_date(rng: RandomNumberGenerator, day: int) -> int:
+	var first := _anchors[0] + 7
+	var last := _anchors[_anchors.size() - 1] - MIN_YEARS_LEFT * 365
+	var d := rng.randi_range(first, last)
+	var want := (day - 1) % 7 # game day 1 is a Monday
+	return d + posmod(want - _weekday(d), 7)
+
+
+## 0 for Monday to 6 for Sunday. 1970-01-01 was a Thursday.
+static func _weekday(date: int) -> int:
+	return posmod(date + 3, 7)
+
+
+func _current_day() -> int:
+	var shop := get_node_or_null("/root/Shop")
+	return int(shop.day) if shop else 1
+
+
+func _set_stage(stage: String) -> void:
+	_stage = stage
+	if not held:
+		step()
+
+
+func _vol_of(k: String) -> float:
+	if k.begins_with("metal:"):
+		return DAILY_VOL[k.get_slice(":", 1)]
+	return CRYPTO_DAILY_VOL if k.begins_with("crypto:") else STOCK_DAILY_VOL
+
+
+## Replayed log price of `metal` on historical `date`, before scaling: the day on the
+## bridge between monthly prices (weekends keep Friday's), less some of the slow trend.
+func _raw_log(metal: String, date: int) -> float:
+	var wd := _weekday(date)
+	if wd >= 5:
+		date -= wd - 4
+	var i := clampi(_anchors.bsearch(date, true) - 1, 0, _anchors.size() - 2)
+	var key := "%s:%d" % [metal, i]
+	if not _bridges.has(key):
+		var n := int(_anchors[i + 1] - _anchors[i])
+		var rng := RandomNumberGenerator.new()
+		rng.seed = hash(key)
+		var logs: PackedFloat64Array = _logs[metal]
+		_bridges[key] = _bridge(logs[i], logs[i + 1], n, DAILY_VOL[metal] * sqrt(5.0 / 7.0), rng)
+	var days: PackedFloat64Array = _bridges[key]
+	var k := clampi(int(date - _anchors[i]), 0, days.size() - 1)
+	var trend: PackedFloat64Array = _trend[metal]
+	var t := lerpf(trend[i], trend[i + 1], float(k) / (days.size() - 1))
+	return days[k] - TREND_DAMP * t
+
+
+## A random walk of `n` steps of `sd` from `a` that lands exactly on `b`.
+static func _bridge(a: float, b: float, n: int, sd: float, rng: RandomNumberGenerator) -> PackedFloat64Array:
+	var walk := PackedFloat64Array([0.0])
+	for k in n:
+		walk.append(walk[k] + rng.randfn(0.0, sd))
+	var out := PackedFloat64Array()
+	for k in n + 1:
+		var t := float(k) / n
+		out.append(a + (b - a) * t + walk[k] - t * walk[n])
+	return out
+
+
+## Log level of a made-up price on game `day`, against where it started: a daily
+## random move pulled gently back toward the start. Stocks rest on weekends.
+func _sim_log(k: String, day: int) -> float:
+	if day <= 0:
+		return 0.0
+	if not _sim.has(k):
+		_sim[k] = PackedFloat64Array([0.0])
+	var levels: PackedFloat64Array = _sim[k]
+	var vol := _vol_of(k)
+	var rng := RandomNumberGenerator.new()
+	for d in range(levels.size(), day + 1):
+		rng.seed = hash([seed, k, d, "sim"])
+		if k.begins_with("stock:") and _weekday(date_of(d)) >= 5:
+			levels.append(levels[d - 1])
+		else:
+			levels.append(levels[d - 1] * (1.0 - SIM_PULL) + rng.randfn(0.0, vol))
+	_sim[k] = levels
+	return levels[day]
+
+
+func _set_shown(k: String, value: float, ref: float) -> void:
+	var sym := k.get_slice(":", 1)
+	var pct := (value / ref - 1.0) * 100.0 if ref > 0.0 else 0.0
+	match k.get_slice(":", 0):
+		"metal":
+			prices[sym] = value
+			metals_change[sym] = pct
+		"crypto":
+			crypto[sym] = {"price": value, "change_pct": pct}
+		"stock":
+			stocks[sym] = {"price": value, "change_pct": pct}
+
+
+func _load_history() -> void:
+	var rows: Array = PriceHistory.MONTHS
+	for metal in METALS:
+		_logs[metal] = PackedFloat64Array()
+	for i in rows.size():
+		var month := PriceHistory.FIRST_MONTH - 1 + i
+		var unix := Time.get_unix_time_from_datetime_dict({"year": PriceHistory.FIRST_YEAR + month / 12,
+			"month": month % 12 + 1, "day": 15})
+		_anchors.append(unix / 86400)
+		for m in METALS.size():
+			_logs[METALS[m]].append(log(float(rows[i][m])))
+	var half := TREND_MONTHS / 2
+	for metal in METALS:
+		var logs: PackedFloat64Array = _logs[metal]
+		var trend := PackedFloat64Array()
+		for i in logs.size():
+			var lo := maxi(0, i - half)
+			var hi := mini(logs.size() - 1, i + half)
+			var total := 0.0
+			for j in range(lo, hi + 1):
+				total += logs[j]
+			trend.append(total / (hi - lo + 1))
+		_trend[metal] = trend
 
 
 func _load_currency() -> void:
