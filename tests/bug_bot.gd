@@ -652,13 +652,7 @@ func _finish() -> void:
 
 
 func _quiet_market() -> void:
-	Market.service_url = "http://127.0.0.1:9/"
-	for child in Market.get_children():
-		if child is Timer:
-			child.stop()
-		elif child is HTTPRequest:
-			child.cancel_request()
-	Market.source = "simulated"
+	Market.held = true
 
 
 func _visible_text(text: String) -> bool:

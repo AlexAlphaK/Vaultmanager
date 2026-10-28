@@ -8,7 +8,8 @@ extends Node
 ##   godot --headless --path . res://tests/balance_sim.tscn -- --runs=8 --days=120
 ## Options: --runs=N seeds per bot, --days=N days per run, --bots=novice,average,expert,
 ## --seed=N first seed, --csv=PATH writes one row per bot per day, --no-decor leaves the
-## shop floor bare (to compare).
+## shop floor bare (to compare), --walk swaps the replay of real price history for a plain
+## random walk from today's prices (the old check, to compare).
 
 const STEP := 0.25 # shop-clock seconds per tick
 
@@ -71,6 +72,7 @@ var _busy := 0.0
 var _bench := {}
 var _csv: FileAccess
 var _decor := true
+var _walk := false
 
 
 func _ready() -> void:
@@ -79,9 +81,10 @@ func _ready() -> void:
 	var days := int(args.get("days", 120))
 	var first_seed := int(args.get("seed", 1))
 	_decor = not args.has("no-decor")
+	_walk = args.has("walk")
 	var names: PackedStringArray = String(args.get("bots", "novice,average,expert")).split(",")
 	# each process gets its own save, so several sims (other bots or seeds) can run side by side
-	SaveGame.path = "user://balance_sim_%s_%d.json" % [String(args.get("bots", "all")).replace(",", "_") + ("" if _decor else "_bare"), first_seed]
+	SaveGame.path = "user://balance_sim_%s_%d.json" % [String(args.get("bots", "all")).replace(",", "_") + ("" if _decor else "_bare") + ("_walk" if _walk else ""), first_seed]
 	SaveGame.delete_save()
 	_quiet_market()
 	if args.has("csv"):
@@ -114,6 +117,11 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 	Market.prices = Market.SEED_PRICES.duplicate()
 	Market.start_new_day()
 	shop._new_game()
+	if not _walk:
+		# each run replays its own stretch of real history, as a new game does
+		Market.held = false
+		Market.new_era(seed)
+		Market.start_new_day()
 	shop.coach.skip()
 	shop.rng.seed = seed
 	var out := {"tier_day": [1, -1, -1, -1], "worth": [], "rep": [], "break_ins": 0, "stolen": 0.0, "fakes_bought": 0,
@@ -129,7 +137,8 @@ func run(bot_name: String, seed: int, days: int) -> Dictionary:
 		_tally(out, report, bot_name, seed)
 		if Progress.goal_reached() and d > 0 and out.tier_day[3] > 0 and Shop.day >= out.tier_day[3] + 7:
 			break
-		_walk_prices()
+		if _walk:
+			_walk_prices()
 		shop._open_next_day()
 		# let the engine flush its deferred calls, or the message queue overflows on long runs
 		await get_tree().process_frame
@@ -653,15 +662,9 @@ func _sum(results: Array, key: String) -> float:
 	return total
 
 
-## Fixed prices: no network, no random walk between ticks.
+## Prices stay where the sim puts them (with --walk) until a run starts its replay.
 func _quiet_market() -> void:
-	Market.service_url = "http://127.0.0.1:9/"
-	for child in Market.get_children():
-		if child is Timer:
-			child.stop()
-		elif child is HTTPRequest:
-			child.cancel_request()
-	Market.source = "simulated"
+	Market.held = true
 
 
 func _args() -> Dictionary:

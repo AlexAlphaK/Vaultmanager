@@ -1,10 +1,10 @@
 class_name DeskSession
 extends RefCounted
 ## One morning at the trading desk: a minute-long tape of a trading day, 09:00 to 17:00,
-## for gold, silver, platinum and the live crypto and stocks from Market. Each tape starts
-## where the live price stood 24 hours ago and drifts toward a close near where it is now,
-## so the real 24-hour move (shown on the board) is the trader's edge, but noise and a
-## scaled move keep it from being a sure thing.
+## for gold, silver, platinum and the crypto and stocks from Market. Each tape starts
+## where the price stood a day ago and drifts toward a close near where it is now, so the
+## day's move (shown on the board) is the trader's edge, but noise and a scaled move keep
+## it from being a sure thing.
 ##
 ## The desk trades on its own limit (longs plus shorts), not cash: every position closes
 ## at the bell and only the profit or loss goes on the day's ledger. Shorting the metals

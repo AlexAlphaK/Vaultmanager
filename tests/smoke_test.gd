@@ -31,7 +31,7 @@ func _ready() -> void:
 	_check_bars()
 	_check_vault_layout()
 	_check_market_events()
-	_check_price_smoothing()
+	_check_price_replay()
 	_check_customers()
 	_check_shop_sounds()
 	await _check_vault_scene()
@@ -218,65 +218,92 @@ func _check_save_slots() -> void:
 	SaveGame.new_game()
 
 
-## One real quote a day, walked out over play time instead of polled every few minutes.
-func _check_price_smoothing() -> void:
-	var saved := {"prices": Market.prices.duplicate(), "change": Market.metals_change.duplicate(),
-		"crypto": Market.crypto.duplicate(true), "stocks": Market.stocks.duplicate(true), "paths": Market._paths.duplicate(true),
-		"day": Market.quote_day, "unix": Market.last_live_unix, "source": Market.source}
-	Market.source = "live"
-	Market.prices = {}
-	Market.metals_change = {}
-	Market.crypto = {}
-	Market._paths = {}
-	Market.quote_day = ""
-	var quote := {"prices": {"XAU": 4000.0, "XAG": 50.0}, "metals_change": {"XAU": 2.0},
-		"crypto": {"BTC": {"price": 100000.0, "change_pct": -5.0}}}
-	Market.take_quote(quote, 1000000, "2026-10-24")
-	expect(is_equal_approx(Market.prices.XAU, 4000.0 / 1.02), "a new day's gold opens at the previous close")
-	expect(absf(Market.metals_change.XAU) < 0.001 and absf(Market.crypto.BTC.change_pct) < 0.001, "the day's move starts at zero")
-	expect(is_equal_approx(Market.prices.XAG, 50.0), "without a real change, silver starts at its real price")
-	var steps := int(Market.DAY_PATH_SECONDS / Market.SIM_STEP_SECONDS)
-	var moved := false
-	for n in steps:
-		Market.step()
-		if n == steps / 2:
-			moved = absf(Market.prices.XAU - 4000.0 / 1.02) > 0.01
-	expect(moved, "gold moves between the close and today's price")
-	expect(is_equal_approx(Market.prices.XAU, 4000.0) and is_equal_approx(Market.crypto.BTC.price, 100000.0), "the walk lands on today's real prices")
-	expect(absf(Market.metals_change.XAU - 2.0) < 0.001 and absf(Market.crypto.BTC.change_pct + 5.0) < 0.001, "and on the real daily change, for the news")
-	for n in 200:
-		Market.step()
-	expect(absf(Market.prices.XAU / 4000.0 - 1.0) < 0.01, "settled prices wobble close to the real one")
-	expect(not Market.needs_refresh(1000000 + 3600, "2026-10-24"), "an hour-old quote from today needs no new request")
-	expect(Market.needs_refresh(1000000 + Market.REFRESH_SECONDS, "2026-10-24"), "a quote a few hours old is refreshed")
-	expect(Market.needs_refresh(1000000 + 60, "2026-10-25"), "a new real day asks for a new quote")
-	# a same-day update re-aims quickly, without a jump
-	var before: float = Market.prices.XAU
-	Market.take_quote({"prices": {"XAU": 4040.0}, "metals_change": {"XAU": 3.0}}, 1000000 + Market.REFRESH_SECONDS, "2026-10-24")
-	expect(Market.prices.XAU == before, "a same-day quote does not jump the price")
-	for n in int(Market.RETARGET_SECONDS / Market.SIM_STEP_SECONDS):
-		Market.step()
-	expect(is_equal_approx(Market.prices.XAU, 4040.0), "it walks to the update within a few minutes")
-	Market.prices = saved.prices
-	Market.metals_change = saved.change
-	Market.crypto = saved.crypto
-	Market.stocks = saved.stocks
-	Market._paths = saved.paths
-	Market.quote_day = saved.day
-	Market.last_live_unix = saved.unix
-	Market.source = saved.source
+## Each save replays real metal history from a random past date, one day per game day.
+func _check_price_replay() -> void:
+	var saved_day := Shop.day
+	var saved_era := Market.to_dict()
+	var saved_stage: String = Market._stage
+	Market.held = false
+	Market.new_era(1234)
+	Shop.day = 1
+	Market.start_new_day()
+	for metal in Market.METALS:
+		expect(absf(Market.prices[metal] / Market.SEED_PRICES[metal] - 1.0) < 0.0001, "a new game opens at today's %s price" % metal)
+	expect(Market._weekday(Market.date_of(1)) == 0, "game day 1 is a Monday in history too")
+	var year := int(Time.get_datetime_dict_from_unix_time(Market.date_of(1) * 86400).year)
+	expect(year >= 1972 and year <= 2026 - Market.MIN_YEARS_LEFT, "the replay starts in a year with enough history ahead (%d)" % year)
+	var c30: Dictionary = Market.closes(30)
+	Market.new_era(1234)
+	expect(Market.closes(30) == c30, "a save's replay is the same every time")
+	# the monthly prices are the real ones, before the slow trend is softened
+	var i := 100
+	var raw: float = Market._raw_log("XAU", Market._anchors[i]) + Market.TREND_DAMP * Market._trend.XAU[i]
+	expect(absf(exp(raw) / PriceHistory.MONTHS[i][0] - 1.0) < 0.0001, "the replay passes through the real monthly gold price")
+	# while the shop is open, prices walk from yesterday's close to today's along the shop clock
+	Shop.day = 2
+	Market.start_new_day()
+	var c1: Dictionary = Market.closes(1)
+	var c2: Dictionary = Market.closes(2)
+	expect(is_equal_approx(Market.prices.XAU, c1["metal:XAU"]), "the morning opens at yesterday's close")
+	Market._set_stage("open")
+	Market.day_fraction = 0.0
+	Market.step()
+	expect(absf(Market.metals_change.XAU) < 0.0001, "the day's move starts at zero")
+	Market.day_fraction = 0.5
+	Market.step()
+	var mid: float = Market.prices.XAU
+	expect(mid != c1["metal:XAU"] and mid != c2["metal:XAU"], "gold moves during the day")
+	Market.day_fraction = 1.0
+	Market.step()
+	expect(is_equal_approx(Market.prices.XAU, c2["metal:XAU"]) and is_equal_approx(Market.crypto.BTC.price, c2["crypto:BTC"]), "closing time lands on today's close")
+	expect(absf(Market.metals_change.XAU - (c2["metal:XAU"] / c1["metal:XAU"] - 1.0) * 100.0) < 0.0001, "the change is the day's move, for the news")
+	# game weekends are market weekends
+	expect(Market.is_trading_day(5) and not Market.is_trading_day(6) and not Market.is_trading_day(7), "Saturday and Sunday are market holidays")
+	var fri: Dictionary = Market.closes(5)
+	var sun: Dictionary = Market.closes(7)
+	expect(fri["metal:XAU"] == sun["metal:XAU"] and fri["stock:SPY"] == sun["stock:SPY"], "metals and stocks rest at the weekend")
+	expect(fri["crypto:BTC"] != sun["crypto:BTC"], "crypto trades every day")
+	# saved with the game
+	var era := Market.to_dict()
+	var c40: Dictionary = Market.closes(40)
+	Market.new_era(99)
+	expect(Market.closes(40) != c40, "another save replays another stretch")
+	Market.from_dict(JSON.parse_string(JSON.stringify(era)))
+	expect(Market.closes(40) == c40, "loading a save brings its replay back")
+	# a save that runs out of history carries on from another date without a jump
+	Shop.day = 50
+	Market.era_date = Market._anchors[Market._anchors.size() - 1] - 50
+	var before: float = Market.closes(49)["metal:XAU"]
+	Market._sync()
+	expect(Market.date_of(50) < Market._anchors[Market._anchors.size() - 1] - 365 * Market.MIN_YEARS_LEFT + 7, "the end of the data starts a new stretch")
+	expect(absf(Market.closes(49)["metal:XAU"] / before - 1.0) < 0.0001, "and prices carry on where they were")
+	# softened trends keep long campaigns near today's price level
+	var lo := 1e9
+	var hi := 0.0
+	for s in 6:
+		Market.new_era(s * 77 + 5)
+		for d in range(1, 365 * Market.MIN_YEARS_LEFT, 5):
+			var r: float = Market.closes(d)["metal:XAU"] / Market.SEED_PRICES.XAU
+			lo = minf(lo, r)
+			hi = maxf(hi, r)
+	expect(lo > 0.25 and hi < 4.0, "gold stays within reach of today's price over a long campaign (%.2f to %.2f)" % [lo, hi])
+	Shop.day = saved_day
+	Market.from_dict(saved_era)
+	Market._stage = saved_stage
+	Market._sync()
 
 
 func _check_market_events() -> void:
-	var saved_source := Market.source
 	var saved_crypto := Market.crypto.duplicate(true)
+	var saved_stocks := Market.stocks.duplicate(true)
 	var saved_change := Market.metals_change.duplicate()
-	MarketEvents.stop()
-	MarketEvents.advance(MarketEvents.COOLDOWN_SECONDS + 1.0)
-	Market.source = "live"
+	Market.held = true
 	# calm markets make no news
 	Market.crypto = {"BTC": {"price": 60000.0, "change_pct": 1.0}}
+	Market.stocks = {}
 	Market.metals_change = {"XAU": 0.2, "XAG": -0.4, "XPT": 0.0}
+	MarketEvents.stop()
+	MarketEvents.advance(MarketEvents.COOLDOWN_SECONDS + 1.0)
 	MarketEvents.evaluate()
 	expect(MarketEvents.active.is_empty(), "a calm market starts no event")
 	# a Bitcoin crash brings crypto converts who buy gold
@@ -313,8 +340,9 @@ func _check_market_events() -> void:
 	expect(reserves / 20.0 < 0.86, "panic sellers accept less than usual")
 	MarketEvents.stop()
 	MarketEvents.advance(MarketEvents.COOLDOWN_SECONDS + 1.0)
-	Market.source = saved_source
+	Market.held = false
 	Market.crypto = saved_crypto
+	Market.stocks = saved_stocks
 	Market.metals_change = saved_change
 
 

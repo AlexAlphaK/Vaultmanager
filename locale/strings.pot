@@ -2232,6 +2232,10 @@ msgstr ""
 msgid "1911 Regent"
 msgstr ""
 
+#: data/price_history.gd
+msgid "Historical prices: World Bank Commodity Price Data (The Pink Sheet), CC BY 4.0; U.S. Geological Survey."
+msgstr ""
+
 #: items/bullion_bar.gd
 msgid "1 kilo gold bar"
 msgstr ""
@@ -3555,15 +3559,11 @@ msgid "Save slots"
 msgstr ""
 
 #: scenes/menu/title_screen.gd scenes/shop/hud.gd
-msgid "● CACHED"
+msgid "● TRADING"
 msgstr ""
 
 #: scenes/menu/title_screen.gd scenes/shop/hud.gd
-msgid "● LIVE"
-msgstr ""
-
-#: scenes/menu/title_screen.gd scenes/shop/hud.gd
-msgid "● OFFLINE"
+msgid "● WEEKEND"
 msgstr ""
 
 #: scenes/shop/customer.gd
@@ -5896,10 +5896,6 @@ msgstr ""
 
 #: scenes/trading_desk/trading_desk.gd
 msgid "No metal in the vault to hedge."
-msgstr ""
-
-#: scenes/trading_desk/trading_desk.gd
-msgid "Offline: the tapes are simulated."
 msgstr ""
 
 #: scenes/trading_desk/trading_desk.gd

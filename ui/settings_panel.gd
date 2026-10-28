@@ -98,6 +98,10 @@ func _ready() -> void:
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	box.add_child(spacer)
+	# the replayed price history's source, as its licence asks
+	var credit := _caption(box, PriceHistory.CREDIT, Pal.INK_FAINT)
+	credit.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	credit.custom_minimum_size.x = SIZE.x - 16
 	var back := Button.new()
 	back.text = "Back"
 	back.theme_type_variation = "PrimaryButton"
